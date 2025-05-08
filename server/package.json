@@ -1,0 +1,19 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "This server application is built with typescript and ExpressJs for Remington College Of Health Science And Technology to handle application for admission in to the college.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rmcohst/rmcohst-application-web-app.git"
+  },
+  "author": "Nnamdi Solomon Iroagba",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rmcohst/rmcohst-application-web-app/issues"
+  },
+  "homepage": "https://github.com/rmcohst/rmcohst-application-web-app#readme"
+}

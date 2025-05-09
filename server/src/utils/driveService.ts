@@ -15,17 +15,24 @@ class DriveService {
     this.drive = google.drive({ version: 'v3', auth });
   }
 
-  async uploadFile(fileStream: Readable, fileName: string, mimeType: string): Promise<string> {
+  async uploadFile(
+    fileStream: Readable, 
+    fileName: string, 
+    mimeType: string, 
+    metadata?: { name?: string; parents?: string[]; description?: string }
+  ): Promise<string> {
     try {
       const response = await this.drive.files.create({
         requestBody: {
           name: fileName,
-          mimeType: mimeType
+          mimeType: mimeType,
+          ...metadata
         },
         media: {
           mimeType: mimeType,
           body: fileStream
-        }
+        },
+        fields: 'id,webViewLink'
       });
 
       logger.info('File uploaded to Google Drive', { fileName, fileId: response.data.id });

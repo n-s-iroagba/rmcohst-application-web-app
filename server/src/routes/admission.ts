@@ -35,15 +35,48 @@ router.get('/:applicationId/letter', authMiddleware, async (req, res) => {
       ]
     });
 
-    // Upload to Google Drive
+    // Create application-specific folder in Google Drive
+    const folderMetadata = {
+      name: `RMCOHST_${application.studentId}_documents`,
+      mimeType: 'application/vnd.google-apps.folder',
+      description: `Archive folder for student ${application.studentId}`
+    };
+
+    const folder = await driveService.drive.files.create({
+      requestBody: folderMetadata,
+      fields: 'id'
+    });
+
+    // Upload admission letter to the folder
     const fileStream = fs.createReadStream(pdfPath);
+    const fileName = `admission_letter_${application.studentId}_${new Date().toISOString()}.pdf`;
+    
+    const fileMetadata = {
+      name: fileName,
+      parents: [folder.data.id],
+      description: `Admission letter for ${application.applicant.firstName} ${application.applicant.lastName}`
+    };
+
     const driveFileId = await driveService.uploadFile(
       fileStream,
-      `admission_letter_${applicationId}.pdf`,
-      'application/pdf'
+      fileName,
+      'application/pdf',
+      fileMetadata
     );
 
     const letterUrl = await driveService.getFileUrl(driveFileId);
+
+    // Save reference in database
+    await prisma.document.create({
+      data: {
+        type: 'ADMISSION_LETTER',
+        driveFileId,
+        driveFolderId: folder.data.id,
+        applicationId: application.id,
+        version: 1,
+        status: 'ACTIVE'
+      }
+    });
 
     const letterData = {
       letterUrl,

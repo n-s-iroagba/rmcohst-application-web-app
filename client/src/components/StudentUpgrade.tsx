@@ -1,6 +1,6 @@
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 
 interface StudentUpgradeProps {
   applicationId: string;
@@ -15,17 +15,22 @@ export default function StudentUpgrade({ applicationId }: StudentUpgradeProps) {
   useEffect(() => {
     const upgradeToStudent = async () => {
       try {
-        const response = await axios.post(`/api/student/upgrade/${applicationId}`, {
-          paymentVerified: true
+        const response = await fetch(`/api/applications/${applicationId}/upgrade`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
         });
 
-        setStudentId(response.data.studentId);
-        setTimeout(() => {
-          router.push('/student/dashboard');
-        }, 3000);
+        if (!response.ok) {
+          throw new Error('Upgrade failed');
+        }
+
+        const data = await response.json();
+        setStudentId(data.studentId);
+        router.push('/application/admission');
       } catch (err) {
-        setError('Failed to upgrade to student status. Please contact support.');
-        console.error('Upgrade error:', err);
+        setError(err instanceof Error ? err.message : 'Upgrade failed');
       } finally {
         setLoading(false);
       }
@@ -37,33 +42,49 @@ export default function StudentUpgrade({ applicationId }: StudentUpgradeProps) {
   if (loading) {
     return (
       <div className="text-center p-6">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p className="text-lg">Setting up your student profile...</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-4">Processing your enrollment...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-6 bg-red-50 border border-red-200 rounded-lg" role="alert">
-        <h3 className="text-red-800 font-semibold mb-2">Error</h3>
-        <p className="text-red-600">{error}</p>
+      <div className="text-center p-6 text-red-600">
+        <p>Error: {error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="p-6 bg-green-50 border border-green-200 rounded-lg text-center">
-      <h2 className="text-2xl font-semibold text-green-800 mb-4">
-        Welcome to Remington College!
-      </h2>
-      <p className="mb-4">
-        Your student profile has been created successfully.
-        <br />
-        Student ID: <strong>{studentId}</strong>
+    <div className="text-center p-6">
+      <div className="text-green-600 mb-4">
+        <svg
+          className="h-16 w-16 mx-auto"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 13l4 4L19 7"
+          />
+        </svg>
+      </div>
+      <h2 className="text-2xl font-bold mb-2">Enrollment Successful!</h2>
+      <p className="text-gray-600 mb-4">
+        Your student ID is: <span className="font-mono">{studentId}</span>
       </p>
-      <p className="text-sm text-green-600">
-        Redirecting to your student dashboard...
+      <p className="text-sm text-gray-500">
+        Redirecting to your admission letter...
       </p>
     </div>
   );

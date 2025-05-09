@@ -1,21 +1,26 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useAuth } from '@/contexts/AuthContext';
-
-interface AdmissionLetterData {
-  letterUrl: string;
-  generatedDate: string;
-  validUntil: string;
-  studentId: string;
-}
+import axios from 'axios';
 
 interface AdmissionLetterProps {
   applicationId: string;
 }
 
+interface LetterData {
+  studentId: string;
+  fullName: string;
+  program: string;
+  letterUrl: string;
+  academicYear: string;
+  generatedDate: string;
+  registrationDeadline: string;
+  requirements: string[];
+}
+
 export default function AdmissionLetter({ applicationId }: AdmissionLetterProps) {
-  const [letterData, setLetterData] = useState<AdmissionLetterData | null>(null);
+  const [letterData, setLetterData] = useState<LetterData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -39,84 +44,102 @@ export default function AdmissionLetter({ applicationId }: AdmissionLetterProps)
     fetchLetter();
   }, [applicationId, user?.token]);
 
+  const handleDownload = async () => {
+    if (!letterData?.letterUrl) return;
+
+    setDownloading(true);
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/admission/${applicationId}/letter/download`,
+        {
+          responseType: 'blob',
+          headers: {
+            Authorization: `Bearer ${user?.token}`
+          }
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `admission_letter_${letterData?.studentId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      setError('Failed to download admission letter');
+      console.error('Download error:', err);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   if (error) {
-    return <div className="text-red-600">{error}</div>;
+    return (
+      <div className="bg-red-50 border border-red-200 rounded p-4 text-red-600">
+        {error}
+      </div>
+    );
   }
 
   if (!letterData) {
-    return <div>Loading admission letter...</div>;
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <span className="ml-3">Loading admission letter...</span>
+      </div>
+    );
   }
 
   return (
-    <div className="p-6 border rounded-lg shadow-sm bg-white" data-testid="admission-letter">
-      <div className="flex justify-between items-start mb-8">
-        <h2 className="text-2xl font-bold">Admission Letter</h2>
-        <button 
-          onClick={() => window.print()}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          Print Letter
-        </button>
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="border-b pb-4 mb-4">
+        <h2 className="text-2xl font-bold text-gray-800">Admission Letter</h2>
+        <p className="text-gray-600">Student ID: {letterData.studentId}</p>
       </div>
-      
-      <div className="space-y-6">
+
+      <div className="space-y-4">
         <div>
-          <p className="text-gray-600">Student ID</p>
-          <p className="text-lg font-medium">{letterData.studentId}</p>
+          <h3 className="font-semibold">Program Details</h3>
+          <p>{letterData.program}</p>
+          <p>Academic Year: {letterData.academicYear}</p>
+          {letterData.registrationDeadline && (
+            <p>Registration Deadline: {new Date(letterData.registrationDeadline).toLocaleDateString()}</p>
+          )}
         </div>
 
         <div>
-          <p className="text-gray-600">Program</p>
-          <p className="text-lg font-medium">{letterData.program}</p>
-        </div>
-
-        <div>
-          <p className="text-gray-600">Academic Year</p>
-          <p className="text-lg font-medium">{letterData.academicYear}</p>
-        </div>
-
-        <div>
-          <p className="text-gray-600">Start Date</p>
-          <p className="text-lg font-medium">{new Date(letterData.startDate).toLocaleDateString()}</p>
-        </div>
-
-        <div>
-          <p className="text-gray-600 mb-2">Required Documents</p>
-          <ul className="list-disc pl-5 space-y-1">
+          <h3 className="font-semibold">Requirements</h3>
+          <ul className="list-disc list-inside">
             {letterData.requirements.map((req, index) => (
-              <li key={index} className="text-gray-800">{req}</li>
+              <li key={index} className="text-gray-700">{req}</li>
             ))}
           </ul>
         </div>
 
-        <div className="mt-8 pt-6 border-t">
-          <p className="text-sm text-gray-500">
-            This letter was generated on {new Date(letterData.generatedDate).toLocaleDateString()} 
-            and is valid until {new Date(letterData.validUntil).toLocaleDateString()}
-          </p>
+        <div className="mt-6">
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:bg-blue-300 flex items-center"
+            data-testid="download-button"
+          >
+            {downloading ? (
+              <>
+                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+                Downloading...
+              </>
+            ) : (
+              'Download PDF'
+            )}
+          </button>
+        </div>
+
+        <div className="mt-4 text-sm text-gray-500">
+          <p>Generated: {new Date(letterData.generatedDate).toLocaleDateString()}</p>
         </div>
       </div>
-    </div>
-
-      <div className="mb-6">
-        <p className="text-gray-600">Generated Date:</p>
-        <p>{new Date(letterData.generatedDate).toLocaleDateString()}</p>
-      </div>
-
-      <div className="mb-6">
-        <p className="text-gray-600">Valid Until:</p>
-        <p>{new Date(letterData.validUntil).toLocaleDateString()}</p>
-      </div>
-
-      <a
-        href={letterData.letterUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 inline-block"
-        data-testid="download-letter"
-      >
-        Download Admission Letter
-      </a>
     </div>
   );
 }

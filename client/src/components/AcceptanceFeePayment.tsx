@@ -1,6 +1,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AcceptanceFeePaymentProps {
   applicationId: string;
@@ -9,76 +11,132 @@ interface AcceptanceFeePaymentProps {
 
 export default function AcceptanceFeePayment({ applicationId, amount }: AcceptanceFeePaymentProps) {
   const router = useRouter();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [cardDetails, setCardDetails] = useState({
+    number: '',
+    expiry: '',
+    cvc: ''
+  });
 
-  const handlePayment = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
     try {
-      setLoading(true);
-      setError(null);
-      
-      const response = await fetch(`/api/applications/${applicationId}/acceptance-fee`, {
-        method: 'POST',
+      const response = await axios.post(`/api/applications/${applicationId}/acceptance-fee`, {
+        amount,
+        paymentMethod: 'card',
+        cardDetails
+      }, {
         headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ amount }),
+          Authorization: `Bearer ${user?.token}`
+        }
       });
 
-      if (!response.ok) {
-        throw new Error('Payment failed');
+      if (response.data.status === 'paid') {
+        router.push(`/application/upgrade?id=${applicationId}`);
       }
-
-      const data = await response.json();
-      setSuccess(true);
-      
-      // Redirect to student upgrade after successful payment
-      router.push(`/application/upgrade?id=${applicationId}`);
     } catch (err) {
-      setError('Failed to process payment. Please try again.');
-      console.error('Payment error:', err);
+      setError(err instanceof Error ? err.message : 'Payment failed');
     } finally {
       setLoading(false);
     }
   };
 
+  const formatCardNumber = (value: string) => {
+    return value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
+  };
+
+  const formatExpiry = (value: string) => {
+    return value
+      .replace(/\D/g, '')
+      .replace(/(\d{2})(\d)/, '$1/$2')
+      .substr(0, 5);
+  };
+
   return (
-    <div className="space-y-6 p-6 bg-white rounded-lg shadow-sm">
-      <h2 className="text-xl font-semibold">Acceptance Fee Payment</h2>
-      
-      <div className="border-t border-b py-4">
-        <div className="flex justify-between items-center">
-          <span>Acceptance Fee:</span>
-          <span className="font-medium" data-testid="payment-amount">
-            ₦{amount.toLocaleString()}
-          </span>
-        </div>
+    <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+      <h2 className="text-2xl font-bold mb-6">Acceptance Fee Payment</h2>
+      <div className="mb-6">
+        <p className="text-gray-600">Amount to pay:</p>
+        <p className="text-2xl font-bold">₦{amount.toLocaleString()}</p>
       </div>
 
-      {error && (
-        <div className="text-red-600 text-sm" role="alert">
-          {error}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Card Number</label>
+          <input
+            type="text"
+            maxLength={19}
+            value={cardDetails.number}
+            onChange={(e) => setCardDetails(prev => ({
+              ...prev,
+              number: formatCardNumber(e.target.value)
+            }))}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            placeholder="1234 5678 9012 3456"
+            required
+          />
         </div>
-      )}
 
-      {success ? (
-        <div className="text-green-600" data-testid="payment-success">
-          Payment successful! Redirecting to student profile setup...
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Expiry Date</label>
+            <input
+              type="text"
+              maxLength={5}
+              value={cardDetails.expiry}
+              onChange={(e) => setCardDetails(prev => ({
+                ...prev,
+                expiry: formatExpiry(e.target.value)
+              }))}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              placeholder="MM/YY"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">CVC</label>
+            <input
+              type="text"
+              maxLength={3}
+              value={cardDetails.cvc}
+              onChange={(e) => setCardDetails(prev => ({
+                ...prev,
+                cvc: e.target.value.replace(/\D/g, '')
+              }))}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              placeholder="123"
+              required
+            />
+          </div>
         </div>
-      ) : (
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
+            {error}
+          </div>
+        )}
+
         <button
-          onClick={handlePayment}
+          type="submit"
           disabled={loading}
-          data-testid="pay-button"
-          className={`w-full py-2 px-4 rounded-md text-white font-medium 
-            ${loading 
-              ? 'bg-gray-400 cursor-not-allowed' 
-              : 'bg-blue-600 hover:bg-blue-700'}`}
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300"
         >
-          {loading ? 'Processing...' : 'Pay Now'}
+          {loading ? (
+            <>
+              <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+              Processing...
+            </>
+          ) : (
+            'Pay Now'
+          )}
         </button>
-      )}
+      </form>
     </div>
   );
 }

@@ -79,7 +79,18 @@ router.get('/tasks', authMiddleware, async (req, res) => {
       }
     });
 
-    res.json(tasks);
+    // Evaluate each application
+    const evaluatedTasks = await Promise.all(
+      tasks.map(async (task) => {
+        const evaluation = await ApplicationScoring.evaluateApplication(task.id);
+        return {
+          ...task,
+          evaluation
+        };
+      })
+    );
+
+    res.json(evaluatedTasks);
   } catch (error) {
     logger.error('Error fetching admin tasks:', error);
     res.status(500).json({ error: 'Failed to fetch tasks' });
@@ -151,6 +162,29 @@ router.post('/applications/batch', authMiddleware, async (req, res) => {
   } catch (error) {
     logger.error('Batch processing error:', error);
     res.status(500).json({ error: 'Failed to process batch applications' });
+  }
+});
+
+router.post('/applications/:id/assess', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { weights } = req.body;
+
+    const evaluation = await ApplicationScoring.evaluateApplication(id, weights);
+    
+    // Update application with evaluation results
+    await prisma.application.update({
+      where: { id },
+      data: {
+        evaluationScore: evaluation.totalScore,
+        evaluationDetails: evaluation
+      }
+    });
+
+    res.json(evaluation);
+  } catch (error) {
+    logger.error('Error assessing application:', error);
+    res.status(500).json({ error: 'Failed to assess application' });
   }
 });
 

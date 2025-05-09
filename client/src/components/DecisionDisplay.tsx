@@ -72,6 +72,13 @@ export default function DecisionDisplay({ applicationId }: DecisionDisplayProps)
           <div className="mt-6 p-4 bg-blue-50 rounded-lg">
             <p className="font-semibold">Acceptance Fee:</p>
             <p className="text-xl">₦{decision.acceptanceFeeAmount?.toLocaleString()}</p>
+            <a 
+              href={decision.paymentUrl}
+              className="mt-4 inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              data-testid="payment-link"
+            >
+              Proceed to Payment
+            </a>
           </div>
         </div>
       )}

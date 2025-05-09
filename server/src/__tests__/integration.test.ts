@@ -1,4 +1,3 @@
-
 import request from 'supertest';
 import app from '../index';
 import { createTestUser, cleanupTestUser } from '../test/helpers';
@@ -29,7 +28,7 @@ describe('Integration Tests', () => {
         lastName: 'Doe',
         program: 'Medical Assistant'
       });
-    
+
     applicationId = applicationResponse.body.applicationId;
     expect(applicationId).toBeDefined();
 
@@ -39,28 +38,29 @@ describe('Integration Tests', () => {
       .set('Authorization', `Bearer ${authToken}`)
       .attach('waec', 'test/fixtures/test-waec.pdf')
       .attach('birthCertificate', 'test/fixtures/test-birth-cert.pdf');
-    
+
     expect(documentResponse.status).toBe(200);
 
-    // Check status
-    const statusResponse = await request(app)
-      .get(`/api/applications/${applicationId}/status`)
-      .set('Authorization', `Bearer ${authToken}`);
-    
-    expect(statusResponse.body.status).toBe('Under Review');
+    // Test acceptance fee payment and upgrade
+    const paymentResponse = await request(app)
+      .post(`/api/applications/${applicationId}/acceptance-fee`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send({
+        amount: 50000,
+        paymentMethod: 'card',
+        transactionId: 'test_transaction'
+      });
 
-    // Get decision
-    const decisionResponse = await request(app)
-      .get(`/api/applications/${applicationId}/decision`)
-      .set('Authorization', `Bearer ${authToken}`);
-    
-    expect(decisionResponse.body.status).toBeDefined();
+    expect(paymentResponse.status).toBe(200);
+    expect(paymentResponse.body.status).toBe('paid');
 
-    // Get admission letter
-    const letterResponse = await request(app)
-      .get(`/api/applications/${applicationId}/admission-letter`)
+    // Test student upgrade
+    const upgradeResponse = await request(app)
+      .post(`/api/applications/${applicationId}/upgrade`)
       .set('Authorization', `Bearer ${authToken}`);
-    
-    expect(letterResponse.body.letterUrl).toBeDefined();
+
+    expect(upgradeResponse.status).toBe(200);
+    expect(upgradeResponse.body.studentId).toBeDefined();
+    expect(upgradeResponse.body.status).toBe('enrolled');
   });
 });

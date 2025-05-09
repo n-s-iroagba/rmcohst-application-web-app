@@ -27,6 +27,55 @@ router.post(
       const { email, password, firstName, lastName } = req.body;
 
       const existingUser = await prisma.user.findUnique({
+
+router.post('/verify-email', async (req, res) => {
+  try {
+    const { token } = req.body;
+    
+    if (!token) {
+      return res.status(400).json({ error: 'Verification token is required' });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        verificationToken: token,
+        emailVerified: false,
+        verificationTokenExpiry: {
+          gt: new Date()
+        }
+      }
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid or expired verification token' });
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerified: true,
+        verificationToken: null,
+        verificationTokenExpiry: null
+      }
+    });
+
+    // Generate login token after verification
+    const loginToken = jwt.sign(
+      { email: user.email },
+      config.jwtSecret,
+      { expiresIn: '24h' }
+    );
+
+    res.json({ 
+      message: 'Email verified successfully',
+      token: loginToken 
+    });
+  } catch (error) {
+    logger.error('Email verification error:', error);
+    res.status(500).json({ error: 'Email verification failed' });
+  }
+});
+
         where: { email }
       });
 
@@ -36,14 +85,20 @@ router.post(
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      
       const user = await prisma.user.create({
         data: {
           email,
           password: hashedPassword,
           firstName,
-          lastName
+          lastName,
+          verificationToken,
+          emailVerified: false
         }
       });
+
+      await emailService.sendVerificationEmail(email, `${firstName} ${lastName}`, verificationToken);
 
       const token = jwt.sign(
         { email },

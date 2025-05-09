@@ -49,6 +49,58 @@ router.post('/upload/:type', authMiddleware, upload.single('document'), async (r
       return res.status(400).json({ error: 'File size exceeds 5MB limit' });
     }
 
+    // Create application-specific folder in Google Drive
+    // Create structured folder hierarchy
+    const baseFolder = `RMCOHST_${req.body.applicationId}`;
+    const documentTypeFolder = `${documentType}_documents`;
+    
+    const baseFolderMetadata = {
+      name: baseFolder,
+      mimeType: 'application/vnd.google-apps.folder',
+      description: `Root folder for application ${req.body.applicationId}`
+    };
+    
+    const typeFolderMetadata = {
+      name: documentTypeFolder,
+      mimeType: 'application/vnd.google-apps.folder',
+      description: `${documentType} documents for application ${req.body.applicationId}`
+    };
+    
+    // Create folder structure
+    const baseFolder = await driveService.drive.files.create({
+      requestBody: baseFolderMetadata,
+      fields: 'id'
+    });
+    
+    typeFolderMetadata.parents = [baseFolder.data.id];
+    const typeFolder = await driveService.drive.files.create({
+      requestBody: typeFolderMetadata,
+      fields: 'id'
+    });
+    
+    // Add version tracking metadata
+    const versionMetadata = {
+      name: `${documentType}_${Date.now()}`,
+      parents: [typeFolder.data.id],
+      description: JSON.stringify({
+        version: 1,
+        uploadedBy: req.user.email,
+        timestamp: new Date().toISOString()
+      })
+    };
+    
+    let folderId;
+    try {
+      const folder = await driveService.drive.files.create({
+        requestBody: folderMetadata,
+        fields: 'id'
+      });
+      folderId = folder.data.id;
+    } catch (error) {
+      logger.error('Failed to create folder in Google Drive:', error);
+      throw new Error('Failed to organize documents');
+    }
+
     const fileStream = fs.createReadStream(req.file.path);
     const driveFileId = await driveService.uploadFile(
       fileStream,

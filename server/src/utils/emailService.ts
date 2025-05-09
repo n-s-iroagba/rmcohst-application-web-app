@@ -1,35 +1,45 @@
 
 import nodemailer from 'nodemailer';
+import handlebars from 'nodemailer-handlebars';
+import path from 'path';
 import logger from './logger';
 
 const EMAIL_TEMPLATES = {
   APPLICATION_SUBMITTED: {
+    subject: 'Application Submitted Successfully - Remington College',
+    template: 'application-submitted'
+  },
+  APPLICATION_SUBMITTED: {
     subject: 'Application Received - Remington College',
-    text: (name: string) => `Dear ${name},\n\nYour application has been successfully submitted to Remington College. Our admissions team will review it shortly.\n\nBest regards,\nRemington College Admissions`
+    template: 'application-submitted'
   },
   APPLICATION_UNDER_REVIEW: {
-    subject: 'Application Under Review - Remington College',
-    text: (name: string) => `Dear ${name},\n\nYour application is now being reviewed by our admissions team. We'll notify you of any updates or required documents.\n\nBest regards,\nRemington College Admissions`
+    subject: 'Application Under Review - Remington College', 
+    template: 'application-under-review'
   },
   DOCUMENT_VERIFICATION: {
     subject: 'Document Verification Status - Remington College',
-    text: (name: string, status: string) => `Dear ${name},\n\nYour submitted documents have been ${status}. ${status === 'verified' ? 'Your application will now proceed to the next stage.' : 'Please login to your dashboard to address any issues.'}\n\nBest regards,\nRemington College Admissions`
+    template: 'document-verification'
   },
   DECISION_MADE: {
     subject: 'Application Decision - Remington College',
-    text: (name: string, decision: string) => `Dear ${name},\n\nA decision has been made on your application. Please log in to your dashboard to view the details. ${decision === 'accepted' ? 'If accepted, you will find instructions for paying your acceptance fee.' : ''}\n\nBest regards,\nRemington College Admissions`
+    template: 'decision-made'
   },
   ACCEPTANCE_FEE_RECEIVED: {
     subject: 'Acceptance Fee Payment Confirmation - Remington College',
-    text: (name: string) => `Dear ${name},\n\nWe have received your acceptance fee payment. You can now proceed with student profile activation.\n\nBest regards,\nRemington College Admissions`
+    template: 'payment-confirmation'
   },
   ENROLLMENT_CONFIRMED: {
     subject: 'Welcome to Remington College!',
-    text: (name: string, studentId: string) => `Dear ${name},\n\nCongratulations! Your enrollment is now complete. Your student ID is: ${studentId}\n\nPlease keep this ID for future reference.\n\nWelcome to Remington College!\n\nBest regards,\nRemington College Admissions`
+    template: 'enrollment-confirmed'
   },
   DOCUMENT_REQUEST: {
     subject: 'Additional Documents Required - Remington College',
-    text: (name: string, documents: string[]) => `Dear ${name},\n\nPlease submit the following documents to complete your application:\n\n${documents.join('\n')}\n\nBest regards,\nRemington College Admissions`
+    template: 'document-request'
+  },
+  EMAIL_VERIFICATION: {
+    subject: 'Verify Your Email - Remington College',
+    template: 'email-verification'
   }
 };
 
@@ -40,59 +50,82 @@ class EmailService {
     this.transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: false,
+      secure: process.env.SMTP_SECURE === 'true',
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS
       }
     });
+
+    this.transporter.use('compile', handlebars({
+      viewEngine: {
+        defaultLayout: false
+      },
+      viewPath: path.resolve(__dirname, '../templates/emails')
+    }));
+
+    this.verifyConnection();
   }
 
-  async sendEmail(to: string, templateName: keyof typeof EMAIL_TEMPLATES, data: { 
-    name: string; 
+  async sendEmail(to: string, templateName: keyof typeof EMAIL_TEMPLATES, data: {
+    name: string;
     decision?: string;
     status?: string;
     studentId?: string;
     documents?: string[];
+    verificationToken?: string;
   }) {
     try {
       const template = EMAIL_TEMPLATES[templateName];
-      let text: string;
 
-      switch (templateName) {
-        case 'DECISION_MADE':
-          text = template.text(data.name, data.decision || '');
-          break;
-        case 'DOCUMENT_VERIFICATION':
-          text = template.text(data.name, data.status || '');
-          break;
-        case 'ENROLLMENT_CONFIRMED':
-          text = template.text(data.name, data.studentId || '');
-          break;
-        case 'DOCUMENT_REQUEST':
-          text = template.text(data.name, data.documents || []);
-          break;
-        default:
-          text = template.text(data.name);
-      }
-
-      await this.transporter.sendMail({
+      const mailOptions = {
         from: process.env.SMTP_FROM,
         to,
         subject: template.subject,
-        text
+        template: template.template,
+        context: {
+          ...data,
+          year: new Date().getFullYear(),
+          collegeUrl: process.env.CLIENT_URL
+        }
+      };
+
+      const info = await this.transporter.sendMail(mailOptions);
+      logger.info(`Email sent successfully to ${to}`, {
+        messageId: info.messageId,
+        template: templateName
       });
 
-      logger.info(`Email sent successfully to ${to} using template ${templateName}`);
+      return info;
     } catch (error) {
       logger.error('Failed to send email:', error);
       throw new Error('Email sending failed');
     }
   }
 
+  async sendVerificationEmail(to: string, name: string, token: string) {
+    try {
+      const result = await this.sendEmail(to, 'EMAIL_VERIFICATION', {
+        name,
+        verificationToken: token
+      });
+      
+      logger.info('Verification email sent successfully', {
+        to,
+        messageId: result.messageId
+      });
+      
+      return result;
+    } catch (error) {
+      logger.error('Failed to send verification email:', error);
+      throw new Error('Failed to send verification email. Please try again later.');
+    }
+  }
+
   async verifyConnection(): Promise<boolean> {
     try {
       await this.transporter.verify();
+      logger.info('Email service connection verified');
       return true;
     } catch (error) {
       logger.error('Email service verification failed:', error);

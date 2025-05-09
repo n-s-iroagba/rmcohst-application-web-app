@@ -38,10 +38,46 @@ export default function StatusTracker({ applicationId }: StatusTrackerProps) {
       }
     };
 
-    const interval = setInterval(fetchStatus, 30000); // Poll every 30 seconds
-    fetchStatus(); // Initial fetch
+    // Initial fetch
+    fetchStatus();
 
-    return () => clearInterval(interval);
+    // Set up SSE connection
+    const eventSource = new EventSource(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/status/notifications`,
+      {
+        withCredentials: true
+      }
+    );
+
+    eventSource.addEventListener('status_update', (event) => {
+      const data = JSON.parse(event.data);
+      setCurrentStatus(data.status);
+      setTimeline(prev => [...prev, {
+        status: data.status,
+        date: new Date().toISOString()
+      }]);
+
+      // Show browser notification if supported
+      if (Notification.permission === 'granted') {
+        new Notification('Application Status Update', {
+          body: data.message
+        });
+      }
+    });
+
+    eventSource.onerror = () => {
+      eventSource.close();
+      setError('Lost connection to status updates');
+    };
+
+    // Request notification permission
+    if (Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+
+    return () => {
+      eventSource.close();
+    };
   }, [applicationId, user?.token]);
 
   return (

@@ -44,26 +44,50 @@ router.get('/:applicationId', authMiddleware, async (req, res) => {
   }
 });
 
+router.get('/notifications', authMiddleware, (req, res) => {
+  const userId = req.user.id;
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  notificationService.addClient(userId, res);
+
+  req.on('close', () => {
+    notificationService.removeClient(userId, res);
+  });
+});
+
 router.put('/applications/:id/status', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    // Update application status
     const application = await Application.findByIdAndUpdate(id, { status }, { new: true });
-
-    // Send email notification based on status
     const applicant = application.applicantId;
 
+    // Send both email and real-time notifications
     switch (status) {
       case 'Submitted':
         await emailService.sendEmail(applicant.email, 'APPLICATION_SUBMITTED', { name: applicant.name });
+        notificationService.sendNotification(applicant._id, 'status_update', { 
+          status, 
+          message: 'Your application has been submitted successfully' 
+        });
         break;
       case 'Under Review':
         await emailService.sendEmail(applicant.email, 'APPLICATION_UNDER_REVIEW', { name: applicant.name });
+        notificationService.sendNotification(applicant._id, 'status_update', { 
+          status, 
+          message: 'Your application is now under review' 
+        });
         break;
       case 'Decision Made':
         await emailService.sendEmail(applicant.email, 'DECISION_MADE', { name: applicant.name });
+        notificationService.sendNotification(applicant._id, 'status_update', { 
+          status, 
+          message: 'A decision has been made on your application' 
+        });
         break;
     }
 
@@ -74,5 +98,60 @@ router.put('/applications/:id/status', authMiddleware, async (req, res) => {
   }
 });
 
+
+export default router;
+import { Router } from 'express';
+import { authMiddleware } from '../middleware/auth';
+import prisma from '../utils/db';
+import { emailService } from '../utils/emailService';
+import logger from '../utils/logger';
+
+const router = Router();
+
+router.post('/submit/:applicationId', authMiddleware, async (req, res) => {
+  try {
+    const { applicationId } = req.params;
+    
+    const application = await prisma.application.findUnique({
+      where: { id: applicationId },
+      include: { user: true, documents: true }
+    });
+
+    if (!application) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+
+    if (application.documents.length < 2) {
+      return res.status(400).json({ error: 'Required documents not uploaded' });
+    }
+
+    const updatedApplication = await prisma.application.update({
+      where: { id: applicationId },
+      data: {
+        status: 'Submitted',
+        submittedAt: new Date(),
+      }
+    });
+
+    await emailService.sendEmail(
+      application.user.email,
+      'APPLICATION_SUBMITTED',
+      {
+        name: `${application.user.firstName} ${application.user.lastName}`,
+        status: 'Submitted'
+      }
+    );
+
+    logger.info('Application submitted successfully', {
+      applicationId,
+      userId: application.userId
+    });
+
+    res.json(updatedApplication);
+  } catch (error) {
+    logger.error('Application submission error:', error);
+    res.status(500).json({ error: 'Failed to submit application' });
+  }
+});
 
 export default router;

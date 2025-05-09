@@ -56,6 +56,22 @@ Document.init({
   verificationNotes: {
     type: DataTypes.TEXT,
     allowNull: true
+  },
+  version: {
+    type: DataTypes.INTEGER,
+    defaultValue: 1
+  },
+  previousVersions: {
+    type: DataTypes.JSONB,
+    defaultValue: []
+  },
+  driveFolderId: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  driveTypeFolderId: {
+    type: DataTypes.STRING,
+    allowNull: false
   }
 }, {
   sequelize,

@@ -28,6 +28,32 @@ Cypress.Commands.add('login', (email: string, password: string) => {
     window.localStorage.setItem('token', response.body.token);
   });
 });
+Cypress.Commands.add('loginAsHOA', () => {
+  cy.request({
+    method: 'POST',
+    url: '/api/auth/login',
+    body: {
+      email: Cypress.env('HOA_EMAIL'),
+      password: Cypress.env('HOA_PASSWORD')
+    }
+  }).then((response) => {
+    window.localStorage.setItem('token', response.body.token);
+  });
+});
+
+Cypress.Commands.add('loginAsSuperAdmin', () => {
+  cy.request({
+    method: 'POST',
+    url: '/api/auth/login',
+    body: {
+      email: Cypress.env('SUPER_ADMIN_EMAIL'),
+      password: Cypress.env('SUPER_ADMIN_PASSWORD')
+    }
+  }).then((response) => {
+    window.localStorage.setItem('token', response.body.token);
+  });
+});
+
 Cypress.Commands.add('registerNewUser', (user) => {
   cy.get('[data-testid="firstname-input"]').type(user.firstName);
   cy.get('[data-testid="lastname-input"]').type(user.lastName);

@@ -1,4 +1,3 @@
-
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -40,6 +39,8 @@ import statusRouter from './routes/status';
 import decisionRouter from './routes/decision';
 import admissionRouter from './routes/admission';
 import studentRouter from './routes/student';
+import adminRouter from './routes/admin';
+import userRouter from './routes/user';
 
 app.use('/api/auth', authRouter);
 app.use('/api/documents', documentRouter);
@@ -47,6 +48,8 @@ app.use('/api/status', statusRouter);
 app.use('/api/decision', decisionRouter);
 app.use('/api/admission', admissionRouter);
 app.use('/api/student', studentRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/user', userRouter);
 
 // Ensure upload directory exists
 import { mkdirSync } from 'fs';

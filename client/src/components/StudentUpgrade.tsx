@@ -1,82 +1,70 @@
-
-import { useState } from 'react';
-import axios from 'axios';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
-interface StudentProfile {
-  studentId: string;
-  enrollmentDate: string;
-  department: string;
-  level: string;
-  status: string;
-}
+import axios from 'axios';
 
 interface StudentUpgradeProps {
   applicationId: string;
 }
 
 export default function StudentUpgrade({ applicationId }: StudentUpgradeProps) {
-  const [profile, setProfile] = useState<StudentProfile | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [studentId, setStudentId] = useState<string | null>(null);
 
-  const handleUpgrade = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/student/upgrade/${applicationId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`
-          }
-        }
-      );
-      setProfile(response.data);
-      router.push('/student/dashboard');
-    } catch (err) {
-      setError('Failed to upgrade to student profile');
-      console.error('Profile upgrade error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const upgradeToStudent = async () => {
+      try {
+        const response = await axios.post(`/api/student/upgrade/${applicationId}`, {
+          paymentVerified: true
+        });
+
+        setStudentId(response.data.studentId);
+        setTimeout(() => {
+          router.push('/student/dashboard');
+        }, 3000);
+      } catch (err) {
+        setError('Failed to upgrade to student status. Please contact support.');
+        console.error('Upgrade error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    upgradeToStudent();
+  }, [applicationId, router]);
+
+  if (loading) {
+    return (
+      <div className="text-center p-6">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-lg">Setting up your student profile...</p>
+      </div>
+    );
+  }
 
   if (error) {
-    return <div className="text-red-600">{error}</div>;
+    return (
+      <div className="p-6 bg-red-50 border border-red-200 rounded-lg" role="alert">
+        <h3 className="text-red-800 font-semibold mb-2">Error</h3>
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
   }
 
   return (
-    <div className="p-6 border rounded-lg shadow-sm" data-testid="student-upgrade">
-      {!profile ? (
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Complete Your Enrollment</h2>
-          <p className="mb-6">Click below to activate your student profile and begin your academic journey.</p>
-          
-          <button
-            onClick={handleUpgrade}
-            disabled={loading}
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-            data-testid="upgrade-button"
-          >
-            {loading ? 'Processing...' : 'Activate Student Profile'}
-          </button>
-        </div>
-      ) : (
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Welcome to Remington College!</h2>
-          <div className="space-y-4">
-            <p><span className="font-semibold">Student ID:</span> {profile.studentId}</p>
-            <p><span className="font-semibold">Enrollment Date:</span> {new Date(profile.enrollmentDate).toLocaleDateString()}</p>
-            <p><span className="font-semibold">Department:</span> {profile.department}</p>
-            <p><span className="font-semibold">Level:</span> {profile.level}</p>
-            <p><span className="font-semibold">Status:</span> {profile.status}</p>
-          </div>
-        </div>
-      )}
+    <div className="p-6 bg-green-50 border border-green-200 rounded-lg text-center">
+      <h2 className="text-2xl font-semibold text-green-800 mb-4">
+        Welcome to Remington College!
+      </h2>
+      <p className="mb-4">
+        Your student profile has been created successfully.
+        <br />
+        Student ID: <strong>{studentId}</strong>
+      </p>
+      <p className="text-sm text-green-600">
+        Redirecting to your student dashboard...
+      </p>
     </div>
   );
 }

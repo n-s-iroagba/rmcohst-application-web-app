@@ -9,9 +9,45 @@ router.get('/:applicationId/letter', authMiddleware, async (req, res) => {
   try {
     const { applicationId } = req.params;
 
-    // Mock admission letter data - in real app, would fetch from database
+    const application = await prisma.application.findUnique({
+      where: { id: applicationId },
+      include: {
+        applicant: true,
+        program: true
+      }
+    });
+
+    if (!application) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+
+    const pdfPath = await PDFGenerator.generateAdmissionLetter({
+      studentName: `${application.applicant.firstName} ${application.applicant.lastName}`,
+      studentId: application.studentId,
+      program: application.program.name,
+      startDate: application.startDate,
+      academicYear: '2024/2025',
+      requirements: [
+        'Original WAEC Certificate',
+        'Medical Examination Report',
+        'Two Passport Photographs',
+        'Proof of Payment of Acceptance Fee'
+      ]
+    });
+
+    // Upload to Google Drive
+    const fileStream = fs.createReadStream(pdfPath);
+    const driveFileId = await driveService.uploadFile(
+      fileStream,
+      `admission_letter_${applicationId}.pdf`,
+      'application/pdf'
+    );
+
+    const letterUrl = await driveService.getFileUrl(driveFileId);
+
     const letterData = {
-      letterUrl: 'https://storage.example.com/admission-letters/sample.pdf',
+      letterUrl,
+      studentId: application.studentId,
       studentId: 'RMC' + Math.random().toString(36).substr(2, 6).toUpperCase(),
       generatedDate: new Date().toISOString(),
       validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),

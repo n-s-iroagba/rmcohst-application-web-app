@@ -1,4 +1,3 @@
-
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../config/database';
 import Application from './application';
@@ -33,6 +32,30 @@ Document.init({
   url: {
     type: DataTypes.STRING,
     allowNull: false
+  },
+  driveFileId: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  status: {
+    type: DataTypes.ENUM('pending', 'verified', 'rejected'),
+    defaultValue: 'pending'
+  },
+  verifiedAt: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  verifiedBy: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'users',
+      key: 'id'
+    }
+  },
+  verificationNotes: {
+    type: DataTypes.TEXT,
+    allowNull: true
   }
 }, {
   sequelize,

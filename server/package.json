@@ -4,7 +4,10 @@
   "description": "This server application is built with typescript and ExpressJs for Remington College Of Health Science And Technology to handle application for admission in to the college.",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "jest"
   },
   "repository": {
     "type": "git",

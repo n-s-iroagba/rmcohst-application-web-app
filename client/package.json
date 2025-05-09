@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "cypress": "cypress open",
+    "test:e2e": "cypress run"
   },
   "dependencies": {
     "react": "^19.0.0",

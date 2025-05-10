@@ -1,6 +1,7 @@
-
+'use client'
 import Image from "next/image";
 import Link from "next/link";
+import ProgramSearch from "@/components/ProgramSearch";
 
 export default function Home() {
   return (
@@ -33,8 +34,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-12">Our Programs</h2>
           <ProgramSearch />
         </div>
-      </div>v>
-
+      </div>
       {/* User Portals */}
       <div className="bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

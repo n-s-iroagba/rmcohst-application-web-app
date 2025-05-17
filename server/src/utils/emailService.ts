@@ -1,46 +1,16 @@
-
 import nodemailer from 'nodemailer';
-import handlebars from 'nodemailer-handlebars';
 import path from 'path';
-import logger from './logger';
 
 const EMAIL_TEMPLATES = {
-  APPLICATION_SUBMITTED: {
-    subject: 'Application Submitted Successfully - Remington College',
-    template: 'application-submitted'
-  },
-  APPLICATION_SUBMITTED: {
-    subject: 'Application Received - Remington College',
-    template: 'application-submitted'
-  },
-  APPLICATION_UNDER_REVIEW: {
-    subject: 'Application Under Review - Remington College', 
-    template: 'application-under-review'
-  },
-  DOCUMENT_VERIFICATION: {
-    subject: 'Document Verification Status - Remington College',
-    template: 'document-verification'
-  },
-  DECISION_MADE: {
-    subject: 'Application Decision - Remington College',
-    template: 'decision-made'
-  },
-  ACCEPTANCE_FEE_RECEIVED: {
-    subject: 'Acceptance Fee Payment Confirmation - Remington College',
-    template: 'payment-confirmation'
-  },
-  ENROLLMENT_CONFIRMED: {
-    subject: 'Welcome to Remington College!',
-    template: 'enrollment-confirmed'
-  },
-  DOCUMENT_REQUEST: {
-    subject: 'Additional Documents Required - Remington College',
-    template: 'document-request'
-  },
-  EMAIL_VERIFICATION: {
-    subject: 'Verify Your Email - Remington College',
-    template: 'email-verification'
-  }
+  APPLICATION_SUBMITTED: { subject: 'Application Submitted Successfully - Remington College', template: 'application-submitted' },
+  APPLICATION_UNDER_REVIEW: { subject: 'Application Under Review - Remington College', template: 'application-under-review' },
+  DOCUMENT_VERIFICATION: { subject: 'Document Verification Status - Remington College', template: 'document-verification' },
+  DECISION_MADE: { subject: 'Application Decision - Remington College', template: 'decision-made' },
+  ACCEPTANCE_FEE_RECEIVED: { subject: 'Acceptance Fee Payment Confirmation - Remington College', template: 'payment-confirmation' },
+  ENROLLMENT_CONFIRMED: { subject: 'Welcome to Remington College!', template: 'enrollment-confirmed' },
+  DOCUMENT_REQUEST: { subject: 'Additional Documents Required - Remington College', template: 'document-request' },
+  EMAIL_VERIFICATION: { subject: 'Verify Your Email - Remington College', template: 'email-verification' },
+  RESET_PASSWORD: { subject: 'Reset Password - Remington College', template: 'reset-password' }
 };
 
 class EmailService {
@@ -56,25 +26,26 @@ class EmailService {
         pass: process.env.SMTP_PASS
       }
     });
+  }
+
+  async init() {
+    const handlebars = (await import('nodemailer-express-handlebars')).default;
 
     this.transporter.use('compile', handlebars({
       viewEngine: {
-        defaultLayout: false
+        extname: '.hbs',
+        partialsDir: path.resolve(__dirname, '../templates/emails'),
+        layoutsDir: path.resolve(__dirname, '../templates/emails/layouts'),
+        defaultLayout: 'main'
       },
-      viewPath: path.resolve(__dirname, '../templates/emails')
+      viewPath: path.resolve(__dirname, '../templates/emails'),
+      extName: '.hbs'
     }));
 
-    this.verifyConnection();
+    await this.verifyConnection();
   }
 
-  async sendEmail(to: string, templateName: keyof typeof EMAIL_TEMPLATES, data: {
-    name: string;
-    decision?: string;
-    status?: string;
-    studentId?: string;
-    documents?: string[];
-    verificationToken?: string;
-  }) {
+  async sendEmail(to: string, templateName: keyof typeof EMAIL_TEMPLATES, data: any) {
     try {
       const template = EMAIL_TEMPLATES[templateName];
 
@@ -91,11 +62,7 @@ class EmailService {
       };
 
       const info = await this.transporter.sendMail(mailOptions);
-      logger.info(`Email sent successfully to ${to}`, {
-        messageId: info.messageId,
-        template: templateName
-      });
-
+      logger.info(`Email sent to ${to}`, { messageId: info.messageId, template: templateName });
       return info;
     } catch (error) {
       logger.error('Failed to send email:', error);
@@ -104,22 +71,11 @@ class EmailService {
   }
 
   async sendVerificationEmail(to: string, name: string, token: string) {
-    try {
-      const result = await this.sendEmail(to, 'EMAIL_VERIFICATION', {
-        name,
-        verificationToken: token
-      });
-      
-      logger.info('Verification email sent successfully', {
-        to,
-        messageId: result.messageId
-      });
-      
-      return result;
-    } catch (error) {
-      logger.error('Failed to send verification email:', error);
-      throw new Error('Failed to send verification email. Please try again later.');
-    }
+    return this.sendEmail(to, 'EMAIL_VERIFICATION', { name, verificationToken: token });
+  }
+
+  async sendPasswordResetEmail(to: string, token: string) {
+    return this.sendEmail(to, 'RESET_PASSWORD', { verificationToken: token });
   }
 
   async verifyConnection(): Promise<boolean> {
@@ -134,4 +90,5 @@ class EmailService {
   }
 }
 
-export const emailService = new EmailService();
+const emailService = new EmailService();
+export default emailService;

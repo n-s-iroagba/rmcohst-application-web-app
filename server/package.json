@@ -18,5 +18,35 @@
   "bugs": {
     "url": "https://github.com/rmcohst/rmcohst-application-web-app/issues"
   },
-  "homepage": "https://github.com/rmcohst/rmcohst-application-web-app#readme"
+  "homepage": "https://github.com/rmcohst/rmcohst-application-web-app#readme",
+  "dependencies": {
+    "@types/multer": "^1.4.12",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-validator": "^7.2.1",
+    "googleapis": "^148.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.2",
+    "mysql2": "^3.14.1",
+    "nodemailer": "^7.0.3",
+    "nodemailer-express-handlebars": "^7.0.0",
+    "nodemailer-handlebars": "^1.0.1",
+    "pdfkit": "^0.17.1",
+    "sequelize": "^6.37.7",
+    "uuid": "^11.1.0",
+    "winston": "^3.17.0",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.18",
+    "@types/express": "^5.0.1",
+    "@types/express-handlebars": "^6.0.2",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/morgan": "^1.9.9",
+    "@types/nodemailer": "^6.4.17",
+    "@types/nodemailer-express-handlebars": "^4.0.5"
+  }
 }

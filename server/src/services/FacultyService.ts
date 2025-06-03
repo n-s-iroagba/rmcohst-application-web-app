@@ -2,8 +2,9 @@
 
 import Faculty from '../models/Faculty';
 import Department from '../models/Department';
-import logger from '../utils/logger';      // your logger instance
-import AppError from '../utils/AppError'; // your custom error class
+import { AppError } from '../utils/error/AppError';
+import logger from '../utils/logger/logger';
+
 
 class FacultyService {
   /**

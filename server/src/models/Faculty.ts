@@ -8,7 +8,8 @@ import {
   HasManyAddAssociationMixin, 
   HasManyHasAssociationMixin,
   HasManyCountAssociationsMixin,
-  HasManyCreateAssociationMixin 
+  HasManyCreateAssociationMixin, 
+  NonAttribute
 } from 'sequelize';
 import sequelize from '../config/database';
 import Department from './Department';
@@ -16,6 +17,7 @@ import Department from './Department';
 interface FacultyAttributes {
   id: number;
   name: string;
+  departments?:NonAttribute<Department[]>
 }
 
 interface FacultyCreationAttributes extends Optional<FacultyAttributes, 'id'> {}
@@ -23,6 +25,7 @@ interface FacultyCreationAttributes extends Optional<FacultyAttributes, 'id'> {}
 class Faculty extends Model<FacultyAttributes, FacultyCreationAttributes> implements FacultyAttributes {
   public id!: number;
   public name!: string;
+  public departments?:NonAttribute<Department[]>
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;

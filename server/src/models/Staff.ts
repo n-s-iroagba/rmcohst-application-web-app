@@ -15,13 +15,12 @@ interface StaffAttributes {
   lastName: string;
   email: string;
   phoneNumber: string;
-  officeAddress?: string;
   userId: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-interface StaffCreationAttributes extends Optional<StaffAttributes, 'id' | 'officeAddress' | 'createdAt' | 'updatedAt'> {}
+interface StaffCreationAttributes extends Optional<StaffAttributes, 'id'  | 'createdAt' | 'updatedAt'> {}
 
 class Staff extends Model<StaffAttributes, StaffCreationAttributes> {
   public id!: number;
@@ -29,7 +28,6 @@ class Staff extends Model<StaffAttributes, StaffCreationAttributes> {
   public lastName!: string;
   public email!: string;
   public phoneNumber!: string;
-  public officeAddress?: string;
   public userId!: ForeignKey<User['id']>;
 
   public readonly createdAt!: Date;
@@ -66,10 +64,6 @@ Staff.init(
     phoneNumber: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
-    officeAddress: {
-      type: DataTypes.STRING,
-      allowNull: true,
     },
     userId: {
       type: DataTypes.INTEGER,

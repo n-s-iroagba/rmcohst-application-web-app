@@ -1,14 +1,12 @@
 import ApplicantSSCQualification from '../models/ApplicantSSCQualification';
-import logger from '../utils/logger';
-import AppError from '../utils/AppError';
+import { AppError } from '../utils/error/AppError';
+import logger from '../utils/logger/logger';
+
 
 class ApplicantSSCQualificationService {
   // CREATE
   static async createSSCQualification(data: {
     applicationId: number;
-    numberOfSittings?: number | null;
-    certificateTypes: string[];
-    minimumGrade: string;
   }) {
     try {
       const qualification = await ApplicantSSCQualification.create(data);

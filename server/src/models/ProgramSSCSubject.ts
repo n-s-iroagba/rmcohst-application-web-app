@@ -12,9 +12,9 @@ import SSCSubject from './SSCSubject';
 
 interface ProgramSSCSubjectAttributes {
   id: number;
-  sscSubjectId: number;
+  sscSubjectId: ForeignKey<SSCSubject['id']>;
   minimumGrade: string;
-  programSSCQualificationId: string;
+  programSSCQualificationId: ForeignKey<ProgramSSCQualification['id']>;
   createdAt?: Date;
   updatedAt?: Date;
 }

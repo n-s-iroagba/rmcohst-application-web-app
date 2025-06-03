@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import path from 'path';
+import logger from './logger/logger';
 
 const EMAIL_TEMPLATES = {
   APPLICATION_SUBMITTED: { subject: 'Application Submitted Successfully - Remington College', template: 'application-submitted' },

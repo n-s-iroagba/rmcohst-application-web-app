@@ -1,4 +1,4 @@
-import { Model, DataTypes, HasManyGetAssociationsMixin, HasManyAddAssociationMixin, HasOneGetAssociationMixin, HasOneSetAssociationMixin, Optional } from 'sequelize';
+import { Model, DataTypes, HasManyGetAssociationsMixin, HasManyAddAssociationMixin, HasOneGetAssociationMixin, HasOneSetAssociationMixin, Optional, NonAttribute } from 'sequelize';
 import sequelize from '../config/database';
 
 import ProgramSpecificQualification from './ProgramSpecificQualification';
@@ -10,6 +10,7 @@ interface ProgramAttributes {
   certificationType: string;
   durationType: 'WEEK' | 'MONTH' | 'YEAR';
   duration: number;
+  prequalifications?: NonAttribute<ProgramSpecificQualification[]>
   applicationFeeInNaira: number;
   acceptanceFeeInNaira: number;
 }

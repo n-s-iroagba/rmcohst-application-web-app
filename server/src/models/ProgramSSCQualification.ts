@@ -1,4 +1,4 @@
-import { Model, DataTypes, HasManyGetAssociationsMixin, HasManyAddAssociationMixin, ForeignKey, Optional } from 'sequelize';
+import { Model, DataTypes, HasManyGetAssociationsMixin, HasManyAddAssociationMixin, ForeignKey, Optional, NonAttribute } from 'sequelize';
 import sequelize from '../config/database';
 import ProgramSSCSubject from './ProgramSSCSubject';
 import Program from './Program';
@@ -9,7 +9,7 @@ interface ProgramSSCQualificationAttributes {
   programId: ForeignKey<Program['id']>;
   acceptedCertificateTypes: string[];
   maximumNumberOfSittings: number | null;
-  minimumGrade: string;
+  programsSSCSubjects?:NonAttribute<ProgramSSCSubject[]>
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -25,13 +25,15 @@ class ProgramSSCQualification extends Model<
   public programId!: ForeignKey<Program['id']>;
   public acceptedCertificateTypes!: string[];
   public maximumNumberOfSittings!: number | null;
- 
   public minimumGrade!: string;
+
+  // Non-attribute: array of related ProgramSSCSubjects
+  public programsSSCSubjects?: NonAttribute<ProgramSSCSubject[]>;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
-  // Association mixins
+  // Association mixins for one-to-many (ProgramSSCQualification has many ProgramSSCSubject)
   public getSubjects!: HasManyGetAssociationsMixin<ProgramSSCSubject>;
   public addSubject!: HasManyAddAssociationMixin<ProgramSSCSubject, number>;
 }
@@ -61,10 +63,6 @@ ProgramSSCQualification.init({
   maximumNumberOfSittings: {
     type: DataTypes.INTEGER,
     allowNull: true,
-  },
-  minimumGrade: {
-    type: DataTypes.STRING,
-    allowNull: false,
   },
 }, {
   sequelize,

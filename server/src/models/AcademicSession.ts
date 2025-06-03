@@ -4,8 +4,8 @@ import sequelize from '../config/database';
 interface AcademicSessionAttributes {
   id: number;
   sessionName: string;
-  startDate: Date;
-  endDate: Date;
+  reportingDate: Date;
+
   isCurrent: boolean; 
 }
 
@@ -14,8 +14,8 @@ interface AcademicSessionCreationAttributes extends Optional<AcademicSessionAttr
 class AcademicSession extends Model<AcademicSessionAttributes, AcademicSessionCreationAttributes> implements AcademicSessionAttributes {
   public id!: number;
   public sessionName!: string;
-  public startDate!: Date;
-  public endDate!: Date;
+  public reportingDate!: Date;
+
   public isCurrent!: boolean;
 
   public readonly createdAt!: Date;
@@ -34,11 +34,7 @@ AcademicSession.init(
       allowNull: false,
       unique: true,
     },
-    startDate: {
-      type: DataTypes.DATEONLY,
-      allowNull: false,
-    },
-    endDate: {
+    reportingDate: {
       type: DataTypes.DATEONLY,
       allowNull: false,
     },

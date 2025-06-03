@@ -1,4 +1,3 @@
-
 import request from 'supertest';
 import app from '../index';
 import { createTestUser, cleanupTestUser } from '../test/helpers';

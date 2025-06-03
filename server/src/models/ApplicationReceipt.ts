@@ -50,7 +50,7 @@ ApplicationReceipt.init({
     allowNull: false,
   },
  receiptID:{
-  type:DataTypes.UUID,
+  type:DataTypes.INTEGER,
   allowNull:false
  }
 }, {

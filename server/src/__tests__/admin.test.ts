@@ -1,4 +1,3 @@
-
 import request from 'supertest';
 import app from '../index';
 import prisma from '../utils/db';

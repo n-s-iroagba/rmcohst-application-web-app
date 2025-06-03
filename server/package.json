@@ -25,8 +25,12 @@
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "express-handlebars": "latest",
+    "express-rate-limit": "latest",
     "express-validator": "^7.2.1",
     "googleapis": "^148.0.0",
+    "helmet": "latest",
+    "input-otp": "1.4.1",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.2",
@@ -34,9 +38,16 @@
     "nodemailer": "^7.0.3",
     "nodemailer-express-handlebars": "^7.0.0",
     "nodemailer-handlebars": "^1.0.1",
+    "nodemon": "^3.1.10",
     "pdfkit": "^0.17.1",
-    "sequelize": "^6.37.7",
+    "sequelize": "latest",
+    "sonner": "^1.7.1",
+    "stream": "latest",
+    "supertest": "latest",
+    "url": "latest",
+    "util": "latest",
     "uuid": "^11.1.0",
+    "vaul": "^0.9.6",
     "winston": "^3.17.0",
     "zod": "^3.24.4"
   },
@@ -47,6 +58,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/morgan": "^1.9.9",
     "@types/nodemailer": "^6.4.17",
-    "@types/nodemailer-express-handlebars": "^4.0.5"
+    "@types/nodemailer-express-handlebars": "^4.0.5",
+    "@types/pdfkit": "^0.13.9"
   }
 }

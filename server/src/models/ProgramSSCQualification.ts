@@ -84,5 +84,3 @@ ProgramSSCQualification.belongsTo(Program, {
 });
 
 export default ProgramSSCQualification;
-
-

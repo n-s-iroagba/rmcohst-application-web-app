@@ -62,7 +62,7 @@ Biodata.init({
     primaryKey: true,
   },
   applicationId: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: Application,

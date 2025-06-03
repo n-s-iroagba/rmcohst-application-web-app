@@ -10,21 +10,17 @@ import {
 } from 'sequelize';
 import sequelize from '../config/database';
 import User from './User';
-import BioData from './BioData';
+import BioData from './Biodata';
 import ApplicantProgramSpecificQualification from './ApplicantProgramSpecificQualification';
-import Payment from './Payment';
+
 import ApplicantSSCQualification from './ApplicantSSCQualification';
 import AdmissionOfficer from './AdmissionOfficer';  // Import AdmissionOfficer model
 import AcademicSession from './AcademicSession';
+import Payment from './Payment';
+import Program from './Program';
 
 // creationType: userId, status:Application_PAID
-interface ApplicationAttributes {
-  id: number;
-  userId: number;
-  admissionOfficerId?: ForeignKey<AdmissionOfficer['id']> | null;
-   academicSessionId:ForeignKey<AcademicSession['id']>
-  status:
-    | 'APPLICATION_PAID'
+export type ApplicationStatus=   | 'APPLICATION_PAID'
     | 'BIODATA'
     | 'SSC_QUALIFICATION'
     | 'PROGRAM_SPECIFIC_QUALIFICATION'
@@ -35,6 +31,13 @@ interface ApplicationAttributes {
     | 'OFFERED'
     | 'ACCEPTED'
     | 'ACCEPTANCE_PAID';
+interface ApplicationAttributes {
+  id: number;
+  userId: number;
+  admissionOfficerId?: ForeignKey<AdmissionOfficer['id']> | null;
+   academicSessionId:ForeignKey<AcademicSession['id']>
+  status: ApplicationStatus
+ 
 }
 
 interface ApplicationCreationAttributes extends Optional<ApplicationAttributes, 'id' | 'admissionOfficerId'> {}
@@ -122,6 +125,8 @@ Application.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
 Application.belongsTo(AcademicSession, { foreignKey: 'academicSessionId', as: 'academicSession' });
 AcademicSession.hasMany(Application,{ foreignKey: 'academicSessionId', as: 'applications' })
+Application.belongsTo(Program, { foreignKey: 'programId', as: 'program' });
+Program.hasMany(Application,{ foreignKey: 'programId', as: 'applications' })
 
 // AdmissionOfficer has many applications as tasks
 AdmissionOfficer.hasMany(Application, {

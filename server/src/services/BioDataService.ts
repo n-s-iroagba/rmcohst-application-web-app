@@ -1,4 +1,5 @@
-import Biodata from "../models/BioData";
+
+import Biodata from "../models/Biodata";
 import { AppError } from "../utils/error/AppError";
 import logger from "../utils/logger/logger";
 

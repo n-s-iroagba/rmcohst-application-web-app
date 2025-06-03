@@ -57,7 +57,7 @@ ProgramSSCSubject.init(
       allowNull: false,
     },
     programSSCQualificationId: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   },

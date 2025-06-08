@@ -78,21 +78,8 @@ export default function LoginPage() {
               <IconComponent className="w-16 h-16 mb-8" />
             </div>
             <h1 className="text-4xl font-bold mb-4">Remington College</h1>
+              <p className="text-xl mb-8 text-white/90">Of</p>
             <p className="text-xl mb-8 text-white/90">Health Sciences and Technology</p>
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-white rounded-full"></div>
-                <span>Secure and reliable platform</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-white rounded-full"></div>
-                <span>Real-time application tracking</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-white rounded-full"></div>
-                <span>24/7 support available</span>
-              </div>
-            </div>
           </div>
 
           {/* Floating Elements */}

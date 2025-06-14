@@ -1,4 +1,3 @@
-
 export type ProgramLevel = 'OND' | 'HND' | 'Certificate';
 
 export interface Program {

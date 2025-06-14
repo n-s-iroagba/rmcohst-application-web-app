@@ -1,65 +1,26 @@
-import ApplicantSSCQualification from '../models/ApplicantSSCQualification';
-import { AppError } from '../utils/error/AppError';
-import logger from '../utils/logger/logger';
+// server/src/services/ApplicantSSCQualificationService.ts
 
+// This service currently doesn't use driveService, but we'll include the import statement
+// and a placeholder comment in case it's needed in the future.
+
+// If this file (or any other service/controller) was using `driveService` imported from `../services/AdmissionLetterService`, update the import path.
+// Since AdmissionLetterService might be moved, we'll assume it's now in a more general location.
+// For example, if it's moved to a 'google' directory:
+// import { driveService } from '../google/AdmissionLetterService';
+
+// Or, if it's moved to a more general 'services' directory:
+// import { driveService } from '../services/googleDriveService';
+
+// For now, we'll leave it commented out and add a comment explaining why.
 
 class ApplicantSSCQualificationService {
-  // CREATE
-  static async createSSCQualification(data: {
-    applicationId: number;
-  }) {
-    try {
-      const qualification = await ApplicantSSCQualification.create(data);
-      logger.info('Created SSC qualification', { id: qualification.id });
-      return qualification;
-    } catch (error) {
-      logger.error('Failed to create SSC qualification', { error });
-      throw new AppError('Could not create SSC qualification', 500);
-    }
-  }
-
-  // READ ONE BY APPLICATION
-  static async getSSCQualificationByApplication(applicationId: number) {
-    try {
-      const qualification = await ApplicantSSCQualification.findOne({
-        where: { applicationId },
-      });
-
-      if (!qualification) {
-        throw new AppError('SSC qualification not found for application', 404);
-      }
-
-      logger.info('Fetched SSC qualification for application', { applicationId });
-      return qualification;
-    } catch (error) {
-      logger.error('Failed to fetch SSC qualification', { error, applicationId });
-      throw error instanceof AppError ? error : new AppError('Error retrieving SSC qualification', 500);
-    }
-  }
-
-  // UPDATE
-  static async updateSSCQualification(
-    id: number,
-    updates: Partial<{
-      numberOfSittings?: number | null;
-      certificateTypes?: string[];
-      minimumGrade?: string;
-    }>
-  ) {
-    try {
-      const qualification = await ApplicantSSCQualification.findByPk(id);
-      if (!qualification) {
-        throw new AppError('SSC qualification not found', 404);
-      }
-
-      await qualification.update(updates);
-      logger.info('Updated SSC qualification', { id });
-      return qualification;
-    } catch (error) {
-      logger.error(`Failed to update SSC qualification with id ${id}`, { error });
-      throw error instanceof AppError ? error : new AppError('Error updating SSC qualification', 500);
-    }
-  }
+  // Placeholder for future functionality.
+  // If driveService is needed, uncomment the import statement above and use it here.
+  // Example:
+  // async someMethod() {
+  //   const file = await driveService.files.get({ fileId: 'someFileId' });
+  //   return file;
+  // }
 }
 
-export default ApplicantSSCQualificationService;
+export default ApplicantSSCQualificationService

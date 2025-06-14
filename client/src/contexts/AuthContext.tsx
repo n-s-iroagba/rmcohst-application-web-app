@@ -1,88 +1,129 @@
+"use client"
 
-'use client';
+import type React from "react"
+import { createContext, useState, useEffect, useContext, type ReactNode } from "react"
+import { UserRole, type User } from "@/api/auth" // Assuming these are correctly exported from api/auth
+import {
+  login as apiLogin,
+  register as apiRegister,
+  validateToken as apiValidateToken,
+  logout as apiLogout,
+} from "@/api/auth"
+import { useRouter } from "next/navigation" // Assuming useRouter is from "next/navigation" for App Router
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authApi, LoginData, RegisterData, User } from '@/api/auth';
-import axios from 'axios';
-
-interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  error: string | null;
-  login: (data: LoginData) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
-  logout: () => void;
+interface LoginData {
+  email: string
+  password?: string
+  googleId?: string
+}
+interface RegisterData {
+  email: string
+  password?: string
+  firstName?: string
+  lastName?: string
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+interface AuthContextProps {
+  user: User | null
+  login: (loginData: LoginData) => Promise<void>
+  register: (registerData: RegisterData) => Promise<void>
+  logout: () => void
+  loading: boolean
+  error: string | null
+  // validateToken: () => Promise<void>; // This might be internal or exposed if needed
+}
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const AuthContext = createContext<AuthContextProps | undefined>(undefined)
+
+export const useAuth = (): AuthContextProps => {
+  // Named export
+  const context = useContext(AuthContext)
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider")
+  }
+  return context
+}
+
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      authApi.validateToken()
-        .then(user => setUser(user))
-        .catch(() => localStorage.removeItem('token'))
-        .finally(() => setLoading(false));
+    const attemptValidateToken = async () => {
+      setLoading(true)
+      setError(null)
+      const token = localStorage.getItem("authToken")
+
+      if (token) {
+        const result = await apiValidateToken(token)
+        if (result.data) {
+          setUser(result.data) // Assuming result.data is the User object
+        } else {
+          setUser(null)
+          localStorage.removeItem("authToken") // Token is invalid or expired
+        }
+      } else {
+        setUser(null)
+      }
+      setLoading(false)
+    }
+    attemptValidateToken()
+  }, [])
+
+  const login = async (loginData: LoginData) => {
+    setLoading(true)
+    setError(null)
+    const result = await apiLogin(loginData)
+    if (result.data?.user && result.data?.token) {
+      localStorage.setItem("authToken", result.data.token)
+      setUser(result.data.user)
+      redirectToDashboard(result.data.user.role)
     } else {
-      setLoading(false);
+      setError(result.error || "Login failed. Please check your credentials.")
+      setUser(null)
     }
-  }, []);
+    setLoading(false)
+  }
 
-  const login = async (data: LoginData) => {
-    try {
-      setError(null);
-      const result = await authApi.login(data);
-      if (result.error) {
-        setError(result.error.message);
-        return;
-      }
-      if (result.data) {
-        localStorage.setItem('token', result.data.token);
-        setUser(result.data.user);
-      }
-    } catch (err) {
-      setError('Login failed');
+  const register = async (registerData: RegisterData) => {
+    setLoading(true)
+    setError(null)
+    const result = await apiRegister(registerData)
+    if (result.data?.user && result.data?.token) {
+      localStorage.setItem("authToken", result.data.token)
+      setUser(result.data.user)
+      redirectToDashboard(result.data.user.role)
+    } else {
+      setError(result.error || "Registration failed. Please try again.")
+      setUser(null)
     }
-  };
-
-  const register = async (data: RegisterData) => {
-    try {
-      setError(null);
-      const result = await authApi.register(data);
-      if (result.error) {
-        setError(result.error.message);
-        return;
-      }
-      if (result.data) {
-        localStorage.setItem('token', result.data.token);
-        setUser(result.data.user);
-      }
-    } catch (err) {
-      setError('Registration failed');
-    }
-  };
+    setLoading(false)
+  }
 
   const logout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, loading, error, login, register, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    apiLogout() // Calls localStorage.removeItem("authToken")
+    setUser(null)
+    router.push("/") // Redirect to home or login page
   }
-  return context;
+
+  const redirectToDashboard = (role: UserRole) => {
+    // Add your redirection logic here based on user role
+    switch (role) {
+      case UserRole.APPLICANT:
+        router.push("/dashboard/applicant")
+        break
+      case UserRole.ADMIN:
+        router.push("/dashboard/admin")
+        break
+      // Add other roles
+      default:
+        router.push("/")
+    }
+  }
+
+  const value = { user, login, register, logout, loading, error }
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

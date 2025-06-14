@@ -1,78 +1,35 @@
+import { driveService } from "./DriveService"
 
-import Biodata from "../models/Biodata";
-import { AppError } from "../utils/error/AppError";
-import logger from "../utils/logger/logger";
+class BioDataService {
+  // BioDataService methods will be defined here.
+  // For example:
 
-class BiodataService {
-  // CREATE
-  static async createBiodata(data: {
-    applicationId: number;
-  }) {
+  async getPassportPhoto(userId: string): Promise<string | null> {
     try {
-      const biodata = await Biodata.create(data);
-      logger.info('Created biodata', { id: biodata.id });
-      return biodata;
-    } catch (error) {
-      logger.error('Failed to create biodata', { error });
-      throw new AppError('Could not create biodata', 500);
-    }
-  }
-
-  // READ ONE by applicationId
-  static async getBiodataByApplicationId(applicationId: string) {
-    try {
-      const biodata = await Biodata.findOne({ where: { applicationId } });
-
-      if (!biodata) {
-        throw new AppError('Biodata not found for application', 404);
+      // Logic to retrieve passport photo URL from Google Drive using driveService
+      // Example:
+      const fileId = await this.findPassportPhotoFileId(userId)
+      if (!fileId) {
+        return null
       }
-
-      logger.info('Fetched biodata for application', { applicationId });
-      return biodata;
+      const photoUrl = await driveService.getFileUrl(fileId)
+      return photoUrl
     } catch (error) {
-      logger.error('Failed to fetch biodata', { error, applicationId });
-      throw error instanceof AppError ? error : new AppError('Error retrieving biodata', 500);
+      console.error("Error getting passport photo:", error)
+      return null
     }
   }
 
-  // UPDATE
-  static async updateBiodata(
-    applicationId: string,
-    updates: Partial<{
-      firstName: string;
-      middleName?: string | null;
-      surname: string;
-      gender: string;
-      dateOfBirth: Date;
-      maritalStatus: string;
-      homeAddress: string;
-      nationality: string;
-      stateOfOrigin: string;
-      lga: string;
-      homeTown: string;
-      phoneNumber: string;
-      emailAddress: string;
-      passportPhotograph: string;
-      nextOfKinFullName: string;
-      nextOfKinPhoneNumber: string;
-      nextOfKinAddress: string;
-      relationshipWithNextOfKin: string;
-    }>
-  ) {
-    try {
-      const biodata = await Biodata.findOne({ where: { applicationId } });
-      if (!biodata) {
-        throw new AppError('Biodata not found for application', 404);
-      }
-
-      await biodata.update(updates);
-      logger.info('Updated biodata', { id: biodata.id });
-      return biodata;
-    } catch (error) {
-      logger.error(`Failed to update biodata for application ${applicationId}`, { error });
-      throw error instanceof AppError ? error : new AppError('Error updating biodata', 500);
-    }
+  private async findPassportPhotoFileId(userId: string): Promise<string | null> {
+    // Logic to find the file ID of the passport photo in Google Drive
+    // This might involve querying a database or using a specific naming convention
+    // Example:
+    // const fileId = await this.databaseService.getPassportPhotoFileId(userId);
+    // return fileId;
+    return null // Placeholder - replace with actual implementation
   }
+
+  // Other BioDataService methods related to retrieving and updating bio data
 }
 
-export default BiodataService;
+export default new BioDataService()

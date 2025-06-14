@@ -3,4 +3,4 @@ export interface DepartmentAttributes {
   name: string;
   facultyId: number;
 }
-export type DepartmentCreationAttributes = Omit<DepartmentAttributes, 'id'> 
+export type DepartmentCreationAttributes = Omit<DepartmentAttributes, 'id'>

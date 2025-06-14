@@ -1,14 +1,34 @@
-import axios, { AxiosRequestConfig, Method } from 'axios';
+import axios, { type AxiosInstance, type AxiosRequestConfig, type Method } from "axios"
 
-// Choose base URL based on environment
 const baseURL =
-  process.env.NODE_ENV === 'production'
-    ? 'https://api.yourdomain.com' // Replace with your production API URL
-    : 'http://localhost:5000';     // Replace with your local dev API URL
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  (process.env.NODE_ENV === "production" ? "https://rmcohst.onrender.com/api/v1" : "http://localhost:5000/api/v1")
 
-const axiosInstance = axios.create({
+const axiosInstance: AxiosInstance = axios.create({
   baseURL,
-});
+  // You can add other default configurations here, like timeout
+  // timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+})
+
+// Add a request interceptor to include the auth token
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  },
+)
+
+// Export the axios instance as apiClient
+export const apiClient = axiosInstance // Named export
 
 /**
  * General-purpose Axios request handler.
@@ -22,15 +42,16 @@ export async function axiosRequest<T, U>(
   method: Method,
   url: string,
   data?: T,
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig,
 ): Promise<U> {
-  const response = await axiosInstance.request<U>({
+  const response = await apiClient.request<U>({
+    // Use apiClient here
     method,
     url,
     data,
     ...config,
-  });
-  return response.data;
+  })
+  return response.data
 }
 
 /**
@@ -39,14 +60,12 @@ export async function axiosRequest<T, U>(
  * @param formData - FormData object containing file and other fields.
  * @returns A Promise of the response data of type U.
  */
-export async function uploadFilePatch<U>(
-  url: string,
-  formData: FormData
-): Promise<U> {
-  const response = await axiosInstance.patch<U>(url, formData, {
+export async function uploadFilePatch<U>(url: string, formData: FormData): Promise<U> {
+  const response = await apiClient.patch<U>(url, formData, {
+    // Use apiClient here
     headers: {
-      'Content-Type': 'multipart/form-data',
+      "Content-Type": "multipart/form-data",
     },
-  });
-  return response.data;
+  })
+  return response.data
 }

@@ -7,4 +7,4 @@ export interface AdmissionOfficerAttributes {
   updatedAt?: Date;
 }
 
-export type AdmissionOfficerCreationAttributes = Omit <AdmissionOfficerAttributes, 'id' | 'createdAt' | 'updatedAt'> 
+export type AdmissionOfficerCreationAttributes = Omit <AdmissionOfficerAttributes, 'id' | 'createdAt' | 'updatedAt'>

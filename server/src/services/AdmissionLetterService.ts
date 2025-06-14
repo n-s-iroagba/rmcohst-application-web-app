@@ -1,169 +1,74 @@
+// server/src/services/AdmissionLetterService.ts
+import { google } from "googleapis"
+import { Readable } from "stream"
+import appConfig from "../config" // Default import
+import logger from "../utils/logger/logger" // Assuming logger is default export
+// import { generatePdfFromHtml } from '../utils/pdfGenerator'; // Assuming you have a PDF generator
 
-import { google } from 'googleapis';
-import { Readable } from 'stream';
-import { AppError } from '../utils/error/AppError';
-
-interface DriveConfig {
-  clientId: string;
-  clientSecret: string;
-  redirectUri: string;
-  refreshToken: string;
-}
-
-export class DriveService {
-  private drive: any;
-  private oauth2Client: any;
+class AdmissionLetterServiceImpl {
+  // Renamed to avoid conflict if class is also named AdmissionLetterService
+  private drive
 
   constructor() {
-    this.initializeAuth();
-  }
-
-  private initializeAuth() {
-    const config: DriveConfig = {
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      redirectUri: process.env.GOOGLE_REDIRECT_URI!,
-      refreshToken: process.env.GOOGLE_REFRESH_TOKEN!,
-    };
-
-    this.oauth2Client = new google.auth.OAuth2(
-      config.clientId,
-      config.clientSecret,
-      config.redirectUri
-    );
-
-    this.oauth2Client.setCredentials({
-      refresh_token: config.refreshToken,
-    });
-
-    this.drive = google.drive({
-      version: 'v3',
-      auth: this.oauth2Client,
-    });
-  }
-
-  async uploadFile(
-    fileName: string, 
-    fileContent: Buffer | Readable, 
-    mimeType: string,
-    folderId?: string
-  ): Promise<string> {
+    if (!appConfig.googleDrive.credentials || appConfig.googleDrive.credentials === "{}") {
+      logger.warn("Google Drive credentials are not configured. AdmissionLetterService may not function fully.")
+      // Fallback or limited functionality if credentials are not set
+      this.drive = null
+      return
+    }
     try {
-      // Convert Buffer to Readable stream if necessary
-      let mediaBody: Readable;
-      
-      if (Buffer.isBuffer(fileContent)) {
-        mediaBody = new Readable();
-        mediaBody.push(fileContent);
-        mediaBody.push(null);
-      } else {
-        mediaBody = fileContent;
-      }
+      const auth = new google.auth.GoogleAuth({
+        credentials: JSON.parse(appConfig.googleDrive.credentials),
+        scopes: ["https://www.googleapis.com/auth/drive.file"],
+      })
+      this.drive = google.drive({ version: "v3", auth })
+    } catch (error) {
+      logger.error("Failed to initialize Google Drive auth for AdmissionLetterService:", error)
+      this.drive = null
+    }
+  }
 
-      const fileMetadata: any = {
-        name: fileName,
-      };
+  public async generateAndUploadLetter(
+    applicationId: string,
+    studentName: string,
+    programName: string,
+  ): Promise<string | null> {
+    if (!this.drive) {
+      logger.error("Drive service not initialized in AdmissionLetterService.")
+      return null
+    }
+    // 1. Generate PDF content (e.g., from an HTML template)
+    // const htmlContent = `<h1>Admission Letter</h1><p>Dear ${studentName}, ... for ${programName}</p>`;
+    // const pdfBuffer = await generatePdfFromHtml(htmlContent);
+    const pdfBuffer = Buffer.from("Dummy PDF content for " + studentName) // Placeholder
 
-      // If folderId is provided, set the parent folder
-      if (folderId) {
-        fileMetadata.parents = [folderId];
-      }
+    // 2. Upload to Google Drive
+    const fileName = `Admission_Letter_${studentName.replace(/\s+/g, "_")}_${applicationId}.pdf`
+    const fileMetadata = {
+      name: fileName,
+      parents: appConfig.googleDrive.admissionLettersFolderId
+        ? [appConfig.googleDrive.admissionLettersFolderId]
+        : undefined,
+    }
+    const media = {
+      mimeType: "application/pdf",
+      body: Readable.from(pdfBuffer),
+    }
 
-      const media = {
-        mimeType,
-        body: mediaBody,
-      };
-
+    try {
       const response = await this.drive.files.create({
         requestBody: fileMetadata,
         media: media,
-        fields: 'id,name,webViewLink,webContentLink',
-      });
-
-      // Make file publicly readable (optional - adjust permissions as needed)
-      await this.drive.permissions.create({
-        fileId: response.data.id,
-        requestBody: {
-          role: 'reader',
-          type: 'anyone',
-        },
-      });
-
-      return response.data.id;
+        fields: "id,webViewLink",
+      })
+      logger.info(`Admission letter uploaded: ${fileName}, ID: ${response.data.id}`)
+      return response.data.webViewLink || `https://drive.google.com/file/d/${response.data.id}/view` // Return the view link
     } catch (error) {
-      console.error('Error uploading file to Google Drive:', error);
-      throw new AppError('Failed to upload file',500);
-    }
-  }
-
-  async createFolder(folderName: string, parentFolderId?: string): Promise<string> {
-    try {
-      const fileMetadata: any = {
-        name: folderName,
-        mimeType: 'application/vnd.google-apps.folder',
-      };
-
-      if (parentFolderId) {
-        fileMetadata.parents = [parentFolderId];
-      }
-
-      const response = await this.drive.files.create({
-        requestBody: fileMetadata,
-        fields: 'id,name',
-      });
-
-      return response.data.id;
-    } catch (error) {
-      console.error('Error creating folder in Google Drive:', error);
-      throw new AppError('Failed to create folder',500);
-    }
-  }
-
-  async deleteFile(fileId: string): Promise<void> {
-    try {
-      await this.drive.files.delete({
-        fileId: fileId,
-      });
-    } catch (error) {
-      console.error('Error deleting file from Google Drive:', error);
-      throw new AppError('Failed to delete file',500);
-    }
-  }
-
-  async getFileMetadata(fileId: string) {
-    try {
-      const response = await this.drive.files.get({
-        fileId: fileId,
-        fields: 'id,name,mimeType,size,createdTime,modifiedTime,webViewLink,webContentLink',
-      });
-
-      return response.data;
-    } catch (error) {
-      console.error('Error getting file metadata:', error);
-      throw new AppError('Failed to get file metadata',500);
-    }
-  }
-
-  async listFiles(folderId?: string, pageSize: number = 10) {
-    try {
-      let query = "trashed=false";
-      
-      if (folderId) {
-        query += ` and '${folderId}' in parents`;
-      }
-
-      const response = await this.drive.files.list({
-        q: query,
-        pageSize: pageSize,
-        fields: 'nextPageToken, files(id, name, mimeType, size, createdTime, modifiedTime)',
-      });
-
-      return response.data.files;
-    } catch (error) {
-      console.error('Error listing files:', error);
-      throw new AppError('Failed to list files',500);
+      logger.error("Failed to upload admission letter to Google Drive:", error)
+      return null
     }
   }
 }
 
-export const driveService = new DriveService();
+// Export an instance or the class itself as named export
+export const AdmissionLetterService = new AdmissionLetterServiceImpl()

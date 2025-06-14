@@ -1,142 +1,124 @@
-import {
-  Model,
-  DataTypes,
-  Optional,
-  HasOneGetAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasOneSetAssociationMixin,
-  BelongsToGetAssociationMixin,
-  ForeignKey,
-} from 'sequelize';
-import sequelize from '../config/database';
-import User from './User';
-import BioData from './Biodata';
-import ApplicantProgramSpecificQualification from './ApplicantProgramSpecificQualification';
+import { Model, DataTypes, type Sequelize, type Optional, type ForeignKey } from "sequelize"
+// import sequelize from "../config/database" // Default import
+import type { User } from "./User"
+import type { Program } from "./Program"
+import type { Biodata } from "./Biodata"
+import type { ApplicantSSCQualification } from "./ApplicantSSCQualification"
+import type { ApplicantProgramSpecificQualification } from "./ApplicantProgramSpecificQualification"
+// import type { ApplicantDocument } from "./ApplicantDocument" // Already imported if ApplicantDocumentFactory is used
 
-import ApplicantSSCQualification from './ApplicantSSCQualification';
-import AdmissionOfficer from './AdmissionOfficer';  // Import AdmissionOfficer model
-import AcademicSession from './AcademicSession';
-import Payment from './Payment';
-import Program from './Program';
+export enum ApplicationStatus {
+  DRAFT = "DRAFT",
+  SUBMITTED = "SUBMITTED",
+  UNDER_REVIEW = "UNDER_REVIEW",
+  PENDING_APPROVAL = "PENDING_APPROVAL",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+  ADMITTED = "ADMITTED",
+}
 
-// creationType: userId, status:Application_PAID
-export type ApplicationStatus=   | 'APPLICATION_PAID'
-    | 'BIODATA'
-    | 'SSC_QUALIFICATION'
-    | 'PROGRAM_SPECIFIC_QUALIFICATION'
-    | 'SUBMITTED'
-    | 'ADMISSION_OFFICER_REVIEWED'
-    | 'ADMITTED'
-    | 'REJECTED'
-    | 'OFFERED'
-    | 'ACCEPTED'
-    | 'ACCEPTANCE_PAID';
-interface ApplicationAttributes {
-  id: number;
-  userId: number;
-  admissionOfficerId?: ForeignKey<AdmissionOfficer['id']> | null;
-   academicSessionId:ForeignKey<AcademicSession['id']>
+export interface ApplicationAttributes {
+  id: string
+  applicantUserId: ForeignKey<User["id"]>
+  programId?: ForeignKey<Program["id"]> | null
+  biodataId?: ForeignKey<Biodata["id"]> | null
+  academicSessionId: string // Assuming academic session ID is string (e.g. UUID)
+  assignedOfficerId?: string | null // Assuming officer ID is string
   status: ApplicationStatus
- 
+  admissionLetterUrl?: string | null
+  rejectionReason?: string | null
+  adminComments?: string | null
+  hoaComments?: string | null
+  submittedAt?: Date | null
+  createdAt?: Date
+  updatedAt?: Date
 }
 
-interface ApplicationCreationAttributes extends Optional<ApplicationAttributes, 'id' | 'admissionOfficerId'> {}
+export interface ApplicationCreationAttributes
+  extends Optional<
+    ApplicationAttributes,
+    | "id"
+    | "programId"
+    | "biodataId"
+    | "assignedOfficerId"
+    | "admissionLetterUrl"
+    | "rejectionReason"
+    | "adminComments"
+    | "hoaComments"
+    | "submittedAt"
+    | "createdAt"
+    | "updatedAt"
+  > {}
 
-class Application extends Model<ApplicationAttributes, ApplicationCreationAttributes> implements ApplicationAttributes {
-  public id!: number;
-  public userId!: number;
-  public admissionOfficerId?: number | null;
-  public status!: ApplicationAttributes['status'];
-  public academicSessionId!:ForeignKey<AcademicSession['id']>
+export class Application // Named export
+  extends Model<ApplicationAttributes, ApplicationCreationAttributes>
+  implements ApplicationAttributes
+{
+  public id!: string
+  public applicantUserId!: ForeignKey<User["id"]>
+  public programId?: ForeignKey<Program["id"]> | null
+  public biodataId?: ForeignKey<Biodata["id"]> | null
+  public academicSessionId!: string
+  public assignedOfficerId?: string | null
+  public status!: ApplicationStatus
+  public admissionLetterUrl?: string | null
+  public rejectionReason?: string | null
+  public adminComments?: string | null
+  public hoaComments?: string | null
+  public submittedAt?: Date | null
 
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public readonly createdAt!: Date
+  public readonly updatedAt!: Date
 
-  // Associations
-  public getBioData!: HasOneGetAssociationMixin<BioData>;
-  public getApplicantSSCQualification!: HasOneGetAssociationMixin<ApplicantSSCQualification>;
-  public getApplicantProgramSpecificQualifications!: HasManyGetAssociationsMixin<ApplicantProgramSpecificQualification>;
-  public getPayment!: HasOneGetAssociationMixin<Payment>;
-  public setPayment!: HasOneSetAssociationMixin<Payment, number>;
+  public readonly applicant?: User
+  public readonly program?: Program
+  public readonly biodata?: Biodata
+  // public readonly academicSession?: AcademicSession // Define if needed
+  // public readonly assignedOfficer?: AdmissionOfficer // Define if needed
+  public readonly sscQualifications?: ApplicantSSCQualification[]
+  public readonly programSpecificQualifications?: ApplicantProgramSpecificQualification[]
+  public readonly applicantDocuments?: any[] // Use ApplicantDocument type here
 
-  public getUser!: BelongsToGetAssociationMixin<User>;
-  public getAdmissionOfficer!: BelongsToGetAssociationMixin<AdmissionOfficer>;
-}
-
-Application.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-    admissionOfficerId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: AdmissionOfficer,
-        key: 'id',
-      },
-    },
-        academicSessionId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: AdmissionOfficer,
-        key: 'id',
-      },
-    },
-    status: {
-      type: DataTypes.ENUM(
-        'APPLICATION_PAID',
-        'BIODATA',
-        'SSC_QUALIFICATION',
-        'PROGRAM_SPECIFIC_QUALIFICATION',
-        'SUBMITTED',
-        'ADMISSION_OFFICER_REVIEWED',
-        'ADMITTED',
-        'REJECTED',
-        'OFFERED',
-        'ACCEPTED',
-        'ACCEPTANCE_PAID'
-      ),
-      allowNull: false,
-    },
-  },
-  {
-    sequelize,
-    tableName: 'applications',
-    modelName: 'Application',
+  public static associate(models: any) {
+    Application.belongsTo(models.User, { foreignKey: "applicantUserId", as: "applicant" })
+    Application.belongsTo(models.Program, { foreignKey: "programId", as: "program" })
+    Application.hasOne(models.Biodata, { foreignKey: "applicationId", as: "biodata" }) // Assuming Biodata has applicationId
+    Application.hasMany(models.ApplicantSSCQualification, { foreignKey: "applicationId", as: "sscQualifications" })
+    Application.hasMany(models.ApplicantProgramSpecificQualification, {
+      foreignKey: "applicationId",
+      as: "programSpecificQualifications",
+    })
+    Application.hasMany(models.ApplicantDocument, { foreignKey: "applicationId", as: "applicantDocuments" })
   }
-);
+}
 
-// Associations
-
-Application.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-
-
-Application.belongsTo(AcademicSession, { foreignKey: 'academicSessionId', as: 'academicSession' });
-AcademicSession.hasMany(Application,{ foreignKey: 'academicSessionId', as: 'applications' })
-Application.belongsTo(Program, { foreignKey: 'programId', as: 'program' });
-Program.hasMany(Application,{ foreignKey: 'programId', as: 'applications' })
-
-// AdmissionOfficer has many applications as tasks
-AdmissionOfficer.hasMany(Application, {
-  foreignKey: 'admissionOfficerId',
-  as: 'tasks',
-  onDelete: 'SET NULL',
-});
-Application.belongsTo(AdmissionOfficer, {
-  foreignKey: 'admissionOfficerId',
-  as: 'admissionOfficer',
-});
-
-export default Application;
+export const ApplicationFactory = (sequelize: Sequelize): typeof Application => {
+  Application.init(
+    {
+      id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+      applicantUserId: { type: DataTypes.UUID, allowNull: false, references: { model: "Users", key: "id" } },
+      programId: { type: DataTypes.UUID, allowNull: true, references: { model: "Programs", key: "id" } },
+      biodataId: { type: DataTypes.UUID, allowNull: true /*, references: { model: 'Biodata', key: 'id' } */ },
+      academicSessionId: {
+        type: DataTypes.UUID,
+        allowNull: false /*, references: { model: 'AcademicSessions', key: 'id' } */,
+      },
+      assignedOfficerId: {
+        type: DataTypes.UUID,
+        allowNull: true /*, references: { model: 'AdmissionOfficers', key: 'id' } */,
+      },
+      status: {
+        type: DataTypes.ENUM(...Object.values(ApplicationStatus)),
+        defaultValue: ApplicationStatus.DRAFT,
+        allowNull: false,
+      },
+      admissionLetterUrl: { type: DataTypes.STRING, allowNull: true },
+      rejectionReason: { type: DataTypes.TEXT, allowNull: true },
+      adminComments: { type: DataTypes.TEXT, allowNull: true },
+      hoaComments: { type: DataTypes.TEXT, allowNull: true },
+      submittedAt: { type: DataTypes.DATE, allowNull: true },
+    },
+    { sequelize, tableName: "Applications", modelName: "Application", timestamps: true },
+  )
+  return Application
+}

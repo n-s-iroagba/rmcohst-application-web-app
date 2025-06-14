@@ -1,84 +1,61 @@
 import {
   Model,
   DataTypes,
-  ForeignKey,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
-  Optional,
-} from 'sequelize';
-import sequelize from '../config/database';
-import User from './User';
+  type ForeignKey,
+  type BelongsToGetAssociationMixin,
+  type BelongsToSetAssociationMixin,
+  type Optional,
+  type Sequelize,
+} from "sequelize"
+// import sequelize from "../config/database" // Default import
+import type User from "./User"
 
 interface StaffAttributes {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  userId: number;
-  createdAt?: Date;
-  updatedAt?: Date;
+  id: string // Changed to string for UUID consistency if User.id is UUID
+  phoneNumber: string
+  userId: ForeignKey<User["id"]>
+  createdAt?: Date
+  updatedAt?: Date
 }
 
-interface StaffCreationAttributes extends Optional<StaffAttributes, 'id'  | 'createdAt' | 'updatedAt'> {}
+interface StaffCreationAttributes extends Optional<StaffAttributes, "id" | "createdAt" | "updatedAt"> {}
 
-class Staff extends Model<StaffAttributes, StaffCreationAttributes> {
-  public id!: number;
-  public firstName!: string;
-  public lastName!: string;
-  public email!: string;
-  public phoneNumber!: string;
-  public userId!: ForeignKey<User['id']>;
+export class Staff // Named export
+  extends Model<StaffAttributes, StaffCreationAttributes>
+  implements StaffAttributes
+{
+  public id!: string
+  public phoneNumber!: string
+  public userId!: ForeignKey<User["id"]>
 
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public readonly createdAt!: Date
+  public readonly updatedAt!: Date
 
-  // Association mixins
-  public getUser!: BelongsToGetAssociationMixin<User>;
-  public setUser!: BelongsToSetAssociationMixin<User, number>;
+  public getUser!: BelongsToGetAssociationMixin<User>
+  public setUser!: BelongsToSetAssociationMixin<User, string> // User ID type
+
+  public readonly user?: User
+
+  public static associate(models: any) {
+    Staff.belongsTo(models.User, { foreignKey: "userId", as: "user" })
+  }
 }
 
-Staff.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    firstName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    lastName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    email: {
-      type: DataTypes.STRING,
-      unique: true,
-      allowNull: false,
-      validate: {
-        isEmail: true,
+export const StaffFactory = (sequelize: Sequelize): typeof Staff => {
+  Staff.init(
+    {
+      id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+      phoneNumber: { type: DataTypes.STRING, allowNull: false },
+      userId: {
+        type: DataTypes.UUID, // Match User ID type
+        allowNull: false,
+        unique: true,
+        references: { model: "Users", key: "id" }, // Table name
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
     },
-    phoneNumber: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-  },
-  {
-    sequelize,
-    tableName: 'staff',
-    modelName: 'Staff',
-    timestamps: true,
-  }
-);
-
-// Associations
-Staff.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-
-export default Staff;
+    { sequelize, tableName: "Staff", modelName: "Staff", timestamps: true },
+  )
+  return Staff
+}

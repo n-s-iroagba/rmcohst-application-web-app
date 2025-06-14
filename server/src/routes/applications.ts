@@ -1,86 +1,61 @@
 import { Router } from "express"
-import ApplicationController from "../controllers/ApplicationController"
-import { authMiddleware } from "../middleware/auth"
-
-import { body, param, query } from "express-validator"
+import ApplicationController from "../controllers/ApplicationController" // Assuming default export
+import { authenticate, authorize } from "../middleware/auth" // Your auth middleware
 
 const router = Router()
 
-// All routes require authentication
-// router.use(authMiddleware)
-
-// Create application
-router.post(
-  "/",
-  [body("academicSessionId").isInt().withMessage("Academic session ID must be an integer")],
-
-  ApplicationController.create,
-)
-
-// Get my applications
-router.get("/my", ApplicationController.getMyApplications)
-
-// Get all applications (admin only)
+// Applicant routes
 router.get(
-  "/",
-  [
-    query("page").optional().isInt({ min: 1 }).withMessage("Page must be a positive integer"),
-    query("limit").optional().isInt({ min: 1, max: 100 }).withMessage("Limit must be between 1 and 100"),
-  ],
-
-  ApplicationController.getAll,
+  "/my-current-detailed",
+  authenticate,
+  authorize(["APPLICANT"]),
+  ApplicationController.getMyCurrentDetailedApplication,
 )
-
-// Get application by ID
-router.get(
-  "/:id",
-  [param("id").isInt().withMessage("Application ID must be an integer")],
-
-  ApplicationController.getById,
-)
-
-// Update application status
-router.patch(
-  "/:id/status",
-  [
-    param("id").isInt().withMessage("Application ID must be an integer"),
-    body("status")
-      .isIn([
-        "APPLICATION_PAID",
-        "BIODATA",
-        "SSC_QUALIFICATION",
-        "PROGRAM_SPECIFIC_QUALIFICATION",
-        "SUBMITTED",
-        "ADMISSION_OFFICER_REVIEWED",
-        "ADMITTED",
-        "REJECTED",
-        "OFFERED",
-        "ACCEPTED",
-        "ACCEPTANCE_PAID",
-      ])
-      .withMessage("Invalid status"),
-  ],
-
-  ApplicationController.updateStatus,
-)
-
-// Assign to officer
-router.patch(
-  "/:id/assign",
-  [
-    param("id").isInt().withMessage("Application ID must be an integer"),
-    body("admissionOfficerId").isInt().withMessage("Officer ID must be an integer"),
-  ],
-
-  ApplicationController.assignToOfficer,
-)
-
-// Submit application
+router.post("/choose-program", authenticate, authorize(["APPLICANT"]), ApplicationController.chooseProgram)
 router.post(
-  "/:id/submit",
-  [param("id").isInt().withMessage("Application ID must be an integer")],
+  "/program-specific-qualifications",
+  authenticate,
+  authorize(["APPLICANT"]),
+  ApplicationController.saveProgramSpecificQualifications,
+)
+router.post(
+  "/:applicationId/submit-final", // applicationId from route params
+  authenticate,
+  authorize(["APPLICANT"]),
+  ApplicationController.submitFinalApplication,
+)
 
-  ApplicationController.submit,
+// Admin / HOA / SuperAdmin routes
+router.get(
+  "/", // Get all applications (filtered)
+  authenticate,
+  authorize(["ADMIN", "HEAD_OF_ADMISSIONS", "SUPER_ADMIN"]),
+  ApplicationController.getAllApplicationsFiltered,
+)
+router.get(
+  "/stats/status-counts",
+  authenticate,
+  authorize(["ADMIN", "HEAD_OF_ADMISSIONS", "SUPER_ADMIN"]),
+  ApplicationController.getApplicationStatusCounts,
+)
+router.get(
+  "/:id", // Get specific application by ID
+  authenticate,
+  // More granular authorization can be inside the controller (e.g., applicant can only get their own)
+  authorize(["APPLICANT", "ADMIN", "HEAD_OF_ADMISSIONS", "SUPER_ADMIN"]),
+  ApplicationController.getApplicationDetailsById,
+)
+router.patch(
+  "/:id/status", // Update status
+  authenticate,
+  authorize(["ADMIN", "HEAD_OF_ADMISSIONS", "SUPER_ADMIN"]), // Or more specific roles per status change
+  ApplicationController.updateApplicationStatus,
+)
+router.patch(
+  "/:applicationId/assign", // Assign to officer
+  authenticate,
+  authorize(["HEAD_OF_ADMISSIONS"]),
+  ApplicationController.assignApplicationToOfficer,
 )
 
 export default router

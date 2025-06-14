@@ -8,4 +8,4 @@ export interface SuperAdminAttributes {
 }
 
 // Creation attributes (omit id, createdAt, updatedAt)
-export type SuperAdminCreationAttributes = Omit<SuperAdminAttributes, 'id' | 'createdAt' | 'updatedAt'> 
+export type SuperAdminCreationAttributes = Omit<SuperAdminAttributes, 'id' | 'createdAt' | 'updatedAt'>

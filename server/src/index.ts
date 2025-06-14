@@ -7,6 +7,7 @@ import sequelize from "./config/database"
 import logger from "./utils/logger/logger"
 import { requestLogger } from "./utils/logger/requestLogger"
 import { handleError } from "./utils/error/handleError"
+import applicantDocumentRoutes from "./routes/applicantDocument" // Import the new routes
 
 const app = express()
 
@@ -43,23 +44,24 @@ try {
   // Import routes
   const applicationRoutes = require("./routes/applications").default || require("./routes/applications")
   const authRoutes = require("./routes/auth").default || require("./routes/auth")
+  const biodataRoutes = require("./routes/biodata").default || require("./routes/biodata")
+  const sscRoutes = require("./routes/ssc").default || require("./routes/ssc")
+  const programRoutes = require("./routes/program").default || require("./routes/program")
+  const programSpecificQualificationRoutes =
+    require("./routes/program-specific-qualification").default || require("./routes/program-specific-qualification")
 
   // API routes
   app.use("/api/applications", applicationRoutes)
   app.use("/api/auth", authRoutes)
-  
+  app.use("/api/biodata", biodataRoutes)
+  app.use("/api/ssc", sscRoutes)
+  app.use("/api/programs", programRoutes) // Note: changed from /api/program to /api/programs for consistency
+  app.use("/api/applicant-program-specific-qualifications", programSpecificQualificationRoutes)
+  app.use("/api/v1/applicant-documents", applicantDocumentRoutes) // Mount the new routes
+
   logger.info("Routes loaded successfully")
 } catch (error) {
   logger.error("Error loading routes:", error)
-  
-  // Fallback routes for debugging
-  app.use("/api/applications", (req, res) => {
-    res.status(500).json({ error: "Application routes failed to load" })
-  })
-  
-  app.use("/api/auth", (req, res) => {
-    res.status(500).json({ error: "Auth routes failed to load" })
-  })
 }
 
 // // Error handling
@@ -67,16 +69,16 @@ app.use(handleError)
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ error: "Route not found" });
-});
+  res.status(404).json({ error: "Route not found" })
+})
 // Database connection and server start
 const startServer = async () => {
   try {
     await sequelize.authenticate()
     logger.info("Database connection established successfully")
 
-    // Sync database (use { force: true } only in development)
-    await sequelize.sync({ force: true })
+    // Sync database (use { alter: true } only in development)
+    await sequelize.sync({ alter: true }) // Use alter:true to avoid dropping tables
     logger.info("Database synchronized")
 
     const PORT = config.port || 3001

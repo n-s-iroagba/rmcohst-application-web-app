@@ -2,6 +2,8 @@ import { Op } from 'sequelize';
 import Program from '../models/Program';
 import { AppError } from '../utils/error/AppError';
 import logger from '../utils/logger/logger';
+import AcademicSessionService from './AcademicSessionService';
+import ProgramSessionService from './ProgramSessionService';
 
 
 class ProgramService {
@@ -9,17 +11,22 @@ class ProgramService {
    * Create a new Program
    */
   public static async create(data: {
-    department: string;
-    certificationType: string;
+    departmentId: number;
+    awardType: string;
     durationType: 'WEEK' | 'MONTH' | 'YEAR';
     duration: number;
     applicationFeeInNaira: number;
     acceptanceFeeInNaira: number;
-  }): Promise<Program> {
+    name:string
+  }[],
+sessionId:number
+): Promise<Program[]> {
     try {
-      const program = await Program.create(data);
-      logger.info(`Program created with ID ${program.id}`);
-      return program;
+      const programs = await Program.bulkCreate(data);
+      const session = await AcademicSessionService.getCurrentSession()
+      const programSession = await ProgramSessionService.addProgramsToSession(programs, sessionId)
+      logger.info(`Programs created`);
+      return programs;
     } catch (error: any) {
       logger.error(`Failed to create Program: ${error.message}`);
       throw new AppError('Failed to create Program', 500);

@@ -7,10 +7,9 @@ import {
 } from "sequelize"
 import sequelize from "../config/database"
 import bcrypt from "bcryptjs"
-import Staff from "./Staff" // Import Staff
-import AdmissionOfficer from "./AdmissionOfficer" // Import AdmissionOfficer
-import HeadOfAdmissions from "./HeadOfAdmissions" // Import HeadOfAdmissions
 
+import { Staff } from "./Staff"
+export type UserRole = 'APPLICANT'|'STAFF'|'SUPER_ADMIN'
 // These are all the attributes in the User model
 interface UserAttributes {
   id: number
@@ -18,7 +17,7 @@ interface UserAttributes {
   password: string
   firstName: string
   lastName: string
-  role: "ADMIN" | "HEAD_OF_ADMISSIONS" | "APPLICANT" | "SUPER_ADMIN"
+  role: UserRole
   emailVerified: boolean
   verificationToken?: string | null
   verificationTokenExpiry?: Date | null
@@ -50,7 +49,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public password!: string
   public firstName!: string
   public lastName!: string
-  public role!: "ADMIN" | "HEAD_OF_ADMISSIONS" | "APPLICANT" | "SUPER_ADMIN"
+  public role!: 'STAFF'| "APPLICANT" | "SUPER_ADMIN"
   public emailVerified!: boolean
   public verificationToken!: string | null
   public verificationTokenExpiry!: Date | null
@@ -65,14 +64,10 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   // Associations
   public getStaff!: HasOneGetAssociationMixin<Staff>
   public setStaff!: HasOneSetAssociationMixin<Staff, number>
-  public getAdmissionOfficer!: HasOneGetAssociationMixin<AdmissionOfficer>
-  public setAdmissionOfficer!: HasOneSetAssociationMixin<AdmissionOfficer, number>
-  public getHeadOfAdmissions!: HasOneGetAssociationMixin<HeadOfAdmissions>
-  public setHeadOfAdmissions!: HasOneSetAssociationMixin<HeadOfAdmissions, number>
+
 
   public readonly staff?: Staff
-  public readonly admissionOfficer?: AdmissionOfficer
-  public readonly headOfAdmissions?: HeadOfAdmissions
+
 }
 
 User.init(
@@ -101,7 +96,7 @@ User.init(
       allowNull: false,
     },
     role: {
-      type: DataTypes.ENUM("ADMIN", "HEAD_OF_ADMISSIONS", "APPLICANT", "SUPER_ADMIN"),
+      type: DataTypes.ENUM('STAFF',"APPLICANT", "SUPER_ADMIN"),
       allowNull: false,
     },
     emailVerified: {
@@ -151,7 +146,6 @@ User.init(
 
 // Define associations
 User.hasOne(Staff, { foreignKey: "userId", as: "staff" })
-User.hasOne(AdmissionOfficer, { foreignKey: "userId", as: "admissionOfficer" })
-User.hasOne(HeadOfAdmissions, { foreignKey: "userId", as: "headOfAdmissions" })
+
 
 export default User

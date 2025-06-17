@@ -1,10 +1,10 @@
 import { Model, DataTypes, type Sequelize, type Optional, type ForeignKey } from "sequelize"
-// import sequelize from "../config/database" // Default import
-import type { User } from "./User"
-import type { Program } from "./Program"
-import type { Biodata } from "./Biodata"
-import type { ApplicantSSCQualification } from "./ApplicantSSCQualification"
-import type { ApplicantProgramSpecificQualification } from "./ApplicantProgramSpecificQualification"
+import Program from "./Program"
+import ApplicantSSCQualification from "./ApplicantSSCQualification"
+import User from "./User"
+import Biodata from "./Biodata"
+import ApplicantProgramSpecificQualification from "./ApplicantProgramSpecificQualification"
+
 // import type { ApplicantDocument } from "./ApplicantDocument" // Already imported if ApplicantDocumentFactory is used
 
 export enum ApplicationStatus {
@@ -18,11 +18,11 @@ export enum ApplicationStatus {
 }
 
 export interface ApplicationAttributes {
-  id: string
+  id: number
   applicantUserId: ForeignKey<User["id"]>
   programId?: ForeignKey<Program["id"]> | null
   biodataId?: ForeignKey<Biodata["id"]> | null
-  academicSessionId: string // Assuming academic session ID is string (e.g. UUID)
+  sessionId: string // Assuming academic session ID is string (e.g. UUID)
   assignedOfficerId?: string | null // Assuming officer ID is string
   status: ApplicationStatus
   admissionLetterUrl?: string | null
@@ -34,31 +34,21 @@ export interface ApplicationAttributes {
   updatedAt?: Date
 }
 
-export interface ApplicationCreationAttributes
-  extends Optional<
-    ApplicationAttributes,
-    | "id"
-    | "programId"
-    | "biodataId"
-    | "assignedOfficerId"
-    | "admissionLetterUrl"
-    | "rejectionReason"
-    | "adminComments"
-    | "hoaComments"
-    | "submittedAt"
-    | "createdAt"
-    | "updatedAt"
-  > {}
+export interface ApplicationCreationAttributes{
+  applicantUserId:string
+  sessionId:string
+  programId:string
+  status:string
+}
 
 export class Application // Named export
   extends Model<ApplicationAttributes, ApplicationCreationAttributes>
   implements ApplicationAttributes
 {
-  public id!: string
+  public id!: number
   public applicantUserId!: ForeignKey<User["id"]>
-  public programId?: ForeignKey<Program["id"]> | null
-  public biodataId?: ForeignKey<Biodata["id"]> | null
-  public academicSessionId!: string
+  public programId?: ForeignKey<Program["id"]> 
+  public sessionId!: string
   public assignedOfficerId?: string | null
   public status!: ApplicationStatus
   public admissionLetterUrl?: string | null
@@ -75,16 +65,16 @@ export class Application // Named export
   public readonly biodata?: Biodata
   // public readonly academicSession?: AcademicSession // Define if needed
   // public readonly assignedOfficer?: AdmissionOfficer // Define if needed
-  public readonly sscQualifications?: ApplicantSSCQualification[]
-  public readonly programSpecificQualifications?: ApplicantProgramSpecificQualification[]
+  public readonly sscQualifications?: ApplicantSSCQualification
+  public readonly programSpecificQualifications?: ApplicantProgramSpecificQualification
   public readonly applicantDocuments?: any[] // Use ApplicantDocument type here
 
   public static associate(models: any) {
     Application.belongsTo(models.User, { foreignKey: "applicantUserId", as: "applicant" })
     Application.belongsTo(models.Program, { foreignKey: "programId", as: "program" })
     Application.hasOne(models.Biodata, { foreignKey: "applicationId", as: "biodata" }) // Assuming Biodata has applicationId
-    Application.hasMany(models.ApplicantSSCQualification, { foreignKey: "applicationId", as: "sscQualifications" })
-    Application.hasMany(models.ApplicantProgramSpecificQualification, {
+    Application.hasOne(models.ApplicantSSCQualification, { foreignKey: "applicationId", as: "sscQualifications" })
+    Application.hasOne(models.ApplicantProgramSpecificQualification, {
       foreignKey: "applicationId",
       as: "programSpecificQualifications",
     })
@@ -95,11 +85,11 @@ export class Application // Named export
 export const ApplicationFactory = (sequelize: Sequelize): typeof Application => {
   Application.init(
     {
-      id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+      id: { type: DataTypes.INTEGER, defaultValue: DataTypes.UUIDV4, primaryKey: true },
       applicantUserId: { type: DataTypes.UUID, allowNull: false, references: { model: "Users", key: "id" } },
       programId: { type: DataTypes.UUID, allowNull: true, references: { model: "Programs", key: "id" } },
       biodataId: { type: DataTypes.UUID, allowNull: true /*, references: { model: 'Biodata', key: 'id' } */ },
-      academicSessionId: {
+      sessionId: {
         type: DataTypes.UUID,
         allowNull: false /*, references: { model: 'AcademicSessions', key: 'id' } */,
       },

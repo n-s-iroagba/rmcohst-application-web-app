@@ -1,4 +1,4 @@
-import Department from '../models/Department';
+import {Department} from '../models/Department';
 import { AppError } from '../utils/error/AppError';
 import logger from '../utils/logger/logger';
 
@@ -8,10 +8,11 @@ class DepartmentService {
   static async createDepartment(data: {
     name: string;
     facultyId: number;
-  }) {
+    code:string
+  }[]) {
     try {
-      const department = await Department.create(data);
-      logger.info('Created department', { id: department.id });
+      const department = await Department.bulkCreate(data);
+      logger.info('Created departments');
       return department;
     } catch (error) {
       logger.error('Failed to create department', { error });

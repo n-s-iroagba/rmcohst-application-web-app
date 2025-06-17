@@ -11,7 +11,7 @@ import {
   type Sequelize,
 } from "sequelize"
 // import sequelize from '../config/database'; // Default import
-import type Faculty from "./Faculty" // Assuming Faculty model exists
+import type { Faculty} from "./Faculty" // Assuming Faculty model exists
 // import type Program from './Program'; // Assuming Program model exists
 
 interface DepartmentAttributes {

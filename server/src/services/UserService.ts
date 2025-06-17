@@ -1,7 +1,6 @@
-import User from "../models/User"
-import Staff from "../models/Staff"
-import AdmissionOfficer from "../models/AdmissionOfficer"
-import HeadOfAdmissions from "../models/HeadOfAdmissions"
+import User, { UserRole } from "../models/User"
+import {Staff, StaffRole} from "../models/Staff"
+
 import { AppError } from "../utils/error/AppError"
 import logger from "../utils/logger/logger"
 import sequelize from "../config/database"
@@ -12,7 +11,7 @@ interface StaffCreationData {
   lastName: string
   email: string
   phoneNumber: string
-  role: "ADMIN" | "HEAD_OF_ADMISSIONS" | "SUPER_ADMIN" // Staff roles
+  role: StaffRole// Staff roles
   password?: string // Password only for creation
 }
 
@@ -20,7 +19,7 @@ interface UserUpdateData {
   firstName?: string
   lastName?: string
   email?: string
-  role?: "ADMIN" | "HEAD_OF_ADMISSIONS" | "APPLICANT" | "SUPER_ADMIN"
+  role?: UserRole
   phoneNumber?: string // For updating staff's phone number
 }
 
@@ -44,26 +43,12 @@ class UserService {
           password: data.password,
           firstName: data.firstName,
           lastName: data.lastName,
-          role: data.role,
+          role:'STAFF',
           emailVerified: true,
         },
         { transaction },
       )
 
-      // Staff model no longer takes firstName, lastName, email
-      await Staff.create(
-        {
-          phoneNumber: data.phoneNumber,
-          userId: user.id,
-        },
-        { transaction },
-      )
-
-      if (data.role === "ADMIN") {
-        await AdmissionOfficer.create({ userId: user.id }, { transaction })
-      } else if (data.role === "HEAD_OF_ADMISSIONS") {
-        await HeadOfAdmissions.create({ userId: user.id }, { transaction })
-      }
 
       await transaction.commit()
       logger.info(`Staff user created with ID: ${user.id}`)
@@ -83,8 +68,7 @@ class UserService {
       queryOptions.include = [
         // Ensure 'user' is included if Staff model itself is fetched elsewhere and needs its User details
         { model: Staff, as: "staff", include: [{ model: User, as: "user" }] },
-        { model: AdmissionOfficer, as: "admissionOfficer", include: [{ model: User, as: "user" }] },
-        { model: HeadOfAdmissions, as: "headOfAdmissions", include: [{ model: User, as: "user" }] },
+   
       ]
     }
     const user = await User.findOne(queryOptions)
@@ -102,8 +86,7 @@ class UserService {
       include: [
         { model: Staff, as: "staff", required: false }, // User.staff will have phoneNumber
         // No need to include User again inside Staff here as we are fetching User records primarily
-        { model: AdmissionOfficer, as: "admissionOfficer", required: false },
-        { model: HeadOfAdmissions, as: "headOfAdmissions", required: false },
+
       ],
       order: [["createdAt", "DESC"]],
     }
@@ -146,21 +129,7 @@ class UserService {
         user.email = data.email
       }
 
-      const oldRole = user.role
-      if (data.role && data.role !== oldRole) {
-        user.role = data.role
-        // Role-specific table changes (AdmissionOfficer, HeadOfAdmissions)
-        if (data.role === "ADMIN") {
-          await AdmissionOfficer.findOrCreate({ where: { userId }, transaction })
-          await HeadOfAdmissions.destroy({ where: { userId }, transaction })
-        } else if (data.role === "HEAD_OF_ADMISSIONS") {
-          await HeadOfAdmissions.findOrCreate({ where: { userId }, transaction })
-          await AdmissionOfficer.destroy({ where: { userId }, transaction })
-        } else if (["APPLICANT", "SUPER_ADMIN"].includes(data.role)) {
-          await AdmissionOfficer.destroy({ where: { userId }, transaction })
-          await HeadOfAdmissions.destroy({ where: { userId }, transaction })
-        }
-      }
+     
       await user.save({ transaction })
 
       // Update Staff model's phone number or create Staff if it doesn't exist for non-applicants
@@ -170,13 +139,7 @@ class UserService {
           await user.staff.save({ transaction })
         } else if (user.role !== "APPLICANT") {
           // Create Staff record if it doesn't exist and user is not an applicant
-          await Staff.create(
-            {
-              userId: user.id,
-              phoneNumber: data.phoneNumber,
-            },
-            { transaction },
-          )
+     
         }
       }
       await transaction.commit()

@@ -14,25 +14,12 @@ const GOOGLE_DRIVE_BIODATA_FOLDER_ID =
   process.env.GOOGLE_DRIVE_BIODATA_PASSPORT_FOLDER_ID || "your_google_drive_folder_id_for_passports"
 
 class BiodataController {
-  static async getByApplicationId(req: AuthRequest, res: Response): Promise<void> {
-    try {
-      const { applicationId } = req.params
-      const biodata = await BiodataService.getBiodataByApplicationId(applicationId)
-      res.json({ data: biodata })
-    } catch (error) {
-      logger.error("Error fetching biodata by application ID", { error, applicationId: req.params.applicationId })
-      if (error instanceof AppError) {
-        res.status(error.statusCode).json({ error: error.message })
-      } else {
-        res.status(500).json({ error: "Failed to fetch biodata" })
-      }
-    }
-  }
 
-  static async createOrUpdateByApplicationId(req: AuthRequest, res: Response): Promise<void> {
+
+  static async UpdateApplicationBioData(req: AuthRequest, res: Response): Promise<void> {
     const { applicationId } = req.params
     const userId = req.user?.id
-
+   const 
     if (!userId) {
       res.status(401).json({ error: "User not authenticated" })
       return
@@ -46,17 +33,9 @@ class BiodataController {
       let biodata = await Biodata.findOne({ where: { applicationId: Number(applicationId) } })
 
       if (!biodata) {
-        // If biodata doesn't exist, create it.
-        // This assumes that the application itself exists.
-        // The frontend sends all fields, so we can directly use req.body
-        // However, passportPhotograph needs special handling.
+       throw new AppError('biodata is not found ', 404)
 
-        // Check if application exists and belongs to user
-        // const application = await Application.findOne({ where: { id: applicationId, userId }});
-        // if (!application) {
-        //    res.status(403).json({ error: "Application not found or access denied." });
-        //    return;
-        // }
+      }
 
         const createData: any = { ...req.body, applicationId: Number(applicationId) }
         delete createData.passportPhotograph // Handled separately
@@ -67,11 +46,6 @@ class BiodataController {
           createData.passportPhotograph = filePath // Store Drive file ID or URL
         }
 
-        biodata = await BiodataService.createBiodata(createData) // Adjust createBiodata if it only takes applicationId
-        // Or use Biodata.create directly
-        // biodata = await Biodata.create(createData as any);
-      } else {
-        // Biodata exists, update it
         const updates = { ...req.body }
         delete updates.passportPhotograph // Handled separately
 
@@ -103,7 +77,7 @@ class BiodataController {
       }
 
       logger.info("Biodata created/updated for application", { applicationId, biodataId: biodata.id })
-      res.status(biodata ? 200 : 201).json({ data: biodata }) // 201 if created, 200 if updated
+      res.status( ? 200 ).json({ data: biodata }) // 201 if created, 200 if updated
     } catch (error) {
       logger.error("Error creating/updating biodata for application", { error, applicationId })
       if (req.file && (error as any).filePath) {

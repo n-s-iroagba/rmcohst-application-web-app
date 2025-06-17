@@ -1,35 +1,38 @@
-import { Model, DataTypes, Optional, ForeignKey } from 'sequelize';
-import sequelize from '../config/database';
-import Application from './Application';
+import { Optional, Model, DataTypes } from "sequelize";
+import { Application } from "./Application";
+import sequelize from "../config/database";
+import Grade from "./Grade";
 
 interface ApplicationProgramSpecificQualificationAttributes {
   id: number;
-  
-applicationId: ForeignKey<Application['id']>;
-  qualificationType?: string;
-  grade?: string;
-  certificate?:string;
+  applicationId: number;
+  qualificationType: string;
+  gradeId: number;
+  certificate: string; // Changed to string for base64 encoded file
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 interface ApplicationProgramSpecificQualificationCreationAttributes{
-
-    applicationId: ForeignKey<Application['id']>;
-  
-  
+  qualificationType:string
+  applicationId:number
 }
 
 class ApplicationProgramSpecificQualification extends Model<ApplicationProgramSpecificQualificationAttributes, ApplicationProgramSpecificQualificationCreationAttributes>
   implements ApplicationProgramSpecificQualificationAttributes {
   public id!: number;
-  public applicationId!: ForeignKey<Application['id']>;
-  public qualificationType?: string;
-  public grade?: string;
-  public certificate?: string 
+  public applicationId!: number;
+  public qualificationType!: string;
+  public gradeId!: number;
+  public certificate!: string;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  // Method to check if program-specific qualification is complete
+  public isComplete(): boolean {
+    return !!(this.qualificationType && this.gradeId && this.certificate);
+  }
 }
 
 ApplicationProgramSpecificQualification.init({
@@ -48,16 +51,25 @@ ApplicationProgramSpecificQualification.init({
   },
   qualificationType: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
-    certificate: {
-    type: DataTypes.STRING,
+  certificate: {
+    type: DataTypes.TEXT('long'), // Changed to TEXT for base64 strings
     allowNull: true,
+    validate: {
+      notEmpty: true,
+    },
   },
-  
-  grade: {
-    type: DataTypes.STRING,
+  gradeId: {
+    type: DataTypes.INTEGER,
     allowNull: true,
+    references:{
+      model:Grade,
+      key:'id'
+    }
   },
 }, {
   sequelize,
@@ -65,9 +77,11 @@ ApplicationProgramSpecificQualification.init({
   modelName: 'ApplicationProgramSpecificQualification',
 });
 
+
+
 Application.hasMany(ApplicationProgramSpecificQualification, {
   foreignKey: 'applicationId',
-  as: 'specificQualifications',
+  as: 'programSpecificQualifications',
   onDelete: 'CASCADE',
 });
 
@@ -75,5 +89,4 @@ ApplicationProgramSpecificQualification.belongsTo(Application, {
   foreignKey: 'applicationId',
   as: 'application',
 });
-
-export default ApplicationProgramSpecificQualification;
+export default ApplicationProgramSpecificQualification

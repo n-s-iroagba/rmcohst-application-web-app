@@ -4,11 +4,11 @@ import appConfig from "./index" // Assuming config is default export
 
 const dbConfig = appConfig.database
 
-const sequelize = new Sequelize(dbConfig.database, dbConfig.username, dbConfig.password, {
+const sequelize = new Sequelize('rmcohst', dbConfig.username, '97chocho', {
   host: dbConfig.host,
   port: Number.parseInt(dbConfig.port || "3306"),
-  dialect: dbConfig.dialect || "mysql",
-  logging: dbConfig.logging === "true" ? (msg: string) => logger.info(msg) : false, // Use logger.info
+  dialect:  "mysql",
+  logging: false, // Use logger.info
   pool: {
     max: dbConfig.pool?.max || 5,
     min: dbConfig.pool?.min || 0,

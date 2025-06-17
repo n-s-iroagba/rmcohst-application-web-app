@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+
 import ProgramSpecificQualification from '../models/ProgramSpecificQualification';
 import Program from '../models/Program';
 import { AppError } from '../utils/error/AppError';
@@ -12,7 +12,8 @@ class ProgramSpecificQualificationService {
   public async create(data: {
     programId: number;
     qualificationType: string;
-    minimumGrade: string;
+    minimumGradeId: number;
+    
   }): Promise<ProgramSpecificQualification> {
     const program = await Program.findByPk(data.programId);
     if (!program) {

@@ -2,7 +2,7 @@ import sequelize from '../config/database';
 import Faculty from '../models/Faculty';
 import Department from '../models/Department';
 import Program from '../models/Program';
-import ProgramSSCQualification from '../models/ProgramSSCQualification';
+import ProgramSSCRequirement from '../models/ProgramSSCRequirement';
 import ProgramSSCSubject from '../models/ProgramSSCSubject';
 import SSCSubject from '../models/SSCSubject';
 import ProgramSpecificQualification from '../models/ProgramSpecificQualification';
@@ -38,13 +38,13 @@ async function seedDatabase() {
     });
 
     // 4. Create Program SSC Qualifications
-    const nursingSSCQualification = await ProgramSSCQualification.create({
+    const nursingSSCQualification = await ProgramSSCRequirement.create({
       programId: nursingProgram.id,
       acceptedCertificateTypes: ['WAEC', 'NECO'],
       maximumNumberOfSittings: 2,
     });
 
-    const medLabSSCQualification = await ProgramSSCQualification.create({
+    const medLabSSCQualification = await ProgramSSCRequirement.create({
       programId: medLabProgram.id,
       acceptedCertificateTypes: ['WAEC', 'NECO'],
       maximumNumberOfSittings: 2,

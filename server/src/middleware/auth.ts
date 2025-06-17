@@ -1,12 +1,13 @@
 import type { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 import appConfig from "../config" // Default import
-import User, { type UserRole } from "../models/User" // Assuming User model and UserRole enum
+import User, { UserRole } from "../models/User" // Assuming User model and UserRole enum
 import logger from "../utils/logger/logger" // Assuming logger is default export
 
 export interface AuthenticatedRequest extends Request {
-  user?: User // Or a more specific user payload type from JWT
+  user: User // Or a more specific user payload type from JWT
 }
+
 
 export const authMiddleware = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization

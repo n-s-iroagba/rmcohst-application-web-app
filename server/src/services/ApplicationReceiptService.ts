@@ -1,7 +1,7 @@
 // services/applicationReceipt.service.ts
 
 import ApplicationReceipt from '../models/ApplicationReceipt';
-import Application from '../models/Application';
+import {Application} from '../models/Application';
 import { AppError } from '../utils/error/AppError';
 import logger from '../utils/logger/logger';
 import { v4 as uuidv4 } from 'uuid';

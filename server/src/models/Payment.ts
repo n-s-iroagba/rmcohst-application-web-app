@@ -1,7 +1,7 @@
 // models/Payment.ts
 import { DataTypes, Model, Optional } from "sequelize"
 import sequelize from "../config/database"
-import Application from "./Application"
+import {Application} from "./Application"
 
 
 interface PaymentAttributes {

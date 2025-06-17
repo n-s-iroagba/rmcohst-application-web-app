@@ -1,16 +1,16 @@
-import { ForeignKey, NonAttribute, Optional, Model, BelongsToGetAssociationMixin, BelongsToSetAssociationMixin, HasManyGetAssociationsMixin, HasManyAddAssociationMixin, HasOneGetAssociationMixin, HasOneSetAssociationMixin, DataTypes } from "sequelize";
-
-import Department from "./Department";
+// Program.ts
+import { ForeignKey, NonAttribute, Optional, Model, BelongsToGetAssociationMixin, BelongsToSetAssociationMixin, HasManyGetAssociationsMixin, HasManyAddAssociationMixin, HasOneGetAssociationMixin, HasOneSetAssociationMixin, BelongsToManyGetAssociationsMixin, BelongsToManyAddAssociationMixin, BelongsToManyRemoveAssociationMixin, DataTypes } from "sequelize";
 import ProgramSpecificQualification from "./ProgramSpecificQualification";
-import ProgramSSCQualification from "./ProgramSSCQualification";
+import ProgramSSCRequirement from "./ProgramSSCRequirement";
 import sequelize from "../config/database";
+import AcademicSession from "./AcademicSession";
+import { Department } from "./Department";
 
 interface ProgramAttributes {
   id: number;
-  departmentId: ForeignKey<Department['id']>; // Changed from department string to departmentId
-  name: string; // Added program name
-  code: string; // Added program code
-  certificationType: string;
+  departmentId: number;
+  name: string;
+  awardType: string;
   durationType: 'WEEK' | 'MONTH' | 'YEAR';
   duration: number;
   prequalifications?: NonAttribute<ProgramSpecificQualification[]>;
@@ -26,10 +26,9 @@ interface ProgramCreationAttributes extends Optional<ProgramAttributes, 'id' | '
 
 class Program extends Model<ProgramAttributes, ProgramCreationAttributes> implements ProgramAttributes {
   public id!: number;
-  public departmentId!: ForeignKey<Department['id']>;
+  public departmentId!: number;
   public name!: string;
-  public code!: string;
-  public certificationType!: string;
+  public awardType!: string;
   public durationType!: 'WEEK' | 'MONTH' | 'YEAR';
   public duration!: number;
   public applicationFeeInNaira!: number;
@@ -39,15 +38,21 @@ class Program extends Model<ProgramAttributes, ProgramCreationAttributes> implem
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
-  // Associations
+  // Department associations
   public getDepartment!: BelongsToGetAssociationMixin<Department>;
   public setDepartment!: BelongsToSetAssociationMixin<Department, number>;
   
+  // Qualification associations
   public getProgramSpecificQualifications!: HasManyGetAssociationsMixin<ProgramSpecificQualification>;
   public addProgramSpecificQualification!: HasManyAddAssociationMixin<ProgramSpecificQualification, number>;
+  public getSSCQualification!: HasOneGetAssociationMixin<ProgramSSCRequirement>;
+  public setSSCQualification!: HasOneSetAssociationMixin<ProgramSSCRequirement, number>;
 
-  public getSSCQualification!: HasOneGetAssociationMixin<ProgramSSCQualification>;
-  public setSSCQualification!: HasOneSetAssociationMixin<ProgramSSCQualification, number>;
+  // Session associations
+  public getSessions!: BelongsToManyGetAssociationsMixin<AcademicSession>;
+  public addSession!: BelongsToManyAddAssociationMixin<AcademicSession, number>;
+  public removeSession!: BelongsToManyRemoveAssociationMixin<AcademicSession, number>;
+  public sessions?: AcademicSession[];
 }
 
 Program.init({
@@ -64,17 +69,14 @@ Program.init({
       key: 'id',
     },
     onUpdate: 'CASCADE',
-    onDelete: 'RESTRICT', // Prevent deletion of department if it has programs
+    onDelete: 'RESTRICT',
   },
   name: {
     type: DataTypes.STRING(100),
     allowNull: false,
   },
-  code: {
-    type: DataTypes.STRING(20),
-    allowNull: false,
-  },
-  certificationType: {
+ 
+  awardType: {
     type: DataTypes.STRING(50),
     allowNull: false,
   },
@@ -120,7 +122,7 @@ Program.init({
     type: DataTypes.DATE,
     allowNull: false,
   },
-}, {
+}, { 
   sequelize,
   tableName: 'programs',
   modelName: 'Program',
@@ -131,27 +133,52 @@ Program.init({
     },
     {
       fields: ['name', 'departmentId'],
-      unique: true, // Program name must be unique within a department
+      unique: true,
     },
     {
       fields: ['code', 'departmentId'],
-      unique: true, // Program code must be unique within a department
+      unique: true,
     },
     {
       fields: ['isActive'],
     },
     {
-      fields: ['certificationType'],
+      fields: ['awardType'],
     },
   ],
 });
 
+// Associations
 Department.hasMany(Program, { foreignKey: 'departmentId' });
-
-// In your Program model
 Program.belongsTo(Department, { 
   foreignKey: 'departmentId',
   onDelete: 'RESTRICT',
   onUpdate: 'CASCADE'
 });
-export default Program
+
+// Import ProgramSession for associations
+import ProgramSession from './ProgramSession';
+
+// Many-to-many relationship between Program and AcademicSession
+Program.belongsToMany(AcademicSession, { 
+  through: ProgramSession,
+  foreignKey: 'programId',
+  otherKey: 'sessionId',
+  as: 'sessions'
+});
+
+AcademicSession.belongsToMany(Program, { 
+  through: ProgramSession,
+  foreignKey: 'sessionId',
+  otherKey: 'programId',
+  as: 'programs'
+});
+
+// Direct associations with junction table
+Program.hasMany(ProgramSession, { foreignKey: 'programId' });
+ProgramSession.belongsTo(Program, { foreignKey: 'programId' });
+
+AcademicSession.hasMany(ProgramSession, { foreignKey: 'sessionId' });
+ProgramSession.belongsTo(AcademicSession, { foreignKey: 'sessionId' });
+
+export default Program;

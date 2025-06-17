@@ -11,7 +11,7 @@ import {
 // import type Department from './Department'; // Assuming Department model exists
 
 interface FacultyAttributes {
-  id: string // Changed to string for UUID consistency
+  id: number // Changed to string for UUID consistency
   name: string
   code: string
   description?: string
@@ -20,14 +20,14 @@ interface FacultyAttributes {
   updatedAt?: Date
 }
 
-interface FacultyCreationAttributes
+export interface FacultyCreationAttributes
   extends Optional<FacultyAttributes, "id" | "description" | "isActive" | "createdAt" | "updatedAt"> {}
 
 export class Faculty // Named export
   extends Model<FacultyAttributes, FacultyCreationAttributes>
   implements FacultyAttributes
 {
-  public id!: string
+  public id!: number
   public name!: string
   public code!: string
   public description?: string
@@ -47,7 +47,7 @@ export class Faculty // Named export
 export const FacultyFactory = (sequelize: Sequelize): typeof Faculty => {
   Faculty.init(
     {
-      id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+      id: { type: DataTypes.INTEGER, defaultValue: DataTypes.UUIDV4, primaryKey: true },
       name: { type: DataTypes.STRING(100), allowNull: false, unique: true },
       code: { type: DataTypes.STRING(10), allowNull: false, unique: true },
       description: { type: DataTypes.TEXT, allowNull: true },

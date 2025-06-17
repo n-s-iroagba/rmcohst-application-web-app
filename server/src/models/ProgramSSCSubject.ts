@@ -7,14 +7,14 @@ import {
   Optional,
 } from 'sequelize';
 import sequelize from '../config/database';
-import ProgramSSCQualification from './ProgramSSCQualification';
+import ProgramSSCRequirement from './ProgramSSCRequirement';
 import SSCSubject from './SSCSubject';
 
 interface ProgramSSCSubjectAttributes {
   id: number;
   sscSubjectId: ForeignKey<SSCSubject['id']>;
   minimumGrade: string;
-  programSSCQualificationId: ForeignKey<ProgramSSCQualification['id']>;
+  programSSCQualificationId: ForeignKey<ProgramSSCRequirement['id']>;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -28,14 +28,14 @@ class ProgramSSCSubject extends Model<
   public id!: number;
   public sscSubjectId!: ForeignKey<SSCSubject['id']>;
   public minimumGrade!: string;
-  public programSSCQualificationId!: ForeignKey<ProgramSSCQualification['id']>;
+  public programSSCQualificationId!: ForeignKey<ProgramSSCRequirement['id']>;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
   // Association mixins
-  public getQualification!: BelongsToGetAssociationMixin<ProgramSSCQualification>;
-  public setQualification!: BelongsToSetAssociationMixin<ProgramSSCQualification, string>;
+  public getQualification!: BelongsToGetAssociationMixin<ProgramSSCRequirement>;
+  public setQualification!: BelongsToSetAssociationMixin<ProgramSSCRequirement, string>;
 
   public getSSCSubject!: BelongsToGetAssociationMixin<SSCSubject>;
   public setSSCSubject!: BelongsToSetAssociationMixin<SSCSubject, number>;
@@ -70,13 +70,13 @@ ProgramSSCSubject.init(
 );
 
 // Associations
-ProgramSSCQualification.hasMany(ProgramSSCSubject, {
+ProgramSSCRequirement.hasMany(ProgramSSCSubject, {
   foreignKey: 'programSSCQualificationId',
   as: 'subjects',
   onDelete: 'CASCADE',
 });
 
-ProgramSSCSubject.belongsTo(ProgramSSCQualification, {
+ProgramSSCSubject.belongsTo(ProgramSSCRequirement, {
   foreignKey: 'programSSCQualificationId',
   as: 'qualification',
 });

@@ -1,4 +1,4 @@
-import Staff from '../models/Staff';
+import {Staff, StaffRole} from '../models/Staff';
 import { AppError } from '../utils/error/AppError';
 import logger from '../utils/logger/logger';
 
@@ -13,6 +13,7 @@ class StaffService {
     email: string;
     phoneNumber: string;
     officeAddress?: string;
+    role: StaffRole
     userId: number;
   }): Promise<Staff> {
     try {

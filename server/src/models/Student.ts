@@ -8,7 +8,8 @@ import {
 } from 'sequelize';
 import sequelize from '../config/database';
 import User from './User';
-import Application from './Application';
+import { Application } from 'express';
+
 
 // Interface for full attributes (all columns)
 interface StudentAttributes {

@@ -1,46 +1,60 @@
-import {
-  Model,
-  DataTypes,
-  Optional,
-  HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManyCreateAssociationMixin,
-  ForeignKey,
-} from 'sequelize';
-import sequelize from '../config/database';
-import ApplicantSSCSubject from './ApplicantSSCSubject';
-import Application from './Application';
+import { Optional, Model, DataTypes, HasManyGetAssociationsMixin } from "sequelize";
 
+import { Application } from "./Application";
+import sequelize from "../config/database";
+import ApplicantSSCSubjectAndGrade from "./ApplicantSSCSubjectAndGrade";
+
+
+// ApplicantSSCQualification Model
 interface ApplicantSSCQualificationAttributes {
   id: number;
   applicationId: number;
-  numberOfSittings?: number | null;
-  certificateTypes?: string[];
-  certificates?: string[]
-  minimumGrade?: string;
+  numberOfSittings: number;
+  certificateTypes: string[];
+  certificates: Buffer[]; // Base64 encoded files or file paths
+
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-interface ApplicantSSCQualificationCreationAttributes  {
-  applicationId: ForeignKey<Application['id']>;
+interface ApplicantSSCQualificationCreationAttributes {
+  applicationId:number
 }
 
-class ApplicantSSCQualification extends Model<ApplicantSSCQualificationAttributes, ApplicantSSCQualificationCreationAttributes>
-  implements ApplicantSSCQualificationAttributes {
+class ApplicantSSCQualification extends Model<
+  ApplicantSSCQualificationAttributes, 
+  ApplicantSSCQualificationCreationAttributes
+> implements ApplicantSSCQualificationAttributes {
   public id!: number;
   public applicationId!: number;
-  public numberOfSittings?: number | null;
-  public certificateTypes?: string[];
-  public certificates?: string[]
-  public minimumGrade!: string;
+  public numberOfSittings!: number;
+  public certificateTypes!: string[];
+  public certificates!: Buffer[]; 
+  public getApplicantSubjectAndGrades!:HasManyGetAssociationsMixin<ApplicantSSCSubjectAndGrade>
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
-  public getSubjects!: HasManyGetAssociationsMixin<ApplicantSSCSubject>;
-  public addSubject!: HasManyAddAssociationMixin<ApplicantSSCSubject, number>;
-  public createSubject!: HasManyCreateAssociationMixin<ApplicantSSCSubject>;
+  // Method to check if SSC qualification is complete  
+  public isComplete(): boolean {
+    return !!(
+      this.numberOfSittings &&
+      this.certificateTypes?.length > 0 &&
+      this.certificates?.length > 0 &&
+      this.certificateTypes.length === this.certificates.length // Ensure matching counts
+    );
+  }
+
+  // Method to validate certificate types
+  public hasValidCertificateTypes(): boolean {
+    const validTypes = ['WAEC', 'NECO', 'GCE', 'NABTEB'];
+    return this.certificateTypes.every(type => validTypes.includes(type));
+  }
+
+  // Method to get certificate count
+  public getCertificateCount(): number {
+    return this.certificates?.length || 0;
+  }
 }
 
 ApplicantSSCQualification.init({
@@ -56,52 +70,69 @@ ApplicantSSCQualification.init({
       model: Application,
       key: 'id',
     },
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
   },
   numberOfSittings: {
     type: DataTypes.INTEGER,
     allowNull: true,
+    validate: {
+      min: 1,
+      max: 2, 
+    },
   },
-certificateTypes: {
-  type: DataTypes.STRING,
-  allowNull: false,
-  get() {
-    // cast as unknown first, then string
-    const rawValue = this.getDataValue('certificateTypes') as unknown as string | null;
-    return rawValue ? rawValue.split(',') : [];
+  certificateTypes: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    validate: {
+      isValidArray(value: any) {
+        if (!Array.isArray(value) || value.length === 0) {
+          throw new Error('Certificate types must be a non-empty array');
+        }
+        // Validate certificate types
+        const validTypes = ['WAEC', 'NECO', 'GCE', 'NABTEB'];
+        const invalidTypes = value.filter((type: string) => !validTypes.includes(type));
+        if (invalidTypes.length > 0) {
+          throw new Error(`Invalid certificate types: ${invalidTypes.join(', ')}`);
+        }
+      },
+    },
   },
-
-  set(value: string[]) {
-    this.setDataValue('certificateTypes', value.join(',') as any);
-  },
-
-},
-certificates: {
-  type: DataTypes.STRING,
-  allowNull: false,
-  get() {
-    // cast as unknown first, then string
-    const rawValue = this.getDataValue('certificateTypes') as unknown as string | null;
-    return rawValue ? rawValue.split(',') : [];
-  },
-
-  set(value: string[]) {
-    this.setDataValue('certificateTypes', value.join(',') as any);
-  },
-
-},
-
-
-
-  minimumGrade: {
-    type: DataTypes.STRING,
+  certificates: {
+    type: DataTypes.JSON,
     allowNull: false,
+    validate: {
+      isValidArray(value: any) {
+        if (!Array.isArray(value) || value.length === 0) {
+          throw new Error('Certificates must be a non-empty array');
+        }
+        // Validate that all certificates are strings (base64 or file paths)
+        const invalidCertificates = value.filter((cert: any) => typeof cert !== 'string');
+        if (invalidCertificates.length > 0) {
+          throw new Error('All certificates must be strings (base64 encoded or file paths)');
+        }
+      },
+      matchesCertificateTypes(value: string[]) {
+        // @ts-ignore - this refers to the model instance
+        if (this.certificateTypes && value.length !== this.certificateTypes.length) {
+          throw new Error('Number of certificates must match number of certificate types');
+        }
+      }
+    },
   },
 }, {
   sequelize,
   tableName: 'applicant_ssc_qualifications',
   modelName: 'ApplicantSSCQualification',
+  timestamps: true,
+  indexes: [
+    {
+      fields: ['applicationId'],
+    },
+  ],
 });
 
+// Associations
 Application.hasOne(ApplicantSSCQualification, {
   foreignKey: 'applicationId',
   as: 'sscQualification',

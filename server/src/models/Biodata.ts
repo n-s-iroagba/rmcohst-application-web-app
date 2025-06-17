@@ -1,58 +1,74 @@
+// Fixed Biodata Model
 import { Model, DataTypes, Optional, ForeignKey } from 'sequelize';
 import sequelize from '../config/database';
-import Application from './Application';
+import { Application } from './Application';
 
 interface BiodataAttributes {
   id: number;
-  applicationId: ForeignKey<Application['id']>; // FK to Application
-  firstName?: string;
+  applicationId: number;
+  firstName: string;
   middleName?: string | null;
-  surname?: string;
-  gender?: string;
-  dateOfBirth?: Date;
-  maritalStatus?: string;
-  homeAddress?: string;
-  nationality?: string;
-  stateOfOrigin?: string;
-  lga?: string;
-  homeTown?: string;
-  phoneNumber?: string;
-  emailAddress?: string;
-  passportPhotograph?: string;
-  nextOfKinFullName?: string;
-  nextOfKinPhoneNumber?: string;
-  nextOfKinAddress?: string;
-  relationshipWithNextOfKin?: string;
+  surname: string;
+  gender: string;
+  dateOfBirth: Date;
+  maritalStatus: string;
+  homeAddress: string;
+  nationality: string;
+  stateOfOrigin: string;
+  lga: string;
+  homeTown: string;
+  phoneNumber: string;
+  emailAddress: string;
+  passportPhotograph: Buffer;
+  nextOfKinFullName: string;
+  nextOfKinPhoneNumber: string;
+  nextOfKinAddress: string;
+  relationshipWithNextOfKin: string;
 }
 
-interface BiodataCreationAttributes {
-  applicationId: ForeignKey<Application['id']>; 
+interface BiodataCreationAttributes{
+  applicationId:number
 }
 
-class Biodata extends Model<BiodataAttributes,BiodataCreationAttributes> implements BiodataAttributes {
+class Biodata extends Model<BiodataAttributes, BiodataCreationAttributes> implements BiodataAttributes {
   public id!: number;
-public  applicationId!: ForeignKey<Application['id']>; 
-  public firstName?: string;
+  public applicationId!: number;
+  public firstName!: string;
   public middleName?: string | null;
-  public surname?: string;
-  public gender?: string;
-  public dateOfBirth?: Date;
-  public maritalStatus?: string;
-  public homeAddress?: string;
-  public nationality?: string;
-  public stateOfOrigin?: string;
-  public lga?: string;
+  public surname!: string;
+  public gender!: string;
+  public dateOfBirth!: Date;
+  public maritalStatus!: string;
+  public homeAddress!: string;
+  public nationality!: string;
+  public stateOfOrigin!: string;
+  public lga!: string;
   public homeTown!: string;
-  public phoneNumber?: string;
-  public emailAddress?: string;
-  public passportPhotograph?: string;
-  public nextOfKinFullName?: string;
-  public nextOfKinPhoneNumber?: string;
-  public nextOfKinAddress?: string;
-  public relationshipWithNextOfKin?: string;
+  public phoneNumber!: string;
+  public emailAddress!: string;
+  public passportPhotograph!: Buffer;
+  public nextOfKinFullName!: string;
+  public nextOfKinPhoneNumber!: string;
+  public nextOfKinAddress!: string;
+  public relationshipWithNextOfKin!: string;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  // Method to check if biodata is complete
+  public isComplete(): boolean {
+    const requiredFields: (keyof BiodataAttributes)[] = [
+      'firstName', 'surname', 'gender', 'dateOfBirth', 'maritalStatus',
+      'homeAddress', 'nationality', 'stateOfOrigin', 'lga', 'homeTown',
+      'phoneNumber', 'emailAddress', 'passportPhotograph', 'nextOfKinFullName',
+      'nextOfKinPhoneNumber', 'nextOfKinAddress', 'relationshipWithNextOfKin'
+    ];
+
+    return requiredFields.every(field => {
+      const value = this[field];
+      return value !== null && value !== undefined && value !== '';
+    });
+  }
 }
 
 Biodata.init({
@@ -68,11 +84,14 @@ Biodata.init({
       model: Application,
       key: 'id',
     },
-    unique: true, // because hasOne association
+    unique: true,
   },
   firstName: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   middleName: {
     type: DataTypes.STRING,
@@ -81,10 +100,16 @@ Biodata.init({
   surname: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   gender: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   dateOfBirth: {
     type: DataTypes.DATEONLY,
@@ -93,54 +118,91 @@ Biodata.init({
   maritalStatus: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   homeAddress: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   nationality: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   stateOfOrigin: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   lga: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   homeTown: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   phoneNumber: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   emailAddress: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+      isEmail: true,
+    },
   },
   passportPhotograph: {
-    type: DataTypes.STRING,
+    type: DataTypes.BLOB('long'),
     allowNull: false,
   },
   nextOfKinFullName: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   nextOfKinPhoneNumber: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   nextOfKinAddress: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   relationshipWithNextOfKin: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
 }, {
   sequelize,
@@ -150,12 +212,11 @@ Biodata.init({
 
 Application.hasOne(Biodata, {
   foreignKey: 'applicationId',
-  as: 'bioData',
+  as: 'biodata', // Changed from 'bioData' to 'biodata' for consistency
 });
 
 Biodata.belongsTo(Application, {
   foreignKey: 'applicationId',
   as: 'application',
 });
-
-export default Biodata;
+export default Biodata

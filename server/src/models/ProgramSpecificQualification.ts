@@ -7,13 +7,14 @@ import {
 } from 'sequelize';
 import sequelize from '../config/database';
 import Program from './Program';
+import Grade from './Grade';
 
 // Define all attributes
 interface ProgramSpecificQualificationAttributes {
   id: number;
   programId: number;
   qualificationType: string;
-  minimumGrade: string;
+  minimumGradeId: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -61,9 +62,13 @@ ProgramSpecificQualification.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    minimumGrade: {
+    minimumGradeId: {
       type: DataTypes.STRING,
       allowNull: false,
+      references:{
+        model:Grade,
+        key:'id'
+      }
     },
   },
   {

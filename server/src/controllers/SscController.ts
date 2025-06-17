@@ -16,24 +16,9 @@ interface SubjectInput {
 }
 
 class SscController {
-  static async getByApplicationId(req: AuthRequest, res: Response): Promise<void> {
-    try {
-      const { applicationId } = req.params
-      const qualification = await ApplicantSSCQualificationService.getSSCQualificationByApplication(
-        Number(applicationId),
-      )
-      res.json({ data: qualification })
-    } catch (error) {
-      if (error instanceof AppError && error.statusCode === 404) {
-        res.status(200).json({ data: null }) // Return null if not found, client can handle it
-      } else {
-        logger.error("Error fetching SSC qualification", { error, applicationId: req.params.applicationId })
-        res.status(500).json({ error: "Failed to fetch SSC qualification" })
-      }
-    }
-  }
 
-  static async createOrUpdate(req: AuthRequest, res: Response): Promise<void> {
+
+  static async Update(req: AuthRequest, res: Response): Promise<void> {
     const { applicationId } = req.params
     const { numberOfSittings, certificateTypes, subjects: subjectsJSON } = req.body
     const files = req.files as Express.Multer.File[]

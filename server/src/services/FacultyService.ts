@@ -1,7 +1,7 @@
 // services/faculty.service.ts
 
-import Faculty from '../models/Faculty';
-import Department from '../models/Department';
+import {Faculty, FacultyCreationAttributes} from '../models/Faculty';
+import {Department} from '../models/Department';
 import { AppError } from '../utils/error/AppError';
 import logger from '../utils/logger/logger';
 
@@ -10,11 +10,11 @@ class FacultyService {
   /**
    * Create a new faculty
    */
-  public async createFaculty(name: string): Promise<Faculty> {
+  public async createFaculty(data:FacultyCreationAttributes[]): Promise<Faculty[]> {
     try {
-      const faculty = await Faculty.create({ name });
-      logger.info(`Faculty created with id: ${faculty.id}`);
-      return faculty;
+      const faculties = await Faculty.bulkCreate(data);
+      logger.info(`Faculties created`);
+      return faculties;
     } catch (error: any) {
       logger.error(`Failed to create faculty: ${error.message}`);
       throw new AppError('Failed to create faculty', 500);

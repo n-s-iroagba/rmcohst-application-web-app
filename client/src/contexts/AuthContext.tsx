@@ -20,7 +20,7 @@ interface AuthContextProps {
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined)
 
-export const useAuth = (): AuthContextProps => {
+export const useAuthContext = (): AuthContextProps => {
   // Named export
   const context = useContext(AuthContext)
   if (context === undefined) {

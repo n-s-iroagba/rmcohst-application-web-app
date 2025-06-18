@@ -8,25 +8,25 @@ import {
   UserCircle,
   GraduationCap,
   Users as UserGroupIcon,
-  Share2 as ShareIcon,
-  DollarSign as CurrencyDollarIcon,
   UserMinus,
-  GraduationCap,
   GraduationCapIcon,
   CircleXIcon,
 } from "lucide-react";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+
 
 interface AdminOffcanvasProps {
   children: React.ReactNode;
 }
 
-function AdminOffcanvas({ children }: AdminOffcanvasProps) {
+function StaffOffcanvas({ children }: AdminOffcanvasProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
-  const router = useRouter();
+  const {logout} = useAuth()
+
   
   useEffect(() => {
     const handleResize = () => {
@@ -54,15 +54,7 @@ function AdminOffcanvas({ children }: AdminOffcanvasProps) {
               { href: "/staff/head-of-admissions/rejected-applications", text: "Rejected Admissions", icon: CircleXIcon },
          
             ]:[]
-  const logout = async () => {
-    try {
-      await get(apiRoutes.auth.logout());
-      router.push("/login");
-    } catch (err) {
-      alert("Unable to log out. An error occurred");
-      console.log(err);
-    }
-  };
+
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -100,13 +92,10 @@ function AdminOffcanvas({ children }: AdminOffcanvasProps) {
 
           <div className="flex flex-col gap-1">
             {[
-              { href: "/staff/admission-officer/undone-tasks", text: "My Managers", icon: UserGroupIcon },
-              { href: "/staff/admission-officer/reviewed-application", text: "My Wallets", icon: GraduationCap },
-              { href: "/staff/admission-officer/profile", text: "My Investors", icon: UserCircle },
-              { href: "/staff/admission-officer/application-in-review", text: "Social Media Links", icon: Link },
-              { href: "/admin/referrals", text: "Referrals", icon: ShareIcon },
-              { href: "/admin/mock-withdrawal", text: "Mock Withdrawal", icon: CurrencyDollarIcon },
-              { href: "/admin/unverified-payments", text: "Unverified Payments", icon: CurrencyDollarIcon },
+              { href: "/staff/admission-officer/undone-tasks", text: "Pending Tasks", icon: GraduationCapIcon },
+              { href: "/staff/admission-officer/reviewed-application", text: "Reviewed Applications", icon: GraduationCap },
+              { href: "/staff/admission-officer/profile", text: "My Profile", icon: UserCircle },
+              { href: "/staff/admission-officer/application-in-review", text: "Application In Review", icon: GraduationCapIcon },
               ...headOfAdmissionNav
             ].map((item, index) => (
               <Link
@@ -156,10 +145,8 @@ export default function StaffLayout({
   children: React.ReactNode
 }) {
   return (
-   <Sta
-      <body className={inter.className}>
-        {children}
-      </body>
-    </html>
+   <StaffOffcanvas>
+       {children}
+   </StaffOffcanvas>
   )
 }

@@ -6,4 +6,4 @@ export interface AcademicSessionAttributes {
   isCurrent: boolean
 }
 
-export type AcademicSessionCreationAttributes = Omit<AcademicSessionAttributes, "id" | "isCurrent">
+export type AcademicSessionCreationDto = Omit<AcademicSessionAttributes, "id" | "isCurrent">

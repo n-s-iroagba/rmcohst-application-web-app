@@ -37,7 +37,7 @@ export class Department // Named export
   public name!: string
   public code!: string
   public description?: string
-  public isActive!: boolean
+  public isActive!: boolean | true
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 

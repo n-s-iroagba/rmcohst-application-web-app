@@ -1,4 +1,4 @@
-interface ProgramSpecificQualificationAttributes {
+interface ProgramSpecificRequirementAttributes {
   id: number;
   programId: number;
   qualificationType: string;
@@ -8,4 +8,4 @@ interface ProgramSpecificQualificationAttributes {
 }
 
 // Define creation attributes
-export type ProgramSpecificQualificationCreationAttribute= Omit<ProgramSpecificQualificationAttributes, 'id' | 'createdAt' | 'updatedAt'>
+export type ProgramSpecificRequirementCreationDto= Omit<ProgramSpecificRequirementAttributes, 'id' | 'createdAt' | 'updatedAt'>

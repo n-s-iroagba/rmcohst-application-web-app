@@ -12,8 +12,8 @@ interface ProgramAttributes {
   name: string;
   awardType: string;
   durationType: 'WEEK' | 'MONTH' | 'YEAR';
-  duration: number;
-  prequalifications?: NonAttribute<ProgramSpecificQualification[]>;
+  duration: number
+ 
   applicationFeeInNaira: number;
   acceptanceFeeInNaira: number;
   description?: string;

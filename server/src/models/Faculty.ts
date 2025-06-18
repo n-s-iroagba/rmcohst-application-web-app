@@ -15,7 +15,8 @@ interface FacultyAttributes {
   name: string
   code: string
   description?: string
-  isActive: boolean
+  nameOfDean?:string;
+  isActive?: boolean
   createdAt?: Date
   updatedAt?: Date
 }
@@ -31,7 +32,8 @@ export class Faculty // Named export
   public name!: string
   public code!: string
   public description?: string
-  public isActive!: boolean
+  public isActive?: boolean|true
+  public nameOfDean?: string | undefined
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 
@@ -50,6 +52,10 @@ export const FacultyFactory = (sequelize: Sequelize): typeof Faculty => {
       id: { type: DataTypes.INTEGER, defaultValue: DataTypes.UUIDV4, primaryKey: true },
       name: { type: DataTypes.STRING(100), allowNull: false, unique: true },
       code: { type: DataTypes.STRING(10), allowNull: false, unique: true },
+      nameOfDean:{
+        type: DataTypes.STRING(100),
+        allowNull: true
+      },
       description: { type: DataTypes.TEXT, allowNull: true },
       isActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
     },

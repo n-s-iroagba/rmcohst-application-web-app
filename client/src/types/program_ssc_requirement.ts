@@ -1,4 +1,4 @@
-interface ProgramSSCRequirementAttributes {
+interface ProgramSSCRequirementDto {
   id: number;
   programId: number;
   acceptedCertificateTypes: string[];
@@ -9,4 +9,4 @@ interface ProgramSSCRequirementAttributes {
 }
 
 
-export type ProgramSSCRequirementCreationAttributes = Omit<ProgramSSCRequirementAttributes, 'id' | 'createdAt' | 'updatedAt'>
+export type ProgramSSCRequirementCreationDto = Omit<ProgramSSCRequirementDto, 'id' | 'createdAt' | 'updatedAt'>

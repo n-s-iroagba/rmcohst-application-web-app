@@ -1,4 +1,4 @@
-interface ProgramSSCQualificationAttributes {
+interface ProgramSSCRequirementAttributes {
   id: number;
   programId: number;
   acceptedCertificateTypes: string[];
@@ -9,4 +9,4 @@ interface ProgramSSCQualificationAttributes {
 }
 
 
-export type ProgramSSCQualificationCreationAttributes = Omit<ProgramSSCQualificationAttributes, 'id' | 'createdAt' | 'updatedAt'>
+export type ProgramSSCRequirementCreationAttributes = Omit<ProgramSSCRequirementAttributes, 'id' | 'createdAt' | 'updatedAt'>

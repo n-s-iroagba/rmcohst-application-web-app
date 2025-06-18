@@ -18,22 +18,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { useResizeWindow } from "@/hooks/useResizeWindow";
 
 
-interface AdminOffcanvasProps {
+interface SuperAdminOffCanvas {
   children: React.ReactNode;
 }
 
-function StaffOffcanvas({ children }: AdminOffcanvasProps) {
+function SuperAdminOffCanvas({ children }: SuperAdminOffCanvas) {
   const {isDesktop, isOpen, handleNavClick} = useResizeWindow()
   const {logout} = useAuth()
-const role = 'HEAD_OF_ADMISSIONS'
-  let headOfAdmissionNav = role==='HEAD_OF_ADMISSIONS'? [
-              { href: "/staff/head-of-admissions/all-applications", text: "Applications", icon: UserGroupIcon },
-              { href: "/staff/head-of-admissions/unassigned-applications", text: "Unassigned Applications", icon: GraduationCap },
-              { href: "//staff/head-of-admissions/applications-for-review", text: "Pending Applications for Admission", icon: GraduationCapIcon },
-              { href: "/staff/head-of-admissions/admittted-applications", text: "Admissions", icon: GraduationCap },
-              { href: "/staff/head-of-admissions/rejected-applications", text: "Rejected Admissions", icon: CircleXIcon },
-         
-            ]:[]
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <button
@@ -54,11 +46,6 @@ const role = 'HEAD_OF_ADMISSIONS'
           onClick={() => handleNavClick()}
         />
       )}
-  
-
-
-
-
       <aside
         className={`fixed lg:relative top-0 left-0 h-full z-50 transform transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full"} 
@@ -74,11 +61,11 @@ const role = 'HEAD_OF_ADMISSIONS'
 
           <div className="flex flex-col gap-1">
             {[
-              { href: "/staff/admission-officer/undone-tasks", text: "Pending Tasks", icon: GraduationCapIcon },
+              { href: "/staf/undone-tasks", text: "Pending Tasks", icon: GraduationCapIcon },
               { href: "/staff/admission-officer/reviewed-application", text: "Reviewed Applications", icon: GraduationCap },
               { href: "/staff/admission-officer/profile", text: "My Profile", icon: UserCircle },
               { href: "/staff/admission-officer/application-in-review", text: "Application In Review", icon: GraduationCapIcon },
-              ...headOfAdmissionNav
+            
             ].map((item, index) => (
               <Link
                 key={index}
@@ -127,8 +114,8 @@ export default function StaffLayout({
   children: React.ReactNode
 }) {
   return (
-   <StaffOffcanvas>
+   <SuperAdminOffCanvas>
        {children}
-   </StaffOffcanvas>
+   </SuperAdminOffCanvas>
   )
 }

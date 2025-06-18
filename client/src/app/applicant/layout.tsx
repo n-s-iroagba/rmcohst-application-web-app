@@ -22,18 +22,10 @@ interface AdminOffcanvasProps {
   children: React.ReactNode;
 }
 
-function StaffOffcanvas({ children }: AdminOffcanvasProps) {
+function ApplicantOffcanvas({ children }: AdminOffcanvasProps) {
   const {isDesktop, isOpen, handleNavClick} = useResizeWindow()
   const {logout} = useAuth()
-const role = 'HEAD_OF_ADMISSIONS'
-  let headOfAdmissionNav = role==='HEAD_OF_ADMISSIONS'? [
-              { href: "/staff/head-of-admissions/all-applications", text: "Applications", icon: UserGroupIcon },
-              { href: "/staff/head-of-admissions/unassigned-applications", text: "Unassigned Applications", icon: GraduationCap },
-              { href: "//staff/head-of-admissions/applications-for-review", text: "Pending Applications for Admission", icon: GraduationCapIcon },
-              { href: "/staff/head-of-admissions/admittted-applications", text: "Admissions", icon: GraduationCap },
-              { href: "/staff/head-of-admissions/rejected-applications", text: "Rejected Admissions", icon: CircleXIcon },
-         
-            ]:[]
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <button
@@ -54,10 +46,6 @@ const role = 'HEAD_OF_ADMISSIONS'
           onClick={() => handleNavClick()}
         />
       )}
-  
-
-
-
 
       <aside
         className={`fixed lg:relative top-0 left-0 h-full z-50 transform transition-transform duration-300 ease-in-out
@@ -68,17 +56,16 @@ const role = 'HEAD_OF_ADMISSIONS'
           <div className="mb-4 p-3 lg:p-4 border-b border-blue-700">
             <UserCircle className="h-8 w-8 lg:h-10 lg:w-10 text-blue-100 mx-auto" />
             <h2 className="mt-2 text-center text-base lg:text-lg font-semibold text-blue-100">
-              Admin Dashboard
+              Applicant Dashboard
             </h2>
           </div>
 
           <div className="flex flex-col gap-1">
             {[
-              { href: "/staff/admission-officer/undone-tasks", text: "Pending Tasks", icon: GraduationCapIcon },
-              { href: "/staff/admission-officer/reviewed-application", text: "Reviewed Applications", icon: GraduationCap },
-              { href: "/staff/admission-officer/profile", text: "My Profile", icon: UserCircle },
-              { href: "/staff/admission-officer/application-in-review", text: "Application In Review", icon: GraduationCapIcon },
-              ...headOfAdmissionNav
+              { href: "/applicant/dashboard", text: "Dashboard", icon: UserCircle },
+              { href: "/applicant/application", text: "My Applications", icon: GraduationCapIcon },
+              { href: "/applicant/payments", text: "My Payments", icon: GraduationCap },
+     
             ].map((item, index) => (
               <Link
                 key={index}
@@ -121,14 +108,14 @@ const role = 'HEAD_OF_ADMISSIONS'
 
 
 
-export default function StaffLayout({
+export default function ApplicantLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-   <StaffOffcanvas>
+   <ApplicantOffcanvas>
        {children}
-   </StaffOffcanvas>
+   </ApplicantOffcanvas>
   )
 }

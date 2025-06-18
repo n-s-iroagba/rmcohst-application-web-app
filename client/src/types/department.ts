@@ -16,4 +16,4 @@ export type DepartmentWithProgramsCreationDto = {
     description?: string
     programs: ProgramWithRequirementsCreationDto[]
 }
-export type DepartmentCreationAttributes = Omit<DepartmentAttributes, 'id'>
+export type DepartmentCreationDto = Omit<DepartmentAttributes, 'id'|'isActive'|'faculty'>

@@ -1,6 +1,7 @@
 import { DepartmentAttributes, DepartmentWithProgramsCreationDto } from "./department";
 
 export interface Faculty {
+  id:number
   name: string
   code: string
   description?: string
@@ -18,4 +19,4 @@ export type FacultyCreationDto={
   departments: DepartmentWithProgramsCreationDto
 }
 
-export type FacultyCreationAttributes = Omit<Faculty, 'id'|"departments">
+export type FacultyCreationAttributes = Omit<Faculty, 'id'|"departments"|'isActive'|'createdAt'|'updatedAt'>

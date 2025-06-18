@@ -14,7 +14,7 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { useResizeWindow } from "@/hooks/useResizeWindow";
-import { useAuthContext } from "@/contexts/AuthContext";
+import { AuthProvider, useAuthContext } from "@/contexts/AuthContext";
 
 
 interface AdminOffcanvasProps {
@@ -127,8 +127,10 @@ export default function StaffLayout({
   children: React.ReactNode
 }) {
   return (
+    <AuthProvider>
    <StaffOffcanvas>
        {children}
    </StaffOffcanvas>
+   </AuthProvider>
   )
 }

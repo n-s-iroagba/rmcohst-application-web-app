@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { useResizeWindow } from "@/hooks/useResizeWindow";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 
 interface AdminOffcanvasProps {
@@ -114,8 +115,10 @@ export default function ApplicantLayout({
   children: React.ReactNode
 }) {
   return (
+    <AuthProvider>
    <ApplicantOffcanvas>
        {children}
    </ApplicantOffcanvas>
+   </AuthProvider>
   )
 }

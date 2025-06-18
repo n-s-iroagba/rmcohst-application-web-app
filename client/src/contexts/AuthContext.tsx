@@ -1,5 +1,4 @@
 "use client"
-
 import type React from "react"
 import { createContext,  useContext, type ReactNode } from "react"
 import { useRouter } from "next/navigation" // Assuming useRouter is from "next/navigation" for App Router
@@ -21,7 +20,6 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps | undefined>(undefined)
 
 export const useAuthContext = (): AuthContextProps => {
-  // Named export
   const context = useContext(AuthContext)
   if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider")

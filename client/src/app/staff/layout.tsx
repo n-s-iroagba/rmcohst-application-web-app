@@ -1,6 +1,4 @@
 "use client";
-
-import { useState, useEffect } from "react";
 import type React from "react";
 import {
   X as XMarkIcon,
@@ -16,6 +14,7 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { useResizeWindow } from "@/hooks/useResizeWindow";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 
 interface AdminOffcanvasProps {
@@ -24,9 +23,10 @@ interface AdminOffcanvasProps {
 
 function StaffOffcanvas({ children }: AdminOffcanvasProps) {
   const {isDesktop, isOpen, handleNavClick} = useResizeWindow()
+  const {user} = useAuthContext()
   const {logout} = useAuth()
-const role = 'HEAD_OF_ADMISSIONS'
-  let headOfAdmissionNav = role==='HEAD_OF_ADMISSIONS'? [
+
+  let headOfAdmissionNav = user?.role==='HEAD_OF_ADMISSIONS'? [
               { href: "/staff/head-of-admissions/all-applications", text: "Applications", icon: UserGroupIcon },
               { href: "/staff/head-of-admissions/unassigned-applications", text: "Unassigned Applications", icon: GraduationCap },
               { href: "//staff/head-of-admissions/applications-for-review", text: "Pending Applications for Admission", icon: GraduationCapIcon },

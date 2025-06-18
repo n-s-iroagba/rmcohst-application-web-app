@@ -36,6 +36,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   if (!user && !loading) {
     alert("You are not authenticated. Please log in.")
     router.push("/")
+    return null
   }
 
   const value = { user, loading, error }

@@ -1,0 +1,2 @@
+export type UserRole= 'APPLICANT'|'HEAD_OF_ADMISSIONS'|'SUPER_ADMIN'|'ADMISSION_OFFICER'
+export type SignUpRole = 'APPLICANT'|'SUPER_ADMIN'

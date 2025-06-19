@@ -23,8 +23,7 @@ const SscQualificationForm:React.FC<SscQualificationFormProps> = ({
     programIndex,
     handleChangeSscQualification,
     addSscQualification,
-    removeSscQualification,
-  
+    removeSscQualification, 
 }) => {
 
 const {data:subjects}= useGetList<SSCSubject>(apiRoutes.subject.all)

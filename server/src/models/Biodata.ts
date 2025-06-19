@@ -19,7 +19,7 @@ interface BiodataAttributes {
   homeTown: string;
   phoneNumber: string;
   emailAddress: string;
-  passportPhotograph: Buffer;
+  passportPhotograph: Buffer;  
   nextOfKinFullName: string;
   nextOfKinPhoneNumber: string;
   nextOfKinAddress: string;

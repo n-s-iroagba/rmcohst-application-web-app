@@ -27,8 +27,8 @@ const SscQualificationForm:React.FC<SscQualificationFormProps> = ({
   
 }) => {
 
-const {data:subjects}= useGetList<SSCSubject>(apiRoutes.subjects.getall)
-const {data:grades}= useGetList<Grade>(apiRoutes.grades.getall)
+const {data:subjects}= useGetList<SSCSubject>(apiRoutes.subject.all)
+const {data:grades}= useGetList<Grade>(apiRoutes.grade.all)
 
 
 

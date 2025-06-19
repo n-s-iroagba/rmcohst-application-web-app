@@ -1,33 +1,46 @@
+import React from "react";
 import { useApplicationRequirments } from "@/hooks/useApplicationRequirements";
+import {
+  DepartmentAttributes,
+  DepartmentCreationDto,
+} from "@/types/department";
+import { renderFields } from "@/helpers/renderFields";
 
-const DepartmentForm = () => {
-  const { departmentData, handleChangeDepartment, addDepartment } =
-    useApplicationRequirments();
+interface DepartmentFormProps {
+  departmentData: DepartmentCreationDto[] | DepartmentAttributes;
+  isEdit: boolean;
+}
+
+const DepartmentForm: React.FC<DepartmentFormProps> = ({
+  departmentData,
+  isEdit,
+}) => {
+  const { handleChangeDepartment, addDepartment } = useApplicationRequirments();
+
+
 
   return (
     <form>
-      {departmentData.map((dept, index) => (
-        <section key={index} className="mb-4 p-3 border rounded">
-          {Object.keys(dept).map((key) => (
-            <input
-              key={key}
-              type="text"
-              name={key}
-              value={dept[key as keyof typeof dept] ?? ""}
-              onChange={(e) => handleChangeDepartment(e, index)}
-              placeholder={key}
-              className="block mb-2 p-2 border rounded w-full"
-            />
-          ))}
-          <button
-            type="button"
-            onClick={addDepartment}
-            className="bg-blue-600 text-white px-4 py-2 rounded"
-          >
-            Add Department
-          </button>
+      {isEdit ? (
+        <section className="mb-4 p-3 border rounded">
+          {renderFields(departmentData as DepartmentAttributes,handleChangeDepartment)}
         </section>
-      ))}
+      ) : (
+        (departmentData as DepartmentCreationDto[]).map(
+          (dept: DepartmentCreationDto, index: number) => (
+            <section key={index} className="mb-4 p-3 border rounded">
+              {renderFields(dept, handleChangeDepartment, index)}
+              <button
+                type="button"
+                onClick={addDepartment}
+                className="bg-blue-600 text-white px-4 py-2 rounded mt-2"
+              >
+                Add Department
+              </button>
+            </section>
+          )
+        )
+      )}
     </form>
   );
 };

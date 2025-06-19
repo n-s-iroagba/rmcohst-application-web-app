@@ -1,4 +1,4 @@
-import { DepartmentAttributes, DepartmentWithProgramsCreationDto } from "./department";
+import { DepartmentAttributes } from "./department";
 
 export interface Faculty {
   id:number
@@ -16,7 +16,7 @@ export type FacultyCreationDto={
   code: string
   description?: string
   nameOfDean?:string;
-  departments: DepartmentWithProgramsCreationDto
+
 }
 
-export type FacultyCreationAttributes = Omit<Faculty, 'id'|"departments"|'isActive'|'createdAt'|'updatedAt'>
+

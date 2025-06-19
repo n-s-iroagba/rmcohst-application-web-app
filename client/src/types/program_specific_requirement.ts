@@ -8,4 +8,4 @@ interface ProgramSpecificRequirementAttributes {
 }
 
 // Define creation attributes
-export type ProgramSpecificRequirementCreationDto= Omit<ProgramSpecificRequirementAttributes, 'id' | 'createdAt' | 'updatedAt'>
+export type ProgramSpecificRequirementCreationDto= Omit<ProgramSpecificRequirementAttributes, 'id' | 'createdAt' | 'programId'|'updatedAt'>

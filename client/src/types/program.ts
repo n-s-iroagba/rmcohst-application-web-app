@@ -1,4 +1,5 @@
-import { ProgramSpecificRequirementCreationDto } from "./program_specific_qualification";
+
+import { ProgramSpecificRequirementCreationDto } from "./program_specific_requirement";
 import { SSCSubjectMinimumGradeCreationDto } from "./ssc_subject_minimum_grade";
 
 export type ProgramLevel = 'OND' | 'HND' | 'Certificate';
@@ -25,7 +26,7 @@ export interface ProgramFilters {
   searchTerm?: string;
 }
 
-export type ProgramWithRequirementsCreationDto = {
+export type ProgramCreationDto = {
     name: string;
     awardType: string;
     durationType: 'WEEK' | 'MONTH' | 'YEAR';
@@ -35,7 +36,7 @@ export type ProgramWithRequirementsCreationDto = {
     description?: string;
     isUsingPreexistingSSCRequirements:boolean
     isUsingPreexistingProgramSpecificRequirements:boolean
-    sscRequirements:SSCSubjectMinimumGradeCreationDto[] | number
-    programSpecificRequirements?: ProgramSpecificRequirementCreationDto | number
+    sscRequirements?:SSCSubjectMinimumGradeCreationDto[]  
+    programSpecificRequirements?: ProgramSpecificRequirementCreationDto[]
 
 }

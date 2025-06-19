@@ -2,60 +2,54 @@ export const handleChange = <T extends Record<string, any>>(
   setState: React.Dispatch<React.SetStateAction<T>>,
   e: React.ChangeEvent<HTMLInputElement>
 ) => {
-  const { name, value } = e.target;
-  setState(prev => ({
+  const { name, value } = e.target
+  setState((prev) => ({
     ...prev,
-    [name]: value,
-  }));
-};
+    [name]: value
+  }))
+}
 
 export const handleArrayChange = <T extends Record<string, any>>(
   setState: React.Dispatch<React.SetStateAction<T[]>>,
   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   index: number
 ) => {
-  const { name, value } = e.target;
+  const { name, value } = e.target
 
   setState((prevState) =>
-    prevState.map((item, i) =>
-      i === index ? { ...item, [name]: value } : item
-    )
-  );
-};
-
+    prevState.map((item, i) => (i === index ? { ...item, [name]: value } : item))
+  )
+}
 
 export const handleChangeArrayInArray = <T extends Record<string, any>>(
-  e: React.ChangeEvent<HTMLInputElement |  HTMLSelectElement>,
-  setState:React.Dispatch<React.SetStateAction<T[]>>,
+  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  setState: React.Dispatch<React.SetStateAction<T[]>>,
   parentIndex: number,
   childIndex: number
 ) => {
-  const { name, value } = e.target;
+  const { name, value } = e.target
 
   setState((prevState) =>
     prevState.map((program, pIndex) => {
-      if (pIndex !== parentIndex) return program;
+      if (pIndex !== parentIndex) return program
 
       // If sscRequirements is not an array, don't update
-      if (!Array.isArray(program.sscRequirements)) return program;
+      if (!Array.isArray(program.sscRequirements)) return program
 
       const updatedSSCRequirements = program.sscRequirements.map((req, index) => {
-        if (index !== childIndex) return req;
-        return { ...req, [name]: value };
-      });
+        if (index !== childIndex) return req
+        return { ...req, [name]: value }
+      })
 
       return {
         ...program,
-        sscRequirements: updatedSSCRequirements,
-      };
+        sscRequirements: updatedSSCRequirements
+      }
     })
-  );
-};
+  )
+}
 
-export const handleAddToArrayOfArrays = <
-  T extends Record<string, any>,
-  K extends keyof T
->(
+export const handleAddToArrayOfArrays = <T extends Record<string, any>, K extends keyof T>(
   parentIndex: number,
   setState: React.Dispatch<React.SetStateAction<T[]>>,
   key: K,
@@ -63,28 +57,24 @@ export const handleAddToArrayOfArrays = <
 ) => {
   setState((prev) =>
     prev.map((item, index) => {
-      if (index !== parentIndex) return item;
+      if (index !== parentIndex) return item
 
-      const currentArray = item[key];
+      const currentArray = item[key]
 
       if (!Array.isArray(currentArray)) {
-        console.warn(`Cannot push to non-array key "${String(key)}"`);
-        return item;
+        console.warn(`Cannot push to non-array key "${String(key)}"`)
+        return item
       }
 
       return {
         ...item,
-        [key]: [...currentArray, template],
-      };
+        [key]: [...currentArray, template]
+      }
     })
-  );
-};
+  )
+}
 
-
-export const handleRemoveFromArrayOfArrays = <
-  T extends Record<string, any>,
-  K extends keyof T
->(
+export const handleRemoveFromArrayOfArrays = <T extends Record<string, any>, K extends keyof T>(
   parentIndex: number,
   childIndex: number,
   setState: React.Dispatch<React.SetStateAction<T[]>>,
@@ -92,21 +82,19 @@ export const handleRemoveFromArrayOfArrays = <
 ) => {
   setState((prev) =>
     prev.map((item, index) => {
-      if (index !== parentIndex) return item;
+      if (index !== parentIndex) return item
 
-      const currentArray = item[key];
+      const currentArray = item[key]
 
       if (!Array.isArray(currentArray)) {
-        console.warn(`Cannot remove from non-array key "${String(key)}"`);
-        return item;
+        console.warn(`Cannot remove from non-array key "${String(key)}"`)
+        return item
       }
 
       return {
         ...item,
-        [key]: currentArray.filter((_:unknown, i:number) => i !== childIndex),
-      };
+        [key]: currentArray.filter((_: unknown, i: number) => i !== childIndex)
+      }
     })
-  );
-};
-
-
+  )
+}

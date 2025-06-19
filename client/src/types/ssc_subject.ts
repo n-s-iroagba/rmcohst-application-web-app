@@ -1,8 +1,8 @@
 export interface SSCSubject {
-  id: number;
-  name: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  id: number
+  name: string
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 // Define creation attributes

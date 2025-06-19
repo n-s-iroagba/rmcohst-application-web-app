@@ -1,7 +1,7 @@
-import { AlertCircle } from "lucide-react";
+import { AlertCircle } from 'lucide-react'
 
 interface ErrorAlerProps {
-  message: string;
+  message: string
 }
 
 const ErrorAler = ({ message }: ErrorAlerProps) => (
@@ -12,6 +12,6 @@ const ErrorAler = ({ message }: ErrorAlerProps) => (
     <h3 className="text-lg font-semibold text-red-900 mb-2">Error Loading Data</h3>
     <p className="text-red-700">{message}</p>
   </div>
-);
+)
 
-export default ErrorAler;
+export default ErrorAler

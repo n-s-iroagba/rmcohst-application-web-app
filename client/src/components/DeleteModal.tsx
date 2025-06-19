@@ -1,45 +1,43 @@
-"use client"
+'use client'
 
-import { apiRoutes } from "@/constants/apiRoutes"
-import { remove } from "@/utils/apiClient"
-import { AlertTriangle, X } from "lucide-react"
-import { useState } from "react"
-import ErrorAlert from "./ErrorAlert"
+import { apiRoutes } from '@/constants/apiRoutes'
+import { remove } from '@/utils/apiClient'
+import { AlertTriangle, X } from 'lucide-react'
+import { useState } from 'react'
+import ErrorAlert from './ErrorAlert'
 
 interface DeleteModalProps {
   id: number | string
   onClose: () => void
-  type: "faculty" | "department" | "program"
+  type: 'faculty' | 'department' | 'program'
   message: string
 }
 
 const API_ROUTES_MAP = {
   faculty: apiRoutes.faculty.delete,
   department: apiRoutes.department.delete,
-  program: apiRoutes.program.delete,
-  
+  program: apiRoutes.program.delete
 }
 
 export function DeleteConfirmationModal({ id, onClose, type, message }: DeleteModalProps) {
   const [isDeleting, setIsDeleting] = useState(false)
-  const [error, setError] = useState("")
+  const [error, setError] = useState('')
 
   const handleDelete = async () => {
     setIsDeleting(true)
-    setError("")
+    setError('')
 
     try {
       const endpoint = API_ROUTES_MAP[type](id)
-      if (!endpoint) throw new Error("Invalid deletion type")
+      if (!endpoint) throw new Error('Invalid deletion type')
 
       await remove(endpoint)
 
       window.location.reload()
       onClose()
-
     } catch (err) {
-      console.error("Deletion failed:", err)
-      setError("Failed to delete. Please try again.")
+      console.error('Deletion failed:', err)
+      setError('Failed to delete. Please try again.')
     } finally {
       setIsDeleting(false)
     }
@@ -67,11 +65,11 @@ export function DeleteConfirmationModal({ id, onClose, type, message }: DeleteMo
         </div>
 
         <p className="text-blue-700 mb-6">
-          Are you sure you want to delete <span className="font-semibold">{message}</span>? This action cannot be
-          undone.
+          Are you sure you want to delete <span className="font-semibold">{message}</span>? This
+          action cannot be undone.
         </p>
 
-        {error&&<ErrorAlert message={error}/>}
+        {error && <ErrorAlert message={error} />}
 
         <div className="flex justify-end gap-3">
           <button
@@ -92,7 +90,7 @@ export function DeleteConfirmationModal({ id, onClose, type, message }: DeleteMo
                 Deleting...
               </>
             ) : (
-              "Confirm Delete"
+              'Confirm Delete'
             )}
           </button>
         </div>

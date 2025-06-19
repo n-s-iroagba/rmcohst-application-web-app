@@ -1,10 +1,13 @@
 export interface AdmissionOfficerAttributes {
-  id: number;
-  staffId: number;
-  portalUsername: string;
+  id: number
+  staffId: number
+  portalUsername: string
 
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: Date
+  updatedAt?: Date
 }
 
-export type AdmissionOfficerCreationAttributes = Omit <AdmissionOfficerAttributes, 'id' | 'createdAt' | 'updatedAt'>
+export type AdmissionOfficerCreationAttributes = Omit<
+  AdmissionOfficerAttributes,
+  'id' | 'createdAt' | 'updatedAt'
+>

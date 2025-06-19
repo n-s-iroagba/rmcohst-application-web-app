@@ -1,20 +1,13 @@
-"use client"
+'use client'
 
-import React, { useEffect } from "react"
-import { Biodata } from "@/types/biodata"
-import { useApplication } from "@/hooks/useApplication"
-import { formatCamelCase } from "@/utils/formatCamelCase"
-
-
+import React, { useEffect } from 'react'
+import { Biodata } from '@/types/biodata'
+import { useApplication } from '@/hooks/useApplication'
+import { formatCamelCase } from '@/utils/formatCamelCase'
 
 const EditBiodataForm = () => {
-  const {
-    biodata,
-    biodataErrors,
-    setInitialBiodata,
-    handleChangeBiodata,
-    handleSubmitBiodata,
-  } = useApplication()
+  const { biodata, biodataErrors, setInitialBiodata, handleChangeBiodata, handleSubmitBiodata } =
+    useApplication()
 
   useEffect(() => {
     setInitialBiodata(biodata)
@@ -27,10 +20,10 @@ const EditBiodataForm = () => {
       <h2 className="text-2xl font-semibold text-center text-blue-800">Edit Biodata</h2>
 
       {Object.entries(biodata).map(([key, value]) => {
-        if (["id", "applicationId", "passportPhotograph"].includes(key)) return null
+        if (['id', 'applicationId', 'passportPhotograph'].includes(key)) return null
 
         const typedKey = key as keyof Biodata
-        const isTextArea = key.toLowerCase().includes("address")
+        const isTextArea = key.toLowerCase().includes('address')
 
         return (
           <div key={key}>
@@ -42,7 +35,7 @@ const EditBiodataForm = () => {
                 id={key}
                 name={key}
                 className={`w-full border rounded px-3 py-2 ${
-                  biodataErrors[typedKey] ? "border-red-500" : "border-gray-300"
+                  biodataErrors[typedKey] ? 'border-red-500' : 'border-gray-300'
                 }`}
                 value={value as string}
                 onChange={handleChangeBiodata}
@@ -51,12 +44,12 @@ const EditBiodataForm = () => {
               <input
                 id={key}
                 name={key}
-                type={key === "dateOfBirth" ? "date" : "text"}
+                type={key === 'dateOfBirth' ? 'date' : 'text'}
                 className={`w-full border rounded px-3 py-2 ${
-                  biodataErrors[typedKey] ? "border-red-500" : "border-gray-300"
+                  biodataErrors[typedKey] ? 'border-red-500' : 'border-gray-300'
                 }`}
                 value={
-                  key === "dateOfBirth"
+                  key === 'dateOfBirth'
                     ? new Date(value as Date).toISOString().substring(0, 10)
                     : String(value)
                 }
@@ -82,7 +75,7 @@ const EditBiodataForm = () => {
           accept="image/*"
           onChange={handleChangeBiodata}
           className={`w-full border rounded px-3 py-2 ${
-            biodataErrors.passportPhotograph ? "border-red-500" : "border-gray-300"
+            biodataErrors.passportPhotograph ? 'border-red-500' : 'border-gray-300'
           }`}
         />
         {biodataErrors.passportPhotograph && (

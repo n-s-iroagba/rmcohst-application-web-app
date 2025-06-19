@@ -3,18 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-  "dev": "next dev",
-  "build": "next build",
-  "start": "next start",
-  "lint": "next lint . --ext .js,.jsx,.ts,.tsx",
-  "format": "prettier --write .",
-  "cypress": "cypress open",
-  "test:e2e": "cypress run"
-},
-"lint-staged": {
-  "*.{js,ts,tsx}": ["prettier --write", "next lint"]
-},
-
+    "build": "cross-env NODE_ENV=production next build",
+    "lint": "next lint . --ext .js,.jsx,.ts,.tsx",
+    "dev": "next dev",
+    "start": "next start",
+    "format": "prettier --write .",
+    "cypress": "cypress open",
+    "test:e2e": "cypress run"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "prettier --write",
+      "next lint"
+    ]
+  },
   "dependencies": {
     "@eslint/eslintrc": "latest",
     "@faker-js/faker": "latest",

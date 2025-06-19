@@ -1,22 +1,19 @@
-import { DepartmentAttributes } from "./department";
+import { DepartmentAttributes } from './department'
 
 export interface Faculty {
-  id:number
+  id: number
   name: string
   code: string
   description?: string
-  nameOfDean?:string;
+  nameOfDean?: string
   isActive?: boolean
   createdAt?: Date
   updatedAt?: Date
 }
 
-export type FacultyCreationDto={
-    name: string
+export type FacultyCreationDto = {
+  name: string
   code: string
   description?: string
-  nameOfDean?:string;
-
+  nameOfDean?: string
 }
-
-

@@ -1,8 +1,8 @@
-import React, { useState } from "react"
-import {  useAuth } from "@/hooks/useAuth"
-import { SignUpRole } from "@/types/role.types"
-import { formatCamelCase } from "@/utils/formatCamelCase"
-import ErrorAlert from "./ErrorAlert"
+import React, { useState } from 'react'
+import { useAuth } from '@/hooks/useAuth'
+import { SignUpRole } from '@/types/role.types'
+import { formatCamelCase } from '@/utils/formatCamelCase'
+import ErrorAlert from './ErrorAlert'
 
 type RegisterData = {
   email: string
@@ -19,35 +19,38 @@ type SignupFormProps = {
 }
 
 const SignupForm: React.FC<SignupFormProps> = ({ role, formLabel, submitButtonLabel }) => {
-  const { signupData, handleChangeSignupData, handleSubmitSignup, error: apiError,validationErrors } = useAuth()
-
-
+  const {
+    signupData,
+    handleChangeSignupData,
+    handleSubmitSignup,
+    error: apiError,
+    validationErrors
+  } = useAuth()
 
   return (
-    <form onSubmit={(e)=>handleSubmitSignup(e,role)}>
+    <form onSubmit={(e) => handleSubmitSignup(e, role)}>
       <h2>{formLabel}</h2>
 
       {Object.keys(signupData).map((key) => {
         const typedKey = key as keyof RegisterData
         return (
-          <div key={key} style={{ marginBottom: "1rem" }}>
+          <div key={key} style={{ marginBottom: '1rem' }}>
             <label htmlFor={key}>{formatCamelCase(key)}</label>
             <input
               id={key}
               name={key}
-              type={key === "password" || key === "confirmPassword" ? "password" : "text"}
+              type={key === 'password' || key === 'confirmPassword' ? 'password' : 'text'}
               onChange={handleChangeSignupData}
-              value={signupData[typedKey]
-              }
+              value={signupData[typedKey]}
             />
             {validationErrors[typedKey] && (
-              <p style={{ color: "red", fontSize: "0.8rem" }}>{validationErrors[typedKey]}</p>
+              <p style={{ color: 'red', fontSize: '0.8rem' }}>{validationErrors[typedKey]}</p>
             )}
           </div>
         )
       })}
 
-      {apiError && <ErrorAlert message={apiError}/>}
+      {apiError && <ErrorAlert message={apiError} />}
 
       <button type="submit">{submitButtonLabel}</button>
     </form>

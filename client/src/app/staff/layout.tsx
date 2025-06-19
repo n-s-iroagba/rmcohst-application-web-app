@@ -1,5 +1,5 @@
-"use client";
-import type React from "react";
+'use client'
+import type React from 'react'
 import {
   X as XMarkIcon,
   Menu as Bars3Icon,
@@ -8,32 +8,53 @@ import {
   Users as UserGroupIcon,
   UserMinus,
   GraduationCapIcon,
-  CircleXIcon,
-} from "lucide-react";
+  CircleXIcon
+} from 'lucide-react'
 
-import Link from "next/link";
-import { useAuth } from "@/hooks/useAuth";
-import { useResizeWindow } from "@/hooks/useResizeWindow";
-import { AuthProvider, useAuthContext } from "@/contexts/AuthContext";
-
+import Link from 'next/link'
+import { useAuth } from '@/hooks/useAuth'
+import { useResizeWindow } from '@/hooks/useResizeWindow'
+import { AuthProvider, useAuthContext } from '@/contexts/AuthContext'
 
 interface AdminOffcanvasProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 function StaffOffcanvas({ children }: AdminOffcanvasProps) {
-  const {isDesktop, isOpen, handleNavClick} = useResizeWindow()
-  const {user} = useAuthContext()
-  const {logout} = useAuth()
+  const { isDesktop, isOpen, handleNavClick } = useResizeWindow()
+  const { user } = useAuthContext()
+  const { logout } = useAuth()
 
-  let headOfAdmissionNav = user?.role==='HEAD_OF_ADMISSIONS'? [
-              { href: "/staff/head-of-admissions/all-applications", text: "Applications", icon: UserGroupIcon },
-              { href: "/staff/head-of-admissions/unassigned-applications", text: "Unassigned Applications", icon: GraduationCap },
-              { href: "//staff/head-of-admissions/applications-for-review", text: "Pending Applications for Admission", icon: GraduationCapIcon },
-              { href: "/staff/head-of-admissions/admittted-applications", text: "Admissions", icon: GraduationCap },
-              { href: "/staff/head-of-admissions/rejected-applications", text: "Rejected Admissions", icon: CircleXIcon },
-         
-            ]:[]
+  let headOfAdmissionNav =
+    user?.role === 'HEAD_OF_ADMISSIONS'
+      ? [
+          {
+            href: '/staff/head-of-admissions/all-applications',
+            text: 'Applications',
+            icon: UserGroupIcon
+          },
+          {
+            href: '/staff/head-of-admissions/unassigned-applications',
+            text: 'Unassigned Applications',
+            icon: GraduationCap
+          },
+          {
+            href: '//staff/head-of-admissions/applications-for-review',
+            text: 'Pending Applications for Admission',
+            icon: GraduationCapIcon
+          },
+          {
+            href: '/staff/head-of-admissions/admittted-applications',
+            text: 'Admissions',
+            icon: GraduationCap
+          },
+          {
+            href: '/staff/head-of-admissions/rejected-applications',
+            text: 'Rejected Admissions',
+            icon: CircleXIcon
+          }
+        ]
+      : []
   return (
     <div className="flex min-h-screen bg-gray-50">
       <button
@@ -41,11 +62,7 @@ function StaffOffcanvas({ children }: AdminOffcanvasProps) {
         className="lg:hidden fixed top-2 left-2 z-50 p-2 rounded-lg bg-blue-100 border border-blue-900 text-blue-900 shadow-lg hover:bg-blue-200 transition-all"
         aria-label="Toggle navigation"
       >
-        {isOpen ? (
-          <XMarkIcon className="h-5 w-5" />
-        ) : (
-          <Bars3Icon className="h-5 w-5" />
-        )}
+        {isOpen ? <XMarkIcon className="h-5 w-5" /> : <Bars3Icon className="h-5 w-5" />}
       </button>
 
       {isOpen && (
@@ -54,14 +71,10 @@ function StaffOffcanvas({ children }: AdminOffcanvasProps) {
           onClick={() => handleNavClick()}
         />
       )}
-  
-
-
-
 
       <aside
         className={`fixed lg:relative top-0 left-0 h-full z-50 transform transition-transform duration-300 ease-in-out
-          ${isOpen ? "translate-x-0" : "-translate-x-full"} 
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
           lg:translate-x-0 w-64 sm:w-72 lg:w-64 bg-blue-900 border-r border-blue-700 shadow-xl lg:shadow-none`}
       >
         <nav className="h-full overflow-y-auto p-3 lg:p-4 flex flex-col">
@@ -74,10 +87,22 @@ function StaffOffcanvas({ children }: AdminOffcanvasProps) {
 
           <div className="flex flex-col gap-1">
             {[
-              { href: "/staff/admission-officer/undone-tasks", text: "Pending Tasks", icon: GraduationCapIcon },
-              { href: "/staff/admission-officer/reviewed-application", text: "Reviewed Applications", icon: GraduationCap },
-              { href: "/staff/admission-officer/profile", text: "My Profile", icon: UserCircle },
-              { href: "/staff/admission-officer/application-in-review", text: "Application In Review", icon: GraduationCapIcon },
+              {
+                href: '/staff/admission-officer/undone-tasks',
+                text: 'Pending Tasks',
+                icon: GraduationCapIcon
+              },
+              {
+                href: '/staff/admission-officer/reviewed-application',
+                text: 'Reviewed Applications',
+                icon: GraduationCap
+              },
+              { href: '/staff/admission-officer/profile', text: 'My Profile', icon: UserCircle },
+              {
+                href: '/staff/admission-officer/application-in-review',
+                text: 'Application In Review',
+                icon: GraduationCapIcon
+              },
               ...headOfAdmissionNav
             ].map((item, index) => (
               <Link
@@ -89,24 +114,30 @@ function StaffOffcanvas({ children }: AdminOffcanvasProps) {
                 onClick={handleNavClick}
               >
                 <item.icon className="h-4 w-4 lg:h-5 lg:w-5 text-blue-100 flex-shrink-0" />
-                <span className="text-blue-100 font-medium text-sm lg:text-base truncate">{item.text}</span>
+                <span className="text-blue-100 font-medium text-sm lg:text-base truncate">
+                  {item.text}
+                </span>
               </Link>
             ))}
             <Link
-              href={""}
+              href={''}
               className="flex items-center gap-3 text-blue-900 p-3 rounded-lg
                          bg-blue-100/10 hover:bg-blue-100/20 active:bg-blue-100/30 transition-all
                          border border-transparent hover:border-blue-100/30 touch-manipulation"
               onClick={() => logout()}
             >
               <UserMinus className="h-4 w-4 lg:h-5 lg:w-5 text-blue-100 flex-shrink-0" />
-              <span className="text-blue-100 font-medium text-sm lg:text-base truncate">Log out</span>
+              <span className="text-blue-100 font-medium text-sm lg:text-base truncate">
+                Log out
+              </span>
             </Link>
           </div>
         </nav>
       </aside>
 
-      <main className={`flex-1 transition-all duration-300 ${isOpen && !isDesktop ? "overflow-hidden" : ""}`}>
+      <main
+        className={`flex-1 transition-all duration-300 ${isOpen && !isDesktop ? 'overflow-hidden' : ''}`}
+      >
         <div className="p-3 sm:p-4 lg:p-6 min-h-screen">
           <div className="pt-12 lg:pt-0">
             <div className="max-w-6xl mx-auto bg-white rounded-lg lg:rounded-xl shadow-sm border border-blue-100 p-4 sm:p-6 lg:p-8">
@@ -116,21 +147,13 @@ function StaffOffcanvas({ children }: AdminOffcanvasProps) {
         </div>
       </main>
     </div>
-  );
+  )
 }
 
-
-
-export default function StaffLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function StaffLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-   <StaffOffcanvas>
-       {children}
-   </StaffOffcanvas>
-   </AuthProvider>
+      <StaffOffcanvas>{children}</StaffOffcanvas>
+    </AuthProvider>
   )
 }

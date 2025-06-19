@@ -1,29 +1,21 @@
-import React from "react";
-import { useApplicationRequirments } from "@/hooks/useApplicationRequirements";
-import {
-  DepartmentAttributes,
-  DepartmentCreationDto,
-} from "@/types/department";
-import { renderFields } from "@/helpers/renderFields";
+import React from 'react'
+import { useApplicationRequirments } from '@/hooks/useApplicationRequirements'
+import { DepartmentAttributes, DepartmentCreationDto } from '@/types/department'
+import { renderFields } from '@/helpers/renderFields'
 
 interface DepartmentFormProps {
-  departmentData: DepartmentCreationDto[] | DepartmentAttributes;
-  isEdit: boolean;
+  departmentData: DepartmentCreationDto[] | DepartmentAttributes
+  isEdit: boolean
 }
 
-const DepartmentForm: React.FC<DepartmentFormProps> = ({
-  departmentData,
-  isEdit,
-}) => {
-  const { handleChangeDepartment, addDepartment } = useApplicationRequirments();
-
-
+const DepartmentForm: React.FC<DepartmentFormProps> = ({ departmentData, isEdit }) => {
+  const { handleChangeDepartment, addDepartment } = useApplicationRequirments()
 
   return (
     <form>
       {isEdit ? (
         <section className="mb-4 p-3 border rounded">
-          {renderFields(departmentData as DepartmentAttributes,handleChangeDepartment)}
+          {renderFields(departmentData as DepartmentAttributes, handleChangeDepartment)}
         </section>
       ) : (
         (departmentData as DepartmentCreationDto[]).map(
@@ -42,7 +34,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({
         )
       )}
     </form>
-  );
-};
+  )
+}
 
-export default DepartmentForm;
+export default DepartmentForm

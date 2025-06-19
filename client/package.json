@@ -3,13 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "cypress": "cypress open",
-    "test:e2e": "cypress run"
-  },
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
+  "lint": "next lint . --ext .js,.jsx,.ts,.tsx",
+  "format": "prettier --write .",
+  "cypress": "cypress open",
+  "test:e2e": "cypress run"
+},
+"lint-staged": {
+  "*.{js,ts,tsx}": ["prettier --write", "next lint"]
+},
+
   "dependencies": {
     "@eslint/eslintrc": "latest",
     "@faker-js/faker": "latest",
@@ -76,9 +81,17 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@typescript-eslint/eslint-plugin": "^8.34.1",
+    "@typescript-eslint/parser": "^8.34.1",
     "cypress": "^14.3.3",
-    "eslint": "^9",
+    "eslint": "^9.29.0",
     "eslint-config-next": "15.3.2",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.5.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "prettier": "^3.5.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

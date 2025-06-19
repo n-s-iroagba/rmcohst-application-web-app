@@ -1,4 +1,4 @@
-export interface SSCSubjectAttributes {
+export interface SSCSubject {
   id: number;
   name: string;
   createdAt?: Date;
@@ -6,4 +6,4 @@ export interface SSCSubjectAttributes {
 }
 
 // Define creation attributes
-export type SSCSubjectCreationAttributes = Omit<SSCSubjectAttributes, 'id' | 'createdAt' | 'updatedAt'>
+export type SSCSubjectCreationAttributes = Omit<SSCSubject, 'id' | 'createdAt' | 'updatedAt'>

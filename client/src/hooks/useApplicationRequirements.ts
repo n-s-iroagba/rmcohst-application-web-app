@@ -66,11 +66,11 @@ export const useApplicationRequirments = () => {
 
   const addDepartment = () => {
     setDepartmentData([...departmentData, tempDeptData]);
-  };
+  }; 
 
     // SSC REQUIREMENTS
 const handleChangeProgramSSCRequirement = (
-  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  e: React.ChangeEvent< HTMLSelectElement>,
   programIndex: number,
   sscIndex: number
 ) => {
@@ -102,7 +102,7 @@ const programSSChandlers = {
 
 
   // SSC REQUIREMENTS
-  const handleChangeSSCRequirement = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, index: number) => {
+  const handleChangeSSCRequirement = (e: React.ChangeEvent<HTMLSelectElement>, index: number) => {
     handleArrayChange(setSCCRequirementsData, e, index);
   };
 

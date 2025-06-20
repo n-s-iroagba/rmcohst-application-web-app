@@ -54,11 +54,17 @@ export const useApplicationRequirments = () => {
   const [preexistingProgamSpecificRequirementsId, setPreexistingProgamSpecificRequirementsId] =
     useState<number>(0)
 
+  // SeSSION
+  const handleChangeSession = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleChange(setSessionData, e)
+  }
   // FACULTY
   const handleChangeFaculty = (e: React.ChangeEvent<HTMLInputElement>, index?: number) => {
-    index !== undefined
-      ? handleArrayOfObjectsChange(setFacultyData, e, index)
-      : handleChange(setFacultyData, e)
+    if (index !== undefined) {
+      handleArrayOfObjectsChange(setFacultyData, e, index)
+    } else {
+      handleChange(setFacultyData, e)
+    }
   }
 
   const addFaculty = () => {
@@ -71,9 +77,11 @@ export const useApplicationRequirments = () => {
 
   // DEPARTMENT
   const handleChangeDepartment = (e: React.ChangeEvent<HTMLInputElement>, index?: number) => {
-    index !== undefined
-      ? handleArrayOfObjectsChange(setDepartmentData, e, index)
-      : handleChange(setDepartmentData, e)
+    if (index !== undefined) {
+      handleArrayOfObjectsChange(setDepartmentData, e, index)
+    } else {
+      handleChange(setDepartmentData, e)
+    }
   }
 
   const addDepartment = () => {
@@ -115,12 +123,6 @@ export const useApplicationRequirments = () => {
     )
   }
 
-  const programSSChandlers = {
-    handleChange: handleChangeProgramSSCRequirement,
-    add: addProgramSSCRequirement,
-    remove: removeProgramSSCRequirement
-  }
-
   // SSC REQUIREMENTS
   const handleChangeSSCRequirement = (e: React.ChangeEvent<HTMLSelectElement>, index: number) => {
     handleArrayOfObjectsChange(setSCCRequirementsData, e, index)
@@ -135,6 +137,9 @@ export const useApplicationRequirments = () => {
   }
 
   // PROGRAM SPECIFIC
+  const handleChangeProgramData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleChange(setProgramData, e)
+  }
   const handleChangeProgramSpecificRequirementsData = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -143,6 +148,9 @@ export const useApplicationRequirments = () => {
   }
 
   return {
+    //SESSION
+    sessionData,
+    handleChangeSession,
     // FACULTY
     facultyData,
     handleChangeFaculty,
@@ -159,10 +167,17 @@ export const useApplicationRequirments = () => {
     handleChangeSSCRequirement,
     addSSCRequirement,
     removeSSCRequirement,
-
+    handleChangeProgramSSCRequirement,
+    addProgramSSCRequirement,
+    removeProgramSSCRequirement,
+    // PROGRAM
+    programData,
+    handleChangeProgramData,
     // PROGRAM SPECIFIC
     programSpecificRequirementsData,
     handleChangeProgramSpecificRequirementsData,
+    removeProgramSpecificRequirment,
+    addProgramSpecificRequirment,
 
     // Flags (optional if you want to expose)
     preexistingSSCRequirements,

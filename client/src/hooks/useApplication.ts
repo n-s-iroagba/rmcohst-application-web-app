@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useEffect, useState } from 'react'
 import { Biodata } from '@/types/biodata'
 import { formatCamelCase } from '@/utils/formatCamelCase'
@@ -24,7 +26,7 @@ export const useApplication = () => {
     if (applicationError) {
       setError(applicationError)
     }
-  })
+  }, [application, applicationError])
   const requiredFields: (keyof Biodata)[] = [
     'firstName',
     'surname',
@@ -113,6 +115,7 @@ export const useApplication = () => {
     error,
     submitting,
     biodata,
+    loading,
     biodataErrors,
     handleChangeBiodata,
     handleSubmitBiodata,

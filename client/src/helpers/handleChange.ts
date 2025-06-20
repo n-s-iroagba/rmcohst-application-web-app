@@ -1,4 +1,6 @@
-export const handleChange = <T extends Record<string, string | number>>(
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+export const handleChange = <T extends Record<string, any>>(
   setState: React.Dispatch<React.SetStateAction<T>>,
   e: React.ChangeEvent<HTMLInputElement>
 ) => {
@@ -9,7 +11,7 @@ export const handleChange = <T extends Record<string, string | number>>(
   }))
 }
 
-export const handleArrayOfObjectsChangee = <T extends Record<string, string | number>>(
+export const handleArrayOfObjectsChange = <T extends Record<string, any>>(
   setState: React.Dispatch<React.SetStateAction<T[]>>,
   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   index: number
@@ -30,7 +32,7 @@ export const handleArrayChange = (
   setState((prevState) => prevState.map((item, i) => (i === index ? value : item)))
 }
 
-export const handleChangeArrayInArray = <T extends Record<string, string | number>>(
+export const handleChangeArrayInArray = <T extends Record<string, any>>(
   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   setState: React.Dispatch<React.SetStateAction<T[]>>,
   parentIndex: number,
@@ -58,10 +60,7 @@ export const handleChangeArrayInArray = <T extends Record<string, string | numbe
   )
 }
 
-export const handleAddToArrayOfArrays = <
-  T extends Record<string, string | number>,
-  K extends keyof T
->(
+export const handleAddToArrayOfArrays = <T extends Record<string, any>, K extends keyof T>(
   parentIndex: number,
   setState: React.Dispatch<React.SetStateAction<T[]>>,
   key: K,
@@ -86,10 +85,7 @@ export const handleAddToArrayOfArrays = <
   )
 }
 
-export const handleRemoveFromArrayOfArrays = <
-  T extends Record<string, string | number>,
-  K extends keyof T
->(
+export const handleRemoveFromArrayOfArrays = <T extends Record<string, any>, K extends keyof T>(
   parentIndex: number,
   childIndex: number,
   setState: React.Dispatch<React.SetStateAction<T[]>>,

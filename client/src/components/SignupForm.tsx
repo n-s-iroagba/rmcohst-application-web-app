@@ -1,15 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { SignUpRole } from '@/types/role.types'
 import ErrorAlert from './ErrorAlert'
-import DynamicFormTextFields from '@/helpers/formFields'
+import { DynamicFormTextFields } from '@/helpers/formFields'
 
 type SignupFormProps = {
-  role: SignUpRole
+  signupRole: SignUpRole
   formLabel: string
 }
 
-const SignupForm: React.FC<SignupFormProps> = ({ role, formLabel }) => {
+const SignupForm: React.FC<SignupFormProps> = ({ signupRole, formLabel }) => {
   const {
     submitting,
     signupData,
@@ -20,7 +22,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ role, formLabel }) => {
   } = useAuth()
 
   return (
-    <form onSubmit={(e) => handleSubmitSignup(e, role)}>
+    <form onSubmit={(e) => handleSubmitSignup(e, signupRole)}>
       <h2>{formLabel}</h2>
       <DynamicFormTextFields
         data={signupData}

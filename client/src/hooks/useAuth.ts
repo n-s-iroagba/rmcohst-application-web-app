@@ -53,14 +53,6 @@ class AuthError extends Error {
   }
 }
 
-class ValidationError extends Error {
-  public statusCode: number
-  constructor(message: string, statusCode: number) {
-    super(message)
-    this.statusCode = statusCode
-  }
-}
-
 type UseAuthReturn = {
   handleChangeSignupData: (e: React.ChangeEvent<HTMLInputElement>) => void
   handleChangeForgotPasswordData: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -209,7 +201,7 @@ export const useAuth = (): UseAuthReturn => {
       redirectToDashboard(result)
     } catch (error) {
       console.error('Login error', error)
-      setError(error instanceof Error ? error.message : 'Login failed')
+      setError(error instanceof AuthError ? error.message : 'Login failed')
     } finally {
       setLoading(false)
     }
@@ -226,7 +218,7 @@ export const useAuth = (): UseAuthReturn => {
       router.push(`/auth/verify-email/${result}`)
     } catch (error) {
       console.error('Registration error', error)
-      setError(error instanceof Error ? error.message : 'Signup failed')
+      setError(error instanceof AuthError ? error.message : 'Signup failed')
     } finally {
       setLoading(false)
     }
@@ -254,7 +246,7 @@ export const useAuth = (): UseAuthReturn => {
       router.push(`/auth/reset-paswword/${token}`)
     } catch (error) {
       console.error('Forgot password error', error)
-      setError(error instanceof Error ? error.message : 'Request failed')
+      setError(error instanceof AuthError ? error.message : 'Request failed')
     } finally {
       setSubmitting(false)
     }
@@ -273,7 +265,7 @@ export const useAuth = (): UseAuthReturn => {
       redirectToDashboard(role)
     } catch (error) {
       console.error('Verify code error', error)
-      setError(error instanceof Error ? error.message : 'Verification failed')
+      setError(error instanceof AuthError ? error.message : 'Verification failed')
     } finally {
       setSubmitting(false)
     }
@@ -285,7 +277,7 @@ export const useAuth = (): UseAuthReturn => {
       router.push(`/auth/verify-email/${newToken}`)
     } catch (error) {
       console.error('Verify code error', error)
-      setError(error instanceof Error ? error.message : 'Verification failed')
+      setError(error instanceof AuthError ? error.message : 'Verification failed')
     } finally {
       setSubmitting(false)
     }
@@ -305,7 +297,7 @@ export const useAuth = (): UseAuthReturn => {
       router.push('/auth/login')
     } catch (error) {
       console.error('Reset password error', error)
-      setError(error instanceof Error ? error.message : 'Password reset failed')
+      setError(error instanceof AuthError ? error.message : 'Password reset failed')
     } finally {
       setSubmitting(false)
     }

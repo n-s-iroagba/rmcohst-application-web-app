@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React from 'react'
 import { formatCamelCase } from '@/utils/formatCamelCase'
 
@@ -19,7 +21,6 @@ export function DynamicFormTextFields<T extends Record<string, any>>({
   onChange,
   index,
   excludeKeys = [],
-  textareaKeys = [],
   classNameInput = 'w-full border rounded px-3 py-2',
   classNameLabel = 'block mb-1 font-medium text-gray-700',
   classNameError = 'text-red-600 text-sm mt-1'
@@ -30,7 +31,6 @@ export function DynamicFormTextFields<T extends Record<string, any>>({
         const typedKey = key as keyof T
         if (excludeKeys.includes(typedKey)) return null
 
-        const isTextarea = textareaKeys.includes(typedKey)
         const inputType = key.toLowerCase().includes('password')
           ? 'password'
           : key.toLowerCase().includes('email')

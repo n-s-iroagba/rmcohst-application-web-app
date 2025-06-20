@@ -4,7 +4,7 @@ interface ErrorAlerProps {
   message: string
 }
 
-const ErrorAler = ({ message }: ErrorAlerProps) => (
+const ErrorAlert = ({ message }: ErrorAlerProps) => (
   <div className="bg-red-50 p-6 rounded-2xl border-2 border-red-100 text-center max-w-md mx-auto">
     <div className="flex justify-center mb-4">
       <AlertCircle className="w-12 h-12 text-red-600" />
@@ -14,4 +14,4 @@ const ErrorAler = ({ message }: ErrorAlerProps) => (
   </div>
 )
 
-export default ErrorAler
+export default ErrorAlert

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   handleAddToArrayOfArrays,
-  handleArrayChange,
+  handleArrayOfObjectsChange,
   handleChange,
   handleChangeArrayInArray,
   handleRemoveFromArrayOfArrays
@@ -57,7 +57,7 @@ export const useApplicationRequirments = () => {
   // FACULTY
   const handleChangeFaculty = (e: React.ChangeEvent<HTMLInputElement>, index?: number) => {
     index !== undefined
-      ? handleArrayChange(setFacultyData, e, index)
+      ? handleArrayOfObjectsChange(setFacultyData, e, index)
       : handleChange(setFacultyData, e)
   }
 
@@ -72,7 +72,7 @@ export const useApplicationRequirments = () => {
   // DEPARTMENT
   const handleChangeDepartment = (e: React.ChangeEvent<HTMLInputElement>, index?: number) => {
     index !== undefined
-      ? handleArrayChange(setDepartmentData, e, index)
+      ? handleArrayOfObjectsChange(setDepartmentData, e, index)
       : handleChange(setDepartmentData, e)
   }
 
@@ -123,7 +123,7 @@ export const useApplicationRequirments = () => {
 
   // SSC REQUIREMENTS
   const handleChangeSSCRequirement = (e: React.ChangeEvent<HTMLSelectElement>, index: number) => {
-    handleArrayChange(setSCCRequirementsData, e, index)
+    handleArrayOfObjectsChange(setSCCRequirementsData, e, index)
   }
 
   const addSSCRequirement = () => {
@@ -139,7 +139,7 @@ export const useApplicationRequirments = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
-    handleArrayChange(setProgramSpecificRequirementsData, e, index)
+    handleArrayOfObjectsChange(setProgramSpecificRequirementsData, e, index)
   }
 
   return {

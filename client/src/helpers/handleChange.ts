@@ -9,7 +9,7 @@ export const handleChange = <T extends Record<string, any>>(
   }))
 }
 
-export const handleArrayChange = <T extends Record<string, any>>(
+export const handleArrayOfObjectsChangee = <T extends Record<string, any>>(
   setState: React.Dispatch<React.SetStateAction<T[]>>,
   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   index: number
@@ -18,6 +18,17 @@ export const handleArrayChange = <T extends Record<string, any>>(
 
   setState((prevState) =>
     prevState.map((item, i) => (i === index ? { ...item, [name]: value } : item))
+  )
+}
+export const handleArrayChange = (
+  setState: React.Dispatch<React.SetStateAction<string[]>>,
+  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  index: number
+) => {
+  const { value } = e.target
+
+  setState((prevState) =>
+    prevState.map((item, i) => (i === index ? value : item))
   )
 }
 

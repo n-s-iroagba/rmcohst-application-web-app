@@ -6,7 +6,7 @@ export const apiRoutes = {
     applicantSignup: '/auth/applicant/signup',
     forgotPassword: `/auth/forgot-password`,
     resetPassword: `/auth/reset-password`,
-    verifyEmail: `/auth/verify-email`,
+    verifyEmailCode: `/auth/verify-email-code`,
     resendVerificationEmail: `/auth/resend-verification-token`,
     me: `/auth/me`
   },

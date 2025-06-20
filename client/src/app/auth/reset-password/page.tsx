@@ -1,29 +1,27 @@
-'use client'
-
 import React from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import DynamicFormTextFields from '@/helpers/formFields'
 import ErrorAlert from '@/components/ErrorAlert'
 
 
-const LoginPage = () => {
+const ResetPasswordFormPage = () => {
   const {
     submitting,
-   login,
-    handleChangeLoginData,
-   loginData,
+   resetPasswordFormData,
+    handleChangeForgotPasswordData,
+   resetPassword,
     error: apiError,
     validationErrors
   } = useAuth()
 
   return (
-    <form onSubmit={login}>
-      <h2>Login</h2>
+    <form onSubmit={resetPassword}>
+      <h2>Enter Registration Email</h2>
 
    <DynamicFormTextFields
-        data={loginData}
+        data={resetPasswordFormData}
         errors={validationErrors}
-        onChange={handleChangeLoginData}
+        onChange={handleChangeForgotPasswordData}
       />
 
       {apiError && <ErrorAlert message={apiError} />}
@@ -33,4 +31,4 @@ const LoginPage = () => {
   )
 }
 
-export default LoginPage
+export default ResetPasswordFormPage

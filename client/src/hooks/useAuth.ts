@@ -1,5 +1,5 @@
 import { apiRoutes } from '@/constants/apiRoutes'
-import { handleArrayChange,  handleChange } from '@/helpers/handleChange'
+import { handleArrayChange, handleChange } from '@/helpers/handleChange'
 import { SignUpRole, UserRole } from '@/types/role.types'
 import { get, post } from '@/utils/apiClient'
 import { useRouter } from 'next/router'
@@ -24,7 +24,7 @@ export interface RegisterationFormData extends RegisterData {
 }
 
 interface LoginData {
-  email : string
+  email: string
   password: string
 }
 
@@ -42,7 +42,7 @@ type ResetPasswordFormData = {
 }
 
 type EmailVerificationCode = {
- code : string
+  code: string
 }
 
 class AuthError extends Error {
@@ -64,14 +64,17 @@ class ValidationError extends Error {
 type UseAuthReturn = {
   handleChangeSignupData: (e: React.ChangeEvent<HTMLInputElement>) => void
   handleChangeForgotPasswordData: (e: React.ChangeEvent<HTMLInputElement>) => void
-   handleChangeResetPasswordFormData: (e: React.ChangeEvent<HTMLInputElement>) => void
-    handleChangeEmailVerificationCodeData:  (e: React.ChangeEvent<HTMLInputElement>,index:number)=> void
-    handleResendEmailVerificationFormCode: ()=>void
-     handleChangeLoginData: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleChangeResetPasswordFormData: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleChangeEmailVerificationCodeData: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => void
+  handleResendEmailVerificationFormCode: () => void
+  handleChangeLoginData: (e: React.ChangeEvent<HTMLInputElement>) => void
   login: (e: React.FormEvent) => Promise<void>
   handleSubmitSignup: (e: React.FormEvent, role: SignUpRole) => Promise<void>
   forgotPassword: (e: React.FormEvent) => Promise<void>
-  verifyCode:  (e: React.FormEvent)=> Promise<void>
+  verifyCode: (e: React.FormEvent) => Promise<void>
   resetPassword: (e: React.FormEvent) => Promise<void>
   logout: () => Promise<void>
   signupData: RegisterationFormData
@@ -106,17 +109,18 @@ export const useAuth = (): UseAuthReturn => {
   })
 
   const [forgotPasswordData, setForgotPasswordData] = useState<ForgotPassword>({ email: '' })
-const [emailVerificationFormCode, setEmailVerificationCode] = useState<string[]>(
-  Array(6).fill('')
-)
-
+  const [emailVerificationFormCode, setEmailVerificationCode] = useState<string[]>(
+    Array(6).fill('')
+  )
 
   const [resetPasswordFormData, setResetPasswordFormData] = useState<ResetPasswordFormData>({
     password: '',
     confirmPassword: ''
   })
 
-  const [validationErrors, setValidationErrors] = useState<Partial<Record<AuthFormKeys, string>>>({})
+  const [validationErrors, setValidationErrors] = useState<Partial<Record<AuthFormKeys, string>>>(
+    {}
+  )
 
   const validate = (
     formData: Partial<
@@ -168,13 +172,16 @@ const [emailVerificationFormCode, setEmailVerificationCode] = useState<string[]>
   const handleChangeForgotPasswordData = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleChange(setForgotPasswordData, e)
   }
-    const handleChangeResetPasswordFormData = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeResetPasswordFormData = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleChange(setResetPasswordFormData, e)
   }
-    const handleChangeEmailVerificationCodeData = (e: React.ChangeEvent<HTMLInputElement>,index:number) => {
-      const {value} =e.target
-       if (!/^\d?$/.test(value)) return;
-    handleArrayChange(setEmailVerificationCode, e,index)
+  const handleChangeEmailVerificationCodeData = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const { value } = e.target
+    if (!/^\d?$/.test(value)) return
+    handleArrayChange(setEmailVerificationCode, e, index)
   }
   const redirectToDashboard = (role: UserRole) => {
     switch (role) {
@@ -233,14 +240,17 @@ const [emailVerificationFormCode, setEmailVerificationCode] = useState<string[]>
   }
 
   const forgotPassword = async (e: React.FormEvent) => {
-     e.preventDefault()
+    e.preventDefault()
     setSubmitting(true)
     setError(null)
 
     if (!validate(forgotPasswordData)) return
 
     try {
-      const token = await post<ForgotPassword,string>(apiRoutes.auth.forgotPassword, forgotPasswordData)
+      const token = await post<ForgotPassword, string>(
+        apiRoutes.auth.forgotPassword,
+        forgotPasswordData
+      )
       router.push(`/auth/reset-paswword/${token}`)
     } catch (error) {
       console.error('Forgot password error', error)
@@ -251,15 +261,16 @@ const [emailVerificationFormCode, setEmailVerificationCode] = useState<string[]>
   }
 
   const verifyCode = async (e: React.FormEvent) => {
-     e.preventDefault()
+    e.preventDefault()
     setSubmitting(true)
     setError(null)
 
-  const code = emailVerificationFormCode.join('')
+    const code = emailVerificationFormCode.join('')
     try {
-      const role = await post<EmailVerificationCode,UserRole>(apiRoutes.auth.verifyEmailCode,{code} )
+      const role = await post<EmailVerificationCode, UserRole>(apiRoutes.auth.verifyEmailCode, {
+        code
+      })
       redirectToDashboard(role)
-    
     } catch (error) {
       console.error('Verify code error', error)
       setError(error instanceof Error ? error.message : 'Verification failed')
@@ -268,20 +279,17 @@ const [emailVerificationFormCode, setEmailVerificationCode] = useState<string[]>
     }
   }
 
-
-
   const handleResendEmailVerificationFormCode = async () => {
-   try {
-    const newToken = await get<string>(apiRoutes.auth.resendVerificationEmail)
-    router.push(`/auth/verify-email/${newToken}`)
-   }catch(error){
-    console.error('Verify code error', error)
+    try {
+      const newToken = await get<string>(apiRoutes.auth.resendVerificationEmail)
+      router.push(`/auth/verify-email/${newToken}`)
+    } catch (error) {
+      console.error('Verify code error', error)
       setError(error instanceof Error ? error.message : 'Verification failed')
-   } finally {
+    } finally {
       setSubmitting(false)
     }
   }
-  
 
   const resetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -303,8 +311,6 @@ const [emailVerificationFormCode, setEmailVerificationCode] = useState<string[]>
     }
   }
 
-
-
   const logout = async () => {
     await get<null>(apiRoutes.auth.logout)
     router.push('/')
@@ -324,13 +330,13 @@ const [emailVerificationFormCode, setEmailVerificationCode] = useState<string[]>
     forgotPasswordData,
     emailVerificationFormCode,
     resetPasswordFormData,
-    handleResendEmailVerificationFormCode ,
+    handleResendEmailVerificationFormCode,
     validationErrors,
     loading,
     error,
     submitting,
     handleChangeForgotPasswordData,
-   handleChangeResetPasswordFormData,
+    handleChangeResetPasswordFormData,
     handleChangeEmailVerificationCodeData
   }
 }

@@ -3,7 +3,6 @@ import { useAuth } from '@/hooks/useAuth'
 import DynamicFormTextFields from '@/helpers/formFields'
 import ErrorAlert from '@/components/ErrorAlert'
 
-
 const ForgotPasswordFormPage = () => {
   const {
     submitting,
@@ -18,7 +17,7 @@ const ForgotPasswordFormPage = () => {
     <form onSubmit={forgotPassword}>
       <h2>Enter Registration Email</h2>
 
-   <DynamicFormTextFields
+      <DynamicFormTextFields
         data={forgotPasswordData}
         errors={validationErrors}
         onChange={handleChangeForgotPasswordData}
@@ -26,7 +25,9 @@ const ForgotPasswordFormPage = () => {
 
       {apiError && <ErrorAlert message={apiError} />}
 
-      <button disabled={submitting} type="submit">{submitting?'Submitting':'Submit'}</button>
+      <button disabled={submitting} type="submit">
+        {submitting ? 'Submitting' : 'Submit'}
+      </button>
     </form>
   )
 }

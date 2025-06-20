@@ -21,5 +21,11 @@ export const apiRoutes = {
     create: `/grades`,
     update: `/grades/:id`,
     delete: `/grades/:id`
+  },
+  biodata: {
+    update: (id: number): string => `/biodata/${id}`
+  },
+  application: {
+    myCurrentApplication: '/application/my-current-application'
   }
 }

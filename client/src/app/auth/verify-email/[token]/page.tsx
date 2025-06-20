@@ -1,27 +1,27 @@
-"use client";
+'use client'
 
-import { motion } from "framer-motion";
-import { CheckCircle, Loader2 } from "lucide-react"; // ✅ Lucide icons
-import useVerifyEmail from "@/hooks/useVerifyEmail";
-import { useAuth } from "@/hooks/useAuth";
-import ErrorAlert from "@/components/ErrorAlert";
+import { motion } from 'framer-motion'
+import { CheckCircle, Loader2 } from 'lucide-react' // ✅ Lucide icons
+import useVerifyEmail from '@/hooks/useVerifyEmail'
+import { useAuth } from '@/hooks/useAuth'
+import ErrorAlert from '@/components/ErrorAlert'
 
 const VerifyEmail = () => {
-  const { inputRefs, timeLeft, canResend } = useVerifyEmail();
+  const { inputRefs, timeLeft, canResend } = useVerifyEmail()
   const {
     emailVerificationFormCode,
     error,
     submitting,
     handleChangeEmailVerificationCodeData,
     verifyCode,
-    handleResendEmailVerificationFormCode,
-  } = useAuth();
+    handleResendEmailVerificationFormCode
+  } = useAuth()
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
-    if (e.key === "Backspace" && !emailVerificationFormCode[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
+    if (e.key === 'Backspace' && !emailVerificationFormCode[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus()
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
@@ -52,7 +52,7 @@ const VerifyEmail = () => {
               <input
                 key={index}
                 ref={(el) => {
-                  inputRefs.current[index] = el!;
+                  inputRefs.current[index] = el!
                 }}
                 type="text"
                 maxLength={1}
@@ -75,7 +75,7 @@ const VerifyEmail = () => {
                 Verifying...
               </>
             ) : (
-              "Confirm Verification"
+              'Confirm Verification'
             )}
           </button>
         </form>
@@ -84,16 +84,16 @@ const VerifyEmail = () => {
           <p className="text-blue-600">
             {canResend
               ? "Didn't receive the emailVerificationFormCode?"
-              : `Resend available in ${Math.floor(timeLeft / 60)}:${(
-                  timeLeft % 60
-                ).toString().padStart(2, "0")}`}
+              : `Resend available in ${Math.floor(timeLeft / 60)}:${(timeLeft % 60)
+                  .toString()
+                  .padStart(2, '0')}`}
           </p>
 
           <button
             onClick={handleResendEmailVerificationFormCode}
             disabled={!canResend}
             className={`text-blue-700 hover:text-blue-900 transition-colors ${
-              !canResend ? "opacity-50 cursor-not-allowed" : ""
+              !canResend ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
             Resend Verification emailVerificationFormCode
@@ -101,7 +101,7 @@ const VerifyEmail = () => {
         </div>
       </motion.div>
     </div>
-  );
-};
+  )
+}
 
-export default VerifyEmail;
+export default VerifyEmail

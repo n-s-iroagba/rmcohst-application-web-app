@@ -1,4 +1,4 @@
-export interface ApplicantSSCQualificationAttributes {
+export interface ApplicantSSCQualification {
   id: number
   applicationId: number
   numberOfSittings?: number | null

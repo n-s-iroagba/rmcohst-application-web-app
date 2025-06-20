@@ -24,5 +24,5 @@ export interface Grade {
 }
 export interface UpdateSSCSubjectMinimumGrade {
   subject: SSCSubject
-  Grade: Grade
+  grade: Grade
 }

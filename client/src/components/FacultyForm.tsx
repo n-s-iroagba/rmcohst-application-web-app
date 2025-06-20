@@ -1,10 +1,12 @@
 import React from 'react'
 import { useApplicationRequirments } from '@/hooks/useApplicationRequirements'
 import { FacultyCreationDto } from '@/types/faculty'
-import { renderFields } from '@/helpers/renderFields'
+import { DynamicFormTextFields } from '@/helpers/formFields'
+
 interface FacultyFormProps {
   isEdit: boolean
 }
+
 const FacultyForm: React.FC<FacultyFormProps> = ({ isEdit }) => {
   const { facultyData, handleChangeFaculty, addFaculty, removeFaculty } =
     useApplicationRequirments()
@@ -13,12 +15,19 @@ const FacultyForm: React.FC<FacultyFormProps> = ({ isEdit }) => {
     <form>
       {isEdit ? (
         <section className="mb-4 p-3 border rounded">
-          {renderFields(facultyData, handleChangeFaculty)}
+          <DynamicFormTextFields<FacultyCreationDto[]>
+            data={facultyData}
+            onChange={handleChangeFaculty}
+          />
         </section>
       ) : (
         facultyData.map((faculty: FacultyCreationDto, index) => (
           <section key={index} className="mb-4 p-3 border rounded">
-            {renderFields(faculty, handleChangeFaculty, index)}
+            <DynamicFormTextFields<FacultyCreationDto>
+              data={faculty}
+              onChange={handleChangeFaculty}
+              index={index}
+            />
             <div className="flex gap-2 mt-2">
               <button
                 type="button"

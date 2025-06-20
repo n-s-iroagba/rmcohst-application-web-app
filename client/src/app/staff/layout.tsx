@@ -25,7 +25,7 @@ function StaffOffcanvas({ children }: AdminOffcanvasProps) {
   const { user } = useAuthContext()
   const { logout } = useAuth()
 
-  let headOfAdmissionNav =
+  const headOfAdmissionNav =
     user?.role === 'HEAD_OF_ADMISSIONS'
       ? [
           {
@@ -64,13 +64,6 @@ function StaffOffcanvas({ children }: AdminOffcanvasProps) {
       >
         {isOpen ? <XMarkIcon className="h-5 w-5" /> : <Bars3Icon className="h-5 w-5" />}
       </button>
-
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 lg:hidden z-40"
-          onClick={() => handleNavClick()}
-        />
-      )}
 
       <aside
         className={`fixed lg:relative top-0 left-0 h-full z-50 transform transition-transform duration-300 ease-in-out

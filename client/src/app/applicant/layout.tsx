@@ -1,16 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import type React from 'react'
 import {
   X as XMarkIcon,
   Menu as Bars3Icon,
   UserCircle,
   GraduationCap,
-  Users as UserGroupIcon,
   UserMinus,
-  GraduationCapIcon,
-  CircleXIcon
+  GraduationCapIcon
 } from 'lucide-react'
 
 import Link from 'next/link'
@@ -35,13 +32,13 @@ function ApplicantOffcanvas({ children }: AdminOffcanvasProps) {
       >
         {isOpen ? <XMarkIcon className="h-5 w-5" /> : <Bars3Icon className="h-5 w-5" />}
       </button>
-
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 lg:hidden z-40"
-          onClick={() => handleNavClick()}
-        />
-      )}
+      <button
+        onClick={() => handleNavClick()}
+        className="lg:hidden fixed top-2 left-2 z-50 p-2 rounded-lg bg-blue-100 border border-blue-900 text-blue-900 shadow-lg hover:bg-blue-200 transition-all"
+        aria-label="Toggle navigation"
+      >
+        {isOpen ? <XMarkIcon className="h-5 w-5" /> : <Bars3Icon className="h-5 w-5" />}
+      </button>
 
       <aside
         className={`fixed lg:relative top-0 left-0 h-full z-50 transform transition-transform duration-300 ease-in-out

@@ -1,4 +1,4 @@
-export const handleChange = <T extends Record<string, any>>(
+export const handleChange = <T extends Record<string, string | number>>(
   setState: React.Dispatch<React.SetStateAction<T>>,
   e: React.ChangeEvent<HTMLInputElement>
 ) => {
@@ -9,7 +9,7 @@ export const handleChange = <T extends Record<string, any>>(
   }))
 }
 
-export const handleArrayOfObjectsChangee = <T extends Record<string, any>>(
+export const handleArrayOfObjectsChangee = <T extends Record<string, string | number>>(
   setState: React.Dispatch<React.SetStateAction<T[]>>,
   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   index: number
@@ -27,12 +27,10 @@ export const handleArrayChange = (
 ) => {
   const { value } = e.target
 
-  setState((prevState) =>
-    prevState.map((item, i) => (i === index ? value : item))
-  )
+  setState((prevState) => prevState.map((item, i) => (i === index ? value : item)))
 }
 
-export const handleChangeArrayInArray = <T extends Record<string, any>>(
+export const handleChangeArrayInArray = <T extends Record<string, string | number>>(
   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   setState: React.Dispatch<React.SetStateAction<T[]>>,
   parentIndex: number,
@@ -60,7 +58,10 @@ export const handleChangeArrayInArray = <T extends Record<string, any>>(
   )
 }
 
-export const handleAddToArrayOfArrays = <T extends Record<string, any>, K extends keyof T>(
+export const handleAddToArrayOfArrays = <
+  T extends Record<string, string | number>,
+  K extends keyof T
+>(
   parentIndex: number,
   setState: React.Dispatch<React.SetStateAction<T[]>>,
   key: K,
@@ -85,7 +86,10 @@ export const handleAddToArrayOfArrays = <T extends Record<string, any>, K extend
   )
 }
 
-export const handleRemoveFromArrayOfArrays = <T extends Record<string, any>, K extends keyof T>(
+export const handleRemoveFromArrayOfArrays = <
+  T extends Record<string, string | number>,
+  K extends keyof T
+>(
   parentIndex: number,
   childIndex: number,
   setState: React.Dispatch<React.SetStateAction<T[]>>,

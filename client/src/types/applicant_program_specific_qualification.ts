@@ -1,4 +1,4 @@
-export interface ApplicationProgramSpecificQualificationAttributes {
+export interface ApplicationProgramSpecificQualification {
   id: number
 
   applicationId: number

@@ -1,9 +1,8 @@
+/* eslint-disable react/prop-types */
+
 import { apiRoutes } from '@/constants/apiRoutes'
-import {
-  renderDoubleSelectFields,
-  renderDoubleSelectFieldsForUpdate,
-  renderFields
-} from '@/helpers/renderFields'
+import { RenderDoubleSelectFields, RenderDoubleSelectFieldsForUpdate } from '@/helpers/formFields'
+
 import { useGetList } from '@/hooks/useGet'
 import { SSCSubject } from '@/types/ssc_subject'
 import {
@@ -41,41 +40,45 @@ const SscQualificationForm: React.FC<SscQualificationFormProps> = ({
       Array.isArray(sscQualificationData) &&
       isUpdateSSCSubjectMinimumGrade(sscQualificationData) ? (
         <section className="mb-4 p-3 border rounded">
-          {renderDoubleSelectFieldsForUpdate<SSCSubject, Grade, UpdateSSCSubjectMinimumGrade>({
-            valueData: sscQualificationData,
-            firstSelectionData: subjects || [],
-            secondSelectionData: grades || [],
-            onChange: handleChangeSscQualification as (
-              e: React.ChangeEvent<HTMLSelectElement>,
-              index: number
-            ) => void,
-            index: programIndex,
-            firstSelectionKey: 'name',
-            secondSelectionKey: 'grade',
-            firstSelectionLabel: 'Subject',
-            secondSelectionLabel: 'Grade',
-            firstNestedKey: 'subject',
-            secondNestedKey: 'Grade'
-          })}
+          <RenderDoubleSelectFieldsForUpdate
+            valueData={sscQualificationData}
+            firstSelectionData={subjects || []}
+            secondSelectionData={grades || []}
+            onChange={
+              handleChangeSscQualification as (
+                e: React.ChangeEvent<HTMLSelectElement>,
+                index: number
+              ) => void
+            }
+            index={programIndex}
+            firstSelectionKey="name"
+            secondSelectionKey="grade"
+            firstSelectionLabel="Subject"
+            secondSelectionLabel="Grade"
+            firstNestedKey="subject"
+            secondNestedKey="Grade"
+          />
         </section>
       ) : (
         sscQualificationData.map((sscQualification, index) => (
           <section key={index} className="mb-4 p-3 border rounded">
-            {renderDoubleSelectFields<SSCSubject, Grade>({
-              onChange: handleChangeSscQualification as (
-                e: React.ChangeEvent<HTMLSelectElement>,
-                parentIndex: number,
-                childIndex: number
-              ) => void,
-              firstSelectionData: subjects || [],
-              secondSelectionData: grades || [],
-              parentIndex: programIndex,
-              childIndex: index,
-              firstSelectionKey: 'name',
-              secondSelectionKey: 'grade',
-              firstSelectionLabel: 'Subject',
-              secondSelectionLabel: 'Grade'
-            })}
+            <RenderDoubleSelectFields
+              onChange={
+                handleChangeSscQualification as (
+                  e: React.ChangeEvent<HTMLSelectElement>,
+                  parentIndex: number,
+                  childIndex: number
+                ) => void
+              }
+              firstSelectionData={subjects || []}
+              secondSelectionData={grades || []}
+              parentIndex={programIndex}
+              childIndex={index}
+              firstSelectionKey="name"
+              secondSelectionKey="grade"
+              firstSelectionLabel="Subject"
+              secondSelectionLabel="Grade"
+            />
             <div className="flex gap-2 mt-2">
               <button
                 type="button"

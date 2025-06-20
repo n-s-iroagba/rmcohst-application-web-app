@@ -5,13 +5,12 @@ import { useAuth } from '@/hooks/useAuth'
 import DynamicFormTextFields from '@/helpers/formFields'
 import ErrorAlert from '@/components/ErrorAlert'
 
-
 const LoginPage = () => {
   const {
     submitting,
-   login,
+    login,
     handleChangeLoginData,
-   loginData,
+    loginData,
     error: apiError,
     validationErrors
   } = useAuth()
@@ -20,7 +19,7 @@ const LoginPage = () => {
     <form onSubmit={login}>
       <h2>Login</h2>
 
-   <DynamicFormTextFields
+      <DynamicFormTextFields
         data={loginData}
         errors={validationErrors}
         onChange={handleChangeLoginData}
@@ -28,7 +27,9 @@ const LoginPage = () => {
 
       {apiError && <ErrorAlert message={apiError} />}
 
-      <button disabled={submitting} type="submit">{submitting?'Submitting':'Submit'}</button>
+      <button disabled={submitting} type="submit">
+        {submitting ? 'Submitting' : 'Submit'}
+      </button>
     </form>
   )
 }

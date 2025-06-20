@@ -22,7 +22,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ role, formLabel }) => {
   return (
     <form onSubmit={(e) => handleSubmitSignup(e, role)}>
       <h2>{formLabel}</h2>
-   <DynamicFormTextFields
+      <DynamicFormTextFields
         data={signupData}
         errors={validationErrors}
         onChange={handleChangeSignupData}
@@ -30,7 +30,9 @@ const SignupForm: React.FC<SignupFormProps> = ({ role, formLabel }) => {
 
       {apiError && <ErrorAlert message={apiError} />}
 
-      <button disabled={submitting} type="submit">{submitting?'Submitting':'Submit'}</button>
+      <button disabled={submitting} type="submit">
+        {submitting ? 'Submitting' : 'Submit'}
+      </button>
     </form>
   )
 }

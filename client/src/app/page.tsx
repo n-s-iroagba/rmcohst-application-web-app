@@ -17,7 +17,7 @@ const sections = [
   },
   {
     title: 'Pre-Degree',
-    bgImage: '/images/predegree.jpg', // Add this image to `public/images/`
+    bgImage: '', // Add this image to `public/images/`
     links: ['Basic Studies', 'Pre-degree Certificate', 'Other Relevant Links']
   }
 ]
@@ -48,42 +48,42 @@ const facilities = [
   {
     id: 1,
     title: 'Main Library',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=300&fit=crop',
+    image: '',
     icon: BookOpen,
     description: 'State-of-the-art research facility'
   },
   {
     id: 2,
     title: 'Science Laboratory',
-    image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500&h=300&fit=crop',
+    image: '',
     icon: Beaker,
     description: 'Advanced scientific equipment'
   },
   {
     id: 3,
     title: 'Student Center',
-    image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9d1?w=500&h=300&fit=crop',
+    image: '',
     icon: Users,
     description: 'Hub for student activities'
   },
   {
     id: 4,
     title: 'Sports Complex',
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=300&fit=crop',
+    image: '',
     icon: Dumbbell,
     description: 'Modern fitness and sports facilities'
   },
   {
     id: 5,
     title: 'Lecture Halls',
-    image: 'https://images.unsplash.com/photo-1562774053-701939374585?w=500&h=300&fit=crop',
+    image: '',
     icon: MapPin,
     description: 'Modern learning environments'
   },
   {
     id: 6,
     title: 'Cafeteria',
-    image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&h=300&fit=crop',
+    image: '',
     icon: Coffee,
     description: 'Dining and social space'
   }
@@ -120,13 +120,13 @@ const Page = () => {
       <section className="flex flex-col md:flex-row items-center justify-center px-6 md:px-16 py-10 gap-10">
         {/* Left: Image */}
         <div className="w-full md:w-1/2 relative">
-          <Image
+          {/* <Image
             src="/images/uniport.jpg" // Make sure the image is in the public/images folder
             alt="University of Port Harcourt"
             width={600}
             height={400}
             className="rounded-md shadow-lg w-full h-auto object-cover"
-          />
+          /> */}
           <div className="absolute bottom-4 left-4 bg-black bg-opacity-60 text-white px-4 py-1 rounded-md text-xl font-semibold">
             Gist
           </div>
@@ -305,11 +305,13 @@ const Page = () => {
                     >
                       {/* Image Container */}
                       <div className="relative h-64 overflow-hidden">
-                        <Image
+                        {/* <Image
                           src={facility.image}
                           alt={facility.title}
+                          width={100}
+                          height={100}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
+                        /> */}
 
                         {/* Gradient Overlay */}
                         <div

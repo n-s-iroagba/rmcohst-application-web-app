@@ -1,8 +1,9 @@
+'use client'
 import { apiRoutes } from '@/constants/apiRoutes'
 import { handleArrayChange, handleChange } from '@/helpers/handleChange'
 import { SignUpRole, UserRole } from '@/types/role.types'
 import { get, post } from '@/utils/apiClient'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 type AuthFormKeys =

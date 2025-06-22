@@ -8,7 +8,7 @@ import { useState } from 'react'
 
 type AuthFormKeys =
   | keyof RegisterationFormData
-  | keyof LoginData
+  | keyof LoginData 
   | keyof ForgotPassword
   | keyof VerifyEmailCode
   | keyof ResetPasswordFormData

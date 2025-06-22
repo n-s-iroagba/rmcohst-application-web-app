@@ -1,13 +1,13 @@
-import { Sequelize } from "sequelize"
-import logger from "../utils/logger/logger" // Assuming logger is default export from its module
-import appConfig from "./index" // Assuming config is default export
+import { Sequelize } from 'sequelize'
+import logger from '../utils/logger/logger' // Assuming logger is default export from its module
+import appConfig from './index' // Assuming config is default export
 
 const dbConfig = appConfig.database
 
 const sequelize = new Sequelize('rmcohst', dbConfig.username, '97chocho', {
   host: dbConfig.host,
-  port: Number.parseInt(dbConfig.port || "3306"),
-  dialect:  "mysql",
+  port: Number.parseInt(dbConfig.port || '3306'),
+  dialect: 'mysql',
   logging: false, // Use logger.info
   pool: {
     max: dbConfig.pool?.max || 5,
@@ -20,9 +20,9 @@ const sequelize = new Sequelize('rmcohst', dbConfig.username, '97chocho', {
 export const connectDB = async () => {
   try {
     await sequelize.authenticate()
-    logger.info("Database connection has been established successfully.")
+    logger.info('Database connection has been established successfully.')
   } catch (error) {
-    logger.error("Unable to connect to the database:", error)
+    logger.error('Unable to connect to the database:', error)
     process.exit(1)
   }
 }

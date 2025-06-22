@@ -1,22 +1,22 @@
-import request from 'supertest';
-import app from '../index';
-import { createTestUser, cleanupTestUser } from '../test/helpers';
+import request from 'supertest'
+import app from '../index'
+import { createTestUser, cleanupTestUser } from '../test/helpers'
 
 describe('Integration Tests', () => {
-  let authToken: string;
-  let applicationId: string;
+  let authToken: string
+  let applicationId: string
 
   beforeAll(async () => {
-    const user = await createTestUser();
+    const user = await createTestUser()
     const loginResponse = await request(app)
       .post('/api/auth/login')
-      .send({ email: user.email, password: 'testPassword123' });
-    authToken = loginResponse.body.token;
-  });
+      .send({ email: user.email, password: 'testPassword123' })
+    authToken = loginResponse.body.token
+  })
 
   afterAll(async () => {
-    await cleanupTestUser();
-  });
+    await cleanupTestUser()
+  })
 
   it('should complete full application workflow', async () => {
     // Create application
@@ -26,20 +26,20 @@ describe('Integration Tests', () => {
       .send({
         firstName: 'John',
         lastName: 'Doe',
-        program: 'Medical Assistant'
-      });
+        program: 'Medical Assistant',
+      })
 
-    applicationId = applicationResponse.body.applicationId;
-    expect(applicationId).toBeDefined();
+    applicationId = applicationResponse.body.applicationId
+    expect(applicationId).toBeDefined()
 
     // Upload documents
     const documentResponse = await request(app)
       .post(`/api/applications/${applicationId}/documents`)
       .set('Authorization', `Bearer ${authToken}`)
       .attach('waec', 'test/fixtures/test-waec.pdf')
-      .attach('birthCertificate', 'test/fixtures/test-birth-cert.pdf');
+      .attach('birthCertificate', 'test/fixtures/test-birth-cert.pdf')
 
-    expect(documentResponse.status).toBe(200);
+    expect(documentResponse.status).toBe(200)
 
     // Test acceptance fee payment and upgrade
     const paymentResponse = await request(app)
@@ -48,19 +48,19 @@ describe('Integration Tests', () => {
       .send({
         amount: 50000,
         paymentMethod: 'card',
-        transactionId: 'test_transaction'
-      });
+        transactionId: 'test_transaction',
+      })
 
-    expect(paymentResponse.status).toBe(200);
-    expect(paymentResponse.body.status).toBe('paid');
+    expect(paymentResponse.status).toBe(200)
+    expect(paymentResponse.body.status).toBe('paid')
 
     // Test student upgrade
     const upgradeResponse = await request(app)
       .post(`/api/applications/${applicationId}/upgrade`)
-      .set('Authorization', `Bearer ${authToken}`);
+      .set('Authorization', `Bearer ${authToken}`)
 
-    expect(upgradeResponse.status).toBe(200);
-    expect(upgradeResponse.body.studentId).toBeDefined();
-    expect(upgradeResponse.body.status).toBe('enrolled');
-  });
-});
+    expect(upgradeResponse.status).toBe(200)
+    expect(upgradeResponse.body.studentId).toBeDefined()
+    expect(upgradeResponse.body.status).toBe('enrolled')
+  })
+})

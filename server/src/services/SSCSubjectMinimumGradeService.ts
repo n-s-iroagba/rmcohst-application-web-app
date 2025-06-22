@@ -1,41 +1,32 @@
 // services/SSCSubjectMinimumGradeService.ts
-import { Transaction,Op } from "sequelize";
-import sequelize from "../config/database";
-import SSCSubjectMinimumGrade from "../models/SSCSubjectMinimumGrade";
-import ProgramSSCRequirement from "../models/ProgramSSCRequirement";
+import { Transaction, Op } from 'sequelize'
+import sequelize from '../config/database'
+import SSCSubjectMinimumGrade from '../models/SSCSubjectMinimumGrade'
+import ProgramSSCRequirement from '../models/ProgramSSCRequirement'
 
-import SSCSubject from "../models/SSCSubject";
-import Grade from "../models/Grade";
-
+import SSCSubject from '../models/SSCSubject'
+import Grade from '../models/Grade'
 
 interface BulkCreateSSCSubjectMinimumGradeData {
-  subjectId: number;
-  gradeId: number;
-  alternativeSubjectId?: number;
+  subjectId: number
+  gradeId: number
+  alternativeSubjectId?: number
 }
 
 interface BulkUpdateSSCSubjectMinimumGradeData {
-  id: number;
-  subjectId?: number;
-  gradeId?: number;
-  alternativeSubjectId?: number;
+  id: number
+  subjectId?: number
+  gradeId?: number
+  alternativeSubjectId?: number
 }
 
 class SSCSubjectMinimumGradeService {
-  
-
-
-
-
-
   // Find by program qualification
   async findByProgramQualification(
-    programQualificationId: number,
-
+    programQualificationId: number
   ): Promise<SSCSubjectMinimumGrade[]> {
-    const whereClause: any = {};
-    
-   
+    const whereClause: any = {}
+
     return await SSCSubjectMinimumGrade.findAll({
       include: [
         {
@@ -53,7 +44,7 @@ class SSCSubjectMinimumGradeService {
         },
       ],
       where: whereClause,
-    });
+    })
   }
 
   // Bulk upsert (create or update)
@@ -61,11 +52,11 @@ class SSCSubjectMinimumGradeService {
     data: BulkCreateSSCSubjectMinimumGradeData[],
     transaction?: Transaction
   ): Promise<SSCSubjectMinimumGrade[]> {
-    const t = transaction || await sequelize.transaction();
-    
+    const t = transaction || (await sequelize.transaction())
+
     try {
-      const results: SSCSubjectMinimumGrade[] = [];
-      
+      const results: SSCSubjectMinimumGrade[] = []
+
       for (const item of data) {
         const [record, created] = await SSCSubjectMinimumGrade.findOrCreate({
           where: {
@@ -74,65 +65,55 @@ class SSCSubjectMinimumGradeService {
           },
           defaults: item,
           transaction: t,
-        });
-        
+        })
+
         if (!created && item.alternativeSubjectId !== undefined) {
           // Update alternative subject if record exists
           await record.update(
             { alternativeSubjectId: item.alternativeSubjectId },
             { transaction: t }
-          );
+          )
         }
-        
-        results.push(record);
+
+        results.push(record)
       }
-      
-      if (!transaction) await t.commit();
-      return results;
+
+      if (!transaction) await t.commit()
+      return results
     } catch (error) {
-      if (!transaction) await t.rollback();
-      throw error;
+      if (!transaction) await t.rollback()
+      throw error
     }
   }
 
   // Get statistics
   async getStatistics(): Promise<{
-    totalSubjectMinimumGrades: number;
-    subjectDistribution: { subjectId: number; count: number }[];
-    gradeDistribution: { gradeId: number; count: number }[];
-    alternativeSubjectsCount: number;
+    totalSubjectMinimumGrades: number
+    subjectDistribution: { subjectId: number; count: number }[]
+    gradeDistribution: { gradeId: number; count: number }[]
+    alternativeSubjectsCount: number
   }> {
-    const total = await SSCSubjectMinimumGrade.count();
-    
-    const subjectDistribution = await SSCSubjectMinimumGrade.findAll({
-      attributes: [
-        'subjectId',
-        [sequelize.fn('COUNT', sequelize.col('id')), 'count']
-      ],
+    const total = await SSCSubjectMinimumGrade.count()
+
+    const subjectDistribution = (await SSCSubjectMinimumGrade.findAll({
+      attributes: ['subjectId', [sequelize.fn('COUNT', sequelize.col('id')), 'count']],
       group: ['subjectId'],
       raw: true,
-    }) as any[];
-    
-    const gradeDistribution = await SSCSubjectMinimumGrade.findAll({
-      attributes: [
-        'gradeId',
-        [sequelize.fn('COUNT', sequelize.col('id')), 'count']
-      ],
+    })) as any[]
+
+    const gradeDistribution = (await SSCSubjectMinimumGrade.findAll({
+      attributes: ['gradeId', [sequelize.fn('COUNT', sequelize.col('id')), 'count']],
       group: ['gradeId'],
       raw: true,
-    }) as any[];
-    
+    })) as any[]
+
     const alternativeSubjectsCount = await SSCSubjectMinimumGrade.count({
       where: {
         alternativeSubjectId: {
           [Op.ne]: undefined,
         },
-
-
-
-        
       },
-    });
+    })
 
     return {
       totalSubjectMinimumGrades: total,
@@ -145,8 +126,8 @@ class SSCSubjectMinimumGradeService {
         count: parseInt(item.count),
       })),
       alternativeSubjectsCount,
-    };
+    }
   }
 }
 
-export default new SSCSubjectMinimumGradeService();
+export default new SSCSubjectMinimumGradeService()

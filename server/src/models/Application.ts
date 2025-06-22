@@ -1,27 +1,27 @@
-import { Model, DataTypes, type Sequelize, type Optional, type ForeignKey } from "sequelize"
-import Program from "./Program"
-import ApplicantSSCQualification from "./ApplicantSSCQualification"
-import User from "./User"
-import Biodata from "./Biodata"
-import ApplicantProgramSpecificQualification from "./ApplicantProgramSpecificQualification"
+import { Model, DataTypes, type Sequelize, type Optional, type ForeignKey } from 'sequelize'
+import Program from './Program'
+import ApplicantSSCQualification from './ApplicantSSCQualification'
+import User from './User'
+import Biodata from './Biodata'
+import ApplicantProgramSpecificQualification from './ApplicantProgramSpecificQualification'
 
 // import type { ApplicantDocument } from "./ApplicantDocument" // Already imported if ApplicantDocumentFactory is used
 
 export enum ApplicationStatus {
-  DRAFT = "DRAFT",
-  SUBMITTED = "SUBMITTED",
-  UNDER_REVIEW = "UNDER_REVIEW",
-  PENDING_APPROVAL = "PENDING_APPROVAL",
-  APPROVED = "APPROVED",
-  REJECTED = "REJECTED",
-  ADMITTED = "ADMITTED",
+  DRAFT = 'DRAFT',
+  SUBMITTED = 'SUBMITTED',
+  UNDER_REVIEW = 'UNDER_REVIEW',
+  PENDING_APPROVAL = 'PENDING_APPROVAL',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  ADMITTED = 'ADMITTED',
 }
 
 export interface ApplicationAttributes {
   id: number
-  applicantUserId: ForeignKey<User["id"]>
-  programId?: ForeignKey<Program["id"]> | null
-  biodataId?: ForeignKey<Biodata["id"]> | null
+  applicantUserId: ForeignKey<User['id']>
+  programId?: ForeignKey<Program['id']> | null
+  biodataId?: ForeignKey<Biodata['id']> | null
   sessionId: string // Assuming academic session ID is string (e.g. UUID)
   assignedOfficerId?: string | null // Assuming officer ID is string
   status: ApplicationStatus
@@ -34,11 +34,11 @@ export interface ApplicationAttributes {
   updatedAt?: Date
 }
 
-export interface ApplicationCreationAttributes{
-  applicantUserId:string
-  sessionId:string
-  programId:string
-  status:string
+export interface ApplicationCreationAttributes {
+  applicantUserId: string
+  sessionId: string
+  programId: string
+  status: string
 }
 
 export class Application // Named export
@@ -46,8 +46,8 @@ export class Application // Named export
   implements ApplicationAttributes
 {
   public id!: number
-  public applicantUserId!: ForeignKey<User["id"]>
-  public programId?: ForeignKey<Program["id"]> 
+  public applicantUserId!: ForeignKey<User['id']>
+  public programId?: ForeignKey<Program['id']>
   public sessionId!: string
   public assignedOfficerId?: string | null
   public status!: ApplicationStatus
@@ -70,15 +70,21 @@ export class Application // Named export
   public readonly applicantDocuments?: any[] // Use ApplicantDocument type here
 
   public static associate(models: any) {
-    Application.belongsTo(models.User, { foreignKey: "applicantUserId", as: "applicant" })
-    Application.belongsTo(models.Program, { foreignKey: "programId", as: "program" })
-    Application.hasOne(models.Biodata, { foreignKey: "applicationId", as: "biodata" }) // Assuming Biodata has applicationId
-    Application.hasOne(models.ApplicantSSCQualification, { foreignKey: "applicationId", as: "sscQualifications" })
-    Application.hasOne(models.ApplicantProgramSpecificQualification, {
-      foreignKey: "applicationId",
-      as: "programSpecificQualifications",
+    Application.belongsTo(models.User, { foreignKey: 'applicantUserId', as: 'applicant' })
+    Application.belongsTo(models.Program, { foreignKey: 'programId', as: 'program' })
+    Application.hasOne(models.Biodata, { foreignKey: 'applicationId', as: 'biodata' }) // Assuming Biodata has applicationId
+    Application.hasOne(models.ApplicantSSCQualification, {
+      foreignKey: 'applicationId',
+      as: 'sscQualifications',
     })
-    Application.hasMany(models.ApplicantDocument, { foreignKey: "applicationId", as: "applicantDocuments" })
+    Application.hasOne(models.ApplicantProgramSpecificQualification, {
+      foreignKey: 'applicationId',
+      as: 'programSpecificQualifications',
+    })
+    Application.hasMany(models.ApplicantDocument, {
+      foreignKey: 'applicationId',
+      as: 'applicantDocuments',
+    })
   }
 }
 
@@ -86,9 +92,20 @@ export const ApplicationFactory = (sequelize: Sequelize): typeof Application => 
   Application.init(
     {
       id: { type: DataTypes.INTEGER, defaultValue: DataTypes.UUIDV4, primaryKey: true },
-      applicantUserId: { type: DataTypes.UUID, allowNull: false, references: { model: "Users", key: "id" } },
-      programId: { type: DataTypes.UUID, allowNull: true, references: { model: "Programs", key: "id" } },
-      biodataId: { type: DataTypes.UUID, allowNull: true /*, references: { model: 'Biodata', key: 'id' } */ },
+      applicantUserId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'Users', key: 'id' },
+      },
+      programId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: { model: 'Programs', key: 'id' },
+      },
+      biodataId: {
+        type: DataTypes.UUID,
+        allowNull: true /*, references: { model: 'Biodata', key: 'id' } */,
+      },
       sessionId: {
         type: DataTypes.UUID,
         allowNull: false /*, references: { model: 'AcademicSessions', key: 'id' } */,
@@ -108,7 +125,7 @@ export const ApplicationFactory = (sequelize: Sequelize): typeof Application => 
       hoaComments: { type: DataTypes.TEXT, allowNull: true },
       submittedAt: { type: DataTypes.DATE, allowNull: true },
     },
-    { sequelize, tableName: "Applications", modelName: "Application", timestamps: true },
+    { sequelize, tableName: 'Applications', modelName: 'Application', timestamps: true }
   )
   return Application
 }

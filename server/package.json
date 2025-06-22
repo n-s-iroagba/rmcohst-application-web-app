@@ -5,9 +5,14 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "test": "jest"
+      "build": "tsc",
+      "start": "NODE_ENV=production node dist/index.js",
+   "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+      "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",
+      "format:check": "prettier --check \"src/**/*.{ts,js,json,md}\"",
+      "type-check": "tsc --noEmit",
+      "clean": "rm -rf dist"
   },
   "repository": {
     "type": "git",
@@ -58,7 +63,10 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/morgan": "^1.9.9",
     "@types/nodemailer": "^6.4.17",
+    "eslint-plugin-prettier": "^5.5.0",
     "@types/nodemailer-express-handlebars": "^4.0.5",
+       "eslint-config-prettier": "^10.1.5",
     "@types/pdfkit": "^0.13.9"
   }
 }
+  

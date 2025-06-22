@@ -1,130 +1,327 @@
-import type { Request, Response } from "express"
-import jwt from "jsonwebtoken"
-import bcrypt from "bcryptjs"
-import User from "../models/User"
-import { config } from "../config"
-import type { AuthRequest } from "../middleware/auth"
-import logger from "../utils/logger/logger"
-import { AppError } from "../utils/error/AppError"
+import { Request, Response, NextFunction, CookieOptions } from 'express'
+import { ApiResponseUtil } from '../utils/response'
+import { logger } from '../utils/logger'
+import { AuthService } from '../services/AuthService'
+import { AuthenticatedRequest } from '../middleware/auth'
 
-class AuthController {
-  static async register(req: Request, res: Response) {
-    try {
-      const { email, password, firstName, lastName } = req.body
+export class AuthController {
+  private authService: AuthService
 
-      // Check if user already exists
-      const existingUser = await User.findOne({ where: { email } })
-      if (existingUser) {
-        res.status(400).json({ error: { message: "User already exists" } })
-      }
+  constructor() {
+    this.authService = new AuthService()
+  }
 
-      // Create user
-      const user = await User.create({
-        email,
-        password,
-        firstName,
-        lastName,
-        role: "APPLICANT",
-        emailVerified: true, // For now, auto-verify
-      })
+  private getCookieOptions(
+    tokenType: 'login' | 'emailVerification' | 'passwordReset'
+  ): CookieOptions {
+    const isProduction = process.env.NODE_ENV === 'production'
 
-      // Generate token
-      const token = jwt.sign({ email: user.email }, config.jwtSecret, { expiresIn: "7d" })
+    const baseOptions: CookieOptions = {
+      httpOnly: true,
+      secure: isProduction, // HTTPS only in production
+      sameSite: isProduction ? 'none' : 'lax', // Cross-domain in production, same-domain in development
+      path: '/',
+    }
 
-      logger.info("User registered successfully", { userId: user.id, email })
-
-      res.status(201).json({
-        data: {
-          user: {
-            id: user.id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            role: user.role,
-            emailVerified: user.emailVerified,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-          },
-          token,
-        },
-      })
-    } catch (error) {
-      logger.error("Registration error:", error)
-      res.status(500).json({ error: { message: "Registration failed" } })
+    // Set different expiration times based on token type
+    switch (tokenType) {
+      case 'login':
+        return {
+          ...baseOptions,
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        }
+      case 'emailVerification':
+        return {
+          ...baseOptions,
+          maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        }
+      case 'passwordReset':
+        return {
+          ...baseOptions,
+          maxAge: 10 * 60 * 1000, // 10 minutes
+        }
+      default:
+        return baseOptions
     }
   }
 
-  static async login(req: Request, res: Response) {
+  private clearAuthCookies(res: Response): void {
+    const cookieOptions = this.getCookieOptions('login')
+    res.clearCookie('loginToken', cookieOptions)
+    res.clearCookie('emailVerificationToken', cookieOptions)
+    res.clearCookie('passwordResetToken', cookieOptions)
+  }
+
+  register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { email, password } = req.body
+      logger.info('Register endpoint called', { email: req.body.email })
 
-      // Find user
-      const user = await User.findOne({ where: { email } })
-      if (!user) {
-         throw new AppError('user not found',404)
+      const result = await this.authService.register(req.body)
+
+      // Set email verification token as cookie
+      if (result.emailVerificationToken) {
+        res.cookie(
+          'emailVerificationToken',
+          result.emailVerificationToken,
+          this.getCookieOptions('emailVerification')
+        )
       }
 
-      // Check password
-      const isValidPassword = await bcrypt.compare(password, user.password)
-      if (!isValidPassword) {
-         res.status(401).json({ error: { message: "Invalid credentials" } })
+      const responseData = {
+        user: result.user,
+        requiresVerification: result.requiresVerification,
       }
 
-      // Generate token
-      const token = jwt.sign({ email: user.email }, config.jwtSecret, { expiresIn: "7d" })
-
-      logger.info("User logged in successfully", { userId: user.id, email })
-
-      res.json({
-        data: {
-          user: {
-            id: user.id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            role: user.role,
-            emailVerified: user.emailVerified,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-          },
-          token,
-        },
-      })
+      res
+        .status(201)
+        .json(
+          ApiResponseUtil.success(
+            responseData,
+            'User registered successfully. Please check your email to verify your account.',
+            201
+          )
+        )
     } catch (error) {
-      logger.error("Login error:", error)
-      res.status(500).json({ error: { message: "Login failed" } })
+      logger.error('Registration error', { error: error, email: req.body.email })
+      next(error)
     }
   }
 
-  static async validateToken(req: AuthRequest, res: Response) {
+  login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const user = await User.findByPk(req.user!.id, {
-        attributes: ["id", "email", "firstName", "lastName", "role", "emailVerified", "createdAt", "updatedAt"],
-      })
+      logger.info('Login endpoint called', { email: req.body.email })
 
-      if (!user) {
-         res.status(401).json({ error: { message: "User not found" } })
+      const result = await this.authService.login(req.body)
+
+      // Clear any existing auth cookies first
+      this.clearAuthCookies(res)
+
+      if (result.requiresVerification) {
+        // User needs email verification
+        if (result.emailVerificationToken) {
+          res.cookie(
+            'emailVerificationToken',
+            result.emailVerificationToken,
+            this.getCookieOptions('emailVerification')
+          )
+        }
+
+        const responseData = {
+          user: result.user,
+          requiresVerification: true,
+        }
+
+        res
+          .status(200)
+          .json(
+            ApiResponseUtil.success(
+              responseData,
+              'Please verify your email address to complete login. A verification code has been sent to your email.'
+            )
+          )
+      } else {
+        // User is verified, set login token
+        if (result.loginToken) {
+          res.cookie('loginToken', result.loginToken, this.getCookieOptions('login'))
+        }
+
+        const responseData = {
+          user: result.user,
+          requiresVerification: false,
+        }
+
+        res.status(200).json(ApiResponseUtil.success(responseData, 'Login successful'))
       }
-
-      res.json({
-        data: user,
-      })
     } catch (error) {
-      logger.error("Token validation error:", error)
-      res.status(401).json({ error: { message: "Token validation failed" } })
+      logger.error('Login error', { error: error, email: req.body.email })
+      next(error)
     }
   }
 
-  static async logout(req: AuthRequest, res: Response) {
+  forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      // In a real app, you might want to blacklist the token
-      logger.info("User logged out", { userId: req.user!.id })
-      res.json({ message: "Logged out successfully" })
+      logger.info('Forgot password endpoint called', { email: req.body.email })
+
+      const result = await this.authService.forgotPassword(req.body.email)
+
+      // Set password reset token as cookie
+      if (result.passwordResetToken) {
+        res.cookie(
+          'passwordResetToken',
+          result.passwordResetToken,
+          this.getCookieOptions('passwordReset')
+        )
+      }
+
+      res
+        .status(200)
+        .json(
+          ApiResponseUtil.success(
+            null,
+            'If an account with that email exists, you will receive a password reset link.'
+          )
+        )
     } catch (error) {
-      logger.error("Logout error:", error)
-      res.status(500).json({ error: { message: "Logout failed" } })
+      logger.error('Forgot password error', { error: error, email: req.body.email })
+      next(error)
+    }
+  }
+
+  resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { token } = req.params
+      logger.info('Reset password endpoint called', { token: token.substring(0, 10) + '...' })
+
+      const result = await this.authService.resetPassword(token, req.body)
+
+      // Clear password reset cookie
+      res.clearCookie('passwordResetToken', this.getCookieOptions('passwordReset'))
+
+      if (result.requiresVerification) {
+        // User needs email verification after password reset
+        if (result.emailVerificationToken) {
+          res.cookie(
+            'emailVerificationToken',
+            result.emailVerificationToken,
+            this.getCookieOptions('emailVerification')
+          )
+        }
+
+        const responseData = {
+          user: result.user,
+          requiresVerification: true,
+        }
+
+        res
+          .status(200)
+          .json(
+            ApiResponseUtil.success(
+              responseData,
+              'Password reset successful. Please verify your email address to complete the process.'
+            )
+          )
+      } else {
+        // User is verified, set login token
+        if (result.loginToken) {
+          res.cookie('loginToken', result.loginToken, this.getCookieOptions('login'))
+        }
+
+        const responseData = {
+          user: result.user,
+          requiresVerification: false,
+        }
+
+        res
+          .status(200)
+          .json(
+            ApiResponseUtil.success(
+              responseData,
+              'Password reset successful. You are now logged in.'
+            )
+          )
+      }
+    } catch (error) {
+      logger.error('Reset password error', {
+        error: error,
+        token: req.params.token?.substring(0, 10) + '...',
+      })
+      next(error)
+    }
+  }
+
+  verifyEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      logger.info('Email verification endpoint called', {
+        code: req.body.code.substring(0, 3) + '...',
+      })
+
+      const result = await this.authService.verifyEmail(req.body.code)
+
+      // Clear email verification cookie and set login token
+      res.clearCookie('emailVerificationToken', this.getCookieOptions('emailVerification'))
+
+      if (result.loginToken) {
+        res.cookie('loginToken', result.loginToken, this.getCookieOptions('login'))
+      }
+
+      const responseData = {
+        user: result.user,
+      }
+
+      res
+        .status(200)
+        .json(
+          ApiResponseUtil.success(
+            responseData,
+            'Email verified successfully. You are now logged in.'
+          )
+        )
+    } catch (error) {
+      logger.error('Email verification error', {
+        error: error,
+        code: req.body.code?.substring(0, 3) + '...',
+      })
+      next(error)
+    }
+  }
+
+  resendVerificationCode = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      logger.info('Resend verification code endpoint called', { email: req.body.email })
+
+      const result = await this.authService.resendVerificationCode(req.body.email)
+
+      // Update email verification token cookie
+      if (result.emailVerificationToken) {
+        res.cookie(
+          'emailVerificationToken',
+          result.emailVerificationToken,
+          this.getCookieOptions('emailVerification')
+        )
+      }
+
+      res.status(200).json(ApiResponseUtil.success(null, 'Verification code resent successfully'))
+    } catch (error) {
+      logger.error('Resend verification code error', { error: error, email: req.body.email })
+      next(error)
+    }
+  }
+
+  logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      logger.info('Logout endpoint called')
+
+      // Clear all auth cookies
+      this.clearAuthCookies(res)
+
+      res.status(200).json(ApiResponseUtil.success(null, 'Logout successful'))
+    } catch (error) {
+      logger.error('Logout error', { error })
+      next(error)
+    }
+  }
+
+  async authMe(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.id // Assuming middleware sets req.user
+
+      if (!userId) {
+        res.status(401).json({
+          success: false,
+          message: 'Unauthorized',
+        })
+        return
+      }
+
+      const authUser = await this.authService.getAuthenticatedUser(userId)
+
+      res.status(200).json(ApiResponseUtil.success(authUser, 'Logout successful'))
+    } catch (error) {
+      next(error)
     }
   }
 }
-
-export default AuthController

@@ -4,13 +4,12 @@ import {
   type Optional,
   type HasOneGetAssociationMixin,
   type HasOneSetAssociationMixin,
-} from "sequelize"
-import sequelize from "../config/database"
-import bcrypt from "bcryptjs"
+} from 'sequelize'
+import sequelize from '../config/database'
+import bcrypt from 'bcryptjs'
+import { Staff } from './Staff'
+export type UserRole = 'APPLICANT' | 'STAFF' | 'SUPER_ADMIN'
 
-import { Staff } from "./Staff"
-export type UserRole = 'APPLICANT'|'STAFF'|'SUPER_ADMIN'
-// These are all the attributes in the User model
 interface UserAttributes {
   id: number
   email: string
@@ -18,29 +17,24 @@ interface UserAttributes {
   firstName: string
   lastName: string
   role: UserRole
-  emailVerified: boolean
+  isEmailVerified: boolean
   verificationToken?: string | null
   verificationTokenExpiry?: Date | null
-  resetToken?: string | null
-  resetTokenExpiry?: Date | null
+  passwordResetToken?: string | null
   createdAt?: Date
   updatedAt?: Date
-  deletedAt?: Date | null // For paranoid soft deletes
 }
 
-// These attributes are optional when creating a new User
-interface UserCreationAttributes
+export interface UserCreationAttributes
   extends Optional<
     UserAttributes,
-    | "id"
-    | "emailVerified"
-    | "verificationToken"
-    | "verificationTokenExpiry"
-    | "resetToken"
-    | "resetTokenExpiry"
-    | "createdAt"
-    | "updatedAt"
-    | "deletedAt"
+    | 'id'
+    | 'isEmailVerified'
+    | 'verificationToken'
+    | 'verificationTokenExpiry'
+    | 'passwordResetToken'
+    | 'createdAt'
+    | 'updatedAt'
   > {}
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
@@ -49,25 +43,16 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public password!: string
   public firstName!: string
   public lastName!: string
-  public role!: 'STAFF'| "APPLICANT" | "SUPER_ADMIN"
-  public emailVerified!: boolean
+  public role!: 'STAFF' | 'APPLICANT' | 'SUPER_ADMIN'
+  public isEmailVerified!: boolean
   public verificationToken!: string | null
-  public verificationTokenExpiry!: Date | null
-  public resetToken!: string | null
-  public resetTokenExpiry!: Date | null
-  public deletedAt!: Date | null
+  public passwordResetToken!: string | null
 
   // timestamps
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 
-  // Associations
-  public getStaff!: HasOneGetAssociationMixin<Staff>
-  public setStaff!: HasOneSetAssociationMixin<Staff, number>
-
-
   public readonly staff?: Staff
-
 }
 
 User.init(
@@ -96,10 +81,10 @@ User.init(
       allowNull: false,
     },
     role: {
-      type: DataTypes.ENUM('STAFF',"APPLICANT", "SUPER_ADMIN"),
+      type: DataTypes.ENUM('STAFF', 'APPLICANT', 'SUPER_ADMIN'),
       allowNull: false,
     },
-    emailVerified: {
+    isEmailVerified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
@@ -107,27 +92,15 @@ User.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    verificationTokenExpiry: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    resetToken: {
+
+    passwordResetToken: {
       type: DataTypes.STRING,
-      allowNull: true,
-    },
-    resetTokenExpiry: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    deletedAt: {
-      // For paranoid soft deletes
-      type: DataTypes.DATE,
       allowNull: true,
     },
   },
   {
     sequelize,
-    tableName: "users",
+    tableName: 'users',
     paranoid: true, // Enable soft deletes
     hooks: {
       beforeCreate: async (user: User) => {
@@ -136,16 +109,15 @@ User.init(
         }
       },
       beforeUpdate: async (user: User) => {
-        if (user.changed("password") && user.password) {
+        if (user.changed('password') && user.password) {
           user.password = await bcrypt.hash(user.password, 10)
         }
       },
     },
-  },
+  }
 )
 
 // Define associations
-User.hasOne(Staff, { foreignKey: "userId", as: "staff" })
-
+User.hasOne(Staff, { foreignKey: 'userId', as: 'staff' })
 
 export default User

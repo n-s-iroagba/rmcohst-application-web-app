@@ -1,22 +1,16 @@
-import {
-  Model,
-  DataTypes,
-  Optional,
-  Association,
-  BelongsToGetAssociationMixin,
-} from 'sequelize';
-import sequelize from '../config/database';
-import Program from './Program';
-import Grade from './Grade';
+import { Model, DataTypes, Optional, Association, BelongsToGetAssociationMixin } from 'sequelize'
+import sequelize from '../config/database'
+import Program from './Program'
+import Grade from './Grade'
 
 // Define all attributes
 interface ProgramSpecificQualificationAttributes {
-  id: number;
-  programId: number;
-  qualificationType: string;
-  minimumGradeId: number;
-  createdAt?: Date;
-  updatedAt?: Date;
+  id: number
+  programId: number
+  qualificationType: string
+  minimumGradeId: number
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 // Define creation attributes
@@ -27,20 +21,20 @@ class ProgramSpecificQualification extends Model<
   ProgramSpecificQualificationAttributes,
   ProgramSpecificQualificationCreationAttributes
 > {
-  public id!: number;
-  public programId!: number;
-  public qualificationType!: string;
-  public minimumGrade!: string;
+  public id!: number
+  public programId!: number
+  public qualificationType!: string
+  public minimumGrade!: string
 
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public readonly createdAt!: Date
+  public readonly updatedAt!: Date
 
   // Association mixins
-  public getProgram!: BelongsToGetAssociationMixin<Program>;
+  public getProgram!: BelongsToGetAssociationMixin<Program>
 
   public static associations: {
-    program: Association<ProgramSpecificQualification, Program>;
-  };
+    program: Association<ProgramSpecificQualification, Program>
+  }
 }
 
 ProgramSpecificQualification.init(
@@ -65,10 +59,10 @@ ProgramSpecificQualification.init(
     minimumGradeId: {
       type: DataTypes.STRING,
       allowNull: false,
-      references:{
-        model:Grade,
-        key:'id'
-      }
+      references: {
+        model: Grade,
+        key: 'id',
+      },
     },
   },
   {
@@ -77,18 +71,18 @@ ProgramSpecificQualification.init(
     modelName: 'ProgramSpecificQualification',
     timestamps: true,
   }
-);
+)
 
 // Associations
 Program.hasMany(ProgramSpecificQualification, {
   sourceKey: 'id',
   foreignKey: 'programId',
   as: 'programSpecificQualifications',
-});
+})
 
 ProgramSpecificQualification.belongsTo(Program, {
   foreignKey: 'programId',
   as: 'program',
-});
+})
 
-export default ProgramSpecificQualification;
+export default ProgramSpecificQualification

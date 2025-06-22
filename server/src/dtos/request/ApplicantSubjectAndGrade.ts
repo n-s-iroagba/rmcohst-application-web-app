@@ -1,4 +1,4 @@
-export type ApplicantSubjectAndGradeDto={
-    subjectId:number
-    gradeId:number
+export type ApplicantSubjectAndGradeDto = {
+  subjectId: number
+  gradeId: number
 }

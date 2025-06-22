@@ -16,7 +16,7 @@ class ApplicantProgramSpecificQualificationService {
   // - deleteApplicantProgramSpecificQualification
 
   async exampleMethod(): Promise<string> {
-    return "ApplicantProgramSpecificQualificationService example method"
+    return 'ApplicantProgramSpecificQualificationService example method'
   }
 }
 

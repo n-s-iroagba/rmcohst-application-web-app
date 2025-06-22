@@ -1,6 +1,6 @@
 // server/src/utils/auth.ts
-import jwt from "jsonwebtoken"
-import appConfig from "../config" // Default import
+import jwt from 'jsonwebtoken'
+import appConfig from '../config' // Default import
 
 export const generateToken = (userId: string, email: string, role: string): string => {
   const payload = { id: userId, email, role }

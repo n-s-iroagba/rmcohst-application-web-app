@@ -6,7 +6,7 @@ import {
   type HasManyAddAssociationMixin,
   type HasManyCountAssociationsMixin,
   type Sequelize,
-} from "sequelize"
+} from 'sequelize'
 // import sequelize from '../config/database'; // Default import
 // import type Department from './Department'; // Assuming Department model exists
 
@@ -15,14 +15,17 @@ interface FacultyAttributes {
   name: string
   code: string
   description?: string
-  nameOfDean?:string;
+  nameOfDean?: string
   isActive?: boolean
   createdAt?: Date
   updatedAt?: Date
 }
 
 export interface FacultyCreationAttributes
-  extends Optional<FacultyAttributes, "id" | "description" | "isActive" | "createdAt" | "updatedAt"> {}
+  extends Optional<
+    FacultyAttributes,
+    'id' | 'description' | 'isActive' | 'createdAt' | 'updatedAt'
+  > {}
 
 export class Faculty // Named export
   extends Model<FacultyAttributes, FacultyCreationAttributes>
@@ -32,7 +35,7 @@ export class Faculty // Named export
   public name!: string
   public code!: string
   public description?: string
-  public isActive?: boolean|true
+  public isActive?: boolean | true
   public nameOfDean?: string | undefined
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
@@ -42,7 +45,7 @@ export class Faculty // Named export
   public countDepartments!: HasManyCountAssociationsMixin
 
   public static associate(models: any) {
-    Faculty.hasMany(models.Department, { foreignKey: "facultyId", as: "departments" })
+    Faculty.hasMany(models.Department, { foreignKey: 'facultyId', as: 'departments' })
   }
 }
 
@@ -52,23 +55,23 @@ export const FacultyFactory = (sequelize: Sequelize): typeof Faculty => {
       id: { type: DataTypes.INTEGER, defaultValue: DataTypes.UUIDV4, primaryKey: true },
       name: { type: DataTypes.STRING(100), allowNull: false, unique: true },
       code: { type: DataTypes.STRING(10), allowNull: false, unique: true },
-      nameOfDean:{
+      nameOfDean: {
         type: DataTypes.STRING(100),
-        allowNull: true
+        allowNull: true,
       },
       description: { type: DataTypes.TEXT, allowNull: true },
       isActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
     },
     {
       sequelize,
-      tableName: "Faculties", // Pluralized table name
-      modelName: "Faculty",
+      tableName: 'Faculties', // Pluralized table name
+      modelName: 'Faculty',
       timestamps: true,
       indexes: [
-        { fields: ["name"], unique: true },
-        { fields: ["code"], unique: true },
+        { fields: ['name'], unique: true },
+        { fields: ['code'], unique: true },
       ],
-    },
+    }
   )
   return Faculty
 }

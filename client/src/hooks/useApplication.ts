@@ -7,6 +7,7 @@ import { post } from '@/utils/apiClient'
 import { apiRoutes } from '@/constants/apiRoutes'
 import { useGetSingle } from './useGet'
 import { Application } from '@/types/application'
+import { ApplicationProgramSpecificQualification } from '@/types/applicant_program_specific_qualification'
 
 export const useApplication = () => {
   const {
@@ -15,6 +16,7 @@ export const useApplication = () => {
     loading
   } = useGetSingle<Application>(apiRoutes.application.myCurrentApplication)
   const [biodata, setBiodata] = useState<Biodata | null>(null)
+  const [applicantProgramSpecificRequirements, setApplicantProgramSpecificRequirements] = useState<ApplicationProgramSpecificQualification[]>([])
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -119,6 +121,7 @@ export const useApplication = () => {
     biodataErrors,
     handleChangeBiodata,
     handleSubmitBiodata,
-    saveBiodata
+    saveBiodata,
+    applicantProgramSpecificRequirements
   }
 }

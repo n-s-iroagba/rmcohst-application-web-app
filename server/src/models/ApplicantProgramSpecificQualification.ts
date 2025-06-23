@@ -1,4 +1,4 @@
-import { Optional, Model, DataTypes } from 'sequelize'
+import { Model, DataTypes } from 'sequelize'
 import { Application } from './Application'
 import sequelize from '../config/database'
 import Grade from './Grade'

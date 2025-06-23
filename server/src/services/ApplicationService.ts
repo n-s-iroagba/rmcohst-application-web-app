@@ -9,13 +9,13 @@ import {
 import { Department } from '../models/Department'
 import { Faculty } from '../models/Faculty'
 import Program from '../models/Program'
-import ProgramSpecificQualification from '../models/ProgramSpecificQualification'
+import ProgramSpecificRequirement from '../models/ProgramSpecificRequirement'
 import { Staff } from '../models/Staff'
 import User from '../models/User'
 import ProgramSession from '../models/ProgramSession'
 import Biodata from '../models/Biodata'
 import ApplicantSSCQualification from '../models/ApplicantSSCQualification'
-import ApplicantProgramSpecificQualification from '../models/ApplicantProgramSpecificQualification'
+import ApplicantProgramSpecificRequirement from '../models/ApplicantProgramSpecificRequirement'
 import ApplicantSSCSubjectAndGrade from '../models/ApplicantSSCSubjectAndGrade'
 import { AppError } from '../utils/errors'
 import { logger } from '../utils/logger'
@@ -68,11 +68,11 @@ class ApplicationService {
       const applicationId = application.id
       await Biodata.create({ applicationId })
       await ApplicantSSCQualification.create({ applicationId })
-      const programSpecificQualification = await ProgramSpecificQualification.findOne({
+      const programSpecificQualification = await ProgramSpecificRequirement.findOne({
         where: { programId: program.id },
       })
       if (programSpecificQualification)
-        await ApplicantProgramSpecificQualification.create({
+        await ApplicantProgramSpecificRequirement.create({
           applicationId,
           qualificationType: programSpecificQualification.qualificationType,
         })
@@ -110,9 +110,9 @@ class ApplicationService {
             include: [{ model: ApplicantSSCSubjectAndGrade, as: 'subjects' }],
           },
           {
-            model: ApplicantProgramSpecificQualification,
+            model: ApplicantProgramSpecificRequirement,
             as: 'programSpecificQualifications',
-            include: [{ model: ProgramSpecificQualification, as: 'qualificationDefinition' }],
+            include: [{ model: ProgramSpecificRequirement, as: 'qualificationDefinition' }],
           },
           {
             model: Staff,
@@ -241,7 +241,7 @@ class ApplicationService {
           required: false,
         },
         {
-          model: ApplicantProgramSpecificQualification,
+          model: ApplicantProgramSpecificRequirement,
           as: 'programSpecificQualifications',
           required: false,
         },
@@ -282,7 +282,7 @@ class ApplicationService {
     }
 
     // 4. Check program-specific qualifications (if the program requires them)
-    if (application.program?.getProgramSpecificQualifications()) {
+    if (application.program?.getProgramSpecificRequirements()) {
       if (!application.programSpecificQualifications) {
         validationErrors.push('Program-specific qualifications are required for this program')
       } else {
@@ -358,9 +358,9 @@ class ApplicationService {
             include: [{ model: ApplicantSSCSubjectAndGrade, as: 'subjects' }],
           },
           {
-            model: ApplicantProgramSpecificQualification,
-            as: 'applicantProgramSpecificQualifications',
-            include: [{ model: ProgramSpecificQualification, as: 'programSpecificQualification' }],
+            model: ApplicantProgramSpecificRequirement,
+            as: 'applicantProgramSpecificRequirements',
+            include: [{ model: ProgramSpecificRequirement, as: 'programSpecificQualification' }],
           },
           { model: Staff, as: 'Staff' },
         ],

@@ -1,9 +1,9 @@
 export interface AcademicSessionAttributes {
   id: number
-  sessionName: string
-  startDate: Date
-  endDate: Date
+  name: string
+applicationStartDate:Date
+applicationEndDate: Date
   isCurrent: boolean
 }
 
-export type AcademicSessionCreationDto = Omit<AcademicSessionAttributes, 'id' | 'isCurrent'>
+export type AcademicSessionCreationDto = Omit<AcademicSessionAttributes, 'id'|'isCurrent'>

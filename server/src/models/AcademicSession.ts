@@ -13,8 +13,9 @@ import sequelize from '../config/database'
 
 interface AcademicSessionAttributes {
   id: number
-  sessionName: string
-  reportingDate: Date
+  name: string
+applicationStartDate:Date
+applicationEndDate: Date
   isCurrent: boolean
   createdAt: Date
   updatedAt: Date
@@ -28,8 +29,9 @@ class AcademicSession
   implements AcademicSessionAttributes
 {
   public id!: number
-  public sessionName!: string
-  public reportingDate!: Date
+  public name!:string
+public applicationStartDate!:Date
+public applicationEndDate!: Date
   public isCurrent!: boolean
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
@@ -51,12 +53,16 @@ AcademicSession.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    sessionName: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
     },
-    reportingDate: {
+    applicationStartDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+    },
+       applicationEndDate: {
       type: DataTypes.DATEONLY,
       allowNull: false,
     },

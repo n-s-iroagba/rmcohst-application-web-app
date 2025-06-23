@@ -1,104 +1,61 @@
-/* eslint-disable react/prop-types */
+import React from 'react'
+import { useApplicationRequirements } from '@/hooks/useApplicationRequirements'
+import { Department, DepartmentCreationDto } from '@/types/department'
 
-import { apiRoutes } from '@/constants/apiRoutes'
-import { RenderDoubleSelectFields, RenderDoubleSelectFieldsForUpdate } from '@/helpers/formFields'
 
-import { useGetList } from '@/hooks/useGet'
-import { SSCSubject } from '@/types/ssc_subject'
-import {
-  Grade,
-  SSCSubjectMinimumGradeCreationDto,
-  UpdateSSCSubjectMinimumGrade
-} from '@/types/ssc_subject_minimum_grade'
-import { isUpdateSSCSubjectMinimumGrade } from '@/utils/typeGuards'
-
-interface SscQualificationFormProps {
-  sscQualificationData: SSCSubjectMinimumGradeCreationDto[] | UpdateSSCSubjectMinimumGrade[]
+interface DepartmentFormProps {
+  departmentData: DepartmentCreationDto[] | Department
   isEdit: boolean
-  programIndex: number
-  handleChangeSscQualification:
-    | ((e: React.ChangeEvent<HTMLSelectElement>, programIndex: number, sscIndex: number) => void)
-    | ((e: React.ChangeEvent<HTMLSelectElement>, index: number) => void)
-  addSscQualification: () => void
-  removeSscQualification: (index: number) => void
+  handleChangeUpdate:(e:any)=>void
+  handleSave:(e:any)=> void
 }
 
-const SscQualificationForm: React.FC<SscQualificationFormProps> = ({
-  sscQualificationData,
-  isEdit,
-  programIndex,
-  handleChangeSscQualification,
-  addSscQualification,
-  removeSscQualification
-}) => {
-  const { data: subjects } = useGetList<SSCSubject>(apiRoutes.subject.all)
-  const { data: grades } = useGetList<Grade>(apiRoutes.grade.all)
+
+
+const DepartmentForm: React.FC<DepartmentFormProps> = ({ isEdit = false, departmentToEdit, handleChangeUpdate, handleSave }) => {
+  const {
+    departmentData,
+    handleSubmitDepartment
+    handleChange,
+    addFaculty,
+    removeFaculty
+  } = useApplicationRequirements()
+
+  const data = isEdit && departmentToEdit ? departmentToEdit : departmentData
+  const onChangeFn = isEdit ? handleChangeUpdate : handleChange
+  const onSaveFn = isEdit ? handleSave : handleSubmitDepartment
+
+  const fieldsConfig = {
+    name: { type: 'text', label: 'Faculty Name' },
+    description: { type: 'textarea', label: 'Faculty Description' }
+  }
+
+  const handlers = {
+    name: handleChangeFaculty,
+    description: handleChangeFaculty
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (isEdit && departmentToEdit) {
+      // update logic here
+      console.log('Updating faculty:', departmentToEdit)
+    } else {
+      addFaculty()
+    }
+  }
 
   return (
-    <form>
-      {isEdit &&
-      Array.isArray(sscQualificationData) &&
-      isUpdateSSCSubjectMinimumGrade(sscQualificationData) ? (
-        <section className="mb-4 p-3 border rounded">
-          <RenderDoubleSelectFieldsForUpdate
-            valueData={sscQualificationData}
-            firstSelectionData={subjects || []}
-            secondSelectionData={grades || []}
-            onChange={
-              handleChangeSscQualification as (
-                e: React.ChangeEvent<HTMLSelectElement>,
-                index: number
-              ) => void
-            }
-            index={programIndex}
-            firstSelectionKey="name"
-            secondSelectionKey="grade"
-            firstSelectionLabel="Subject"
-            secondSelectionLabel="Grade"
-            firstNestedKey="subject"
-            secondNestedKey="Grade"
-          />
-        </section>
-      ) : (
-        sscQualificationData.map((sscQualification, index) => (
-          <section key={index} className="mb-4 p-3 border rounded">
-            <RenderDoubleSelectFields
-              onChange={
-                handleChangeSscQualification as (
-                  e: React.ChangeEvent<HTMLSelectElement>,
-                  parentIndex: number,
-                  childIndex: number
-                ) => void
-              }
-              firstSelectionData={subjects || []}
-              secondSelectionData={grades || []}
-              parentIndex={programIndex}
-              childIndex={index}
-              firstSelectionKey="name"
-              secondSelectionKey="grade"
-              firstSelectionLabel="Subject"
-              secondSelectionLabel="Grade"
-            />
-            <div className="flex gap-2 mt-2">
-              <button
-                type="button"
-                onClick={addSscQualification}
-                className="bg-blue-600 text-white px-4 py-2 rounded"
-              >
-                Add Qualification
-              </button>
-              <button
-                type="button"
-                onClick={() => removeSscQualification(index)}
-                className="bg-red-600 text-white px-4 py-2 rounded"
-              >
-                Remove Qualification
-              </button>
-            </div>
-          </section>
-        ))
-      )}
-    </form>
+    <CustomForm
+      isEdit={isEdit??false}
+      data={data}
+      fieldsConfig={fieldsConfig}
+      handlers={handlers}
+      onSubmit={handleSubmit}
+      cancelLabel="Cancel"
+      onCancel={onCancel}
+    />
   )
 }
-export default SscQualificationForm
+
+export default DepartmentForm

@@ -1,4 +1,4 @@
-const ProgramSpecificQualificationsReviewSection = () => (
+const ProgramSpecificRequirementsReviewSection = () => (
   <div>Program Specific Qualifications Review Section Placeholder</div>
 )
-export default ProgramSpecificQualificationsReviewSection
+export default ProgramSpecificRequirementsReviewSection

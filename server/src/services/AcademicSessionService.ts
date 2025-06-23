@@ -5,7 +5,7 @@ import logger from '../utils/logger/logger'
 class AcademicSessionService {
   // CREATE
   static async createSession(data: {
-    sessionName: string
+    name: string
     reportingDate: Date
     isCurrent?: boolean
   }) {
@@ -65,7 +65,7 @@ class AcademicSessionService {
   static async updateSession(
     id: number,
     updates: Partial<{
-      sessionName: string
+      name: string
       reportingDate: Date
       isCurrent: boolean
     }>

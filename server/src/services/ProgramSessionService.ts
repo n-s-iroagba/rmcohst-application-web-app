@@ -4,7 +4,7 @@ import AcademicSession from '../models/AcademicSession'
 import Program from '../models/Program'
 
 interface CreateSessionData {
-  sessionName: string
+  name: string
   reportingDate: Date
   isCurrent?: boolean
 }

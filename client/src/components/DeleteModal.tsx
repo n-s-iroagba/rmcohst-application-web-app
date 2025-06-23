@@ -19,7 +19,7 @@ const API_ROUTES_MAP = {
   program: apiRoutes.program.delete
 }
 
-export function DeleteConfirmationModal({ id, onClose, type, message }: DeleteModalProps) {
+export function DeleteModal({ id, onClose, type, message }: DeleteModalProps) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState('')
 

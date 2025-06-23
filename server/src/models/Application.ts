@@ -3,7 +3,7 @@ import Program from './Program'
 import ApplicantSSCQualification from './ApplicantSSCQualification'
 import User from './User'
 import Biodata from './Biodata'
-import ApplicantProgramSpecificQualification from './ApplicantProgramSpecificQualification'
+import ApplicantProgramSpecificRequirement from './ApplicantProgramSpecificRequirement'
 
 // import type { ApplicantDocument } from "./ApplicantDocument" // Already imported if ApplicantDocumentFactory is used
 
@@ -66,7 +66,7 @@ export class Application // Named export
   // public readonly academicSession?: AcademicSession // Define if needed
   // public readonly assignedOfficer?: AdmissionOfficer // Define if needed
   public readonly sscQualifications?: ApplicantSSCQualification
-  public readonly programSpecificQualifications?: ApplicantProgramSpecificQualification
+  public readonly programSpecificQualifications?: ApplicantProgramSpecificRequirement
   public readonly applicantDocuments?: any[] // Use ApplicantDocument type here
 
   public static associate(models: any) {
@@ -77,7 +77,7 @@ export class Application // Named export
       foreignKey: 'applicationId',
       as: 'sscQualifications',
     })
-    Application.hasOne(models.ApplicantProgramSpecificQualification, {
+    Application.hasOne(models.ApplicantProgramSpecificRequirement, {
       foreignKey: 'applicationId',
       as: 'programSpecificQualifications',
     })

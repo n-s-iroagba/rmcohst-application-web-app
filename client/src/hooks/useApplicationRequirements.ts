@@ -36,11 +36,16 @@ const tempProgramSpecificRequirement: ProgramSpecificRequirementCreationDto = {
   minimumGrade: ''
 }
 
-export const useApplicationRequirments = () => {
-  const [sessionData, setSessionData] = useState<AcademicSessionCreationDto[]>([])
+export const useApplicationRequirements = () => {
+  const [sessionData, setSessionData] = useState<AcademicSessionCreationDto>({
+     name: '',
+applicationStartDate: new Date(),
+applicationEndDate: new Date()
+
+  })
   const [facultyData, setFacultyData] = useState<FacultyCreationDto[]>([])
   const [departmentData, setDepartmentData] = useState<DepartmentCreationDto[]>([tempDeptData])
-  const [sscRequirmentsData, setSCCRequirementsData] = useState<
+  const [sscRequirementsData, setSCCRequirementsData] = useState<
     SSCSubjectMinimumGradeCreationDto[]
   >([])
   const [programSpecificRequirementsData, setProgramSpecificRequirementsData] = useState<
@@ -55,7 +60,7 @@ export const useApplicationRequirments = () => {
     useState<number>(0)
 
   // SeSSION
-  const handleChangeSession = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeSessionData = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleChange(setSessionData, e)
   }
   // FACULTY
@@ -150,7 +155,7 @@ export const useApplicationRequirments = () => {
   return {
     //SESSION
     sessionData,
-    handleChangeSession,
+    handleChangeSessionData,
     // FACULTY
     facultyData,
     handleChangeFaculty,
@@ -163,7 +168,7 @@ export const useApplicationRequirments = () => {
     addDepartment,
 
     // SSC
-    sscRequirmentsData,
+    sscRequirementsData,
     handleChangeSSCRequirement,
     addSSCRequirement,
     removeSSCRequirement,

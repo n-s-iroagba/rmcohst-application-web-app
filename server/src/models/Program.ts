@@ -15,7 +15,7 @@ import {
   BelongsToManyRemoveAssociationMixin,
   DataTypes,
 } from 'sequelize'
-import ProgramSpecificQualification from './ProgramSpecificQualification'
+import ProgramSpecificRequirement from './ProgramSpecificRequirement'
 import ProgramSSCRequirement from './ProgramSSCRequirement'
 import sequelize from '../config/database'
 import AcademicSession from './AcademicSession'
@@ -65,9 +65,9 @@ class Program
   public setDepartment!: BelongsToSetAssociationMixin<Department, number>
 
   // Qualification associations
-  public getProgramSpecificQualifications!: HasManyGetAssociationsMixin<ProgramSpecificQualification>
-  public addProgramSpecificQualification!: HasManyAddAssociationMixin<
-    ProgramSpecificQualification,
+  public getProgramSpecificRequirements!: HasManyGetAssociationsMixin<ProgramSpecificRequirement>
+  public addProgramSpecificRequirement!: HasManyAddAssociationMixin<
+    ProgramSpecificRequirement,
     number
   >
   public getSSCQualification!: HasOneGetAssociationMixin<ProgramSSCRequirement>

@@ -1,44 +1,60 @@
 import React from 'react'
-import { useApplicationRequirments } from '@/hooks/useApplicationRequirements'
-import { DepartmentAttributes, DepartmentCreationDto } from '@/types/department'
-import { DynamicFormTextFields } from '@/helpers/formFields' // default export assumed
+import { useApplicationRequirements } from '@/hooks/useApplicationRequirements'
+import { Department, DepartmentCreationDto } from '@/types/department'
+
 
 interface DepartmentFormProps {
-  departmentData: DepartmentCreationDto[] | DepartmentAttributes
+  departmentData: DepartmentCreationDto[] | Department
   isEdit: boolean
+  handleChangeUpdate:(e:any)=>void
+  handleSave:(e:any)=> void
 }
 
-const DepartmentForm: React.FC<DepartmentFormProps> = ({ departmentData, isEdit }) => {
-  const { handleChangeDepartment, addDepartment } = useApplicationRequirments()
+
+
+const DepartmentForm: React.FC<DepartmentFormProps> = ({ isEdit = false, departmentToEdit, handleChangeUpdate, handleSave }) => {
+  const {
+    departmentData,
+    handleSubmitDepartment
+    handleChange,
+    addFaculty,
+    removeFaculty
+  } = useApplicationRequirements()
+
+  const data = isEdit && departmentToEdit ? departmentToEdit : departmentData
+  const onChangeFn = isEdit ? handleChangeUpdate : handleChange
+  const onSaveFn = isEdit ? handleSave : handleSubmitDepartment
+
+  const fieldsConfig = {
+    name: { type: 'text', label: 'Faculty Name' },
+    description: { type: 'textarea', label: 'Faculty Description' }
+  }
+
+  const handlers = {
+    name: handleChangeFaculty,
+    description: handleChangeFaculty
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (isEdit && departmentToEdit) {
+      // update logic here
+      console.log('Updating faculty:', departmentToEdit)
+    } else {
+      addFaculty()
+    }
+  }
 
   return (
-    <form>
-      {isEdit ? (
-        <section className="mb-4 p-3 border rounded">
-          <DynamicFormTextFields<DepartmentAttributes>
-            data={departmentData as DepartmentAttributes}
-            onChange={handleChangeDepartment}
-          />
-        </section>
-      ) : (
-        (departmentData as DepartmentCreationDto[]).map((dept, index) => (
-          <section key={index} className="mb-4 p-3 border rounded">
-            <DynamicFormTextFields<DepartmentCreationDto>
-              data={dept}
-              onChange={handleChangeDepartment}
-              index={index}
-            />
-            <button
-              type="button"
-              onClick={addDepartment}
-              className="bg-blue-600 text-white px-4 py-2 rounded mt-2"
-            >
-              Add Department
-            </button>
-          </section>
-        ))
-      )}
-    </form>
+    <CustomForm
+      isEdit={isEdit??false}
+      data={data}
+      fieldsConfig={fieldsConfig}
+      handlers={handlers}
+      onSubmit={handleSubmit}
+      cancelLabel="Cancel"
+      onCancel={onCancel}
+    />
   )
 }
 

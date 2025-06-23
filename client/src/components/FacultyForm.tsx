@@ -1,53 +1,58 @@
+'use client'
+
 import React from 'react'
-import { useApplicationRequirments } from '@/hooks/useApplicationRequirements'
-import { FacultyCreationDto } from '@/types/faculty'
-import { DynamicFormTextFields } from '@/helpers/formFields'
+import { useApplicationRequirements } from '@/hooks/useApplicationRequirements'
+import { Faculty, FacultyCreationDto } from '@/types/faculty'
+import { CustomForm } from './CustomForm'
 
 interface FacultyFormProps {
-  isEdit: boolean
+  isEdit?: boolean
+  facultyToEdit?: Faculty
+  onCancel?: () => void
+   handleChangeUpdate:(e:any)=>void
+  handleSave:(e:any)=> void
 }
 
-const FacultyForm: React.FC<FacultyFormProps> = ({ isEdit }) => {
-  const { facultyData, handleChangeFaculty, addFaculty, removeFaculty } =
-    useApplicationRequirments()
+const FacultyForm: React.FC<FacultyFormProps> = ({ isEdit = false, facultyToEdit, onCancel handleChangeUpdate,
+  handleSave}) => {
+  const {
+    facultyData,
+    handleChangeFaculty,
+    addFaculty,
+    removeFaculty
+  } = useApplicationRequirements()
+
+  const data = isEdit && facultyToEdit ? facultyToEdit : facultyData
+
+  const fieldsConfig = {
+    name: { type: 'text', label: 'Faculty Name' },
+    description: { type: 'textarea', label: 'Faculty Description' }
+  }
+
+  const handlers = {
+    name: handleChangeFaculty,
+    description: handleChangeFaculty
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (isEdit && facultyToEdit) {
+      // update logic here
+      console.log('Updating faculty:', facultyToEdit)
+    } else {
+      addFaculty()
+    }
+  }
 
   return (
-    <form>
-      {isEdit ? (
-        <section className="mb-4 p-3 border rounded">
-          <DynamicFormTextFields<FacultyCreationDto[]>
-            data={facultyData}
-            onChange={handleChangeFaculty}
-          />
-        </section>
-      ) : (
-        facultyData.map((faculty: FacultyCreationDto, index) => (
-          <section key={index} className="mb-4 p-3 border rounded">
-            <DynamicFormTextFields<FacultyCreationDto>
-              data={faculty}
-              onChange={handleChangeFaculty}
-              index={index}
-            />
-            <div className="flex gap-2 mt-2">
-              <button
-                type="button"
-                onClick={addFaculty}
-                className="bg-blue-600 text-white px-4 py-2 rounded"
-              >
-                Add Faculty
-              </button>
-              <button
-                type="button"
-                onClick={() => removeFaculty(index)}
-                className="bg-red-600 text-white px-4 py-2 rounded"
-              >
-                Remove Faculty
-              </button>
-            </div>
-          </section>
-        ))
-      )}
-    </form>
+    <CustomForm
+      data={data}
+      fieldsConfig={fieldsConfig}
+      handlers={handlers}
+      onSubmit={handleSubmit}
+      cancelLabel="Cancel"
+      onCancel={onCancel}
+    />
   )
 }
 

@@ -1,34 +1,45 @@
+import { formatCamelCase } from '@/utils/formatCamelCase'
 import {
   TextField,
   TextareaField,
   SelectField,
   CheckboxField,
   FileField,
-  DoubleSelectField
+  MultiGroupSelectField,
+  RadioField
 } from './FormFields'
+import { ChangeEvent } from 'react'
 
-type FieldType = 'text' | 'textarea' | 'select' | 'checkbox' | 'file' | 'double-select'
+type FieldType = 'text' | 'textarea' | 'select' | 'checkbox' | 'file' | 'double-select' | 'radio'
 
 export type FieldConfig = {
-  name: string // main identifier (e.g., index in array)
-  label?: string
+  onChangeHandler?:
+    | ((e: any, index: number, subFieldKey: string) => void)
+    | ((e: ChangeEvent<HTMLSelectElement>) => void)
+    | ((e: ChangeEvent<HTMLInputElement>) => void)
+
   type: FieldType
 
-  // For select
+  /**
+   * Used by:
+   * - select
+   * - radio
+   */
   options?: string[] | { id: string | number; label: string }[]
 
-  // For double-select
+  /**
+   * Used by double-select or multi-group fields
+   */
   fieldGroup?: {
-    firstField: {
+    groupKey: string
+    fields: {
       name: string
       label: string
       options: { id: string | number; label: string }[]
-    }
-    secondField: {
-      name: string
-      label: string
-      options: { id: string | number; label: string }[]
-    }
+    }[]
+    addHandler: () => void
+    removeHandler: (index: number) => void
+    onChangeHandler: (e: ChangeEvent<HTMLSelectElement>) => void
   }
 }
 
@@ -38,23 +49,21 @@ type FieldRendererProps<T> = {
   fieldsConfig: {
     [K in keyof T]?: FieldConfig
   }
-  handlers: {
-    [K in keyof T]?: ((e: any, index?: number) => void) |((e: React.ChangeEvent<HTMLSelectElement>, index: number) => void)
-  }
 }
 
 export function FieldRenderer<T extends Record<string, any>>({
   data,
   errors = {},
-  fieldsConfig,
-  handlers
+  fieldsConfig
 }: FieldRendererProps<T>) {
   return (
     <>
       {Object.entries(fieldsConfig).map(([key, config]) => {
+        if (!(key in data) || !config) return null
+
         const value = data[key as keyof T]
-        const error = errors[key as keyof T]
-        const onChange = handlers[key as keyof T]
+        const error = errors?.[key as keyof T]
+        const onChange = config.onChangeHandler
 
         if (!config) return null
 
@@ -64,36 +73,11 @@ export function FieldRenderer<T extends Record<string, any>>({
               <TextareaField
                 key={key}
                 name={key}
-                label={config.label || key}
+                label={formatCamelCase(key)}
                 value={value}
                 onChange={onChange}
                 error={error}
               />
-            )
-
-          case 'double-select':
-            if (!config.fieldGroup) {
-              console.error(`Double-select field "${key}" is missing fieldGroup config`)
-              return null
-            }
-            if (!onChange){
-              console.error(`Double-select field "${key}" is missing onChange handler`)
-              return null
-            }
-            
-            return (
-              <div key={key} className="mb-4">
-                {config.label && (
-                  <label className="block font-medium mb-2">{config.label}</label>
-                )}
-                <DoubleSelectField
-                  index={0}
-                  data={Array.isArray(value) ? value : [value || {}]}
-                  config={config}
-                  onChange={onChange}
-                />
-                {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-              </div>
             )
 
           case 'select':
@@ -101,20 +85,31 @@ export function FieldRenderer<T extends Record<string, any>>({
               <SelectField
                 key={key}
                 name={key}
-                label={config.label || key}
+                label={formatCamelCase(key)}
                 value={value}
                 options={config.options}
                 onChange={onChange}
                 error={error}
               />
             )
-
+          case 'double-select':
+            if (!config.fieldGroup) {
+              console.error('no field group')
+              return null
+            }
+            return (
+              <MultiGroupSelectField
+                groupData={data[key]}
+                fieldGroup={config.fieldGroup}
+                onChange={config.fieldGroup.onChangeHandler}
+              />
+            )
           case 'checkbox':
             return (
               <CheckboxField
                 key={key}
                 name={key}
-                label={config.label || key}
+                label={formatCamelCase(key)}
                 checked={value}
                 onChange={onChange}
                 error={error}
@@ -126,8 +121,20 @@ export function FieldRenderer<T extends Record<string, any>>({
               <FileField
                 key={key}
                 name={key}
-                label={config.label || key}
+                label={formatCamelCase(key)}
                 onChange={onChange}
+                error={error}
+              />
+            )
+          case 'radio':
+            return (
+              <RadioField
+                key={key}
+                name={key}
+                label={formatCamelCase(key)}
+                value={value}
+                options={config.options || []}
+                onChange={onChange as (e: ChangeEvent<HTMLInputElement>) => void}
                 error={error}
               />
             )
@@ -138,7 +145,7 @@ export function FieldRenderer<T extends Record<string, any>>({
               <TextField
                 key={key}
                 name={key}
-                label={config?.label || key}
+                label={formatCamelCase(key)}
                 value={value}
                 onChange={onChange}
                 error={error}

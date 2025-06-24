@@ -1,6 +1,6 @@
 import { Faculty } from './faculty'
 
-export interface DepartmentAttributes {
+export interface Department {
   id: number
   name: string
   code: string
@@ -10,4 +10,4 @@ export interface DepartmentAttributes {
   faculty?: Faculty
 }
 
-export type DepartmentCreationDto = Omit<DepartmentAttributes, 'id' | 'isActive' | 'faculty'>
+export type DepartmentCreationDto = Omit<Department, 'id' | 'isActive' | 'faculty'>

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { 
-  Users, 
-  Filter, 
-  Send, 
-  AlertCircle, 
-  CheckCircle, 
+import {
+  Users,
+  Filter,
+  Send,
+  AlertCircle,
+  CheckCircle,
   Loader2,
   Eye,
   School,
@@ -124,8 +124,8 @@ const useApplicationAssignment = () => {
     setError(null)
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
       const mockOfficers: Officer[] = [
         {
           id: '1',
@@ -137,7 +137,12 @@ const useApplicationAssignment = () => {
         },
         {
           id: '2',
-          user: { id: '2', firstName: 'Jane', lastName: 'Smith', email: 'jane.smith@university.edu' },
+          user: {
+            id: '2',
+            firstName: 'Jane',
+            lastName: 'Smith',
+            email: 'jane.smith@university.edu'
+          },
           role: 'ADMISSION_OFFICER',
           isActive: true,
           currentAssignments: 32,
@@ -145,7 +150,12 @@ const useApplicationAssignment = () => {
         },
         {
           id: '3',
-          user: { id: '3', firstName: 'Michael', lastName: 'Johnson', email: 'mike.johnson@university.edu' },
+          user: {
+            id: '3',
+            firstName: 'Michael',
+            lastName: 'Johnson',
+            email: 'mike.johnson@university.edu'
+          },
           role: 'ADMISSION_OFFICER',
           isActive: true,
           currentAssignments: 28,
@@ -153,7 +163,12 @@ const useApplicationAssignment = () => {
         },
         {
           id: '4',
-          user: { id: '4', firstName: 'Sarah', lastName: 'Williams', email: 'sarah.williams@university.edu' },
+          user: {
+            id: '4',
+            firstName: 'Sarah',
+            lastName: 'Williams',
+            email: 'sarah.williams@university.edu'
+          },
           role: 'JUNIOR_ADMISSION_OFFICER',
           isActive: true,
           currentAssignments: 15,
@@ -171,29 +186,29 @@ const useApplicationAssignment = () => {
 
   const loadPreview = useCallback(async () => {
     if (!selectedOfficer) return
-    
+
     setLoading(true)
     setError(null)
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800))
-      
+      await new Promise((resolve) => setTimeout(resolve, 800))
+
       let targetName = ''
       let totalAvailable = 0
-      
+
       switch (assignmentType) {
         case 'faculty':
-          const faculty = faculties.find(f => f.id === targetId)
+          const faculty = faculties.find((f) => f.id === targetId)
           targetName = faculty?.name || 'Unknown Faculty'
           totalAvailable = Math.floor(Math.random() * 50) + 20
           break
         case 'department':
-          const department = departments.find(d => d.id === targetId)
+          const department = departments.find((d) => d.id === targetId)
           targetName = department?.name || 'Unknown Department'
           totalAvailable = Math.floor(Math.random() * 30) + 10
           break
         case 'program':
-          const program = programs.find(p => p.id === targetId)
+          const program = programs.find((p) => p.id === targetId)
           targetName = program?.name || 'Unknown Program'
           totalAvailable = Math.floor(Math.random() * 20) + 5
           break
@@ -202,10 +217,10 @@ const useApplicationAssignment = () => {
           totalAvailable = Math.floor(Math.random() * 100) + 50
           break
       }
-      
+
       const assignedCount = Math.min(count, totalAvailable)
       const unassignedCount = totalAvailable - assignedCount
-      
+
       setPreview({
         totalAvailable,
         assignedCount,
@@ -223,7 +238,7 @@ const useApplicationAssignment = () => {
 
   const executeAssignment = useCallback(async () => {
     if (!selectedOfficer || !preview) return
-    
+
     setAssigning(true)
     setError(null)
     try {
@@ -233,13 +248,13 @@ const useApplicationAssignment = () => {
         count,
         targetId: assignmentType !== 'random' ? targetId : undefined
       }
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
       // Simulate success/failure
       const success = Math.random() > 0.1 // 90% success rate
-      
+
       if (success) {
         setResult({
           success: true,
@@ -359,7 +374,7 @@ const OfficerSelection: React.FC<{
         <Users className="h-5 w-5 text-blue-600" />
         <h3 className="text-lg font-semibold text-gray-900">Select Admission Officer</h3>
       </div>
-      
+
       <div className="grid gap-4 md:grid-cols-2">
         {officers.map((officer) => (
           <div
@@ -415,12 +430,12 @@ const AssignmentConfiguration: React.FC<{
   onAssignmentTypeChange: (type: AssignmentType) => void
   onTargetIdChange: (id: string) => void
   onCountChange: (count: number) => void
-}> = ({ 
-  assignmentType, 
-  targetId, 
-  count, 
-  faculties, 
-  departments, 
+}> = ({
+  assignmentType,
+  targetId,
+  count,
+  faculties,
+  departments,
   programs,
   onAssignmentTypeChange,
   onTargetIdChange,
@@ -461,9 +476,7 @@ const AssignmentConfiguration: React.FC<{
 
       {/* Assignment Type Selection */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          Assignment Type
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-3">Assignment Type</label>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {[
             { value: 'faculty', label: 'Faculty', icon: <School className="h-4 w-4" /> },
@@ -533,9 +546,7 @@ const AssignmentConfiguration: React.FC<{
           max="100"
           className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
-        <p className="mt-1 text-sm text-gray-500">
-          Maximum 100 applications per assignment
-        </p>
+        <p className="mt-1 text-sm text-gray-500">Maximum 100 applications per assignment</p>
       </div>
     </div>
   )
@@ -556,11 +567,7 @@ const AssignmentPreview: React.FC<{
   }
 
   if (!preview) {
-    return (
-      <div className="text-center py-12 text-gray-500">
-        No preview available
-      </div>
-    )
+    return <div className="text-center py-12 text-gray-500">No preview available</div>
   }
 
   return (
@@ -585,7 +592,7 @@ const AssignmentPreview: React.FC<{
               </div>
             </div>
           </div>
-          
+
           <div>
             <h4 className="font-semibold text-gray-900 mb-3">Assignment Summary</h4>
             <div className="space-y-2">
@@ -613,7 +620,8 @@ const AssignmentPreview: React.FC<{
             <div>
               <h4 className="font-medium text-yellow-800">Partial Assignment</h4>
               <p className="text-sm text-yellow-700">
-                Only {preview.assignedCount} out of {preview.totalAvailable} available applications will be assigned.
+                Only {preview.assignedCount} out of {preview.totalAvailable} available applications
+                will be assigned.
               </p>
             </div>
           </div>
@@ -757,11 +765,10 @@ const ApplicationAssignmentInterface: React.FC = () => {
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Application Assignment System
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Application Assignment System</h1>
         <p className="text-gray-600">
-          Assign applications to admission officers based on faculty, department, program, or randomly
+          Assign applications to admission officers based on faculty, department, program, or
+          randomly
         </p>
       </div>
 
@@ -769,19 +776,14 @@ const ApplicationAssignmentInterface: React.FC = () => {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           {['select_officer', 'configure', 'preview', 'result'].map((stepName, index) => (
-            <div
-              key={stepName}
-              className={`flex items-center ${
-                index < 3 ? 'flex-1' : ''
-              }`}
-            >
+            <div key={stepName} className={`flex items-center ${index < 3 ? 'flex-1' : ''}`}>
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                   step === stepName
                     ? 'bg-blue-600 text-white'
                     : ['select_officer', 'configure', 'preview', 'result'].indexOf(step) > index
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-200 text-gray-600'
+                      ? 'bg-green-600 text-white'
+                      : 'bg-gray-200 text-gray-600'
                 }`}
               >
                 {index + 1}
@@ -838,13 +840,9 @@ const ApplicationAssignmentInterface: React.FC = () => {
           />
         )}
 
-        {step === 'preview' && (
-          <AssignmentPreview preview={preview} loading={loading} />
-        )}
+        {step === 'preview' && <AssignmentPreview preview={preview} loading={loading} />}
 
-        {step === 'result' && (
-          <AssignmentResult result={result} onReset={resetAssignment} />
-        )}
+        {step === 'result' && <AssignmentResult result={result} onReset={resetAssignment} />}
       </div>
 
       {/* Navigation Buttons */}

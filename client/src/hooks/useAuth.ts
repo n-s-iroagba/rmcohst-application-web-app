@@ -8,7 +8,7 @@ import { useState } from 'react'
 
 type AuthFormKeys =
   | keyof RegisterationFormData
-  | keyof LoginData 
+  | keyof LoginData
   | keyof ForgotPassword
   | keyof VerifyEmailCode
   | keyof ResetPasswordFormData
@@ -65,7 +65,7 @@ type UseAuthReturn = {
   handleResendEmailVerificationFormCode: () => void
   handleChangeLoginData: (e: React.ChangeEvent<HTMLInputElement>) => void
   login: (e: React.FormEvent) => Promise<void>
-  handleSubmitSignup: (e: React.FormEvent, role: SignUpRole) => Promise<void>
+  handleSubmitSignup: (role: SignUpRole) => Promise<void>
   forgotPassword: (e: React.FormEvent) => Promise<void>
   verifyCode: (e: React.FormEvent) => Promise<void>
   resetPassword: (e: React.FormEvent) => Promise<void>
@@ -225,8 +225,7 @@ export const useAuth = (): UseAuthReturn => {
     }
   }
 
-  const handleSubmitSignup = async (e: React.FormEvent, role: SignUpRole) => {
-    e.preventDefault()
+  const handleSubmitSignup = async (role: SignUpRole) => {
     if (validate(signupData)) {
       await register(role)
     }

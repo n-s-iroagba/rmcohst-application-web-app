@@ -1,12 +1,5 @@
 // components/icons.ts
-import {
-  Users,
-  BookOpen,
-  School,
-  ScrollText,
-  BadgeCheck,
-  GraduationCap
-} from 'lucide-react'
+import { Users, BookOpen, School, ScrollText, BadgeCheck, GraduationCap } from 'lucide-react'
 
 export const entityIcons: Record<string, React.ReactNode> = {
   department: <School className="w-12 h-12 text-blue-600" />,
@@ -15,11 +8,10 @@ export const entityIcons: Record<string, React.ReactNode> = {
   sscQualification: <GraduationCap className="w-12 h-12 text-blue-600" />,
   program: <BadgeCheck className="w-12 h-12 text-blue-600" />,
   admissionOfficer: <Users className="w-12 h-12 text-blue-600" />
-};
-
+}
 
 // components/CrudPageWrapper.tsx
-'use client'
+;('use client')
 
 import { useState } from 'react'
 import { Spinner } from '@/components/Spinner'
@@ -71,13 +63,13 @@ export function CrudPageWrapper<T>({
         </div>
 
         {createMode && <FormComponent onCancel={() => setCreateMode(false)} />}
-        {toUpdate && <FormComponent existingEntity={toUpdate} patch onCancel={() => setToUpdate(null)} />}
+        {toUpdate && (
+          <FormComponent existingEntity={toUpdate} patch onCancel={() => setToUpdate(null)} />
+        )}
 
         {!data || data.length === 0 ? (
           <div className="bg-blue-50 p-8 rounded-2xl border-2 border-blue-100 text-center max-w-md mx-auto">
-            <div className="flex justify-center mb-4">
-              {entityIcons[entityKey]}
-            </div>
+            <div className="flex justify-center mb-4">{entityIcons[entityKey]}</div>
             <h3 className="text-lg font-semibold text-blue-900 mb-2">No {title} Yet</h3>
             <p className="text-blue-700">Start by adding a new {title.toLowerCase()}.</p>
           </div>
@@ -107,9 +99,7 @@ export function CrudPageWrapper<T>({
   )
 }
 
-
 // example pages
 // app/(dashboard)/departments/page.tsx
-
 
 // Do the same for session, programSpecificQualification, sscQualification, program, admissionOfficer

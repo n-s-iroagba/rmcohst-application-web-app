@@ -9,9 +9,9 @@ import {
 import { AcademicSessionCreationDto } from '@/types/academic_session'
 import { DepartmentCreationDto } from '@/types/department'
 import { FacultyCreationDto } from '@/types/faculty'
-import { SSCSubjectMinimumGradeCreationDto } from '@/types/ssc_subject_minimum_grade' // Assumed correct import path
 import { ProgramCreationDto } from '@/types/program'
 import { ProgramSpecificRequirementCreationDto } from '@/types/program_specific_requirement'
+import { ProgramSSCRequirement } from '@/types/program_ssc_requirement'
 
 const tempDeptData: DepartmentCreationDto = {
   name: '',
@@ -26,11 +26,6 @@ const tempFacultyData: FacultyCreationDto = {
   nameOfDean: ''
 }
 
-const tempSSCRequirement: SSCSubjectMinimumGradeCreationDto = {
-  sscSubjectId: 0,
-  minimumGradeId: ''
-}
-
 const tempProgramSpecificRequirement: ProgramSpecificRequirementCreationDto = {
   qualificationType: '',
   minimumGrade: ''
@@ -38,16 +33,13 @@ const tempProgramSpecificRequirement: ProgramSpecificRequirementCreationDto = {
 
 export const useApplicationRequirements = () => {
   const [sessionData, setSessionData] = useState<AcademicSessionCreationDto>({
-     name: '',
-applicationStartDate: new Date(),
-applicationEndDate: new Date()
-
+    name: '',
+    applicationStartDate: new Date(),
+    applicationEndDate: new Date()
   })
   const [facultyData, setFacultyData] = useState<FacultyCreationDto[]>([])
   const [departmentData, setDepartmentData] = useState<DepartmentCreationDto[]>([tempDeptData])
-  const [sscRequirementsData, setSCCRequirementsData] = useState<
-    SSCSubjectMinimumGradeCreationDto[]
-  >([])
+  const [sscRequirementsData, setSCCRequirementsData] = useState<ProgramSSCRequirement[]>([])
   const [programSpecificRequirementsData, setProgramSpecificRequirementsData] = useState<
     ProgramSpecificRequirementCreationDto[]
   >([])
@@ -63,6 +55,8 @@ applicationEndDate: new Date()
   const handleChangeSessionData = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleChange(setSessionData, e)
   }
+
+  const handleSubmitSession = () => {}
   // FACULTY
   const handleChangeFaculty = (e: React.ChangeEvent<HTMLInputElement>, index?: number) => {
     if (index !== undefined) {
@@ -72,6 +66,7 @@ applicationEndDate: new Date()
     }
   }
 
+  const handleSubmitFaculty = () => {}
   const addFaculty = () => {
     setFacultyData([...facultyData, tempFacultyData])
   }
@@ -88,7 +83,7 @@ applicationEndDate: new Date()
       handleChange(setDepartmentData, e)
     }
   }
-
+  const handleSubmitDepartment = () => {}
   const addDepartment = () => {
     setDepartmentData([...departmentData, tempDeptData])
   }
@@ -100,10 +95,6 @@ applicationEndDate: new Date()
     sscIndex: number
   ) => {
     handleChangeArrayInArray(e, setProgramData, programIndex, sscIndex)
-  }
-
-  const addProgramSSCRequirement = (parentIndex: number) => {
-    handleAddToArrayOfArrays(parentIndex, setProgramData, 'sscRequirements', tempSSCRequirement)
   }
 
   const removeProgramSSCRequirement = (parentIndex: number, childIndex: number) => {
@@ -133,9 +124,7 @@ applicationEndDate: new Date()
     handleArrayOfObjectsChange(setSCCRequirementsData, e, index)
   }
 
-  const addSSCRequirement = () => {
-    setSCCRequirementsData((prev) => [...prev, tempSSCRequirement])
-  }
+  const handleSubmitSSCRequirement = () => {}
 
   const removeSSCRequirement = (index: number) => {
     setSCCRequirementsData((prev) => prev.filter((_, i) => i !== index))
@@ -144,6 +133,9 @@ applicationEndDate: new Date()
   // PROGRAM SPECIFIC
   const handleChangeProgramData = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleChange(setProgramData, e)
+  }
+  const handleSubmitProgram = () => {
+    // Add program
   }
   const handleChangeProgramSpecificRequirementsData = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -156,28 +148,32 @@ applicationEndDate: new Date()
     //SESSION
     sessionData,
     handleChangeSessionData,
+    handleSubmitSession,
     // FACULTY
     facultyData,
     handleChangeFaculty,
     addFaculty,
     removeFaculty,
+    handleSubmitFaculty,
 
     // DEPARTMENT
     departmentData,
     handleChangeDepartment,
+    handleSubmitDepartment,
     addDepartment,
 
     // SSC
     sscRequirementsData,
     handleChangeSSCRequirement,
-    addSSCRequirement,
+    handleSubmitSSCRequirement,
     removeSSCRequirement,
     handleChangeProgramSSCRequirement,
-    addProgramSSCRequirement,
+
     removeProgramSSCRequirement,
     // PROGRAM
     programData,
     handleChangeProgramData,
+    handleSubmitProgram,
     // PROGRAM SPECIFIC
     programSpecificRequirementsData,
     handleChangeProgramSpecificRequirementsData,

@@ -1,61 +1,45 @@
-import React from 'react'
 import { useApplicationRequirements } from '@/hooks/useApplicationRequirements'
-import { Department, DepartmentCreationDto } from '@/types/department'
+import { ProgramSSCRequirement } from '@/types/program_ssc_requirement'
+import { FieldType } from '@/types/fields_config'
+import { CustomArrayForm, CustomForm } from './CustomForm'
 
-
-interface DepartmentFormProps {
-  departmentData: DepartmentCreationDto[] | Department
-  isEdit: boolean
-  handleChangeUpdate:(e:any)=>void
-  handleSave:(e:any)=> void
+interface SSCRequrremenntFormProps {
+  sscRequirementToEdit?: ProgramSSCRequirement
+  handleChangeUpdate: (e: any) => void
+  handleSave: () => void
 }
 
+const SSCRequrremenntForm: React.FC<SSCRequrremenntFormProps> = ({
+  sscRequirementToEdit,
+  handleChangeUpdate,
+  handleSave
+}) => {
+  const { sscRequirementsData, handleSubmitSSCRequirement, handleChangeSSCRequirement } =
+    useApplicationRequirements()
 
-
-const DepartmentForm: React.FC<DepartmentFormProps> = ({ isEdit = false, departmentToEdit, handleChangeUpdate, handleSave }) => {
-  const {
-    departmentData,
-    handleSubmitDepartment
-    handleChange,
-    addFaculty,
-    removeFaculty
-  } = useApplicationRequirements()
-
-  const data = isEdit && departmentToEdit ? departmentToEdit : departmentData
-  const onChangeFn = isEdit ? handleChangeUpdate : handleChange
-  const onSaveFn = isEdit ? handleSave : handleSubmitDepartment
+  const data = sscRequirementToEdit ? sscRequirementToEdit : sscRequirementsData
+  const onChangeFn = sscRequirementToEdit ? handleChangeUpdate : handleChangeSSCRequirement
+  const onSaveFn = sscRequirementToEdit ? handleSave : handleSubmitSSCRequirement
 
   const fieldsConfig = {
-    name: { type: 'text', label: 'Faculty Name' },
-    description: { type: 'textarea', label: 'Faculty Description' }
-  }
-
-  const handlers = {
-    name: handleChangeFaculty,
-    description: handleChangeFaculty
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (isEdit && departmentToEdit) {
-      // update logic here
-      console.log('Updating faculty:', departmentToEdit)
-    } else {
-      addFaculty()
+    maximumNumberOfSittings: {
+      type: 'text' as FieldType,
+      onChangeHandler: onChangeFn
     }
   }
 
+  if (sscRequirementToEdit)
+    return (
+      <CustomForm data={sscRequirementToEdit} fieldsConfig={fieldsConfig} onSubmit={onSaveFn} />
+    )
   return (
-    <CustomForm
-      isEdit={isEdit??false}
-      data={data}
+    <CustomArrayForm
+      arrayData={sscRequirementsData}
       fieldsConfig={fieldsConfig}
-      handlers={handlers}
-      onSubmit={handleSubmit}
-      cancelLabel="Cancel"
-      onCancel={onCancel}
+      onSubmit={onSaveFn}
+      addOrRemovelabel={'SSC Requirement'}
     />
   )
 }
 
-export default DepartmentForm
+export default SSCRequrremenntForm

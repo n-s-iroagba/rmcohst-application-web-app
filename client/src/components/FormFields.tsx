@@ -3,7 +3,9 @@ import { FieldConfig } from './FieldRenderer'
 
 export const TextField = ({ name, label, value, onChange, error }: any) => (
   <div className="mb-4">
-    <label htmlFor={name} className="block font-medium mb-1">{label}</label>
+    <label htmlFor={name} className="block font-medium mb-1">
+      {label}
+    </label>
     <input
       type="text"
       id={name}
@@ -18,7 +20,9 @@ export const TextField = ({ name, label, value, onChange, error }: any) => (
 
 export const TextareaField = ({ name, label, value, onChange, error }: any) => (
   <div className="mb-4">
-    <label htmlFor={name} className="block font-medium mb-1">{label}</label>
+    <label htmlFor={name} className="block font-medium mb-1">
+      {label}
+    </label>
     <textarea
       id={name}
       name={name}
@@ -32,7 +36,9 @@ export const TextareaField = ({ name, label, value, onChange, error }: any) => (
 
 export const SelectField = ({ name, label, value, onChange, options, error }: any) => (
   <div className="mb-4">
-    <label htmlFor={name} className="block font-medium mb-1">{label}</label>
+    <label htmlFor={name} className="block font-medium mb-1">
+      {label}
+    </label>
     <select
       id={name}
       name={name}
@@ -42,7 +48,9 @@ export const SelectField = ({ name, label, value, onChange, options, error }: an
     >
       <option value="">Select {label}</option>
       {options?.map((opt: string) => (
-        <option key={opt} value={opt}>{opt}</option>
+        <option key={opt} value={opt}>
+          {opt}
+        </option>
       ))}
     </select>
     {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
@@ -51,13 +59,7 @@ export const SelectField = ({ name, label, value, onChange, options, error }: an
 
 export const CheckboxField = ({ name, label, checked, onChange, error }: any) => (
   <div className="mb-4 flex items-center space-x-2">
-    <input
-      type="checkbox"
-      id={name}
-      name={name}
-      checked={checked || false}
-      onChange={onChange}
-    />
+    <input type="checkbox" id={name} name={name} checked={checked || false} onChange={onChange} />
     <label htmlFor={name}>{label}</label>
     {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
   </div>
@@ -65,7 +67,9 @@ export const CheckboxField = ({ name, label, checked, onChange, error }: any) =>
 
 export const FileField = ({ name, label, onChange, error }: any) => (
   <div className="mb-4">
-    <label htmlFor={name} className="block font-medium mb-1">{label}</label>
+    <label htmlFor={name} className="block font-medium mb-1">
+      {label}
+    </label>
     <input
       type="file"
       id={name}
@@ -77,57 +81,82 @@ export const FileField = ({ name, label, onChange, error }: any) => (
     {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
   </div>
 )
-type DoubleSelectProps = {
-  index: number
-  data: any[]
-  config: FieldConfig
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>, index: number) => void
+
+type MultiGroupSelectFieldProps = {
+  groupData: any[]
+  fieldGroup: NonNullable<FieldConfig['fieldGroup']>
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>, index: number, subKey: string) => void
 }
 
-export const DoubleSelectField: React.FC<DoubleSelectProps> = ({ index, data, config, onChange }) => {
-  const { fieldGroup } = config
+export const MultiGroupSelectField: React.FC<MultiGroupSelectFieldProps> = ({
+  groupData,
+  fieldGroup,
+  onChange
+}) => {
+  return (
+    <div className="space-y-2">
+      {groupData.map((entry, i) => (
+        <div key={i} className="grid grid-cols-2 gap-2">
+          {fieldGroup.fields.map((field) => (
+            <select
+              key={field.name}
+              value={entry[field.name] || ''}
+              onChange={(e) => onChange(e, i, field.name)}
+              className="border rounded px-2 py-1"
+            >
+              <option value="">Select {field.label}</option>
+              {field.options.map((opt) => (
+                <option key={opt.id} value={opt.id}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+type RadioFieldProps = {
+  name: string
+  label: string
+  options: { id: string | number; label: string }[] | string[]
+  value: string | number
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  error?: string
+}
 
-  if (!fieldGroup) {
-    throw new Error(`Double-select field "${config.name}" is missing fieldGroup config`)
-  }
-
-  const value = data[index]
+export const RadioField: React.FC<RadioFieldProps> = ({
+  name,
+  label,
+  options,
+  value,
+  onChange,
+  error
+}) => {
+  const normalizedOptions =
+    typeof options[0] === 'string'
+      ? (options as string[]).map((opt) => ({ id: opt, label: opt }))
+      : (options as { id: string | number; label: string }[])
 
   return (
-    <div className="flex space-x-4">
-      <div className="flex flex-col flex-1">
-        <label>{fieldGroup.firstField.label}</label>
-        <select
-          name={fieldGroup.firstField.name}
-          value={value[fieldGroup.firstField.name] || ''}
-          onChange={(e) => onChange(e, index)}
-          className="border p-2 rounded"
-        >
-          <option value="">Select {fieldGroup.firstField.label}</option>
-          {fieldGroup.firstField.options.map((opt) => (
-            <option key={opt.id} value={opt.id}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+    <div className="mb-4">
+      <label className="block font-medium mb-2">{label}</label>
+      <div className="space-y-2">
+        {normalizedOptions.map((option) => (
+          <label key={option.id} className="inline-flex items-center gap-2">
+            <input
+              type="radio"
+              name={name}
+              value={option.id}
+              checked={value === option.id}
+              onChange={onChange}
+            />
+            {option.label}
+          </label>
+        ))}
       </div>
-
-      <div className="flex flex-col flex-1">
-        <label>{fieldGroup.secondField.label}</label>
-        <select
-          name={fieldGroup.secondField.name}
-          value={value[fieldGroup.secondField.name] || ''}
-          onChange={(e) => onChange(e, index)}
-          className="border p-2 rounded"
-        >
-          <option value="">Select {fieldGroup.secondField.label}</option>
-          {fieldGroup.secondField.options.map((opt) => (
-            <option key={opt.id} value={opt.id}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-      </div>
+      {error && <p className="text-red-500 text-sm">{error}</p>}
     </div>
   )
 }

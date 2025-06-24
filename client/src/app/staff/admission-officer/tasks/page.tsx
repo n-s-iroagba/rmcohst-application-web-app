@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  User, 
-  FileText, 
-  Calendar, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Users, 
+import React, { useState, useEffect, useCallback } from 'react'
+import {
+  User,
+  FileText,
+  Calendar,
+  Phone,
+  Mail,
+  MapPin,
+  Users,
   GraduationCap,
   Eye,
   MessageSquare,
@@ -19,63 +19,67 @@ import {
   Filter,
   ChevronDown,
   ChevronUp
-} from 'lucide-react';
+} from 'lucide-react'
 
 // Types
-type ApplicationStatus = 'PENDING' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED' | 'WAITLISTED';
+type ApplicationStatus = 'PENDING' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED' | 'WAITLISTED'
 
 interface Biodata {
-  id: number;
-  applicationId: number;
-  firstName: string;
-  middleName?: string;
-  surname: string;
-  gender: string;
-  dateOfBirth: string;
-  maritalStatus: string;
-  homeAddress: string;
-  nationality: string;
-  stateOfOrigin: string;
-  lga: string;
-  homeTown: string;
-  phoneNumber: string;
-  emailAddress: string;
-  passportPhotograph: string; // Base64 or blob data
-  nextOfKinFullName: string;
-  nextOfKinPhoneNumber: string;
-  nextOfKinAddress: string;
-  relationshipWithNextOfKin: string;
+  id: number
+  applicationId: number
+  firstName: string
+  middleName?: string
+  surname: string
+  gender: string
+  dateOfBirth: string
+  maritalStatus: string
+  homeAddress: string
+  nationality: string
+  stateOfOrigin: string
+  lga: string
+  homeTown: string
+  phoneNumber: string
+  emailAddress: string
+  passportPhotograph: string // Base64 or blob data
+  nextOfKinFullName: string
+  nextOfKinPhoneNumber: string
+  nextOfKinAddress: string
+  relationshipWithNextOfKin: string
 }
 
 interface SSCQualification {
-  id: number;
-  applicationId: number;
-  numberOfSittings: number;
-  certificateTypes: string[];
-  certificates: string[]; // Array of base64 or file paths
+  id: number
+  applicationId: number
+  numberOfSittings: number
+  certificateTypes: string[]
+  certificates: string[] // Array of base64 or file paths
 }
 
 interface Application {
-  id: number;
-  status: ApplicationStatus;
-  adminComments?: string;
-  createdAt: string;
-  updatedAt: string;
-  biodata: Biodata;
-  sscQualifications: SSCQualification[];
+  id: number
+  status: ApplicationStatus
+  adminComments?: string
+  createdAt: string
+  updatedAt: string
+  biodata: Biodata
+  sscQualifications: SSCQualification[]
 }
 
 interface Comment {
-  id: string;
-  content: string;
-  timestamp: string;
-  officer: string;
-  type: 'GENERAL' | 'BIODATA' | 'QUALIFICATION' | 'DECISION';
+  id: string
+  content: string
+  timestamp: string
+  officer: string
+  type: 'GENERAL' | 'BIODATA' | 'QUALIFICATION' | 'DECISION'
 }
 
 // Services
 class ApplicationService {
-  static async updateApplicationStatus(id: string, status: ApplicationStatus, comments?: string): Promise<Application> {
+  static async updateApplicationStatus(
+    id: string,
+    status: ApplicationStatus,
+    comments?: string
+  ): Promise<Application> {
     // Mock implementation - replace with actual API call
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -87,29 +91,33 @@ class ApplicationService {
           updatedAt: new Date().toISOString(),
           biodata: {} as Biodata,
           sscQualifications: []
-        });
-      }, 1000);
-    });
+        })
+      }, 1000)
+    })
   }
 
   static async getApplications(filters?: any): Promise<Application[]> {
     // Mock data
-    return mockApplications;
+    return mockApplications
   }
 
   static async getApplication(id: string): Promise<Application> {
-    return mockApplications.find(app => app.id === parseInt(id)) || mockApplications[0];
+    return mockApplications.find((app) => app.id === parseInt(id)) || mockApplications[0]
   }
 
-  static async addComment(applicationId: string, comment: string, type: Comment['type']): Promise<Comment> {
+  static async addComment(
+    applicationId: string,
+    comment: string,
+    type: Comment['type']
+  ): Promise<Comment> {
     const newComment: Comment = {
       id: Date.now().toString(),
       content: comment,
       timestamp: new Date().toISOString(),
       officer: 'Current Officer',
       type
-    };
-    return newComment;
+    }
+    return newComment
   }
 }
 
@@ -143,29 +151,24 @@ const mockApplications: Application[] = [
       nextOfKinAddress: '123 Main Street, Lagos',
       relationshipWithNextOfKin: 'Sister'
     },
-    sscQualifications: [{
-      id: 1,
-      applicationId: 1,
-      numberOfSittings: 1,
-      certificateTypes: ['WAEC', 'NECO'],
-      certificates: ['cert1_base64', 'cert2_base64']
-    }]
+    sscQualifications: [
+      {
+        id: 1,
+        applicationId: 1,
+        numberOfSittings: 1,
+        certificateTypes: ['WAEC', 'NECO'],
+        certificates: ['cert1_base64', 'cert2_base64']
+      }
+    ]
   }
-];
+]
 
 // Utility Components
 
-
-
-
 // Main Components
-
-
-
 
 // Main Application Component
 const AdmissionReviewSystem: React.FC = () => {
- 
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center">
@@ -174,7 +177,7 @@ const AdmissionReviewSystem: React.FC = () => {
           <p className="text-gray-600">Loading applications...</p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -189,9 +192,8 @@ const AdmissionReviewSystem: React.FC = () => {
       </div>
 
       {/* Main Content */}
-     
     </div>
-  );
-};
+  )
+}
 
-export default AdmissionReviewSystem;
+export default AdmissionReviewSystem

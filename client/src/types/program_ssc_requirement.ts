@@ -1,9 +1,11 @@
+import { Program } from './program'
 import { SSCSubject } from './ssc_subject'
 
-interface SSCSubjectMinimumGrade {
+export interface ProgramSSCRequirement {
   id: number
-  sscSubjectId: number
-  minimumGradeId: string
+  maximumNumberOfSittings: number
+  programs: Program[]
+  subjectAndGrades: SSCSubjectMinimumGrade[]
   createdAt?: Date
   updatedAt?: Date
 }
@@ -22,7 +24,7 @@ export interface Grade {
   readonly createdAt: Date
   readonly updatedAt: Date
 }
-export interface UpdateSSCSubjectMinimumGrade {
+export interface SSCSubjectMinimumGrade {
   subject: SSCSubject
   grade: Grade
 }

@@ -1,7 +1,7 @@
 export interface ApplicationProgramSpecificQualification {
   id: number
 
-applicationId: number
+  applicationId: number
   qualificationType: string
   gradeId: number
   certificate: string

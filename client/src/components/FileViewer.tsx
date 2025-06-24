@@ -1,8 +1,8 @@
-import { Eye, Download } from "lucide-react";
-import { useState } from "react";
+import { Eye, Download } from 'lucide-react'
+import { useState } from 'react'
 
-const FileViewer: React.FC<{ files: string[], types: string[] }> = ({ files, types }) => {
-  const [selectedFile, setSelectedFile] = useState<number | null>(null);
+const FileViewer: React.FC<{ files: string[]; types: string[] }> = ({ files, types }) => {
+  const [selectedFile, setSelectedFile] = useState<number | null>(null)
 
   return (
     <div className="space-y-4">
@@ -31,5 +31,5 @@ const FileViewer: React.FC<{ files: string[], types: string[] }> = ({ files, typ
         ))}
       </div>
     </div>
-  );
-};
+  )
+}

@@ -1,61 +1,31 @@
 import React from 'react'
 import { useApplicationRequirements } from '@/hooks/useApplicationRequirements'
-import { session, sessionCreationDto } from '@/types/session'
 
+import { FieldType } from '@/types/fields_config'
+import { Session } from '@/types/academic_session'
+import { CustomForm } from './CustomForm'
 
 interface SessionFormProps {
-  sessionData: sessionCreationDto[] | session
-  isEdit: boolean
-  handleChangeUpdate:(e:any)=>void
-  handleSave:(e:any)=> void
+  session?: Session
+  handleChangeUpdate: (e: any) => void
+  handleSave: () => void
 }
 
+const SessionForm: React.FC<SessionFormProps> = ({ session, handleChangeUpdate, handleSave }) => {
+  const { sessionData, handleSubmitSession, handleChangeSessionData } = useApplicationRequirements()
 
-
-const SessionForm: React.FC<SessionFormProps> = ({ isEdit = false, sessionToEdit, handleChangeUpdate, handleSave }) => {
-  const {
-    sessionData,
-    handleSubmitSession,
-        handleChangeSessionData,
-    addFaculty,
-    removeFaculty
-  } = useApplicationRequirements()
-
-  const data = isEdit && sessionToEdit ? sessionToEdit : sessionData
-  const onChangeFn = isEdit ? handleChangeUpdate : handleChangeSessionData
-  const onSaveFn = isEdit ? handleSave : handleSubmitSession,
+  const data = session ? session : sessionData
+  const onChangeFn = session ? handleChangeUpdate : handleChangeSessionData
+  const onSaveFn = session ? handleSave : handleSubmitSession
 
   const fieldsConfig = {
-    name: { type: 'text', label: 'Faculty Name' },
-    description: { type: 'textarea', label: 'Faculty Description' }
-  }
-
-  const handlers = {
-    name: handleChangeFaculty,
-    description: handleChangeFaculty
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (isEdit && sessionToEdit) {
-      // update logic here
-      console.log('Updating faculty:', sessionToEdit)
-    } else {
-      addFaculty()
+    name: {
+      type: 'text' as FieldType,
+      onChangeHandler: onChangeFn
     }
   }
 
-  return (
-    <CustomForm
-      isEdit={isEdit??false}
-      data={data}
-      fieldsConfig={fieldsConfig}
-      handlers={handlers}
-      onSubmit={handleSubmit}
-      cancelLabel="Cancel"
-      onCancel={onCancel}
-    />
-  )
+  return <CustomForm data={data} fieldsConfig={fieldsConfig} onSubmit={onSaveFn} />
 }
 
 export default SessionForm

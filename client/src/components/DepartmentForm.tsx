@@ -1,61 +1,43 @@
 import React from 'react'
 import { useApplicationRequirements } from '@/hooks/useApplicationRequirements'
 import { Department, DepartmentCreationDto } from '@/types/department'
-
+import { CustomArrayForm, CustomForm } from './CustomForm'
+import { FieldType } from '@/types/fields_config'
 
 interface DepartmentFormProps {
-  departmentData: DepartmentCreationDto[] | Department
-  isEdit: boolean
-  handleChangeUpdate:(e:any)=>void
-  handleSave:(e:any)=> void
+  departmentToEdit?: Department
+  handleChangeUpdate: (e: any) => void
+  handleSave: () => void
 }
 
+const DepartmentForm: React.FC<DepartmentFormProps> = ({
+  departmentToEdit,
+  handleChangeUpdate,
+  handleSave
+}) => {
+  const { departmentData, handleSubmitDepartment, handleChangeDepartment } =
+    useApplicationRequirements()
 
-
-const DepartmentForm: React.FC<DepartmentFormProps> = ({ isEdit = false, departmentToEdit, handleChangeUpdate, handleSave }) => {
-  const {
-    departmentData,
-    handleSubmitDepartment
-    handleChange,
-    addFaculty,
-    removeFaculty
-  } = useApplicationRequirements()
-
-  const data = isEdit && departmentToEdit ? departmentToEdit : departmentData
-  const onChangeFn = isEdit ? handleChangeUpdate : handleChange
-  const onSaveFn = isEdit ? handleSave : handleSubmitDepartment
+  const data = departmentToEdit ? departmentToEdit : departmentData
+  const onChangeFn = departmentToEdit ? handleChangeUpdate : handleChangeDepartment
+  const onSaveFn = departmentToEdit ? handleSave : handleSubmitDepartment
 
   const fieldsConfig = {
-    name: { type: 'text', label: 'Faculty Name' },
-    description: { type: 'textarea', label: 'Faculty Description' }
-  }
-
-  const handlers = {
-    name: handleChangeFaculty,
-    description: handleChangeFaculty
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (isEdit && departmentToEdit) {
-      // update logic here
-      console.log('Updating faculty:', departmentToEdit)
-    } else {
-      addFaculty()
+    name: {
+      type: 'text' as FieldType,
+      onChangeHandler: onChangeFn
     }
   }
 
+  if (departmentToEdit)
+    return <CustomForm data={departmentToEdit} fieldsConfig={fieldsConfig} onSubmit={onSaveFn} />
   return (
-    <CustomForm
-      isEdit={isEdit??false}
-      data={data}
+    <CustomArrayForm
+      arrayData={departmentData}
       fieldsConfig={fieldsConfig}
-      handlers={handlers}
-      onSubmit={handleSubmit}
-      cancelLabel="Cancel"
-      onCancel={onCancel}
+      onSubmit={onSaveFn}
+      addOrRemovelabel={'departments'}
     />
   )
 }
-
 export default DepartmentForm

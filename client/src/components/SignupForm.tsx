@@ -1,9 +1,7 @@
-
 import React from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { SignUpRole } from '@/types/role.types'
-import ErrorAlert from './ErrorAlert'
-import { DynamicFormTextFields } from '@/helpers/formFields'
+import { CustomForm } from './CustomForm'
 
 type SignupFormProps = {
   signupRole: SignUpRole
@@ -19,22 +17,13 @@ const SignupForm: React.FC<SignupFormProps> = ({ signupRole, formLabel }) => {
     error: apiError,
     validationErrors
   } = useAuth()
-
+  const fieldsConfig = {}
   return (
-    <form onSubmit={(e) => handleSubmitSignup(e, signupRole)}>
-      <h2>{formLabel}</h2>
-      <DynamicFormTextFields
-        data={signupData}
-        errors={validationErrors}
-        onChange={handleChangeSignupData}
-      />
-
-      {apiError && <ErrorAlert message={apiError} />}
-
-      <button disabled={submitting} type="submit">
-        {submitting ? 'Submitting' : 'Submit'}
-      </button>
-    </form>
+    <CustomForm
+      data={signupData}
+      fieldsConfig={fieldsConfig}
+      onSubmit={() => handleSubmitSignup(signupRole)}
+    />
   )
 }
 

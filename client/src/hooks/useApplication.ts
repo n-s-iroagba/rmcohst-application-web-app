@@ -16,7 +16,9 @@ export const useApplication = () => {
     loading
   } = useGetSingle<Application>(apiRoutes.application.myCurrentApplication)
   const [biodata, setBiodata] = useState<Biodata | null>(null)
-  const [applicantProgramSpecificRequirements, setApplicantProgramSpecificRequirements] = useState<ApplicationProgramSpecificQualification[]>([])
+  const [applicantProgramSpecificRequirements, setApplicantProgramSpecificRequirements] = useState<
+    ApplicationProgramSpecificQualification[]
+  >([])
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 

@@ -3,57 +3,42 @@
 import React from 'react'
 import { useApplicationRequirements } from '@/hooks/useApplicationRequirements'
 import { Faculty, FacultyCreationDto } from '@/types/faculty'
-import { CustomForm } from './CustomForm'
+import { CustomArrayForm, CustomForm } from './CustomForm'
+import { FieldType } from '@/types/fields_config'
 
 interface FacultyFormProps {
-  isEdit?: boolean
   facultyToEdit?: Faculty
-  onCancel?: () => void
-   handleChangeUpdate:(e:any)=>void
-  handleSave:(e:any)=> void
+  handleChangeUpdate: (e: any) => void
+  handleSave: () => void
 }
 
-const FacultyForm: React.FC<FacultyFormProps> = ({ isEdit = false, facultyToEdit, onCancel handleChangeUpdate,
-  handleSave}) => {
-  const {
-    facultyData,
-    handleChangeFaculty,
-    addFaculty,
-    removeFaculty
-  } = useApplicationRequirements()
+const FacultyForm: React.FC<FacultyFormProps> = ({
+  facultyToEdit,
+  handleChangeUpdate,
+  handleSave
+}) => {
+  const { facultyData, handleSubmitFaculty, handleChangeFaculty } = useApplicationRequirements()
 
-  const data = isEdit && facultyToEdit ? facultyToEdit : facultyData
+  const data = facultyToEdit ? facultyToEdit : facultyData
+  const onChangeFn = facultyToEdit ? handleChangeUpdate : handleChangeFaculty
+  const onSaveFn = facultyToEdit ? handleSave : handleSubmitFaculty
 
   const fieldsConfig = {
-    name: { type: 'text', label: 'Faculty Name' },
-    description: { type: 'textarea', label: 'Faculty Description' }
-  }
-
-  const handlers = {
-    name: handleChangeFaculty,
-    description: handleChangeFaculty
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (isEdit && facultyToEdit) {
-      // update logic here
-      console.log('Updating faculty:', facultyToEdit)
-    } else {
-      addFaculty()
+    name: {
+      type: 'text' as FieldType,
+      onChangeHandler: onChangeFn
     }
   }
 
+  if (facultyToEdit)
+    return <CustomForm data={facultyToEdit} fieldsConfig={fieldsConfig} onSubmit={onSaveFn} />
   return (
-    <CustomForm
-      data={data}
+    <CustomArrayForm
+      arrayData={facultyData}
       fieldsConfig={fieldsConfig}
-      handlers={handlers}
-      onSubmit={handleSubmit}
-      cancelLabel="Cancel"
-      onCancel={onCancel}
+      onSubmit={onSaveFn}
+      addOrRemovelabel={'Faculty'}
     />
   )
 }
-
 export default FacultyForm

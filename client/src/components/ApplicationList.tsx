@@ -1,29 +1,30 @@
-import { Application, ApplicationStatus } from "@/types/application";
-import { Search, Calendar, GraduationCap } from "lucide-react";
-import { useState } from "react";
+import { Application, ApplicationStatus } from '@/types/application'
+import { Search, Calendar, GraduationCap } from 'lucide-react'
+import { useState } from 'react'
 
 const ApplicationList: React.FC<{
-  applications: Application[];
-  onSelectApplication: (application: Application) => void;
-  selectedId?: number;
+  applications: Application[]
+  onSelectApplication: (application: Application) => void
+  selectedId?: number
 }> = ({ applications, onSelectApplication, selectedId }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<ApplicationStatus | 'ALL'>('ALL');
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState<ApplicationStatus | 'ALL'>('ALL')
 
-  const filteredApplications = applications.filter(app => {
-    const matchesSearch = app.biodata.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         app.biodata.surname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         app.biodata.emailAddress.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'ALL' || app.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredApplications = applications.filter((app) => {
+    const matchesSearch =
+      app.biodata.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.biodata.surname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.biodata.emailAddress.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesStatus = statusFilter === 'ALL' || app.status === statusFilter
+    return matchesSearch && matchesStatus
+  })
 
   return (
     <div className="bg-white border-r border-gray-200 h-full flex flex-col">
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Applications</h2>
-        
+
         {/* Search */}
         <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -84,5 +85,5 @@ const ApplicationList: React.FC<{
         ))}
       </div>
     </div>
-  );
-};
+  )
+}

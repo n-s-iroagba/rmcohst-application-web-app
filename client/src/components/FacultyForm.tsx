@@ -24,10 +24,10 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
   const onSaveFn = facultyToEdit ? handleSave : handleSubmitFaculty
 
   const fieldsConfig = {
-    name: {
-      type: 'text' as FieldType,
-      onChangeHandler: onChangeFn
-    }
+    name: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    code: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    description: { type: 'textarea' as FieldType, onChangeHandler: onChangeFn },
+    nameOfDean: { type: 'text' as FieldType, onChangeHandler: onChangeFn }
   }
 
   if (facultyToEdit)

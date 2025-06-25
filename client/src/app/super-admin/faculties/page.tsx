@@ -1,18 +1,29 @@
+// app/(dashboard)/faculties/page.tsx
+'use client'
+
 import { CrudPageWrapper } from '@/components/CrudPageWrapper'
-import { useApplicationRequirements } from '@/hooks/useApplicationRequirements'
+import { FacultyCard } from '@/components/FacultyCard'
 import FacultyForm from '@/components/FacultyForm'
-import FacultyCard from '@/components/FacultyCard'
+import { useGetList } from '@/hooks/useGet'
+import { Faculty } from '@/types/faculty'
 
 export default function FacultyCrudPage() {
-  const { faculties, loading, error } = useApplicationRequirements()
+  const { data: faculties, loading, error } = useGetList<Faculty>('faculties')
+
+  const handleSubmitUpdate = () => {
+    // update logic here
+  }
+  const onDelete = () => {
+    // delete logic here
+  }
 
   return (
     <CrudPageWrapper
-      title="faculties"
+      title="Faculties"
       entityKey="faculty"
       data={faculties || []}
       loading={loading}
-      error={error}
+      error={error || 'An error occurred fetching faculties'}
       FormComponent={FacultyForm}
       CardComponent={FacultyCard}
     />

@@ -5,18 +5,28 @@ import { remove } from '@/utils/apiClient'
 import { AlertTriangle, X } from 'lucide-react'
 import { useState } from 'react'
 import ErrorAlert from './ErrorAlert'
+import { Session } from 'inspector/promises'
 
 interface DeleteModalProps {
-  id: number | string
+  id: number
   onClose: () => void
-  type: 'faculty' | 'department' | 'program'
+  type:
+    | 'faculty'
+    | 'department'
+    | 'program'
+    | 'session'
+    | 'programSpecificRequirement'
+    | 'programSSCRequirement'
   message: string
 }
 
 const API_ROUTES_MAP = {
   faculty: apiRoutes.faculty.delete,
   department: apiRoutes.department.delete,
-  program: apiRoutes.program.delete
+  program: apiRoutes.program.delete,
+  session: apiRoutes.academicSession.delete,
+  programSpecificRequirement: apiRoutes.programSpecificRequirement.delete,
+  programSSCRequirement: apiRoutes.sscRequirement.delete
 }
 
 export function DeleteModal({ id, onClose, type, message }: DeleteModalProps) {

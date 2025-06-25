@@ -1,20 +1,29 @@
-import { CrudPageWrapper } from '@/components/CrudPageWrapper'
-import { useApplicationRequirements } from '@/hooks/useApplicationRequirements'
-import SSCQualificationForm from '@/components/SSCQualificationForm'
-import SSCQualificationCard from '@/components/SSCQualificationCard'
+// app/(dashboard)/program-ssc-requirements/page.tsx
+'use client'
 
-export default function SSCQualificationCrudPage() {
-  const { sscQualifications, loading, error } = useApplicationRequirements()
+import { CrudPageWrapper } from '@/components/CrudPageWrapper'
+import { ProgramSSCRequirementCard } from '@/components/ProgramSSCRequirementCard'
+import ProgramSSCRequirementForm from '@/components/ProgramSSCRequirementForm'
+
+import { useGetList } from '@/hooks/useGet'
+import { ProgramSSCRequirement } from '@/types/program_ssc_requirement'
+
+export default function ProgramSSCRequirementCrudPage() {
+  const {
+    data: requirements,
+    loading,
+    error
+  } = useGetList<ProgramSSCRequirement>('program-ssc-requirements')
 
   return (
     <CrudPageWrapper
-      title="SSCQualifications"
-      entityKey="SSCQualification"
-      data={sscQualifications || []}
+      title="Program SSC Requirements"
+      entityKey="programSSCRequirement"
+      data={requirements || []}
       loading={loading}
-      error={error}
-      FormComponent={SSCQualificationForm}
-      CardComponent={SSCQualificationCard}
+      error={error || 'An error occurred fetching SSC requirements'}
+      FormComponent={ProgramSSCRequirementForm}
+      CardComponent={ProgramSSCRequirementCard}
     />
   )
 }

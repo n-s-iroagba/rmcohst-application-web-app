@@ -12,6 +12,7 @@ export enum ApplicationStatus {
 }
 
 export interface Application {
+  id: number
   applicantUserId: number
   programId: number
   biodataId: number
@@ -27,6 +28,6 @@ export interface Application {
   adminComments?: string | null
   hoaComments?: string | null
   submittedAt?: Date | null
-  createdAt?: Date
-  updatedAt?: Date
+  createdAt: Date
+  updatedAt: Date
 }

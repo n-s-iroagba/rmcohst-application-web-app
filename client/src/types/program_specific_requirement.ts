@@ -1,4 +1,4 @@
-interface ProgramSpecificRequirementAttributes {
+export interface ProgramSpecificRequirement {
   id: number
   programId: number
   qualificationType: string
@@ -9,6 +9,6 @@ interface ProgramSpecificRequirementAttributes {
 
 // Define creation attributes
 export type ProgramSpecificRequirementCreationDto = Omit<
-  ProgramSpecificRequirementAttributes,
+  ProgramSpecificRequirement,
   'id' | 'createdAt' | 'programId' | 'updatedAt'
 >

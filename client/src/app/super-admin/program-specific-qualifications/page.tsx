@@ -1,18 +1,26 @@
+// app/(dashboard)/program-specific-requirements/page.tsx
+'use client'
+
 import { CrudPageWrapper } from '@/components/CrudPageWrapper'
-import { useApplicationRequirements } from '@/hooks/useApplicationRequirements'
+import { ProgramSpecificRequirementCard } from '@/components/ProgramSpecificRequirementCard'
 import ProgramSpecificRequirementForm from '@/components/ProgramSpecificRequirementForm'
-import ProgramSpecificRequirementCard from '@/components/ProgramSpecificRequirementCard'
+import { useGetList } from '@/hooks/useGet'
+import { ProgramSpecificRequirement } from '@/types/program_specific_requirement'
 
 export default function ProgramSpecificRequirementCrudPage() {
-  const { programSpecificRequirements, loading, error } = useApplicationRequirements()
+  const {
+    data: requirements,
+    loading,
+    error
+  } = useGetList<ProgramSpecificRequirement>('program-specific-requirements')
 
   return (
     <CrudPageWrapper
-      title="programSpecificRequirements"
-      entityKey="specific program requirements"
-      data={programSpecificRequirements || []}
+      title="Program Specific Requirements"
+      entityKey="programSpecificRequirement"
+      data={requirements || []}
       loading={loading}
-      error={error}
+      error={error || 'An error occurred fetching program requirements'}
       FormComponent={ProgramSpecificRequirementForm}
       CardComponent={ProgramSpecificRequirementCard}
     />

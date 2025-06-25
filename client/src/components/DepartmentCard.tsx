@@ -1,34 +1,27 @@
-import { BadgeCheck, Edit, Trash2, Timer } from 'lucide-react'
-import { Program } from '@/types/program'
+import { Building2, Edit, Trash2, CheckCircle } from 'lucide-react'
+import { Department } from '@/types/department'
 
-interface ProgramCardProps {
-  entity: Program
+interface DepartmentCardProps {
+  entity: Department
   onEdit: () => void
   onDelete: () => void
 }
 
-export const ProgramCard: React.FC<ProgramCardProps> = ({ entity, onEdit, onDelete }) => (
+export const DepartmentCard: React.FC<DepartmentCardProps> = ({ entity, onEdit, onDelete }) => (
   <div className="bg-blue-50 border border-blue-200 shadow-md rounded-2xl p-6 transition hover:shadow-lg">
     <div className="flex justify-between items-center mb-4">
       <div className="flex items-center gap-3">
-        <BadgeCheck className="text-blue-600" size={24} />
+        <Building2 className="text-blue-600" size={24} />
         <h2 className="text-xl font-semibold text-blue-900">{entity.name}</h2>
       </div>
+      {entity.isActive && (
+        <div className="flex items-center gap-1 text-green-600 text-sm font-medium">
+          <CheckCircle size={16} />
+          Active
+        </div>
+      )}
     </div>
-    <div className="text-sm text-blue-800 space-y-1 mb-4">
-      <p>
-        <strong>Level:</strong> {entity.level}
-      </p>
-      <p>
-        <strong>Duration:</strong> {entity.duration} {entity.durationType.toLowerCase()}
-      </p>
-      <p>
-        <strong>Application Fee:</strong> ₦{entity.applicationFeeInNaira}
-      </p>
-      <p>
-        <strong>Acceptance Fee:</strong> ₦{entity.acceptanceFeeInNaira}
-      </p>
-    </div>
+    <p className="text-blue-800 text-sm mb-4">{entity.description || 'No description.'}</p>
     <div className="flex gap-3">
       <button
         onClick={onEdit}

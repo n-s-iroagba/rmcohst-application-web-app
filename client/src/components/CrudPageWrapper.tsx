@@ -1,5 +1,17 @@
 // components/icons.ts
-import { Users, BookOpen, School, ScrollText, BadgeCheck, GraduationCap } from 'lucide-react'
+// components/icons.ts
+import {
+  Users,
+  BookOpen,
+  School,
+  ScrollText,
+  BadgeCheck,
+  GraduationCap,
+  Building2,
+  FileText,
+  BookOpenCheck,
+  Timer
+} from 'lucide-react'
 
 export const entityIcons: Record<string, React.ReactNode> = {
   department: <School className="w-12 h-12 text-blue-600" />,
@@ -7,9 +19,13 @@ export const entityIcons: Record<string, React.ReactNode> = {
   programSpecificQualification: <BookOpen className="w-12 h-12 text-blue-600" />,
   sscQualification: <GraduationCap className="w-12 h-12 text-blue-600" />,
   program: <BadgeCheck className="w-12 h-12 text-blue-600" />,
-  admissionOfficer: <Users className="w-12 h-12 text-blue-600" />
+  admissionOfficer: <Users className="w-12 h-12 text-blue-600" />,
+  faculty: <GraduationCap className="w-12 h-12 text-blue-600" />,
+  programSSCRequirement: <BookOpenCheck className="w-12 h-12 text-blue-600" />,
+  programSpecificRequirement: <FileText className="w-12 h-12 text-blue-600" />,
+  departmentNew: <Building2 className="w-12 h-12 text-blue-600" />,
+  programNew: <Timer className="w-12 h-12 text-blue-600" />
 }
-
 // components/CrudPageWrapper.tsx
 ;('use client')
 
@@ -17,23 +33,32 @@ import { useState } from 'react'
 import { Spinner } from '@/components/Spinner'
 import ErrorAlert from '@/components/ErrorAlert'
 import { DeleteModal } from '@/components/DeleteModal'
-import { entityIcons } from './icons'
+interface HasIdAndName {
+  id: number
+  name?: string // optional if some types may not have name
+}
 
-interface CrudPageWrapperProps<T> {
+interface CrudPageWrapperProps<T extends HasIdAndName> {
   title: string
-  entityKey: string
+  entityKey:
+    | 'faculty'
+    | 'department'
+    | 'program'
+    | 'session'
+    | 'programSpecificRequirement'
+    | 'programSSCRequirement'
   data: T[]
   loading: boolean
   error?: string
   FormComponent: React.ComponentType<any>
   CardComponent: React.ComponentType<{
-    [key: string]: any
+    entity: T
     onEdit: () => void
     onDelete: () => void
   }>
 }
 
-export function CrudPageWrapper<T>({
+export function CrudPageWrapper<T extends HasIdAndName>({
   title,
   entityKey,
   data,

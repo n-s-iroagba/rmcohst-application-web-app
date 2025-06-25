@@ -1,7 +1,7 @@
 import { Eye, Download } from 'lucide-react'
 import { useState } from 'react'
 
-const FileViewer: React.FC<{ files: string[]; types: string[] }> = ({ files, types }) => {
+export const FileViewer: React.FC<{ files: string[]; types: string[] }> = ({ files, types }) => {
   const [selectedFile, setSelectedFile] = useState<number | null>(null)
 
   return (

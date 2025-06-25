@@ -24,11 +24,20 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
   const onSaveFn = programToEdit ? handleSave : handleSubmitProgram
 
   const fieldsConfig = {
-    name: {
-      type: 'text' as FieldType,
-      onChangeHandler: onChangeFn
-    }
+    id: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    departmentId: { type: 'number' as FieldType, onChangeHandler: onChangeFn },
+    name: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    awardType: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    durationType: { type: 'select' as FieldType, onChangeHandler: onChangeFn },
+    duration: { type: 'number' as FieldType, onChangeHandler: onChangeFn },
+    applicationFeeInNaira: { type: 'number' as FieldType, onChangeHandler: onChangeFn },
+    acceptanceFeeInNaira: { type: 'number' as FieldType, onChangeHandler: onChangeFn },
+    description: { type: 'textarea' as FieldType, onChangeHandler: onChangeFn },
+    isActive: { type: 'checkbox' as FieldType, onChangeHandler: onChangeFn },
+    createdAt: { type: 'date' as FieldType, onChangeHandler: onChangeFn },
+    updatedAt: { type: 'date' as FieldType, onChangeHandler: onChangeFn }
   }
+
   const program = { ...programData, sscqualifications }
 
   if (programToEdit)

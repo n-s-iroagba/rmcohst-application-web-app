@@ -1,6 +1,6 @@
 import React from 'react'
 import { useApplicationRequirements } from '@/hooks/useApplicationRequirements'
-import { Department, DepartmentCreationDto } from '@/types/department'
+import { Department } from '@/types/department'
 import { CustomArrayForm, CustomForm } from './CustomForm'
 import { FieldType } from '@/types/fields_config'
 
@@ -23,10 +23,12 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({
   const onSaveFn = departmentToEdit ? handleSave : handleSubmitDepartment
 
   const fieldsConfig = {
-    name: {
-      type: 'text' as FieldType,
-      onChangeHandler: onChangeFn
-    }
+    id: { type: 'number' as FieldType, onChangeHandler: onChangeFn },
+    name: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    code: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    description: { type: 'textarea' as FieldType, onChangeHandler: onChangeFn },
+    isActive: { type: 'checkbox' as FieldType, onChangeHandler: onChangeFn },
+    facultyId: { type: 'number' as FieldType, onChangeHandler: onChangeFn }
   }
 
   if (departmentToEdit)

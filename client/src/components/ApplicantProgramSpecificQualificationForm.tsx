@@ -7,26 +7,27 @@ import { DynamicFormTextFields } from '@/helpers/formFields'
 import { CustomForm } from './CustomForm'
 
 const excludeKeys: (keyof applicantProgramSpecificRequirements)[] = [
-  'id',
-  'applicationId',
-  'passportPhotograph'
-]
 
-// These fields will use <textarea>
-const textareaKeys: (keyof applicantProgramSpecificRequirements)[] = [
-  'homeAddress',
-  'nextOfKinAddress'
-]
 
-const EditapplicantProgramSpecificRequirementsForm = () => {
+const ApplicantProgramSpecificRequirementsForm = () => {
+
   const { applicantProgramSpecificRequirements } = useApplication()
 
   if (!applicantProgramSpecificRequirements) return null
+const appProgramSpecQualFieldsConfig = {
+  id: { type: 'number' as FieldType, onChangeHandler: onChangeFn },
+  applicationId: { type: 'number' as FieldType, onChangeHandler: onChangeFn },
+  qualificationType: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+  gradeId: { type: 'number' as FieldType, onChangeHandler: onChangeFn },
+  certificate: { type: 'file' as FieldType, onChangeHandler: onChangeFn },
+  createdAt: { type: 'date' as FieldType, onChangeHandler: onChangeFn },
+  updatedAt: { type: 'date' as FieldType, onChangeHandler: onChangeFn },
+}
 
   return (
     <CustomForm
       data={applicantProgramSpecificRequirements}
-      fieldsConfig={undefined}
+      fieldsConfig={appProgramSpecQualFieldsConfig }
       handlers={undefined}
       onSubmit={function (e: React.FormEvent): void {
         throw new Error('Function not implemented.')
@@ -35,4 +36,4 @@ const EditapplicantProgramSpecificRequirementsForm = () => {
   )
 }
 
-export default EditapplicantProgramSpecificRequirementsForm
+export default ApplicantProgramSpecificRequirementsForm

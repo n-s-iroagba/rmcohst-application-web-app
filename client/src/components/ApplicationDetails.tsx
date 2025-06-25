@@ -1,3 +1,32 @@
+import { Application, ApplicationStatus } from '@/types/application'
+import {
+  User,
+  ChevronUp,
+  ChevronDown,
+  Calendar,
+  Phone,
+  Mail,
+  MapPin,
+  Users,
+  GraduationCap,
+  MessageSquare
+} from 'lucide-react'
+import { useState } from 'react'
+import { FileViewer } from './FileViewer'
+import { apiRoutes } from '@/constants/apiRoutes'
+import { post } from '@/utils/apiClient'
+export type CommentType = 'GENERAL' | 'BIODATA' | 'QUALIFICATION' | 'DECISION'
+
+export interface Comment {
+  id: string
+  content: string
+  type: CommentType
+  officer: string
+  timestamp: string
+  applicationId: string
+  createdAt: string
+  updatedAt: string
+}
 const ApplicationDetail: React.FC<{
   application: Application
   onStatusUpdate: (id: string, status: ApplicationStatus, comments?: string) => void
@@ -18,13 +47,11 @@ const ApplicationDetail: React.FC<{
       [section]: !prev[section]
     }))
   }
-
   const handleAddComment = async (type: Comment['type']) => {
     if (newComment.trim()) {
-      const comment = await ApplicationService.addComment(
-        application.id.toString(),
-        newComment,
-        type
+      const comment = await post<any, Comment>(
+        apiRoutes.application.addComment(application.id.toString()),
+        { content: newComment, type }
       )
       setComments([...comments, comment])
       setNewComment('')
@@ -61,7 +88,7 @@ const ApplicationDetail: React.FC<{
           <div className="flex items-center space-x-3">
             <StatusBadge status={application.status} />
             <span className="text-sm text-gray-500">
-              Applied: {formatDate(application.createdAt)}
+              Applied: {formatDate(new Date(application.createdAt).toISOString())}
             </span>
           </div>
         </div>
@@ -105,7 +132,7 @@ const ApplicationDetail: React.FC<{
                   </label>
                   <p className="text-gray-900 flex items-center">
                     <Calendar className="w-4 h-4 mr-1" />
-                    {formatDate(application.biodata.dateOfBirth)}
+                    {formatDate(new Date(application.biodata.dateOfBirth).toISOString())}
                   </p>
                 </div>
 
@@ -244,8 +271,8 @@ const ApplicationDetail: React.FC<{
                   </div>
 
                   <FileViewer
-                    files={qualification.certificates}
-                    types={qualification.certificateTypes}
+                    files={qualification.certificates || []}
+                    types={qualification.certificateTypes || []}
                   />
                 </div>
               ))}

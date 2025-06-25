@@ -4,6 +4,7 @@ import React from 'react'
 import { Biodata } from '@/types/biodata'
 import { useApplication } from '@/hooks/useApplication'
 import { DynamicFormTextFields } from '@/helpers/formFields'
+import { FieldType } from '@/types/fields_config'
 
 const excludeKeys: (keyof Biodata)[] = ['id', 'applicationId', 'passportPhotograph']
 
@@ -14,6 +15,28 @@ const EditBiodataForm = () => {
   const { biodata, biodataErrors, handleChangeBiodata, handleSubmitBiodata } = useApplication()
 
   if (!biodata) return null
+  const biodataFieldsConfig = {
+    id: { type: 'number' as FieldType, onChangeHandler: onChangeFn },
+    applicationId: { type: 'number' as FieldType, onChangeHandler: onChangeFn },
+    firstName: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    middleName: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    surname: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    gender: { type: 'select' as FieldType, onChangeHandler: onChangeFn },
+    dateOfBirth: { type: 'date' as FieldType, onChangeHandler: onChangeFn },
+    maritalStatus: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    homeAddress: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    nationality: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    stateOfOrigin: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    lga: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    homeTown: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    phoneNumber: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    emailAddress: { type: 'email' as FieldType, onChangeHandler: onChangeFn },
+    passportPhotograph: { type: 'file' as FieldType, onChangeHandler: onChangeFn },
+    nextOfKinFullName: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    nextOfKinPhoneNumber: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    nextOfKinAddress: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    relationshipWithNextOfKin: { type: 'text' as FieldType, onChangeHandler: onChangeFn }
+  }
 
   return (
     <form onSubmit={handleSubmitBiodata} className="max-w-3xl mx-auto p-4 space-y-6">

@@ -1,14 +1,16 @@
 import { ProgramSpecificRequirementCreationDto } from './program_specific_requirement'
-import { SSCSubjectMinimumGradeCreationDto } from './ssc_subject_minimum_grade'
+import { SSCSubjectMinimumGradeCreationDto } from './program_ssc_requirement'
+
 
 export type ProgramLevel = 'OND' | 'HND' | 'Certificate'
-
+type DurationType =  'WEEK' | 'MONTH' | 'YEAR'
+ 
 export interface Program {
-  id: string
+  id: number
   departmentId: number
   name: string
-  awardType: string
-  durationType: 'WEEK' | 'MONTH' | 'YEAR'
+  level: ProgramLevel
+  durationType:DurationType
   duration: number
   applicationFeeInNaira: number
   acceptanceFeeInNaira: number
@@ -28,7 +30,7 @@ export interface ProgramFilters {
 export type ProgramCreationDto = {
   name: string
   awardType: string
-  durationType: 'WEEK' | 'MONTH' | 'YEAR'
+  durationType:DurationType
   duration: number
   applicationFeeInNaira: number
   acceptanceFeeInNaira: number

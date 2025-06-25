@@ -19,10 +19,11 @@ const SessionForm: React.FC<SessionFormProps> = ({ session, handleChangeUpdate, 
   const onSaveFn = session ? handleSave : handleSubmitSession
 
   const fieldsConfig = {
-    name: {
-      type: 'text' as FieldType,
-      onChangeHandler: onChangeFn
-    }
+    id: { type: 'number' as FieldType, onChangeHandler: onChangeFn },
+    name: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    applicationStartDate: { type: 'date' as FieldType, onChangeHandler: onChangeFn },
+    applicationEndDate: { type: 'date' as FieldType, onChangeHandler: onChangeFn },
+    isCurrent: { type: 'checkbox' as FieldType, onChangeHandler: onChangeFn }
   }
 
   return <CustomForm data={data} fieldsConfig={fieldsConfig} onSubmit={onSaveFn} />

@@ -1,18 +1,31 @@
+// app/(dashboard)/departments/page.tsx
+'use client'
+
 import { CrudPageWrapper } from '@/components/CrudPageWrapper'
-import { useApplicationRequirements } from '@/hooks/useApplicationRequirements'
-import DepartmentForm from '@/components/DepartmentForm'
-import DepartmentCard from '@/components/DepartmentCard'
+import { DepartmentCard } from '@/components/DepartmentCard'
+import DepartmentForm from '@/components/DepartmentForm' // Assume you have this
+import { useGetList } from '@/hooks/useGet'
+import { Department } from '@/types/department'
 
 export default function DepartmentCrudPage() {
-  const { departments, loading, error } = useApplicationRequirements()
+  const { data: departments, loading, error } = useGetList<Department>('departments')
+
+  // Implement update/delete handlers if needed
+  const handleSubmitUpdate = () => {
+    // Your update logic here
+  }
+
+  const onDelete = () => {
+    // Your delete logic here
+  }
 
   return (
     <CrudPageWrapper
-      title="departments"
+      title="Departments"
       entityKey="department"
       data={departments || []}
       loading={loading}
-      error={error}
+      error={error || 'An error occurred fetching departments'}
       FormComponent={DepartmentForm}
       CardComponent={DepartmentCard}
     />

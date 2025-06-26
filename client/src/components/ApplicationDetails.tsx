@@ -80,7 +80,7 @@ const ApplicationDetail: React.FC<{
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-gray-900">
-              {application.biodata.firstName} {application.biodata.middleName}{' '}
+              {application.biodata.lastName} {application.biodata.middleName}{' '}
               {application.biodata.surname}
             </h1>
             <p className="text-gray-500 mt-1">Application ID: {application.id}</p>
@@ -116,7 +116,7 @@ const ApplicationDetail: React.FC<{
                 <div>
                   <label className="block text-sm font-medium text-gray-500 mb-1">Full Name</label>
                   <p className="text-gray-900">
-                    {application.biodata.firstName} {application.biodata.middleName}{' '}
+                    {application.biodata.lastName} {application.biodata.middleName}{' '}
                     {application.biodata.surname}
                   </p>
                 </div>
@@ -306,7 +306,7 @@ const ApplicationDetail: React.FC<{
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Add your review comments here..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                   rows={3}
                 />
                 <div className="flex justify-between items-center mt-3">
@@ -321,7 +321,7 @@ const ApplicationDetail: React.FC<{
                     disabled={!newComment.trim()}
                     className={`px-4 py-2 rounded-md text-sm font-medium ${
                       newComment.trim()
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
+                        ? 'bg-slate-600 text-white hover:bg-slate-700'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
                   >
@@ -363,7 +363,7 @@ const ApplicationDetail: React.FC<{
               <select
                 value={newStatus}
                 onChange={(e) => setNewStatus(e.target.value as ApplicationStatus)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-500 focus:border-transparent"
               >
                 <option value="PENDING">Pending</option>
                 <option value="UNDER_REVIEW">Under Review</option>
@@ -380,7 +380,7 @@ const ApplicationDetail: React.FC<{
                 value={statusComments}
                 onChange={(e) => setStatusComments(e.target.value)}
                 placeholder="Add comments about this status change..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                 rows={2}
               />
             </div>
@@ -391,7 +391,7 @@ const ApplicationDetail: React.FC<{
             className={`mt-4 px-4 py-2 rounded-md font-medium ${
               newStatus === application.status
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-slate-600 text-white hover:bg-slate-700'
             }`}
           >
             Update Status

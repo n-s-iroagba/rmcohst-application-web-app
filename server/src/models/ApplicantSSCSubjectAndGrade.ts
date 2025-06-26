@@ -26,8 +26,11 @@ class ApplicantSSCSubjectAndGrade
   public gradeId!: number
   public applicantSSCQualificationId!: number
 
-  public readonly createdAt!: Date
-  public readonly updatedAt!: Date
+  // Association methods for eager loading
+  public getSubject!: () => Promise<SSCSubject>
+  public getGrade!: () => Promise<Grade>
+  
+  // Timestamps - removed from attributes since we're disabling them
 }
 
 ApplicantSSCSubjectAndGrade.init(
@@ -56,23 +59,60 @@ ApplicantSSCSubjectAndGrade.init(
     applicantSSCQualificationId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: ApplicantSSCQualification,
+        key: 'id',
+      },
     },
   },
   {
     sequelize,
-    // model: 'ApplicantSSCSubjectAndGrade',
+    modelName: 'ApplicantSSCSubjectAndGrade',
+    tableName: 'applicant_ssc_subject_grades',  // Explicit table name
+    timestamps: false,  // Disable automatic timestamps
   }
 )
 
-ApplicantSSCQualification.hasMany(ApplicantSSCSubjectAndGrade, {
-  foreignKey: 'applicantSSCQualificationId',
-  as: 'subjects',
-  onDelete: 'CASCADE',
+// =====================
+// ASSOCIATIONS FOR EAGER LOADING
+// =====================
+
+// Association with SSCSubject
+ApplicantSSCSubjectAndGrade.belongsTo(SSCSubject, {
+  foreignKey: 'subjectId',
+  as: 'subject',  // Alias for eager loading
+})
+SSCSubject.hasMany(ApplicantSSCSubjectAndGrade, {
+  foreignKey: 'subjectId',
+  as: 'applicantSSCSubjectAndGrades',  // Alias for eager loading
+  })
+
+Grade.hasMany(
+  ApplicantSSCSubjectAndGrade,
+  {
+    foreignKey: 'gradeId',
+    as: 'applicantSSCSubjectAndGrades',  // Alias for eager loading\
+    }
+)
+// Association with Grade
+ApplicantSSCSubjectAndGrade.belongsTo(Grade, {
+  foreignKey: 'gradeId',
+  as: 'grade',  // Alias for eager loading
 })
 
+// Association with Qualification
 ApplicantSSCSubjectAndGrade.belongsTo(ApplicantSSCQualification, {
   foreignKey: 'applicantSSCQualificationId',
   as: 'qualification',
 })
+
+// Reverse association from Qualification
+ApplicantSSCQualification.hasMany(ApplicantSSCSubjectAndGrade, {
+  foreignKey: 'applicantSSCQualificationId',
+  as: 'subjectGrades',  // Alias for eager loading
+})
+
+
+
 
 export default ApplicantSSCSubjectAndGrade

@@ -1,5 +1,5 @@
-// Fixed Biodata Model
-import { Model, DataTypes, Optional, ForeignKey } from 'sequelize'
+
+import { Model, DataTypes} from 'sequelize'
 import sequelize from '../config/database'
 import { Application } from './Application'
 

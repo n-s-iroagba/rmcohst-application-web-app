@@ -6,7 +6,7 @@ export interface Department {
   code: string
   description?: string
   isActive: boolean
-  facultyId?: number
+  facultyId: number
   faculty?: Faculty
 }
 

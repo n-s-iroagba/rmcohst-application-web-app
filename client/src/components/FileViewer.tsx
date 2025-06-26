@@ -13,7 +13,7 @@ export const FileViewer: React.FC<{ files: string[]; types: string[] }> = ({ fil
               <span className="font-medium">{types[index]} Certificate</span>
               <button
                 onClick={() => setSelectedFile(selectedFile === index ? null : index)}
-                className="text-blue-600 hover:text-blue-800 text-sm flex items-center"
+                className="text-slate-600 hover:text-slate-800 text-sm flex items-center"
               >
                 <Eye className="w-4 h-4 mr-1" />
                 {selectedFile === index ? 'Hide' : 'View'}
@@ -22,7 +22,7 @@ export const FileViewer: React.FC<{ files: string[]; types: string[] }> = ({ fil
             {selectedFile === index && (
               <div className="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-600">
                 Certificate preview would appear here
-                <button className="ml-2 text-blue-600 hover:text-blue-800">
+                <button className="ml-2 text-slate-600 hover:text-slate-800">
                   <Download className="w-4 h-4 inline" />
                 </button>
               </div>

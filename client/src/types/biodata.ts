@@ -1,7 +1,7 @@
 export interface Biodata {
   id: number
   applicationId: number
-  firstName: string
+  lastName: string
   middleName: string | null
   surname: string
   gender: string

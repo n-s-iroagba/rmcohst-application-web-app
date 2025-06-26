@@ -18,7 +18,7 @@ const EditBiodataForm = () => {
   const biodataFieldsConfig = {
     id: { type: 'number' as FieldType, onChangeHandler: onChangeFn },
     applicationId: { type: 'number' as FieldType, onChangeHandler: onChangeFn },
-    firstName: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
+    lastName: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
     middleName: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
     surname: { type: 'text' as FieldType, onChangeHandler: onChangeFn },
     gender: { type: 'select' as FieldType, onChangeHandler: onChangeFn },
@@ -40,7 +40,7 @@ const EditBiodataForm = () => {
 
   return (
     <form onSubmit={handleSubmitBiodata} className="max-w-3xl mx-auto p-4 space-y-6">
-      <h2 className="text-2xl font-semibold text-center text-blue-800">Edit Biodata</h2>
+      <h2 className="text-2xl font-semibold text-center text-slate-800">Edit Biodata</h2>
 
       <DynamicFormTextFields
         data={biodata}
@@ -72,7 +72,7 @@ const EditBiodataForm = () => {
 
       <button
         type="submit"
-        className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+        className="bg-slate-600 text-white px-6 py-3 rounded-lg hover:bg-slate-700 transition"
       >
         Save Biodata
       </button>

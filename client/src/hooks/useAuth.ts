@@ -16,8 +16,8 @@ type AuthFormKeys =
 interface RegisterData {
   email: string
   password: string
-  firstName: string
   lastName: string
+  firstName: string
 }
 
 export interface RegisterationFormData extends RegisterData {
@@ -89,8 +89,8 @@ export const useAuth = (): UseAuthReturn => {
   const [error, setError] = useState<string | null>(null)
 
   const [signupData, setSignupData] = useState<RegisterationFormData>({
-    firstName: '',
     lastName: '',
+    firstName: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -127,8 +127,8 @@ export const useAuth = (): UseAuthReturn => {
       else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = 'Email is invalid.'
     }
 
-    if ('firstName' in formData && !formData.firstName?.trim()) {
-      errors.firstName = 'First name is required.'
+    if ('lastName' in formData && !formData.lastName?.trim()) {
+      errors.lastName = 'First name is required.'
     }
 
     if ('lastName' in formData && !formData.lastName?.trim()) {

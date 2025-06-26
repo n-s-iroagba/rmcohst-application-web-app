@@ -1,7 +1,7 @@
 export const Spinner = ({ className }: { className?: string }) => (
   <div className="flex justify-center py-12">
     <svg
-      className={`animate-spin h-5 w-5 text-blue-600 ${className}`}
+      className={`animate-spin h-5 w-5 text-slate-600 ${className}`}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"

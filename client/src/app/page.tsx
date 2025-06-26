@@ -1,7 +1,13 @@
 'use client'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, FileText, GraduationCap } from 'lucide-react'
+import { ArrowRight, FileText, GraduationCap, SyringeIcon } from 'lucide-react'
+import headerBackgroundImage from '../images/headerBackgroundImage.jpeg'
+import classRoomImage from '../images/classroom.jpeg'
+import laboratoryImage from '../images/laboratory.jpeg'
+import sickBayImage from '../images/sickbay.jpeg'
+import hallImage from '../images/hall.jpeg'
+import hostelImage from '../images/hostel.jpeg'
 
 import { MapPin, Users, BookOpen, Beaker, Dumbbell, Coffee } from 'lucide-react'
 const sections = [
@@ -12,13 +18,13 @@ const sections = [
   },
   {
     title: 'Postgraduate',
-    bg: 'bg-blue-900 text-white',
+    bg: 'bg-slate-900 text-white',
     links: ['Postgraduate Admission', 'Programmes Offered', 'Postgraduate Portal']
   },
   {
-    title: 'Pre-Degree',
+    title: 'Certificate Studies',
     bgImage: '', // Add this image to `public/images/`
-    links: ['Basic Studies', 'Pre-degree Certificate', 'Other Relevant Links']
+    links: ['Certificate Studies Admission', 'Programmes Offered', 'Certificate Studies Portal']
   }
 ]
 const steps = [
@@ -26,129 +32,140 @@ const steps = [
     id: '01',
     title: 'Visit the Portal',
     description:
-      'Take the time to explore the diverse range of undergraduate and graduate programs offered at University of Port Harcourt',
+      'Take the time to explore the diverse range of undergraduate and graduate programs offered at Remington College Of Health Science And Technology Port Harcourt',
     icon: GraduationCap
   },
   {
     id: '02',
     title: 'Online Application',
     description:
-      'Take the time to explore the diverse range of undergraduate and graduate programs offered at University of Port Harcourt',
+      'Take the time to explore the diverse range of undergraduate and graduate programs offered at Remington College Of Health Science And Technology Port Harcourt',
     icon: FileText
   },
   {
     id: '03',
     title: 'Programs & Requirements',
     description:
-      'Take the time to explore the diverse range of undergraduate and graduate programs offered at University of Port Harcourt',
+      'Take the time to explore the diverse range of undergraduate and graduate programs offered at Remington College Of Health Science And Technology Port Harcourt',
     icon: BookOpen
   }
 ]
 const facilities = [
   {
     id: 1,
-    title: 'Main Library',
-    image: '',
+    title: 'Classrooms',
+    image: classRoomImage,
     icon: BookOpen,
-    description: 'State-of-the-art research facility'
+    description: 'Conducive learning environment'
   },
   {
     id: 2,
     title: 'Science Laboratory',
-    image: '',
+    image: laboratoryImage,
     icon: Beaker,
     description: 'Advanced scientific equipment'
   },
   {
     id: 3,
-    title: 'Student Center',
-    image: '',
+    title: 'Student Hostels',
+    image: hostelImage,
     icon: Users,
-    description: 'Hub for student activities'
+    description: 'Comfortable Accomodation'
   },
   {
     id: 4,
-    title: 'Sports Complex',
-    image: '',
-    icon: Dumbbell,
-    description: 'Modern fitness and sports facilities'
+    title: 'Sick Bay',
+    image: sickBayImage,
+    icon: SyringeIcon,
+    description: 'Modern and equiped sick bay'
   },
   {
     id: 5,
-    title: 'Lecture Halls',
-    image: '',
+    title: ' Halls',
+    image: hallImage,
     icon: MapPin,
-    description: 'Modern learning environments'
+    description: 'Modern event and lecture halls'
   },
   {
     id: 6,
-    title: 'Cafeteria',
+    title: 'Admin Block',
     image: '',
     icon: Coffee,
-    description: 'Dining and social space'
+    description: 'Comfortable Admin Block to ensure quality education delivery'
   }
 ]
 
 const Page = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 to-slate-700 text-white p-6">
-      <header className="text-center mb-12">
-        <h1 className="text-5xl font-bold mb-4">RMCOHST Application Portal</h1>
-        <p className="text-xl text-slate-300">
-          Welcome to the Rivers State College of Health Science and Management Technology Online
-          Application.
-        </p>
-      </header>
+<div className="flex flex-col items-center justify-center min-h-screen bg-white text-black p-6">
+<header
+  className="relative w-full h-auto min-h-[30rem] bg-cover bg-center text-white mb-3"
+  style={{
+    backgroundImage: `url(${headerBackgroundImage.src})`,
+  }}
+>
+  {/* Dark Overlay */}
+  <div className="absolute inset-0 bg-black/50" />
 
-      <main className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full">
-        <div className="bg-slate-800 p-8 rounded-xl shadow-2xl transform hover:scale-105 transition-transform duration-300">
-          <h2 className="text-3xl font-semibold mb-6 text-teal-400">For Applicants</h2>
-          <p className="mb-6 text-slate-300">
-            Start your journey with us. Register or log in to complete your application, upload
-            documents, and track your admission status.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button className="bg-teal-500 hover:bg-teal-600 text-slate-900 font-semibold flex-1">
-              <Link href="/applicant/register">Register Now</Link>
-            </button>
-            <button className="border-teal-500 text-teal-400 hover:bg-teal-500 hover:text-slate-900 font-semibold flex-1">
-              <Link href="/applicant/login">Applicant Login</Link>
-            </button>
-          </div>
-        </div>
-      </main>
-      <section className="flex flex-col md:flex-row items-center justify-center px-6 md:px-16 py-10 gap-10">
+  {/* Content */}
+  <div className="relative z-10 flex flex-col justify-center items-center px-4 py-10 text-center h-full">
+    <h1 className="text-3xl md:text-5xl font-bold mb-4">RMCOHST Application Portal</h1>
+    <p className="text-base md:text-xl text-slate-300 mb-6 max-w-3xl">
+      Welcome to the Remington College of Health Science and Technology Online Application Portal.
+    </p>
+
+    {/* Action Box */}
+    <div className="bg-slate-800 p-6 md:p-8 rounded-xl shadow-2xl w-full max-w-md sm:max-w-xl mx-auto transition-all duration-300">
+      <h2 className="text-2xl md:text-3xl font-semibold mb-4 text-white">For Applicants</h2>
+      <p className="mb-6 text-slate-300 text-sm md:text-base">
+        Start your journey with us. Register or log in to complete your application, upload
+        documents, and track your admission status.
+      </p>
+      <div className="flex flex-col sm:flex-row gap-4">
+        <Link
+          href="/auth/applicant-signup"
+          className="bg-white hover:bg-teal-300 text-slate-800 font-semibold flex-1 text-center py-2 rounded"
+        >
+          Register Now
+        </Link>
+        <Link
+          href="/auth/login"
+          className="border border-white text-white hover:bg-teal-300 hover:text-slate-900 font-semibold flex-1 text-center py-2 rounded"
+        >
+          Applicant Login
+        </Link>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <section className="flex flex-col md:flex-row items-center justify-center px-6 md:px-16 gap-10">
         {/* Left: Image */}
         <div className="w-full md:w-1/2 relative">
           {/* <Image
             src="/images/uniport.jpg" // Make sure the image is in the public/images folder
-            alt="University of Port Harcourt"
+            alt="Remington College Of Health Science And Technology Port Harcourt"
             width={600}
             height={400}
             className="rounded-md shadow-lg w-full h-auto object-cover"
           /> */}
-          <div className="absolute bottom-4 left-4 bg-black bg-opacity-60 text-white px-4 py-1 rounded-md text-xl font-semibold">
-            Gist
-          </div>
+       
         </div>
 
         {/* Right: Text */}
         <div className="w-full md:w-1/2 text-center md:text-left">
           <h2 className="text-3xl md:text-5xl font-serif font-bold leading-tight">
-            UNIVERSITY OF <br /> PORT HARCOURT
+            REMINGTON COLLEGE OF HEALTH SCIENCE AND TECHNOLOGY
           </h2>
           <p className="mt-6 text-gray-700 text-base md:text-lg leading-relaxed">
-            At University of Port Harcourt, we believe in the transformative power of education and
-            the boundless potential within every individual. Established in 1975, we have been
+            At Remington College Of Health Science And Technology Port Harcourt, we believe in the transformative power of education and
+            the boundless potential within every individual.We are
             dedicated to fostering intellectual curiosity, academic excellence, and a vibrant campus
             community.
           </p>
-          <h3 className="mt-10 text-4xl md:text-6xl font-bold text-gray-300 tracking-wide">
-            EST. 1975
-          </h3>
         </div>
       </section>
-      <section className="py-16 px-6 md:px-10 bg-white">
+      <section className="py-6 px-6 md:px-10 bg-white">
         <h2 className="text-3xl md:text-4xl font-serif font-semibold text-center mb-12">
           Academics & Programmes
         </h2>
@@ -163,8 +180,8 @@ const Page = () => {
                 className={`group relative p-8 rounded-2xl transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden mb-6
               ${
                 isEven
-                  ? 'bg-gradient-to-br from-white to-gray-50 text-black border border-gray-200 hover:shadow-blue-500/25'
-                  : 'bg-gradient-to-br from-gray-800 to-gray-900 text-white hover:shadow-purple-500/25'
+                  ? 'bg-gradient-to-br from-white to-gray-50 text-black border border-gray-200 hover:shadow-slate-500/25'
+                  : 'bg-gradient-to-br from-gray-800 to-gray-900 text-white hover:shadow-slate-200/25'
               }`}
               >
                 {/* Background Pattern */}
@@ -175,15 +192,15 @@ const Page = () => {
                   className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500
               ${
                 isEven
-                  ? 'bg-gradient-to-br from-blue-500 to-blue-700'
-                  : 'bg-gradient-to-br from-purple-600 to-indigo-700'
+                  ? 'bg-gradient-to-br from-slate-500 to-slate-700'
+                  : 'bg-gradient-to-br from-slate-600 to-indigo-700'
               }`}
                 ></div>
 
                 <div className="relative z-10">
                   <h3
                     className={`text-2xl font-bold mb-6 transition-colors duration-300
-                ${isEven ? 'group-hover:text-white' : 'group-hover:text-blue-100'}`}
+                ${isEven ? 'group-hover:text-white' : 'group-hover:text-slate-100'}`}
                   >
                     {section.title}
                   </h3>
@@ -195,8 +212,8 @@ const Page = () => {
                         className={`group/link w-full text-left border px-4 py-3 rounded-lg transition-all duration-300 flex justify-between items-center relative overflow-hidden
                       ${
                         isEven
-                          ? 'border-gray-300 hover:border-blue-400 group-hover:border-white/30 group-hover:text-white'
-                          : 'border-gray-600 hover:border-purple-400 group-hover:border-white/30 group-hover:text-white'
+                          ? 'border-gray-300 hover:border-slate-400 group-hover:border-white/30 group-hover:text-white'
+                          : 'border-gray-600 hover:border--400 group-hover:border-white/30 group-hover:text-white'
                       }`}
                       >
                         {/* Link Background Hover */}
@@ -204,8 +221,8 @@ const Page = () => {
                           className={`absolute inset-0 opacity-0 group-hover/link:opacity-20 transition-opacity duration-300
                       ${
                         isEven
-                          ? 'bg-blue-600 group-hover:bg-white/10'
-                          : 'bg-purple-600 group-hover:bg-white/10'
+                          ? 'bg-slate-600 group-hover:bg-white/10'
+                          : 'bg-slate-600 group-hover:bg-white/10'
                       }`}
                         ></div>
 
@@ -222,8 +239,8 @@ const Page = () => {
                   className={`absolute bottom-0 left-0 right-0 h-1 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left
               ${
                 isEven
-                  ? 'bg-gradient-to-r from-blue-400 to-blue-600'
-                  : 'bg-gradient-to-r from-purple-400 to-indigo-500'
+                  ? 'bg-gradient-to-r from-slate-400 to-slate-600'
+                  : 'bg-gradient-to-r from-slate-400 to-indigo-500'
               }`}
                 ></div>
               </div>
@@ -232,10 +249,10 @@ const Page = () => {
         </div>
       </section>
 
-      <div className="bg-white min-h-screen py-16 px-4">
+      <div className="bg-white min-h-screen px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-16">
+          <div className="mb-6">
             <h1 className="text-5xl font-bold text-gray-900 mb-2">How to Apply</h1>
           </div>
 
@@ -247,7 +264,7 @@ const Page = () => {
               return (
                 <div
                   key={step.id}
-                  className="group relative bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-8 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 cursor-pointer overflow-hidden"
+                  className="group relative bg-gradient-to-br from-slate-600 to-slate-800 rounded-2xl p-8 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-slate-500/25 cursor-pointer overflow-hidden"
                 >
                   {/* Background Pattern */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-y-12 translate-y-full group-hover:translate-y-0 transition-transform duration-700"></div>
@@ -264,19 +281,19 @@ const Page = () => {
 
                   {/* Content */}
                   <div className="relative z-10">
-                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-blue-100 transition-colors duration-300">
+                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-slate-100 transition-colors duration-300">
                       {step.title}
                     </h3>
-                    <p className="text-blue-100 leading-relaxed group-hover:text-white transition-colors duration-300">
+                    <p className="text-slate-100 leading-relaxed group-hover:text-white transition-colors duration-300">
                       {step.description}
                     </p>
                   </div>
 
                   {/* Hover Glow Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/0 via-blue-300/10 to-blue-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-slate-400/0 via-slate-300/10 to-slate-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                   {/* Bottom Border Accent */}
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-300 to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-slate-300 to-slate-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
                 </div>
               )
             })}
@@ -305,50 +322,49 @@ const Page = () => {
                     >
                       {/* Image Container */}
                       <div className="relative h-64 overflow-hidden">
-                        {/* <Image
+                        <Image
                           src={facility.image}
                           alt={facility.title}
                           width={100}
                           height={100}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        /> */}
+                        /> 
 
-                        {/* Gradient Overlay */}
+                        Gradient Overlay
                         <div
                           className={`absolute inset-0 opacity-60 group-hover:opacity-80 transition-opacity duration-500
                     ${
                       isEven
-                        ? 'bg-gradient-to-t from-blue-900/90 via-blue-600/50 to-transparent'
-                        : 'bg-gradient-to-t from-purple-900/90 via-purple-600/50 to-transparent'
+                        ? 'bg-gradient-to-t from-slate-900/90 via-slate-600/50 to-transparent'
+                        : 'bg-gradient-to-t from-slate-900/90 via-slate-600/50 to-transparent'
                     }`}
                         ></div>
 
-                        {/* Icon */}
                         <div
                           className={`absolute top-4 right-4 w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-300
                     ${
                       isEven
-                        ? 'bg-blue-500/20 text-white group-hover:bg-blue-400/30'
-                        : 'bg-purple-500/20 text-white group-hover:bg-purple-400/30'
+                        ? 'bg-slate-500/20 text-white group-hover:bg-slate-400/30'
+                        : 'bg-slate-500/20 text-white group-hover:bg-slate-400/30'
                     }`}
                         >
                           <Icon className="w-6 h-6" />
                         </div>
                       </div>
 
-                      {/* Content */}
+                      Content 
                       <div
                         className={`absolute bottom-0 left-0 right-0 p-6 text-white transition-all duration-500
                   ${
                     isEven
-                      ? 'bg-gradient-to-t from-blue-900/95 to-transparent'
-                      : 'bg-gradient-to-t from-purple-900/95 to-transparent'
+                      ? 'bg-gradient-to-t from-slate-900/95 to-transparent'
+                      : 'bg-gradient-to-t from-slate-900/95 to-transparent'
                   }`}
                       >
                         <h3 className="text-2xl font-bold mb-2 transition-transform duration-300 group-hover:translate-y-[-2px]">
                           {facility.title}
                         </h3>
-                        <p className="text-blue-100 opacity-90 group-hover:opacity-100 transition-opacity duration-300">
+                        <p className="text-slate-100 opacity-90 group-hover:opacity-100 transition-opacity duration-300">
                           {facility.description}
                         </p>
 
@@ -357,8 +373,8 @@ const Page = () => {
                           className={`absolute bottom-0 left-0 right-0 h-1 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left
                     ${
                       isEven
-                        ? 'bg-gradient-to-r from-blue-400 to-blue-200'
-                        : 'bg-gradient-to-r from-purple-400 to-purple-200'
+                        ? 'bg-gradient-to-r from-slate-400 to-slate-200'
+                        : 'bg-gradient-to-r from-slate-400 to-slate-200'
                     }`}
                         ></div>
                       </div>
@@ -366,7 +382,7 @@ const Page = () => {
                       {/* Hover Glow Effect */}
                       <div
                         className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none
-                  ${isEven ? 'bg-blue-400' : 'bg-purple-400'}`}
+                  ${isEven ? 'bg-slate-400' : 'bg-slate-400'}`}
                       ></div>
                     </div>
                   )
@@ -376,18 +392,20 @@ const Page = () => {
           </div>
 
           {/* Call to Action */}
-          <div className="mt-16 text-center">
-            <button className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-full transition-all duration-300 hover:from-blue-700 hover:to-blue-800 hover:shadow-lg hover:shadow-blue-500/25 transform hover:-translate-y-1">
+          <div className="mt-6 text-center">
+            <Link
+            href='/auth/applicant-signup'
+            className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-slate-600 to-slate-700 rounded-full transition-all duration-300 hover:from-slate-700 hover:to-slate-800 hover:shadow-lg hover:shadow-slate-500/25 transform hover:-translate-y-1">
               <span className="relative z-10">Start Your Application</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-            </button>
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-400 to-slate-900 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+            </Link>
           </div>
         </div>
       </div>
 
-      <footer className="mt-16 text-center text-slate-400">
+      <footer className="mt-6 text-center text-white bg-slate-900 w-full h-[10rem] flex flex-col justify-center items-center">
         <p>
-          &copy; {new Date().getFullYear()} Rivers State College of Health Science and Management
+          &copy; {new Date().getFullYear()} Remington College of Health Science and Management
           Technology. All rights reserved.
         </p>
         <p className="text-sm mt-1">Empowering future healthcare professionals.</p>

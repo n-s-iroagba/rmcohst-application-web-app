@@ -1,14 +1,14 @@
 import { Model, DataTypes } from 'sequelize'
 import { Application } from './Application'
 import sequelize from '../config/database'
-import Grade from './Grade'
+
 
 interface ApplicationProgramSpecificQualificationAttributes {
   id: number
   applicationId: number
-  qualificationType: string
+  qualificationType?: string
   gradeId: number
-  certificate: string // Changed to string for base64 encoded file
+  isDocumentUploaded:boolean
   createdAt?: Date
   updatedAt?: Date
 }
@@ -28,15 +28,14 @@ class ApplicationProgramSpecificQualification
   public id!: number
   public applicationId!: number
   public qualificationType!: string
+  public isDocumentUploaded!:boolean
   public gradeId!: number
-  public certificate!: string
-
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 
   // Method to check if program-specific qualification is complete
   public isComplete(): boolean {
-    return !!(this.qualificationType && this.gradeId && this.certificate)
+    return !!(this.qualificationType && this.gradeId && this.isDocumentUploaded)
   }
 }
 
@@ -62,8 +61,8 @@ ApplicationProgramSpecificQualification.init(
         notEmpty: true,
       },
     },
-    certificate: {
-      type: DataTypes.TEXT('long'), // Changed to TEXT for base64 strings
+    isDocumentUploaded: {
+      type: DataTypes.BOOLEAN, 
       allowNull: true,
       validate: {
         notEmpty: true,
@@ -73,7 +72,7 @@ ApplicationProgramSpecificQualification.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: Grade,
+        model: 'grade',
         key: 'id',
       },
     },

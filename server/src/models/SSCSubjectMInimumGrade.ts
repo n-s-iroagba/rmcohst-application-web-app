@@ -5,7 +5,7 @@ import SSCSubject from './SSCSubject'
 import Grade from './Grade'
 import sequelize from '../config/database'
 
-// SSCSubjectMinimumGrade Model
+// SSCSubjectM inimumGrade Model
 interface SSCSubjectMinimumGradeAttributes {
   id: number
   subjectId: number

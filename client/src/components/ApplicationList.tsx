@@ -12,7 +12,7 @@ const ApplicationList: React.FC<{
 
   const filteredApplications = applications.filter((app) => {
     const matchesSearch =
-      app.biodata.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.biodata.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.biodata.surname.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.biodata.emailAddress.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = statusFilter === 'ALL' || app.status === statusFilter
@@ -33,7 +33,7 @@ const ApplicationList: React.FC<{
             placeholder="Search applicants..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-500 focus:border-transparent"
           />
         </div>
 
@@ -41,7 +41,7 @@ const ApplicationList: React.FC<{
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as ApplicationStatus | 'ALL')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-500 focus:border-transparent"
         >
           <option value="ALL">All Status</option>
           <option value="PENDING">Pending</option>
@@ -59,13 +59,13 @@ const ApplicationList: React.FC<{
             key={application.id}
             onClick={() => onSelectApplication(application)}
             className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-              selectedId === application.id ? 'bg-blue-50 border-blue-200' : ''
+              selectedId === application.id ? 'bg-slate-50 border-slate-200' : ''
             }`}
           >
             <div className="flex items-start justify-between mb-2">
               <div>
                 <h3 className="font-medium text-gray-900">
-                  {application.biodata.firstName} {application.biodata.surname}
+                  {application.biodata.lastName} {application.biodata.surname}
                 </h3>
                 <p className="text-sm text-gray-500">{application.biodata.emailAddress}</p>
               </div>

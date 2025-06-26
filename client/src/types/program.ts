@@ -1,4 +1,4 @@
-import { ProgramSpecificRequirementCreationDto } from './program_specific_requirement'
+import { ProgramSpecificRequirement, ProgramSpecificRequirementCreationDto } from './program_specific_requirement'
 import { SSCSubjectMinimumGradeCreationDto } from './program_ssc_requirement'
 
 
@@ -14,18 +14,16 @@ export interface Program {
   duration: number
   applicationFeeInNaira: number
   acceptanceFeeInNaira: number
+  sscRequirement: SSCSubjectMinimumGradeCreationDto
+  programSpecificRequirements: ProgramSpecificRequirement[]
   description?: string
+  sscRequirementId: number
+  programSpecificRequirementsId: number
   isActive: boolean
   createdAt: Date
   updatedAt: Date
 }
 
-export interface ProgramFilters {
-  faculty?: string
-  department?: string
-  level?: ProgramLevel
-  searchTerm?: string
-}
 
 export type ProgramCreationDto = {
   name: string
@@ -37,6 +35,14 @@ export type ProgramCreationDto = {
   description?: string
   isUsingPreexistingSSCRequirements: boolean
   isUsingPreexistingProgramSpecificRequirements: boolean
-  sscRequirements?: SSCSubjectMinimumGradeCreationDto[]
-  programSpecificRequirements?: ProgramSpecificRequirementCreationDto[]
+  sscRequirementId: number
+  programSpecificRequirementsId: number
+}
+
+
+export interface ProgramFilters {
+  faculty?: string
+  department?: string
+  level?: ProgramLevel
+  searchTerm?: string
 }

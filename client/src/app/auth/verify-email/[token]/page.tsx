@@ -24,22 +24,22 @@ const VerifyEmail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-2xl shadow-xl border-2 border-blue-100 p-8 w-full max-w-md relative"
+        className="bg-white rounded-2xl shadow-xl border-2 border-slate-100 p-8 w-full max-w-md relative"
       >
         {/* Decorative Corner Borders */}
-        <div className="absolute top-2 right-2 w-8 h-8 border-t-2 border-r-2 border-blue-800 opacity-20" />
-        <div className="absolute bottom-2 left-2 w-8 h-8 border-b-2 border-l-2 border-blue-800 opacity-20" />
+        <div className="absolute top-2 right-2 w-8 h-8 border-t-2 border-r-2 border-slate-800 opacity-20" />
+        <div className="absolute bottom-2 left-2 w-8 h-8 border-b-2 border-l-2 border-slate-800 opacity-20" />
 
         <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-            <CheckCircle className="w-8 h-8 text-blue-700" />
+          <div className="mx-auto w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+            <CheckCircle className="w-8 h-8 text-slate-700" />
           </div>
-          <h2 className="text-2xl font-bold text-blue-900">Verify Your Email</h2>
-          <p className="text-blue-600 mt-2">
+          <h2 className="text-2xl font-bold text-slate-900">Verify Your Email</h2>
+          <p className="text-slate-600 mt-2">
             Enter the 6-digit emailVerificationFormCode sent to your email
           </p>
         </div>
@@ -59,7 +59,7 @@ const VerifyEmail = () => {
                 value={digit}
                 onChange={(e) => handleChangeEmailVerificationCodeData(e, index)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
-                className="w-12 h-12 text-center text-xl font-semibold text-blue-900 border-2 border-blue-900 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                className="w-12 h-12 text-center text-xl font-semibold text-slate-900 border-2 border-slate-900 rounded-xl focus:border-slate-500 focus:ring-2 focus:ring-slate-200 transition-all"
               />
             ))}
           </div>
@@ -67,7 +67,7 @@ const VerifyEmail = () => {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-3 bg-blue-700 text-white rounded-xl hover:bg-blue-800 disabled:bg-blue-400 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+            className="w-full py-3 bg-slate-700 text-white rounded-xl hover:bg-slate-800 disabled:bg-slate-400 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
           >
             {submitting ? (
               <>
@@ -81,7 +81,7 @@ const VerifyEmail = () => {
         </form>
 
         <div className="mt-6 text-center space-y-2">
-          <p className="text-blue-600">
+          <p className="text-slate-600">
             {canResend
               ? "Didn't receive the emailVerificationFormCode?"
               : `Resend available in ${Math.floor(timeLeft / 60)}:${(timeLeft % 60)
@@ -92,7 +92,7 @@ const VerifyEmail = () => {
           <button
             onClick={handleResendEmailVerificationFormCode}
             disabled={!canResend}
-            className={`text-blue-700 hover:text-blue-900 transition-colors ${
+            className={`text-slate-700 hover:text-slate-900 transition-colors ${
               !canResend ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >

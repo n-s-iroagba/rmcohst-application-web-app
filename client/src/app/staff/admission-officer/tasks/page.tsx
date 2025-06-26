@@ -27,7 +27,7 @@ type ApplicationStatus = 'PENDING' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED' | 
 interface Biodata {
   id: number
   applicationId: number
-  firstName: string
+  lastName: string
   middleName?: string
   surname: string
   gender: string
@@ -132,7 +132,7 @@ const mockApplications: Application[] = [
     biodata: {
       id: 1,
       applicationId: 1,
-      firstName: 'John',
+      lastName: 'John',
       middleName: 'David',
       surname: 'Doe',
       gender: 'Male',
@@ -173,7 +173,7 @@ const AdmissionReviewSystem: React.FC = () => {
     return (
       <div className="h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading applications...</p>
         </div>
       </div>

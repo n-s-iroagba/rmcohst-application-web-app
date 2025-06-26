@@ -32,7 +32,7 @@ export const useApplication = () => {
     }
   }, [application, applicationError])
   const requiredFields: (keyof Biodata)[] = [
-    'firstName',
+    'lastName',
     'surname',
     'gender',
     'dateOfBirth',

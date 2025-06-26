@@ -1,19 +1,7 @@
 import React from 'react'
 import { FieldConfig, FieldRenderer } from './FieldRenderer'
 
-type CustomFormProps<T> = {
-  data: T
-  errors?: Partial<Record<keyof T, string>>
-  fieldsConfig: {
-    [K in keyof T]?: FieldConfig
-  }
-  onSubmit: () => void
-  icon?: React.ReactNode
-  submitButtonLabel?: string
-  cancelButtonLabel?: string
-  onCancel?: () => void
-}
-
+// Generic Custom Form
 export function CustomForm<T extends Record<string, any>>({
   data,
   errors = {},
@@ -22,55 +10,59 @@ export function CustomForm<T extends Record<string, any>>({
   icon,
   submitButtonLabel = 'Submit',
   cancelButtonLabel = 'Cancel',
+  submiting,
   onCancel
-}: CustomFormProps<T>) {
+}: {
+  data: T
+  errors?: Partial<Record<keyof T, string>>
+  fieldsConfig: { [K in keyof T]?: FieldConfig }
+  onSubmit: () => void
+  icon?: React.ReactNode
+  submitButtonLabel?: string
+  cancelButtonLabel?: string
+  onCancel?: () => void
+  submiting: boolean
+}) {
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault()
         onSubmit()
       }}
-      className="max-w-xl mx-auto p-4 bg-white shadow rounded"
+      className="w-full max-w-4xl my-16 mx-auto px-4 py-10 bg-slate-100 shadow-2xl rounded-2xl border border-slate-200"
     >
-      {icon && <div className="flex justify-center mb-4">{icon}</div>}
+      {/* Icon Display */}
+      {icon && <div className="flex justify-center mb-6 text-slate-600">{icon}</div>}
+
+      {/* Title if needed */}
+      <h2 className="text-2xl font-bold mb-8 text-center text-slate-800 uppercase tracking-wide">
+        Application Form
+      </h2>
 
       <FieldRenderer data={data} errors={errors} fieldsConfig={fieldsConfig} />
 
-      <div className="flex justify-end gap-4 mt-6">
+      <div className="flex justify-end gap-4 mt-8">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="bg-gray-300 hover:bg-gray-400 text-black font-medium px-6 py-2 rounded"
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-6 py-2 rounded transition"
           >
             {cancelButtonLabel}
           </button>
         )}
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded"
+          className="bg-slate-700 hover:bg-slate-800 text-white font-semibold px-6 py-2 rounded transition"
         >
-          {submitButtonLabel}
+          {submiting ? 'Submitting...' : submitButtonLabel}
         </button>
       </div>
     </form>
   )
 }
 
-type CustomFormArrayProps<T> = {
-  arrayData: T[]
-  errors?: Partial<Record<keyof T, string>>
-  fieldsConfig: {
-    [K in keyof T]?: FieldConfig
-  }
-  onSubmit: (e: React.FormEvent) => void
-  icon?: React.ReactNode
-  submitButtonLabel?: string
-  cancelButtonLabel?: string
-  addOrRemovelabel: string
-  onCancel?: () => void
-}
-
+// Custom Array Form
 export function CustomArrayForm<T extends Record<string, any>>({
   arrayData,
   errors = {},
@@ -80,35 +72,68 @@ export function CustomArrayForm<T extends Record<string, any>>({
   submitButtonLabel = 'Submit',
   cancelButtonLabel = 'Cancel',
   addOrRemovelabel,
+  submiting,
   onCancel
-}: CustomFormArrayProps<T>) {
+}: {
+  arrayData: T[]
+  errors?: Partial<Record<keyof T, string>>
+  fieldsConfig: { [K in keyof T]?: FieldConfig }
+  onSubmit: (e: React.FormEvent) => void
+  icon?: React.ReactNode
+  submitButtonLabel?: string
+  cancelButtonLabel?: string
+  addOrRemovelabel: string
+  onCancel?: () => void
+  submiting: boolean
+}) {
   return (
-    <form onSubmit={onSubmit} className="max-w-xl mx-auto p-4 bg-white shadow rounded">
-      {icon && <div className="flex justify-center mb-4">{icon}</div>}
+    <form
+      onSubmit={onSubmit}
+      className="w-full max-w-4xl mx-auto px-4 py-10 bg-white shadow-2xl rounded-2xl border border-slate-100"
+    >
+      {icon && <div className="flex justify-center mb-6 text-slate-600">{icon}</div>}
+
+      <h2 className="text-2xl font-bold mb-8 text-center text-slate-800 uppercase tracking-wide">
+        Multiple Entries
+      </h2>
 
       {arrayData.map((data, index) => (
-        <div key={index}>
+        <div key={index} className="mb-10">
           <FieldRenderer data={data} errors={errors} fieldsConfig={fieldsConfig} />
-          {arrayData.length > 1 && <button type="button">Remove {addOrRemovelabel}</button>}
-          <button type="button">Add {addOrRemovelabel}</button>
+          <div className="flex justify-end gap-4 mt-2">
+            {arrayData.length > 1 && (
+              <button
+                type="button"
+                className="text-sm text-red-600 hover:underline"
+              >
+                Remove {addOrRemovelabel}
+              </button>
+            )}
+            <button
+              type="button"
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Add {addOrRemovelabel}
+            </button>
+          </div>
         </div>
       ))}
 
-      <div className="flex justify-end gap-4 mt-6">
+      <div className="flex justify-end gap-4 mt-8">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="bg-gray-300 hover:bg-gray-400 text-black font-medium px-6 py-2 rounded"
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-6 py-2 rounded transition"
           >
             {cancelButtonLabel}
           </button>
         )}
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded"
+          className="bg-slate-700 hover:bg-slate-800 text-white font-semibold px-6 py-2 rounded transition"
         >
-          {submitButtonLabel}
+          {submiting ? 'Submitting...' : submitButtonLabel}
         </button>
       </div>
     </form>

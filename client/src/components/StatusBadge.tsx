@@ -4,7 +4,7 @@ const StatusBadge: React.FC<{ status: ApplicationStatus }> = ({ status }) => {
       case 'PENDING':
         return { icon: Clock, color: 'bg-yellow-100 text-yellow-800', label: 'Pending' }
       case 'UNDER_REVIEW':
-        return { icon: Eye, color: 'bg-blue-100 text-blue-800', label: 'Under Review' }
+        return { icon: Eye, color: 'bg-slate-100 text-slate-800', label: 'Under Review' }
       case 'APPROVED':
         return { icon: CheckCircle, color: 'bg-green-100 text-green-800', label: 'Approved' }
       case 'REJECTED':

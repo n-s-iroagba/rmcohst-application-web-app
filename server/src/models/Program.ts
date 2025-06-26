@@ -1,7 +1,5 @@
 // Program.ts
 import {
-  ForeignKey,
-  NonAttribute,
   Optional,
   Model,
   BelongsToGetAssociationMixin,
@@ -21,17 +19,21 @@ import sequelize from '../config/database'
 import AcademicSession from './AcademicSession'
 import { Department } from './Department'
 
+export type ProgramLevel = 'OND' | 'HND' | 'Certificate'
+type DurationType = 'WEEK' | 'MONTH' | 'YEAR'
+
 interface ProgramAttributes {
   id: number
   departmentId: number
   name: string
-  awardType: string
-  durationType: 'WEEK' | 'MONTH' | 'YEAR'
+  level: ProgramLevel
+  durationType: DurationType
   duration: number
-
   applicationFeeInNaira: number
   acceptanceFeeInNaira: number
   description?: string
+  sscRequirementId: number
+  programSpecificRequirementsId: number
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -50,13 +52,15 @@ class Program
   public id!: number
   public departmentId!: number
   public name!: string
-  public awardType!: string
+  public level!: ProgramLevel
   public durationType!: 'WEEK' | 'MONTH' | 'YEAR'
   public duration!: number
   public applicationFeeInNaira!: number
   public acceptanceFeeInNaira!: number
   public description?: string
   public isActive!: boolean
+  public sscRequirementId!: number
+  public programSpecificRequirementsId!: number
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 
@@ -101,8 +105,7 @@ Program.init(
       type: DataTypes.STRING(100),
       allowNull: false,
     },
-
-    awardType: {
+    level: {
       type: DataTypes.STRING(50),
       allowNull: false,
     },
@@ -148,6 +151,24 @@ Program.init(
       type: DataTypes.DATE,
       allowNull: false,
     },
+    sscRequirementId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'program_ssc_requirements',
+        key: 'id',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'RESTRICT',
+    },
+    programSpecificRequirementsId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'program_specific_requirements',
+        key: 'id',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'RESTRICT',
+    },
   },
   {
     sequelize,
@@ -170,7 +191,7 @@ Program.init(
         fields: ['isActive'],
       },
       {
-        fields: ['awardType'],
+        fields: ['level'],
       },
     ],
   }
@@ -184,7 +205,6 @@ Program.belongsTo(Department, {
   onUpdate: 'CASCADE',
 })
 
-// Import ProgramSession for associations
 import ProgramSession from './ProgramSession'
 
 // Many-to-many relationship between Program and AcademicSession

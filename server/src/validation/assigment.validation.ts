@@ -12,25 +12,7 @@ enum AssignmentType {
 
 // Zod schemas
 const assignmentValidationSchemas = {
-  getPreview: {
-    query: z.object({
-      assignmentType: z.nativeEnum(AssignmentType, {
-        errorMap: () => ({ message: 'Invalid assignment type' })
-      }),
-      targetId: z.string()
-        .transform(val => parseInt(val))
-        .refine(val => !isNaN(val) && val > 0, {
-          message: 'Target ID must be a valid positive number'
-        })a
-        .optional(),
-      academicSessionId: z.string()
-        .transform(val => parseInt(val))
-        .refine(val => !isNaN(val) && val > 0, {
-          message: 'Academic session ID must be a valid positive number'
-        })
-        .optional()
-    })
-  },
+
 
   assignApplications: {
     body: z.object({

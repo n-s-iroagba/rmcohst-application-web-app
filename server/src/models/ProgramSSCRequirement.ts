@@ -1,31 +1,16 @@
-// models/ProgramSSCRequirement.ts
-import {
-  Optional,
-  Model,
-  DataTypes,
-  BelongsToManyAddAssociationMixin,
-  BelongsToManyAddAssociationsMixin,
-  BelongsToManyCountAssociationsMixin,
-  BelongsToManyCreateAssociationMixin,
-  BelongsToManyGetAssociationsMixin,
-  BelongsToManyHasAssociationMixin,
-  BelongsToManyHasAssociationsMixin,
-  BelongsToManyRemoveAssociationMixin,
-  BelongsToManyRemoveAssociationsMixin,
-  BelongsToManySetAssociationsMixin,
-} from 'sequelize'
-import sequelize from '../config/database'
-import SSCSubjectMinimumGrade from './SSCSubjectMinimumGrade'
-import Program from './Program'
+import { Model, DataTypes, Optional, BelongsToGetAssociationMixin } from 'sequelize';
+import sequelize from '../config/database';
+import Program from './Program'; // Import your Program model
+import SSCSubject from './SSCSubject';
+import Grade from './Grade';
 
-// ProgramSSCRequirement Model
 interface ProgramSSCRequirementAttributes {
-  id: number
-  programId: number
-  qualificationTypes: string[]
-  maximumNumberOfSittings: number
-  createdAt?: Date
-  updatedAt?: Date
+  id: number;
+  programId: number;
+  subjectId: number;
+  minimumGradeId: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface ProgramSSCRequirementCreationAttributes
@@ -35,47 +20,17 @@ class ProgramSSCRequirement
   extends Model<ProgramSSCRequirementAttributes, ProgramSSCRequirementCreationAttributes>
   implements ProgramSSCRequirementAttributes
 {
-  public id!: number
-  public programId!: number
-  public qualificationTypes!: string[]
+  public id!: number;
+  public programId!: number;
+  public subjectId!: number;
+  public minimumGradeId!: number;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 
-  public maximumNumberOfSittings!: number
-
-  public readonly createdAt!: Date
-  public readonly updatedAt!: Date
-
-  // Association mixins for SSCSubjectMinimumGrade
-  public addSSCSubjectMinimumGrade!: BelongsToManyAddAssociationMixin<
-    SSCSubjectMinimumGrade,
-    number
-  >
-  public addSSCSubjectMinimumGrades!: BelongsToManyAddAssociationsMixin<
-    SSCSubjectMinimumGrade,
-    number
-  >
-  public countSSCSubjectMinimumGrades!: BelongsToManyCountAssociationsMixin
-  public createSSCSubjectMinimumGrade!: BelongsToManyCreateAssociationMixin<SSCSubjectMinimumGrade>
-  public getSSCSubjectMinimumGrades!: BelongsToManyGetAssociationsMixin<SSCSubjectMinimumGrade>
-  public hasSSCSubjectMinimumGrade!: BelongsToManyHasAssociationMixin<
-    SSCSubjectMinimumGrade,
-    number
-  >
-  public hasSSCSubjectMinimumGrades!: BelongsToManyHasAssociationsMixin<
-    SSCSubjectMinimumGrade,
-    number
-  >
-  public removeSSCSubjectMinimumGrade!: BelongsToManyRemoveAssociationMixin<
-    SSCSubjectMinimumGrade,
-    number
-  >
-  public removeSSCSubjectMinimumGrades!: BelongsToManyRemoveAssociationsMixin<
-    SSCSubjectMinimumGrade,
-    number
-  >
-  public setSSCSubjectMinimumGrades!: BelongsToManySetAssociationsMixin<
-    SSCSubjectMinimumGrade,
-    number
-  >
+  // Eager loading associations
+  public getProgram!: BelongsToGetAssociationMixin<Program>;
+  public getSubject!: BelongsToGetAssociationMixin<SSCSubject>;
+  public getMinimumGrade!: BelongsToGetAssociationMixin<Grade>;
 }
 
 ProgramSSCRequirement.init(
@@ -87,69 +42,96 @@ ProgramSSCRequirement.init(
     },
     programId: {
       type: DataTypes.INTEGER,
-
+      allowNull: false,
       references: {
         model: Program,
         key: 'id',
       },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
-    qualificationTypes: {
-      type: DataTypes.JSON,
-      allowNull: false,
-      validate: {
-        isIn: [['SSCE', 'GCE', 'NECO', 'NABTEB', 'WAEC']],
-      },
-    },
-
-    maximumNumberOfSittings: {
+    subjectId: {
       type: DataTypes.INTEGER,
-      allowNull: true,
-      validate: {
-        min: 1,
-        max: 2,
+      allowNull: false,
+      references: {
+        model: SSCSubject,
+        key: 'id',
       },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+    minimumGradeId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Grade,
+        key: 'id',
+      },
+      onDelete: 'RESTRICT',
+      onUpdate: 'CASCADE',
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
   },
   {
     sequelize,
-    tableName: 'program_ssc_qualifications',
+    tableName: 'program_ssc_requirements',
     modelName: 'ProgramSSCRequirement',
     timestamps: true,
     indexes: [
       {
-        fields: ['programId'],
-      },
-      {
-        fields: ['qualificationLevel'],
-      },
-      {
-        fields: ['isActive'],
-      },
-      {
         unique: true,
-        fields: ['programId', 'qualificationLevel'],
-        name: 'unique_program_qualification_level',
+        fields: ['programId', 'subjectId'], // Ensures unique subject requirement per program
       },
     ],
   }
-)
+);
 
-// Many-to-Many Association with SSCSubjectMinimumGrade
-ProgramSSCRequirement.belongsToMany(SSCSubjectMinimumGrade, {
-  through: 'ProgramSSCRequirementSubjects',
-  foreignKey: 'programSSCQualificationId',
-  otherKey: 'sscSubjectMinimumGradeId',
-  as: 'sscSubjectMinimumGrades',
+// =====================
+// ASSOCIATIONS
+// =====================
+
+// Program has many SSC subject requirements
+Program.hasMany(ProgramSSCRequirement, {
+  foreignKey: 'programId',
+  as: 'sscRequirements',
   onDelete: 'CASCADE',
-})
+});
 
-SSCSubjectMinimumGrade.belongsToMany(ProgramSSCRequirement, {
-  through: 'ProgramSSCRequirementSubjects',
-  foreignKey: 'sscSubjectMinimumGradeId',
-  otherKey: 'programSSCQualificationId',
-  as: 'programSSCQualifications',
+ProgramSSCRequirement.belongsTo(Program, {
+  foreignKey: 'programId',
+  as: 'program',
+});
+
+// SSCSubject has many program requirements
+SSCSubject.hasMany(ProgramSSCRequirement, {
+  foreignKey: 'subjectId',
+  as: 'programRequirements',
   onDelete: 'CASCADE',
-})
+});
 
-export default ProgramSSCRequirement
-export { ProgramSSCRequirementAttributes, ProgramSSCRequirementCreationAttributes }
+ProgramSSCRequirement.belongsTo(SSCSubject, {
+  foreignKey: 'subjectId',
+  as: 'subject',
+});
+
+// Minimum grade requirement
+ProgramSSCRequirement.belongsTo(Grade, {
+  foreignKey: 'minimumGradeId',
+  as: 'minimumGrade',
+});
+
+Grade.hasMany(ProgramSSCRequirement, {
+  foreignKey: 'minimumGradeId',
+  as: 'usedInRequirements',
+});
+
+export default ProgramSSCRequirement;

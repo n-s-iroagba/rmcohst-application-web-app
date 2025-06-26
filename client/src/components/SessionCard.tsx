@@ -24,11 +24,11 @@ export const SessionCard: React.FC<SessionCardProps> = ({ entity, onEdit, onDele
     })
 
   return (
-    <div className="bg-blue-50 border border-blue-200 shadow-md rounded-2xl p-6 transition hover:shadow-lg">
+    <div className="bg-slate-50 border border-slate-200 shadow-md rounded-2xl p-6 transition hover:shadow-lg">
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-3">
-          <Calendar className="text-blue-600" size={24} />
-          <h2 className="text-xl font-semibold text-blue-900">{entity.name}</h2>
+          <Calendar className="text-slate-600" size={24} />
+          <h2 className="text-xl font-semibold text-slate-900">{entity.name}</h2>
         </div>
         {entity.isCurrent && (
           <div className="flex items-center gap-1 text-green-600 text-sm font-medium">
@@ -38,7 +38,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({ entity, onEdit, onDele
         )}
       </div>
 
-      <div className="text-blue-800 text-sm mb-4 space-y-1">
+      <div className="text-slate-800 text-sm mb-4 space-y-1">
         <p>
           <strong>Start:</strong> {formatDate(entity.applicationStartDate)}
         </p>
@@ -48,7 +48,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({ entity, onEdit, onDele
       </div>
 
       <div className="flex gap-3">
-        <button onClick={() => onEdit()} className="bg-blue-600 hover:bg-blue-700 text-white">
+        <button onClick={() => onEdit()} className="bg-slate-600 hover:bg-slate-700 text-white">
           <Edit size={16} className="mr-2" />
           Edit
         </button>

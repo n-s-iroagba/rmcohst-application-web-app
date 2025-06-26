@@ -2,21 +2,15 @@ import {
   Model,
   DataTypes,
   type Optional,
-  type BelongsToGetAssociationMixin,
-  type BelongsToSetAssociationMixin,
-  type HasManyGetAssociationsMixin,
-  type HasManyAddAssociationMixin,
-  type HasManyCountAssociationsMixin,
-  type ForeignKey,
-  type Sequelize,
 } from 'sequelize'
-// import sequelize from '../config/database'; // Default import
-import type { Faculty } from './Faculty' // Assuming Faculty model exists
-// import type Program from './Program'; // Assuming Program model exists
+
+import { Faculty } from './Faculty'
+import sequelize from '../config/database'
+
 
 interface DepartmentAttributes {
-  id: string // Changed to string for UUID consistency
-  facultyId: ForeignKey<Faculty['id']>
+  id: number 
+  facultyId: number
   name: string
   code: string
   description?: string
@@ -35,8 +29,8 @@ export class Department // Named export
   extends Model<DepartmentAttributes, DepartmentCreationAttributes>
   implements DepartmentAttributes
 {
-  public id!: string
-  public facultyId!: ForeignKey<Faculty['id']>
+  public id!: number
+  public facultyId!: number
   public name!: string
   public code!: string
   public description?: string
@@ -44,23 +38,11 @@ export class Department // Named export
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 
-  public getFaculty!: BelongsToGetAssociationMixin<Faculty>
-  public setFaculty!: BelongsToSetAssociationMixin<Faculty, string> // Faculty ID type
-
-  public getPrograms!: HasManyGetAssociationsMixin<any> // Replace 'any' with Program type
-  public addProgram!: HasManyAddAssociationMixin<any, string> // Program ID type
-  public countPrograms!: HasManyCountAssociationsMixin
-
-  public static associate(models: any) {
-    Department.belongsTo(models.Faculty, { foreignKey: 'facultyId', as: 'faculty' })
-    Department.hasMany(models.Program, { foreignKey: 'departmentId', as: 'programs' }) // Assuming Program has departmentId
-  }
 }
 
-export const DepartmentFactory = (sequelize: Sequelize): typeof Department => {
   Department.init(
     {
-      id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+      id: { type: DataTypes.INTEGER, defaultValue: DataTypes.UUIDV4, primaryKey: true },
       facultyId: {
         type: DataTypes.UUID, // Match Faculty ID type
         allowNull: false,
@@ -83,5 +65,7 @@ export const DepartmentFactory = (sequelize: Sequelize): typeof Department => {
       ],
     }
   )
-  return Department
-}
+
+ Faculty.hasMany(Department, { foreignKey: 'facultyId', as: 'departments' })
+ Department.belongsTo(Faculty, { foreignKey: 'facultyId', as: 'faculty' })
+

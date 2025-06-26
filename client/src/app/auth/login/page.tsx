@@ -2,8 +2,8 @@
 
 import React from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import DynamicFormTextFields from '@/helpers/formFields'
-import ErrorAlert from '@/components/ErrorAlert'
+import { FieldType } from '@/types/fields_config'
+import { CustomForm } from '@/components/CustomForm'
 
 const LoginPage = () => {
   const {
@@ -11,26 +11,25 @@ const LoginPage = () => {
     login,
     handleChangeLoginData,
     loginData,
+    handleSubmitLogin,
     error: apiError,
     validationErrors
   } = useAuth()
 
+ const fieldsConfig = {
+      email: { type: 'text' as FieldType, onChangeHandler: handleChangeLoginData },
+    
+     
+      password: { type: 'date' as FieldType, onChangeHandler: handleChangeLoginData },
+  
+    }
   return (
-    <form onSubmit={login}>
-      <h2>Login</h2>
-
-      <DynamicFormTextFields
-        data={loginData}
-        errors={validationErrors}
-        onChange={handleChangeLoginData}
-      />
-
-      {apiError && <ErrorAlert message={apiError} />}
-
-      <button disabled={submitting} type="submit">
-        {submitting ? 'Submitting' : 'Submit'}
-      </button>
-    </form>
+    <CustomForm
+      data={loginData}
+      fieldsConfig={fieldsConfig}
+      submiting={submitting}
+      onSubmit={() => handleSubmitLogin()}
+    />
   )
 }
 

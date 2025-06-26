@@ -39,14 +39,6 @@ export class Faculty // Named export
   public nameOfDean?: string | undefined
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
-
-  public getDepartments!: HasManyGetAssociationsMixin<any> // Replace 'any' with Department type
-  public addDepartment!: HasManyAddAssociationMixin<any, string> // Department ID type
-  public countDepartments!: HasManyCountAssociationsMixin
-
-  public static associate(models: any) {
-    Faculty.hasMany(models.Department, { foreignKey: 'facultyId', as: 'departments' })
-  }
 }
 
 export const FacultyFactory = (sequelize: Sequelize): typeof Faculty => {

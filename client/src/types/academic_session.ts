@@ -1,9 +1,11 @@
 export interface Session {
-  id: number
+ id: number
   name: string
-  applicationStartDate: Date
-  applicationEndDate: Date
+applicationStartDate:Date
+applicationEndDate: Date
   isCurrent: boolean
+  createdAt: Date
+  updatedAt: Date
 }
 
-export type AcademicSessionCreationDto = Omit<Session, 'id' | 'isCurrent'>
+export type AcademicSessionCreationDto = Omit<Session, 'id' | 'isCurrent'|'createdAt'|'updatedAt'>

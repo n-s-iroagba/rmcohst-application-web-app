@@ -23,7 +23,7 @@ interface Officer {
   id: string
   user: {
     id: string
-    firstName: string
+    lastName: string
     lastName: string
     email: string
   }
@@ -129,7 +129,7 @@ const useApplicationAssignment = () => {
       const mockOfficers: Officer[] = [
         {
           id: '1',
-          user: { id: '1', firstName: 'John', lastName: 'Doe', email: 'john.doe@university.edu' },
+          user: { id: '1', lastName: 'John', lastName: 'Doe', email: 'john.doe@university.edu' },
           role: 'SENIOR_ADMISSION_OFFICER',
           isActive: true,
           currentAssignments: 45,
@@ -139,7 +139,7 @@ const useApplicationAssignment = () => {
           id: '2',
           user: {
             id: '2',
-            firstName: 'Jane',
+            lastName: 'Jane',
             lastName: 'Smith',
             email: 'jane.smith@university.edu'
           },
@@ -152,7 +152,7 @@ const useApplicationAssignment = () => {
           id: '3',
           user: {
             id: '3',
-            firstName: 'Michael',
+            lastName: 'Michael',
             lastName: 'Johnson',
             email: 'mike.johnson@university.edu'
           },
@@ -165,7 +165,7 @@ const useApplicationAssignment = () => {
           id: '4',
           user: {
             id: '4',
-            firstName: 'Sarah',
+            lastName: 'Sarah',
             lastName: 'Williams',
             email: 'sarah.williams@university.edu'
           },
@@ -226,7 +226,7 @@ const useApplicationAssignment = () => {
         assignedCount,
         unassignedCount,
         targetName,
-        officerName: `${selectedOfficer.user.firstName} ${selectedOfficer.user.lastName}`
+        officerName: `${selectedOfficer.user.lastName} ${selectedOfficer.user.lastName}`
       })
     } catch (err) {
       setError('Failed to load assignment preview')
@@ -362,7 +362,7 @@ const OfficerSelection: React.FC<{
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-slate-600" />
         <span className="ml-3 text-gray-600">Loading admission officers...</span>
       </div>
     )
@@ -371,7 +371,7 @@ const OfficerSelection: React.FC<{
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-6">
-        <Users className="h-5 w-5 text-blue-600" />
+        <Users className="h-5 w-5 text-slate-600" />
         <h3 className="text-lg font-semibold text-gray-900">Select Admission Officer</h3>
       </div>
 
@@ -381,19 +381,19 @@ const OfficerSelection: React.FC<{
             key={officer.id}
             className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
               selectedOfficer?.id === officer.id
-                ? 'border-blue-500 bg-blue-50'
+                ? 'border-slate-500 bg-slate-50'
                 : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
             }`}
             onClick={() => onSelect(officer)}
           >
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <User className="h-5 w-5 text-blue-600" />
+                <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
+                  <User className="h-5 w-5 text-slate-600" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900">
-                    {officer.user.firstName} {officer.user.lastName}
+                    {officer.user.lastName} {officer.user.lastName}
                   </h4>
                   <div className="flex items-center gap-1 text-sm text-gray-600">
                     <Mail className="h-3 w-3" />
@@ -470,7 +470,7 @@ const AssignmentConfiguration: React.FC<{
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 mb-6">
-        <Filter className="h-5 w-5 text-blue-600" />
+        <Filter className="h-5 w-5 text-slate-600" />
         <h3 className="text-lg font-semibold text-gray-900">Configure Assignment</h3>
       </div>
 
@@ -489,7 +489,7 @@ const AssignmentConfiguration: React.FC<{
               type="button"
               className={`p-3 rounded-lg border-2 transition-all ${
                 assignmentType === type.value
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
+                  ? 'border-slate-500 bg-slate-50 text-slate-700'
                   : 'border-gray-200 hover:border-gray-300 text-gray-700'
               }`}
               onClick={() => {
@@ -519,7 +519,7 @@ const AssignmentConfiguration: React.FC<{
             <select
               value={targetId}
               onChange={(e) => onTargetIdChange(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
               required
             >
               <option value="">Select {assignmentType}...</option>
@@ -544,7 +544,7 @@ const AssignmentConfiguration: React.FC<{
           onChange={(e) => onCountChange(Math.max(1, Math.min(100, parseInt(e.target.value) || 1)))}
           min="1"
           max="100"
-          className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
         />
         <p className="mt-1 text-sm text-gray-500">Maximum 100 applications per assignment</p>
       </div>
@@ -560,7 +560,7 @@ const AssignmentPreview: React.FC<{
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-slate-600" />
         <span className="ml-3 text-gray-600">Loading assignment preview...</span>
       </div>
     )
@@ -573,7 +573,7 @@ const AssignmentPreview: React.FC<{
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 mb-6">
-        <Eye className="h-5 w-5 text-blue-600" />
+        <Eye className="h-5 w-5 text-slate-600" />
         <h3 className="text-lg font-semibold text-gray-900">Assignment Preview</h3>
       </div>
 
@@ -688,7 +688,7 @@ const AssignmentResult: React.FC<{
       <div className="flex justify-center">
         <button
           onClick={onReset}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-6 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
         >
           Create New Assignment
         </button>
@@ -780,7 +780,7 @@ const ApplicationAssignmentInterface: React.FC = () => {
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                   step === stepName
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-slate-600 text-white'
                     : ['select_officer', 'configure', 'preview', 'result'].indexOf(step) > index
                       ? 'bg-green-600 text-white'
                       : 'bg-gray-200 text-gray-600'
@@ -866,7 +866,7 @@ const ApplicationAssignmentInterface: React.FC = () => {
             disabled={!canProceed() || loading || assigning}
             className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
               canProceed() && !loading && !assigning
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                ? 'bg-slate-600 text-white hover:bg-slate-700'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
           >

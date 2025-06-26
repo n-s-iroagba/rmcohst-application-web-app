@@ -10,8 +10,7 @@ interface ApplicantSSCQualificationAttributes {
   applicationId: number
   numberOfSittings: number
   certificateTypes: string[]
-  certificates: Buffer[] // Base64 encoded files or file paths
-
+  isDocumentUploaded:boolean
   createdAt?: Date
   updatedAt?: Date
 }
@@ -28,9 +27,7 @@ class ApplicantSSCQualification
   public applicationId!: number
   public numberOfSittings!: number
   public certificateTypes!: string[]
-  public certificates!: Buffer[]
-  public getApplicantSubjectAndGrades!: HasManyGetAssociationsMixin<ApplicantSSCSubjectAndGrade>
-
+  public isDocumentUploaded!:boolean
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 
@@ -39,8 +36,7 @@ class ApplicantSSCQualification
     return !!(
       this.numberOfSittings &&
       this.certificateTypes?.length > 0 &&
-      this.certificates?.length > 0 &&
-      this.certificateTypes.length === this.certificates.length // Ensure matching counts
+      this.isDocumentUploaded
     )
   }
 
@@ -50,10 +46,7 @@ class ApplicantSSCQualification
     return this.certificateTypes.every(type => validTypes.includes(type))
   }
 
-  // Method to get certificate count
-  public getCertificateCount(): number {
-    return this.certificates?.length || 0
-  }
+
 }
 
 ApplicantSSCQualification.init(
@@ -98,28 +91,10 @@ ApplicantSSCQualification.init(
         },
       },
     },
-    certificates: {
-      type: DataTypes.JSON,
-      allowNull: false,
-      validate: {
-        isValidArray(value: any) {
-          if (!Array.isArray(value) || value.length === 0) {
-            throw new Error('Certificates must be a non-empty array')
-          }
-          // Validate that all certificates are strings (base64 or file paths)
-          const invalidCertificates = value.filter((cert: any) => typeof cert !== 'string')
-          if (invalidCertificates.length > 0) {
-            throw new Error('All certificates must be strings (base64 encoded or file paths)')
-          }
-        },
-        matchesCertificateTypes(value: string[]) {
-          // @ts-ignore - this refers to the model instance
-          if (this.certificateTypes && value.length !== this.certificateTypes.length) {
-            throw new Error('Number of certificates must match number of certificate types')
-          }
-        },
-      },
-    },
+    isDocumentUploaded: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    }
   },
   {
     sequelize,

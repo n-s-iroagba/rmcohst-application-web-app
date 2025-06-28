@@ -7,7 +7,7 @@ interface ApplicationProgramSpecificQualificationAttributes {
   id: number
   applicationId: number
   qualificationType?: string
-  gradeId: number
+  grade: string  
   isDocumentUploaded:boolean
   createdAt?: Date
   updatedAt?: Date
@@ -29,13 +29,13 @@ class ApplicationProgramSpecificQualification
   public applicationId!: number
   public qualificationType!: string
   public isDocumentUploaded!:boolean
-  public gradeId!: number
+  public grade!:string
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 
   // Method to check if program-specific qualification is complete
   public isComplete(): boolean {
-    return !!(this.qualificationType && this.gradeId && this.isDocumentUploaded)
+    return !!(this.qualificationType && this.grade && this.isDocumentUploaded)
   }
 }
 
@@ -68,8 +68,8 @@ ApplicationProgramSpecificQualification.init(
         notEmpty: true,
       },
     },
-    gradeId: {
-      type: DataTypes.INTEGER,
+    grade:{     
+      type:DataTypes.STRING,
       allowNull: true,
       references: {
         model: 'grade',

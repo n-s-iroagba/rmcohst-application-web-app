@@ -15,10 +15,11 @@ import User from '../models/User'
 import ProgramSession from '../models/ProgramSession'
 import Biodata from '../models/Biodata'
 import ApplicantSSCQualification from '../models/ApplicantSSCQualification'
-import ApplicantProgramSpecificRequirement from '../models/ApplicantProgramSpecificRequirement'
+import ApplicantProgramSpecificQualification from '../models/ApplicantProgramSpecificQualification'
 import ApplicantSSCSubjectAndGrade from '../models/ApplicantSSCSubjectAndGrade'
 import { AppError } from '../utils/errors'
 import { logger } from '../utils/logger'
+import { ApplicantData, ApplicationFiles, FileData } from './DriveService'
 
 interface ApplicationFilters {
   status?: string
@@ -72,7 +73,7 @@ class ApplicationService {
         where: { programId: program.id },
       })
       if (programSpecificQualification)
-        await ApplicantProgramSpecificRequirement.create({
+        await ApplicantProgramSpecificQualification.create({
           applicationId,
           qualificationType: programSpecificQualification.qualificationType,
         })
@@ -110,7 +111,7 @@ class ApplicationService {
             include: [{ model: ApplicantSSCSubjectAndGrade, as: 'subjects' }],
           },
           {
-            model: ApplicantProgramSpecificRequirement,
+            model: ApplicantProgramSpecificQualification,
             as: 'programSpecificQualifications',
             include: [{ model: ProgramSpecificRequirement, as: 'qualificationDefinition' }],
           },
@@ -239,15 +240,23 @@ class ApplicationService {
           model: ApplicantSSCQualification,
           as: 'sscQualification',
           required: false,
+        },{
+          model:User,
+          as:'user'
+
         },
         {
-          model: ApplicantProgramSpecificRequirement,
+          model: ApplicantProgramSpecificQualification,
           as: 'programSpecificQualifications',
           required: false,
         },
       ],
     })
-
+    const user = await User.findByPk(applicantUserId)
+    if (!user){
+      throw new AppError('user not found', 404)
+      
+    }
     if (!application) {
       throw new AppError('Application not found or you do not have permission.', 404)
     }
@@ -302,7 +311,61 @@ class ApplicationService {
         400
       )
     }
+      // Prepare applicant data for folder structure
+      const applicantData: ApplicantData = {
+        applicationId: application.id.toString(),
+        firstName: user.firstName,
+        lastName:  user.lastName,
+        sessionName: (await application.getSessions()).name,
+        facultyName: (await ((await application.program.getDepartment()).getFaculty())).name,
+        departmentName: (await application.program.getDepartment()).name,
+        programName: application.program.name,
+      };
 
+      // Convert multer files to FileData format
+      const applicationFiles: ApplicationFiles = {
+        biodata: {
+          passportPhoto: application.biodata?.passportPhotograph
+  ? this.multerFileToFileData(application.biodata.passportPhotograph)
+  : undefined,
+
+          personalDetails: jsonData.personalDetails,
+        },
+        applicationReceipt: this.multerFileToFileData(files.applicationReceipt),
+        sscQualification: {
+          certificates: files.sscCertificates.map(file => this.multerFileToFileData(file)),
+          details: jsonData.sscDetails,
+        },
+        programSpecificQualification: files.programCertificates ? {
+          certificates: files.programCertificates.map(file => this.multerFileToFileData(file)),
+          details: jsonData.programDetails || {},
+        } : undefined,
+      };
+
+      // Save files to storage
+      const savedFiles = await this.driveService.saveApplicationFiles(applicantData, applicationFiles);
+
+      // Update application record with file references and blob data
+      await application.update({
+        passportPhotoBlob: files.passportPhoto.buffer,
+        applicationReceiptBlob: files.applicationReceipt.buffer,
+        sscCertificatesJson: JSON.stringify(files.sscCertificates.map(file => ({
+          filename: file.originalname,
+          mimetype: file.mimetype,
+          size: file.size,
+        }))),
+        sscCertificatesBlob: Buffer.concat(files.sscCertificates.map(file => file.buffer)),
+        programCertificatesJson: files.programCertificates ? JSON.stringify(files.programCertificates.map(file => ({
+          filename: file.originalname,
+          mimetype: file.mimetype,
+          size: file.size,
+        }))) : null,
+        programCertificatesBlob: files.programCertificates ? Buffer.concat(files.programCertificates.map(file => file.buffer)) : null,
+        personalDetailsJson: JSON.stringify(jsonData.personalDetails),
+        sscDetailsJson: JSON.stringify(jsonData.sscDetails),
+        programDetailsJson: jsonData.programDetails ? JSON.stringify(jsonData.programDetails) : null,
+        fileStoragePath: JSON.stringify(savedFiles),
+      });
     // All validations passed, update application status
     application.status = ApplicationStatus.SUBMITTED
     application.submittedAt = new Date()
@@ -342,6 +405,40 @@ class ApplicationService {
       throw new AppError('Failed to fetch application counts', 500)
     }
   }
+    /**
+   * Convert multer file to FileData interface
+   */
+multerFileToFileData(file: Express.Multer.File | Buffer): FileData {
+  if (Buffer.isBuffer(file)) {
+    return {
+      filename: 'unknown.jpg', // fallback
+      buffer: file,
+      mimetype: 'image/jpeg', // assume or infer
+    }
+  }
+
+  return {
+    filename: file.originalname,
+    buffer: file.buffer,
+    mimetype: file.mimetype,
+  }
+}
+
+
+  return {
+    filename: file.originalname,
+    buffer: file.buffer,
+    mimetype: file.mimetype,
+  }
+}
+
+    return {
+      filename: file.originalname,
+      buffer: file.buffer,
+      mimetype: file.mimetype,
+    };
+  }
+
 
   // Get application by ID with all related data
   static async getApplicationById(id: number) {
@@ -358,8 +455,8 @@ class ApplicationService {
             include: [{ model: ApplicantSSCSubjectAndGrade, as: 'subjects' }],
           },
           {
-            model: ApplicantProgramSpecificRequirement,
-            as: 'applicantProgramSpecificRequirements',
+            model: ApplicantProgramSpecificQualification,
+            as: 'applicantProgramSpecificQualifications',
             include: [{ model: ProgramSpecificRequirement, as: 'programSpecificQualification' }],
           },
           { model: Staff, as: 'Staff' },

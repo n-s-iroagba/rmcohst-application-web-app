@@ -3,14 +3,16 @@ import { useAuth } from '@/hooks/useAuth'
 import { SignUpRole } from '@/types/role.types'
 import { CustomForm } from './CustomForm'
 import { FieldType } from '@/types/fields_config'
+import { UserCircleIcon } from 'lucide-react'
 
 type SignupFormProps = {
   signupRole: SignUpRole
-  formLabel: string
+
 }
 
-const SignupForm: React.FC<SignupFormProps> = ({ signupRole, formLabel }) => {
+const SignupForm: React.FC<SignupFormProps> = ({ signupRole }) => {
   const {
+    handleCancel,
     submitting,
     signupData,
     handleChangeSignupData,
@@ -33,8 +35,9 @@ const SignupForm: React.FC<SignupFormProps> = ({ signupRole, formLabel }) => {
       data={signupData}
       fieldsConfig={fieldsConfig}
       submiting={submitting}
-      onSubmit={() => handleSubmitSignup(signupRole)}
-    />
+      formLabel="Create An Account to Apply"
+      icon={<UserCircleIcon/>}
+      onSubmit={() => handleSubmitSignup(signupRole)} onCancel={handleCancel}    />
   )
 }
 

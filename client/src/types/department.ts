@@ -10,4 +10,4 @@ export interface Department {
   faculty?: Faculty
 }
 
-export type DepartmentCreationDto = Omit<Department, 'id' | 'isActive' | 'faculty'>
+export type DepartmentCreationDto = Omit<Department, 'id' | 'isActive' | 'faculty'|'facultyId'>

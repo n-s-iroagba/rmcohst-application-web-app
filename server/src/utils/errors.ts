@@ -11,12 +11,20 @@ export class AppError extends Error {
   }
 }
 
-export class ValidationError extends AppError {
-  public errors: any
+export class ValidationError extends Error {
+  public statusCode: number
+  public errors: Array<{ field: string; message: string }>
 
-  constructor(message: string, errors?: any) {
-    super(message, 400)
+  constructor(message: string, errors: Array<{ field: string; message: string }>) {
+    super(message)
+    this.name = 'ValidationError'
+    this.statusCode = 400
     this.errors = errors
+
+    // Maintains proper stack trace (only in V8)
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ValidationError)
+    }
   }
 }
 

@@ -79,6 +79,7 @@ type UseAuthReturn = {
   loading: boolean
   error: string | null
   submitting: boolean
+  handleCancel: ()=>void
 }
 
 export const useAuth = (): UseAuthReturn => {
@@ -114,6 +115,11 @@ export const useAuth = (): UseAuthReturn => {
   const [validationErrors, setValidationErrors] = useState<Partial<Record<AuthFormKeys, string>>>(
     {}
   )
+
+  
+  const handleCancel = ()=>{
+    router.push('/')
+  }
 
   const validate = (
     formData: Partial<
@@ -309,6 +315,7 @@ export const useAuth = (): UseAuthReturn => {
   }
 
   return {
+    handleCancel,
     handleChangeSignupData,
     handleChangeLoginData,
     login,

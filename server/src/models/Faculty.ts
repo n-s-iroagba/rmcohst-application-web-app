@@ -2,13 +2,9 @@ import {
   Model,
   DataTypes,
   type Optional,
-  type HasManyGetAssociationsMixin,
-  type HasManyAddAssociationMixin,
-  type HasManyCountAssociationsMixin,
-  type Sequelize,
 } from 'sequelize'
-// import sequelize from '../config/database'; // Default import
-// import type Department from './Department'; // Assuming Department model exists
+import sequelize from '../config/database'; // Default import
+
 
 interface FacultyAttributes {
   id: number // Changed to string for UUID consistency
@@ -41,10 +37,10 @@ export class Faculty // Named export
   public readonly updatedAt!: Date
 }
 
-export const FacultyFactory = (sequelize: Sequelize): typeof Faculty => {
+
   Faculty.init(
     {
-      id: { type: DataTypes.INTEGER, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+      id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
       name: { type: DataTypes.STRING(100), allowNull: false, unique: true },
       code: { type: DataTypes.STRING(10), allowNull: false, unique: true },
       nameOfDean: {
@@ -65,5 +61,5 @@ export const FacultyFactory = (sequelize: Sequelize): typeof Faculty => {
       ],
     }
   )
-  return Faculty
-}
+export default Faculty
+

@@ -1,35 +1,28 @@
-import React from 'react'
-import { useAuth } from '@/hooks/useAuth'
-import DynamicFormTextFields from '@/helpers/formFields'
-import ErrorAlert from '@/components/ErrorAlert'
+// import React from 'react'
+// import { useAuth } from '@/hooks/useAuth'
+// import { CustomForm } from '@/components/CustomForm'
 
-const ResetPasswordFormPage = () => {
-  const {
-    submitting,
-    resetPasswordFormData,
-    handleChangeForgotPasswordData,
-    resetPassword,
-    error: apiError,
-    validationErrors
-  } = useAuth()
+// const ResetPasswordFormPage = () => {
+//   const {
+//     submitting,
+//     resetPasswordFormData,
+//     handleChangeForgotPasswordData,
+//     resetPassword,
+//     error: apiError,
+//     validationErrors
+//   } = useAuth()
 
-  return (
-    <form onSubmit={resetPassword}>
-      <h2>Enter Registration Email</h2>
+//   return (
+//     <CustomForm data={resetPasswordFormData} fieldsConfig={undefined} onSubmit={function (): void {
+//       throw new Error('Function not implemented.')
+//     } } formLabel={''} onCancel={function (): void {
+//       throw new Error('Function not implemented.')
+//     } } submiting={false}/>
+//   )
+// }
 
-      <DynamicFormTextFields
-        data={resetPasswordFormData}
-        errors={validationErrors}
-        onChange={handleChangeForgotPasswordData}
-      />
-
-      {apiError && <ErrorAlert message={apiError} />}
-
-      <button disabled={submitting} type="submit">
-        {submitting ? 'Submitting' : 'Submit'}
-      </button>
-    </form>
-  )
+// export default ResetPasswordFormPage
+const page = ()=>{
+  return <div>hi</div>
 }
-
-export default ResetPasswordFormPage
+export default page

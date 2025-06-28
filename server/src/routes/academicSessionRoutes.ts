@@ -2,7 +2,8 @@ import express from 'express'
 import { validateQuery, validateParams, validateBody } from '../middleware/validation'
 
 import AcademicSessionController from '../controllers/AcademicSessionController'
-import {  academicSessionCreationSchema, idParamSchema, academicSessionUpdateSchema } from '../validation/application.validationSchemas'
+import { academicSessionCreationSchema, academicSessionUpdateSchema } from '../validation/academicSession.validationSchemas'
+
 
 const router = express.Router()
 const academicSessionController = new AcademicSessionController()

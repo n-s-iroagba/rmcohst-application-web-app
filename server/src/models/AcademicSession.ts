@@ -21,7 +21,7 @@ applicationEndDate: Date
   updatedAt: Date
 }
 
-interface AcademicSessionCreationAttributes
+export interface AcademicSessionCreationAttributes
   extends Optional<AcademicSessionAttributes, 'id' | 'isCurrent' | 'createdAt' | 'updatedAt'> {}
 
 class AcademicSession

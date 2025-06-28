@@ -1,0 +1,822 @@
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  url: undefined,
+  method: undefined,
+  ip: undefined,
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-27T20:49:58.201Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  level: 'error',
+  message: 'Unexpected error',
+  timestamp: '2025-06-27T20:49:58.202Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  url: undefined,
+  method: undefined,
+  ip: undefined,
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-27T20:51:44.535Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  level: 'error',
+  message: 'Unexpected error',
+  timestamp: '2025-06-27T20:51:44.536Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  url: undefined,
+  method: undefined,
+  ip: undefined,
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-27T22:59:24.574Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  level: 'error',
+  message: 'Unexpected error',
+  timestamp: '2025-06-27T22:59:24.575Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  url: undefined,
+  method: undefined,
+  ip: undefined,
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-27T22:59:28.016Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  level: 'error',
+  message: 'Unexpected error',
+  timestamp: '2025-06-27T22:59:28.017Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  url: undefined,
+  method: undefined,
+  ip: undefined,
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-27T22:59:31.231Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  level: 'error',
+  message: 'Unexpected error',
+  timestamp: '2025-06-27T22:59:31.232Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  url: undefined,
+  method: undefined,
+  ip: undefined,
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-27T22:59:33.285Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  level: 'error',
+  message: 'Unexpected error',
+  timestamp: '2025-06-27T22:59:33.286Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  url: undefined,
+  method: undefined,
+  ip: undefined,
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-27T22:59:59.292Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  level: 'error',
+  message: 'Unexpected error',
+  timestamp: '2025-06-27T22:59:59.293Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  url: undefined,
+  method: undefined,
+  ip: undefined,
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-27T23:00:01.233Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  level: 'error',
+  message: 'Unexpected error',
+  timestamp: '2025-06-27T23:00:01.234Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  url: undefined,
+  method: undefined,
+  ip: undefined,
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-27T23:00:04.219Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  level: 'error',
+  message: 'Unexpected error',
+  timestamp: '2025-06-27T23:00:04.220Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  url: undefined,
+  method: undefined,
+  ip: undefined,
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-27T23:00:05.416Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  level: 'error',
+  message: 'Unexpected error',
+  timestamp: '2025-06-27T23:00:05.418Z'
+}
+{
+  service: 'rmcohst-server',
+  error: 'Validation failed',
+  stack: 'Error: Validation failed\n' +
+    '    at /home/udorakpuenyi/rmcohst-application-web-app/server/src/middleware/validation.ts:16:31\n' +
+    '    at Layer.handleRequest (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/layer.js:152:17)\n' +
+    '    at next (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/route.js:157:13)\n' +
+    '    at Route.dispatch (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/route.js:117:3)\n' +
+    '    at handle (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:435:11)\n' +
+    '    at Layer.handleRequest (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/layer.js:152:17)\n' +
+    '    at /home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:295:15\n' +
+    '    at processParams (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:582:12)\n' +
+    '    at next (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:291:5)\n' +
+    '    at Function.handle (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:186:3)',
+  url: '/api/academic-sessions',
+  method: 'POST',
+  ip: '::1',
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-27T23:05:45.021Z'
+}
+{
+  service: 'rmcohst-server',
+  error: 'Validation failed',
+  stack: 'Error: Validation failed\n' +
+    '    at /home/udorakpuenyi/rmcohst-application-web-app/server/src/middleware/validation.ts:16:31\n' +
+    '    at Layer.handleRequest (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/layer.js:152:17)\n' +
+    '    at next (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/route.js:157:13)\n' +
+    '    at Route.dispatch (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/route.js:117:3)\n' +
+    '    at handle (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:435:11)\n' +
+    '    at Layer.handleRequest (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/layer.js:152:17)\n' +
+    '    at /home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:295:15\n' +
+    '    at processParams (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:582:12)\n' +
+    '    at next (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:291:5)\n' +
+    '    at Function.handle (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:186:3)',
+  url: '/api/academic-sessions',
+  method: 'POST',
+  ip: '::1',
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-27T23:09:24.544Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  url: undefined,
+  method: undefined,
+  ip: undefined,
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-28T00:25:00.671Z'
+}
+{
+  service: 'rmcohst-server',
+  error: ConnectionError [SequelizeConnectionError]: connect ETIMEDOUT
+      at ConnectionManager.connect (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/dialects/mysql/connection-manager.js:126:17)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async ConnectionManager._connect (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/dialects/abstract/connection-manager.js:332:24) {
+    parent: Error: connect ETIMEDOUT
+        at Connection._handleTimeoutError (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/base/connection.js:200:17)
+        at listOnTimeout (node:internal/timers:588:17)
+        at processTimers (node:internal/timers:523:7) {
+      errorno: 'ETIMEDOUT',
+      code: 'ETIMEDOUT',
+      syscall: 'connect',
+      fatal: true
+    },
+    original: Error: connect ETIMEDOUT
+        at Connection._handleTimeoutError (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/base/connection.js:200:17)
+        at listOnTimeout (node:internal/timers:588:17)
+        at processTimers (node:internal/timers:523:7) {
+      errorno: 'ETIMEDOUT',
+      code: 'ETIMEDOUT',
+      syscall: 'connect',
+      fatal: true
+    }
+  },
+  level: 'error',
+  message: 'Error fetching academic sessions',
+  timestamp: '2025-06-28T00:27:08.616Z'
+}
+{
+  service: 'rmcohst-server',
+  error: AppError: Could not retrieve academic sessions
+      at Function.getAllSessions (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/AcademicSessionService.ts:27:13)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async AcademicSessionController.getAll (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/AcademicSessionController.ts:17:22) {
+    statusCode: 500,
+    isOperational: true
+  },
+  level: 'error',
+  message: 'Error fetching academic sessions',
+  timestamp: '2025-06-28T00:27:10.679Z'
+}
+{
+  service: 'rmcohst-server',
+  error: undefined,
+  stack: undefined,
+  url: undefined,
+  method: undefined,
+  ip: undefined,
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-28T00:48:31.169Z'
+}
+{
+  service: 'rmcohst-server',
+  error: Error
+      at Query.run (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/dialects/mysql/query.js:46:25)
+      at /home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/sequelize.js:650:28
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async MySQLQueryInterface.insert (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/dialects/abstract/query-interface.js:795:21)
+      at async AcademicSession.save (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/model.js:4154:35)
+      at async Function.create (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/model.js:2305:12)
+      at async Function.createSession (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/AcademicSessionService.ts:10:23)
+      at async AcademicSessionController.create (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/AcademicSessionController.ts:38:23) {
+    name: 'SequelizeUniqueConstraintError',
+    errors: [
+      ValidationErrorItem {
+        message: 'name must be unique',
+        type: 'unique violation',
+        path: 'name',
+        value: 'IKDHFFN',
+        origin: 'DB',
+        instance: AcademicSession {
+          dataValues: {
+            isCurrent: false,
+            id: null,
+            name: 'IKDHFFN',
+            applicationStartDate: '2025-06-13',
+            applicationEndDate: '2025-06-19',
+            updatedAt: 2025-06-28T00:54:25.092Z,
+            createdAt: 2025-06-28T00:54:25.092Z
+          },
+          _previousDataValues: {
+            name: undefined,
+            applicationStartDate: undefined,
+            applicationEndDate: undefined
+          },
+          uniqno: 1,
+          _changed: Set(3) {
+            'name',
+            'applicationStartDate',
+            'applicationEndDate'
+          },
+          _options: {
+            isNewRecord: true,
+            _schema: null,
+            _schemaDelimiter: '',
+            attributes: undefined,
+            include: undefined,
+            raw: undefined,
+            silent: undefined
+          },
+          isNewRecord: true
+        },
+        validatorKey: 'not_unique',
+        validatorName: null,
+        validatorArgs: []
+      }
+    ],
+    parent: Error: Duplicate entry 'IKDHFFN' for key 'academic_sessions.name'
+        at Packet.asError (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/packets/packet.js:740:17)
+        at Execute.execute (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/commands/command.js:29:26)
+        at Connection.handlePacket (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/base/connection.js:475:34)
+        at PacketParser.onPacket (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/base/connection.js:93:12)
+        at PacketParser.executeStart (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/packet_parser.js:75:16)
+        at Socket.<anonymous> (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/base/connection.js:100:25)
+        at Socket.emit (node:events:518:28)
+        at Socket.emit (node:domain:489:12)
+        at addChunk (node:internal/streams/readable:561:12)
+        at readableAddChunkPushByteMode (node:internal/streams/readable:512:3) {
+      code: 'ER_DUP_ENTRY',
+      errno: 1062,
+      sqlState: '23000',
+      sqlMessage: "Duplicate entry 'IKDHFFN' for key 'academic_sessions.name'",
+      sql: 'INSERT INTO `academic_sessions` (`id`,`name`,`applicationStartDate`,`applicationEndDate`,`isCurrent`,`createdAt`,`updatedAt`) VALUES (DEFAULT,?,?,?,?,?,?);',
+      parameters: [
+        'IKDHFFN',
+        '2025-06-13',
+        '2025-06-19',
+        false,
+        '2025-06-28 00:54:25',
+        '2025-06-28 00:54:25'
+      ]
+    },
+    original: Error: Duplicate entry 'IKDHFFN' for key 'academic_sessions.name'
+        at Packet.asError (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/packets/packet.js:740:17)
+        at Execute.execute (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/commands/command.js:29:26)
+        at Connection.handlePacket (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/base/connection.js:475:34)
+        at PacketParser.onPacket (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/base/connection.js:93:12)
+        at PacketParser.executeStart (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/packet_parser.js:75:16)
+        at Socket.<anonymous> (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/base/connection.js:100:25)
+        at Socket.emit (node:events:518:28)
+        at Socket.emit (node:domain:489:12)
+        at addChunk (node:internal/streams/readable:561:12)
+        at readableAddChunkPushByteMode (node:internal/streams/readable:512:3) {
+      code: 'ER_DUP_ENTRY',
+      errno: 1062,
+      sqlState: '23000',
+      sqlMessage: "Duplicate entry 'IKDHFFN' for key 'academic_sessions.name'",
+      sql: 'INSERT INTO `academic_sessions` (`id`,`name`,`applicationStartDate`,`applicationEndDate`,`isCurrent`,`createdAt`,`updatedAt`) VALUES (DEFAULT,?,?,?,?,?,?);',
+      parameters: [
+        'IKDHFFN',
+        '2025-06-13',
+        '2025-06-19',
+        false,
+        '2025-06-28 00:54:25',
+        '2025-06-28 00:54:25'
+      ]
+    },
+    fields: { name: 'IKDHFFN' },
+    sql: 'INSERT INTO `academic_sessions` (`id`,`name`,`applicationStartDate`,`applicationEndDate`,`isCurrent`,`createdAt`,`updatedAt`) VALUES (DEFAULT,?,?,?,?,?,?);'
+  },
+  level: 'error',
+  message: 'Error creating academic session',
+  timestamp: '2025-06-28T00:54:25.857Z'
+}
+{
+  service: 'rmcohst-server',
+  error: AppError: Failed to create academic session
+      at Function.createSession (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/AcademicSessionService.ts:15:13)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async AcademicSessionController.create (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/AcademicSessionController.ts:38:23) {
+    statusCode: 500,
+    isOperational: true
+  },
+  sessionData: {
+    name: 'IKDHFFN',
+    applicationStartDate: '2025-06-13T00:00:00.000Z',
+    applicationEndDate: '2025-06-19T00:00:00.000Z'
+  },
+  level: 'error',
+  message: 'Error creating academic session',
+  timestamp: '2025-06-28T00:54:25.862Z'
+}
+{
+  service: 'rmcohst-server',
+  error: 'Failed to create academic session',
+  stack: 'Error: Failed to create academic session\n' +
+    '    at Function.createSession (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/AcademicSessionService.ts:15:13)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async AcademicSessionController.create (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/AcademicSessionController.ts:38:23)',
+  url: '/api/academic-sessions',
+  method: 'POST',
+  ip: '::1',
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-28T00:54:25.867Z'
+}
+{
+  service: 'rmcohst-server',
+  error: 'Validation failed',
+  stack: 'ValidationError: Validation failed\n' +
+    '    at /home/udorakpuenyi/rmcohst-application-web-app/server/src/middleware/validation.ts:16:31\n' +
+    '    at Layer.handleRequest (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/layer.js:152:17)\n' +
+    '    at next (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/route.js:157:13)\n' +
+    '    at Route.dispatch (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/route.js:117:3)\n' +
+    '    at handle (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:435:11)\n' +
+    '    at Layer.handleRequest (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/layer.js:152:17)\n' +
+    '    at /home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:295:15\n' +
+    '    at processParams (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:582:12)\n' +
+    '    at next (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:291:5)\n' +
+    '    at Function.handle (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:186:3)',
+  url: '/api/academic-sessions',
+  method: 'POST',
+  ip: '::1',
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-28T00:54:44.714Z'
+}
+{
+  service: 'rmcohst-server',
+  name: 'SequelizeConnectionError',
+  parent: Error: connect ETIMEDOUT
+      at Connection._handleTimeoutError (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/base/connection.js:200:17)
+      at listOnTimeout (node:internal/timers:588:17)
+      at processTimers (node:internal/timers:523:7) {
+    errorno: 'ETIMEDOUT',
+    code: 'ETIMEDOUT',
+    syscall: 'connect',
+    fatal: true
+  },
+  original: Error: connect ETIMEDOUT
+      at Connection._handleTimeoutError (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/base/connection.js:200:17)
+      at listOnTimeout (node:internal/timers:588:17)
+      at processTimers (node:internal/timers:523:7) {
+    errorno: 'ETIMEDOUT',
+    code: 'ETIMEDOUT',
+    syscall: 'connect',
+    fatal: true
+  },
+  level: 'error',
+  message: 'Unable to start server: connect ETIMEDOUT',
+  stack: 'SequelizeConnectionError: connect ETIMEDOUT\n' +
+    '    at ConnectionManager.connect (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/dialects/mysql/connection-manager.js:126:17)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async ConnectionManager._connect (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/dialects/abstract/connection-manager.js:332:24)\n' +
+    '    at async /home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/dialects/abstract/connection-manager.js:250:32\n' +
+    '    at async ConnectionManager.getConnection (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/dialects/abstract/connection-manager.js:280:7)\n' +
+    '    at async /home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/sequelize.js:638:26\n' +
+    '    at async Sequelize.authenticate (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/sequelize.js:972:5)\n' +
+    '    at async startServer (/home/udorakpuenyi/rmcohst-application-web-app/server/src/index.ts:58:5)',
+  timestamp: '2025-06-28T01:51:46.567Z'
+}
+{
+  service: 'rmcohst-server',
+  name: 'SequelizeDatabaseError',
+  parent: Error: Referencing column 'facultyId' and referenced column 'id' in foreign key constraint 'Departments_ibfk_1' are incompatible.
+      at Packet.asError (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/packets/packet.js:740:17)
+      at Query.execute (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/commands/command.js:29:26)
+      at Connection.handlePacket (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/base/connection.js:475:34)
+      at PacketParser.onPacket (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/base/connection.js:93:12)
+      at PacketParser.executeStart (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/packet_parser.js:75:16)
+      at Socket.<anonymous> (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/base/connection.js:100:25)
+      at Socket.emit (node:events:518:28)
+      at Socket.emit (node:domain:489:12)
+      at addChunk (node:internal/streams/readable:561:12)
+      at readableAddChunkPushByteMode (node:internal/streams/readable:512:3) {
+    code: 'ER_FK_INCOMPATIBLE_COLUMNS',
+    errno: 3780,
+    sqlState: 'HY000',
+    sqlMessage: "Referencing column 'facultyId' and referenced column 'id' in foreign key constraint 'Departments_ibfk_1' are incompatible.",
+    sql: 'CREATE TABLE IF NOT EXISTS `Departments` (`id` INTEGER , `facultyId` CHAR(36) BINARY NOT NULL, `name` VARCHAR(100) NOT NULL, `code` VARCHAR(10) NOT NULL, `description` TEXT, `isActive` TINYINT(1) NOT NULL DEFAULT true, `createdAt` DATETIME NOT NULL, `updatedAt` DATETIME NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`facultyId`) REFERENCES `Faculties` (`id`) ON DELETE CASCADE ON UPDATE CASCADE) ENGINE=InnoDB;',
+    parameters: undefined
+  },
+  original: Error: Referencing column 'facultyId' and referenced column 'id' in foreign key constraint 'Departments_ibfk_1' are incompatible.
+      at Packet.asError (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/packets/packet.js:740:17)
+      at Query.execute (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/commands/command.js:29:26)
+      at Connection.handlePacket (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/base/connection.js:475:34)
+      at PacketParser.onPacket (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/base/connection.js:93:12)
+      at PacketParser.executeStart (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/packet_parser.js:75:16)
+      at Socket.<anonymous> (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/mysql2/lib/base/connection.js:100:25)
+      at Socket.emit (node:events:518:28)
+      at Socket.emit (node:domain:489:12)
+      at addChunk (node:internal/streams/readable:561:12)
+      at readableAddChunkPushByteMode (node:internal/streams/readable:512:3) {
+    code: 'ER_FK_INCOMPATIBLE_COLUMNS',
+    errno: 3780,
+    sqlState: 'HY000',
+    sqlMessage: "Referencing column 'facultyId' and referenced column 'id' in foreign key constraint 'Departments_ibfk_1' are incompatible.",
+    sql: 'CREATE TABLE IF NOT EXISTS `Departments` (`id` INTEGER , `facultyId` CHAR(36) BINARY NOT NULL, `name` VARCHAR(100) NOT NULL, `code` VARCHAR(10) NOT NULL, `description` TEXT, `isActive` TINYINT(1) NOT NULL DEFAULT true, `createdAt` DATETIME NOT NULL, `updatedAt` DATETIME NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`facultyId`) REFERENCES `Faculties` (`id`) ON DELETE CASCADE ON UPDATE CASCADE) ENGINE=InnoDB;',
+    parameters: undefined
+  },
+  sql: 'CREATE TABLE IF NOT EXISTS `Departments` (`id` INTEGER , `facultyId` CHAR(36) BINARY NOT NULL, `name` VARCHAR(100) NOT NULL, `code` VARCHAR(10) NOT NULL, `description` TEXT, `isActive` TINYINT(1) NOT NULL DEFAULT true, `createdAt` DATETIME NOT NULL, `updatedAt` DATETIME NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY (`facultyId`) REFERENCES `Faculties` (`id`) ON DELETE CASCADE ON UPDATE CASCADE) ENGINE=InnoDB;',
+  parameters: {},
+  level: 'error',
+  message: "Unable to start server: Referencing column 'facultyId' and referenced column 'id' in foreign key constraint 'Departments_ibfk_1' are incompatible.",
+  stack: 'Error\n' +
+    '    at Query.run (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/dialects/mysql/query.js:46:25)\n' +
+    '    at /home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/sequelize.js:650:28\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async MySQLQueryInterface.createTable (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/dialects/abstract/query-interface.js:229:12)\n' +
+    '    at async Function.sync (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/model.js:1353:7)\n' +
+    '    at async Sequelize.sync (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/sequelize.js:825:9)\n' +
+    '    at async startServer (/home/udorakpuenyi/rmcohst-application-web-app/server/src/index.ts:64:5)',
+  timestamp: '2025-06-28T02:33:39.874Z'
+}
+{
+  service: 'rmcohst-server',
+  error: 'Validation failed',
+  stack: 'ValidationError: Validation failed\n' +
+    '    at /home/udorakpuenyi/rmcohst-application-web-app/server/src/middleware/validation.ts:16:31\n' +
+    '    at Layer.handleRequest (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/layer.js:152:17)\n' +
+    '    at next (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/route.js:157:13)\n' +
+    '    at Route.dispatch (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/route.js:117:3)\n' +
+    '    at handle (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:435:11)\n' +
+    '    at Layer.handleRequest (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/layer.js:152:17)\n' +
+    '    at /home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:295:15\n' +
+    '    at processParams (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:582:12)\n' +
+    '    at next (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:291:5)\n' +
+    '    at Function.handle (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:186:3)',
+  url: '/api/faculties',
+  method: 'POST',
+  ip: '::1',
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-28T10:06:39.945Z'
+}
+{
+  service: 'rmcohst-server',
+  error: 'Validation failed',
+  stack: 'ValidationError: Validation failed\n' +
+    '    at /home/udorakpuenyi/rmcohst-application-web-app/server/src/middleware/validation.ts:16:31\n' +
+    '    at Layer.handleRequest (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/layer.js:152:17)\n' +
+    '    at next (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/route.js:157:13)\n' +
+    '    at Route.dispatch (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/route.js:117:3)\n' +
+    '    at handle (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:435:11)\n' +
+    '    at Layer.handleRequest (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/layer.js:152:17)\n' +
+    '    at /home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:295:15\n' +
+    '    at processParams (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:582:12)\n' +
+    '    at next (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:291:5)\n' +
+    '    at Function.handle (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:186:3)',
+  url: '/api/faculties',
+  method: 'POST',
+  ip: '::1',
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-28T10:06:39.962Z'
+}
+{
+  message: "Failed to create faculty: Cannot read properties of undefined (reading 'length')",
+  level: 'error',
+  service: 'rmcohst-server',
+  timestamp: '2025-06-28T10:10:07.326Z'
+}
+{
+  service: 'rmcohst-server',
+  error: AppError: Failed to create faculty
+      at FacultyService.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/FacultyService.ts:19:13)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async FacultyController.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/FacultyController.ts:99:32) {
+    statusCode: 500,
+    isOperational: true
+  },
+  userId: undefined,
+  facultyData: [ { name: 'ododdd' }, { name: 'ddd' } ],
+  level: 'error',
+  message: 'Error creating faculties',
+  timestamp: '2025-06-28T10:10:07.327Z'
+}
+{
+  service: 'rmcohst-server',
+  error: 'Failed to create faculty',
+  stack: 'Error: Failed to create faculty\n' +
+    '    at FacultyService.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/FacultyService.ts:19:13)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async FacultyController.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/FacultyController.ts:99:32)',
+  url: '/api/faculties',
+  method: 'POST',
+  ip: '::1',
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-28T10:10:07.343Z'
+}
+{
+  message: "Failed to create faculty: Cannot read properties of undefined (reading 'length')",
+  level: 'error',
+  service: 'rmcohst-server',
+  timestamp: '2025-06-28T10:14:18.877Z'
+}
+{
+  service: 'rmcohst-server',
+  error: AppError: Failed to create faculty
+      at FacultyService.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/FacultyService.ts:19:13)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async FacultyController.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/FacultyController.ts:99:32) {
+    statusCode: 500,
+    isOperational: true
+  },
+  userId: undefined,
+  facultyData: [ { name: 'ddjdd' }, { name: 'ddd' } ],
+  level: 'error',
+  message: 'Error creating data',
+  timestamp: '2025-06-28T10:14:18.879Z'
+}
+{
+  service: 'rmcohst-server',
+  error: 'Failed to create faculty',
+  stack: 'Error: Failed to create faculty\n' +
+    '    at FacultyService.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/FacultyService.ts:19:13)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async FacultyController.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/FacultyController.ts:99:32)',
+  url: '/api/faculties',
+  method: 'POST',
+  ip: '::1',
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-28T10:14:18.913Z'
+}
+{
+  service: 'rmcohst-server',
+  error: 'Validation failed',
+  stack: 'ValidationError: Validation failed\n' +
+    '    at /home/udorakpuenyi/rmcohst-application-web-app/server/src/middleware/validation.ts:16:31\n' +
+    '    at Layer.handleRequest (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/layer.js:152:17)\n' +
+    '    at next (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/route.js:157:13)\n' +
+    '    at Route.dispatch (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/route.js:117:3)\n' +
+    '    at handle (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:435:11)\n' +
+    '    at Layer.handleRequest (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/lib/layer.js:152:17)\n' +
+    '    at /home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:295:15\n' +
+    '    at processParams (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:582:12)\n' +
+    '    at next (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:291:5)\n' +
+    '    at Function.handle (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/router/index.js:186:3)',
+  url: '/api/faculties',
+  method: 'POST',
+  ip: '::1',
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-28T10:15:46.507Z'
+}
+{
+  message: "Failed to create faculty: Cannot read properties of undefined (reading 'length')",
+  level: 'error',
+  service: 'rmcohst-server',
+  timestamp: '2025-06-28T10:24:25.899Z'
+}
+{
+  service: 'rmcohst-server',
+  error: AppError: Failed to create faculty
+      at FacultyService.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/FacultyService.ts:19:13)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async FacultyController.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/FacultyController.ts:100:32) {
+    statusCode: 500,
+    isOperational: true
+  },
+  userId: undefined,
+  facultyData: [ { name: 'ff' } ],
+  level: 'error',
+  message: 'Error creating data',
+  timestamp: '2025-06-28T10:24:25.901Z'
+}
+{
+  service: 'rmcohst-server',
+  error: 'Failed to create faculty',
+  stack: 'Error: Failed to create faculty\n' +
+    '    at FacultyService.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/FacultyService.ts:19:13)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async FacultyController.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/FacultyController.ts:100:32)',
+  url: '/api/faculties',
+  method: 'POST',
+  ip: '::1',
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-28T10:24:25.927Z'
+}
+{
+  message: "Failed to create faculty: Incorrect integer value: 'd7da5817-7cfb-488b-80f1-a8fb361f7d5f' for column 'id' at row 1",
+  level: 'error',
+  service: 'rmcohst-server',
+  timestamp: '2025-06-28T10:29:52.034Z'
+}
+{
+  service: 'rmcohst-server',
+  error: AppError: Failed to create faculty
+      at FacultyService.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/FacultyService.ts:20:13)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async FacultyController.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/FacultyController.ts:99:32) {
+    statusCode: 500,
+    isOperational: true
+  },
+  userId: undefined,
+  facultyData: [ { name: 'dd' } ],
+  level: 'error',
+  message: 'Error creating data',
+  timestamp: '2025-06-28T10:29:52.036Z'
+}
+{
+  service: 'rmcohst-server',
+  error: 'Failed to create faculty',
+  stack: 'Error: Failed to create faculty\n' +
+    '    at FacultyService.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/FacultyService.ts:20:13)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async FacultyController.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/FacultyController.ts:99:32)',
+  url: '/api/faculties',
+  method: 'POST',
+  ip: '::1',
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-28T10:29:52.039Z'
+}
+{
+  message: "Failed to create faculty: Column 'id' cannot be null",
+  level: 'error',
+  service: 'rmcohst-server',
+  timestamp: '2025-06-28T10:56:45.142Z'
+}
+{
+  service: 'rmcohst-server',
+  error: AppError: Failed to create faculty
+      at FacultyService.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/FacultyService.ts:20:13)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async FacultyController.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/FacultyController.ts:99:32) {
+    statusCode: 500,
+    isOperational: true
+  },
+  userId: undefined,
+  facultyData: [ { name: 'ff', code: 'ff', description: 'ff', nameOfDean: 'ff' } ],
+  level: 'error',
+  message: 'Error creating data',
+  timestamp: '2025-06-28T10:56:45.144Z'
+}
+{
+  service: 'rmcohst-server',
+  error: 'Failed to create faculty',
+  stack: 'Error: Failed to create faculty\n' +
+    '    at FacultyService.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/FacultyService.ts:20:13)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async FacultyController.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/FacultyController.ts:99:32)',
+  url: '/api/faculties',
+  method: 'POST',
+  ip: '::1',
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-28T10:56:45.150Z'
+}
+{
+  message: "Failed to create faculty: Column 'id' cannot be null",
+  level: 'error',
+  service: 'rmcohst-server',
+  timestamp: '2025-06-28T11:13:34.170Z'
+}
+{
+  service: 'rmcohst-server',
+  error: AppError: Failed to create faculty
+      at FacultyService.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/FacultyService.ts:20:13)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async FacultyController.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/FacultyController.ts:99:32) {
+    statusCode: 500,
+    isOperational: true
+  },
+  userId: undefined,
+  facultyData: [ { name: 'ff', code: 'gg', description: 'gg', nameOfDean: 'gg' } ],
+  level: 'error',
+  message: 'Error creating data',
+  timestamp: '2025-06-28T11:13:34.172Z'
+}
+{
+  service: 'rmcohst-server',
+  error: 'Failed to create faculty',
+  stack: 'Error: Failed to create faculty\n' +
+    '    at FacultyService.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/FacultyService.ts:20:13)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async FacultyController.createFaculty (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/FacultyController.ts:99:32)',
+  url: '/api/faculties',
+  method: 'POST',
+  ip: '::1',
+  level: 'error',
+  message: 'Error occurred',
+  timestamp: '2025-06-28T11:13:34.175Z'
+}

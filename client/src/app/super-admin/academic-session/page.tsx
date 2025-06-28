@@ -1,14 +1,15 @@
+'use client'
+
 import { CrudPageWrapper } from '@/components/CrudPageWrapper'
 import { SessionCard } from '@/components/SessionCard'
 import SessionForm from '@/components/SessionForm'
+import { apiRoutes } from '@/constants/apiRoutes'
 import { useGetList } from '@/hooks/useGet'
 import { Session } from '@/types/academic_session'
 
 export default function SessionCrudPage() {
-  const { data: sessions, loading, error } = useGetList<Session>('')
-
-  const handleSubmitUpdate = () => {}
-  const onDelete = () => {}
+  const { data: sessions, loading, error } = useGetList<Session>(apiRoutes.academicSession.all)
+  console.log('useGetlistEROR',error)
 
   return (
     <CrudPageWrapper
@@ -16,7 +17,7 @@ export default function SessionCrudPage() {
       entityKey="session"
       data={sessions}
       loading={loading}
-      error={error || 'An error occured fetching sessions'}
+      error={error}
       FormComponent={SessionForm}
       CardComponent={SessionCard}
     />

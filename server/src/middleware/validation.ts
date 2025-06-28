@@ -18,7 +18,7 @@ export const validateBody = <T>(schema: ZodSchema<T>) => {
       return
     }
 
-    req.body = result.data
+  
     next()
   }
 }
@@ -38,7 +38,7 @@ export const validateParams = <T>(schema: ZodSchema<T>) => {
       return
     }
 
-    req.params = result.data as any
+   
     next()
   }
 }
@@ -103,7 +103,7 @@ export const validateAll = <TBody, TParams, TQuery>(schemas: {
           message: err.message,
         })))
       } else {
-        req.body = bodyResult.data
+    
       }
     }
 
@@ -115,9 +115,7 @@ export const validateAll = <TBody, TParams, TQuery>(schemas: {
           field: `params.${err.path.join('.')}`,
           message: err.message,
         })))
-      } else {
-        req.params = paramsResult.data as any
-      }
+      } 
     }
 
     // Validate query

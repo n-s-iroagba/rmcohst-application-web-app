@@ -15,7 +15,7 @@ const config = {
     port: process.env.DB_PORT || '3306',
     username: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || 'password',
-    database: process.env.DB_NAME || 'rmcohst_db',
+    database: process.env.DB_NAME || 'rmcohst',
     dialect: process.env.DB_DIALECT || 'mysql', // e.g., 'postgres', 'sqlite'
     logging: process.env.DB_LOGGING === 'true', // Set to 'true' to enable SQL logging
     pool: {

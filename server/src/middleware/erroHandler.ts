@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from 'express'
+// middleware/errorHandler.ts
+import { NextFunction, Request, Response } from 'express'
 import { AppError, ValidationError } from '../utils/errors'
-import { ApiResponseUtil } from '../utils/response'
 import { logger } from '../utils/logger'
 
-export const errorHandler = (error: Error, req: Request, res: Response): void => {
+export const errorHandler = (error: Error, req: Request, res: Response,next:NextFunction): void => {
   logger.error('Error occurred', {
     error: error.message,
     stack: error.stack,
@@ -11,33 +11,29 @@ export const errorHandler = (error: Error, req: Request, res: Response): void =>
     method: req.method,
     ip: req.ip,
   })
+if (error instanceof ValidationError) {
+  res.status(error.statusCode).json({
+    message: error.message,
+    errors: error.errors, // <-- include this
+  })
+  return
+}
 
-  // Handle validation errors
-  if (error instanceof ValidationError) {
-    res
-      .status(error.statusCode)
-      .json(ApiResponseUtil.error(error.message, error.statusCode, JSON.stringify(error.errors)))
-    return
-  }
 
-  // Handle operational errors
   if (error instanceof AppError) {
-    res.status(error.statusCode).json(ApiResponseUtil.error(error.message, error.statusCode))
+    res.status(error.statusCode).json({ message: error.message })
     return
   }
 
-  // Handle JWT errors
   if (error.name === 'JsonWebTokenError') {
-    res.status(401).json(ApiResponseUtil.error('Invalid token', 401))
+    res.status(401).json({ message: 'Invalid token' })
     return
   }
 
   if (error.name === 'TokenExpiredError') {
-    res.status(401).json(ApiResponseUtil.error('Token expired', 401))
+    res.status(401).json({ message: 'Token expired' })
     return
   }
 
-  // Handle unexpected errors
-  logger.error('Unexpected error', { error: error.message, stack: error.stack })
-  res.status(500).json(ApiResponseUtil.error('Internal server error', 500))
+  res.status(500).json({ message: 'Internal server error' })
 }

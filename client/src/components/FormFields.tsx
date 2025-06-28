@@ -1,13 +1,14 @@
+import { FieldConfig } from '@/types/fields_config'
 import React from 'react'
-import { FieldConfig } from './FieldRenderer'
 
-export const TextField = ({ name, label, value, onChange, error }: any) => (
+
+export const TextField = ({ name, label, value, onChange, error,type }: any) => (
   <div className="mb-4">
     <label htmlFor={name} className="block font-medium mb-1">
       {label}
     </label>
     <input
-      type="text"
+      type={type}
       id={name}
       name={name}
       value={value || ''}

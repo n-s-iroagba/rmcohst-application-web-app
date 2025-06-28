@@ -1,14 +1,11 @@
-import AcademicSession from '../models/AcademicSession'
-import { AppError } from '../utils/error/AppError'
-import logger from '../utils/logger/logger'
+import AcademicSession, { AcademicSessionCreationAttributes } from '../models/AcademicSession'
+import { AppError } from '../utils/errors'
+import { logger } from '../utils/logger'
+
 
 class AcademicSessionService {
   // CREATE
-  static async createSession(data: {
-    name: string
-    reportingDate: Date
-    isCurrent?: boolean
-  }) {
+  static async createSession(data:AcademicSessionCreationAttributes) {
     try {
       const session = await AcademicSession.create(data)
       logger.info('Created academic session', { id: session.id })

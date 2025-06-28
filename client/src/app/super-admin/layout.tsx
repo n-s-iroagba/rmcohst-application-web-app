@@ -5,9 +5,13 @@ import {
   X as XMarkIcon,
   Menu as Bars3Icon,
   UserCircle,
-  GraduationCap,
   UserMinus,
-  GraduationCapIcon
+  GraduationCapIcon,
+  CalendarCheck,
+  File,
+  BookIcon,
+  Book,
+  CheckCircle
 } from 'lucide-react'
 
 import Link from 'next/link'
@@ -48,18 +52,26 @@ function SuperAdminOffCanvas({ children }: SuperAdminOffCanvas) {
 
           <div className="flex flex-col gap-1">
             {[
-              { href: '/staf/undone-tasks', text: 'Pending Tasks', icon: GraduationCapIcon },
+              { href: '/super-admin/undone-tasks', text: 'Pending Tasks', icon: File },
               {
-                href: '/staff/admission-officer/reviewed-application',
-                text: 'Reviewed Applications',
-                icon: GraduationCap
+                href: '/super-admin/academic-session',
+                text: 'Academic Sessions',
+                icon: CalendarCheck
               },
-              { href: '/staff/admission-officer/profile', text: 'My Profile', icon: UserCircle },
+              { href: '/super-admin/faculties', text: 'Faculties', icon: BookIcon },
               {
-                href: '/staff/admission-officer/application-in-review',
-                text: 'Application In Review',
-                icon: GraduationCapIcon
-              }
+                href: '/super-admin/departments',
+                text: 'Departments',
+                icon: Book
+              },
+                { href: '/super-admin/accepted-subjects', text: "Accepted Subjects And Grades", icon: CheckCircle },
+                { href: '/super-admin/ssc-requirements', text: "O'Level Requirement", icon: BookIcon },
+              {
+                href: '/super-admin/program-specific-requirements',
+                text: 'Other Program Requirements',
+                icon: Book
+              },
+                { href: '/super-admin/programs', text: "Programs Offered", icon: GraduationCapIcon },
             ].map((item, index) => (
               <Link
                 key={index}
@@ -108,8 +120,8 @@ function SuperAdminOffCanvas({ children }: SuperAdminOffCanvas) {
 
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
+    // <AuthProvider>
       <SuperAdminOffCanvas>{children}</SuperAdminOffCanvas>
-    </AuthProvider>
+    // </AuthProvider>
   )
 }

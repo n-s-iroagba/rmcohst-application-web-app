@@ -1,6 +1,8 @@
+'use client'
+
 import SignupForm from '@/components/SignupForm'
 
 const SuperAdminSignupPage = () => {
-  return <SignupForm signupRole="SUPER_ADMIN" formLabel="Sign Up As Super Admin" />
+  return <SignupForm signupRole="SUPER_ADMIN"/>
 }
 export default SuperAdminSignupPage

@@ -1,4 +1,5 @@
 export class ApiResponseUtil {
+
   static success<T>(
     data: T,
     message: string = 'Success',
@@ -20,4 +21,12 @@ export class ApiResponseUtil {
       statusCode,
     }
   }
+}
+
+interface ApiResponse <T=null>{
+  data?:T
+  error?:string
+  message:string
+  statusCode:number
+  success:boolean
 }

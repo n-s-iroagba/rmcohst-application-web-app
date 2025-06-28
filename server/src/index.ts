@@ -9,6 +9,8 @@ import authRoutes from './routes/authRoutes'
 import { errorHandler } from './middleware/erroHandler'
 import { healthCheckLogger, requestLogger } from './middleware/requestLogger'
 import { logger } from './utils/logger'
+import academicSessionRoutes from './routes/academicSessionRoutes'
+import facultyRoutes from './routes/facultyRoutes'
 
 const app = express()
 
@@ -16,10 +18,11 @@ const app = express()
 app.use(helmet())
 app.use(
   cors({
-    origin: '*',
+    origin: 'http://localhost:3001',
     credentials: true,
   })
 )
+
 
 // Rate limiting
 const limiter = rateLimit({
@@ -31,9 +34,6 @@ app.use(limiter)
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
-app.get('/health', healthCheckLogger, (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() })
-})
 
 // Request logging
 app.use(requestLogger)
@@ -44,16 +44,15 @@ app.get('/health', (req, res) => {
 })
 
 app.use('/api/auth', authRoutes)
+app.use('/api/academic-sessions', academicSessionRoutes)
+app.use('/api/faculties',facultyRoutes)
 app.use(errorHandler)
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' })
 })
 const PORT = process.env.PORT || 3000
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
-// 404 handler
+
 
 // Database connection and server start
 const startServer = async () => {
@@ -62,10 +61,10 @@ const startServer = async () => {
     logger.info('Database connection established successfully')
 
     // Sync database (use { alter: true } only in development)
-    await sequelize.sync({ alter: true }) // Use alter:true to avoid dropping tables
+    await sequelize.sync({ force:true}) // Use alter:true to avoid dropping tables
     logger.info('Database synchronized')
 
-    const PORT = 3001
+  
     app.listen(PORT, () => {
       logger.info(`Server running on port ${PORT}`)
     })

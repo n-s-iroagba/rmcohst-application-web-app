@@ -2,6 +2,6 @@
 import SignupForm from '@/components/SignupForm'
 
 const ApplicantSignupPage = () => {
-  return <SignupForm signupRole="APPLICANT" formLabel="Create An Account to Apply" />
+  return <SignupForm signupRole="APPLICANT"  />
 }
 export default ApplicantSignupPage

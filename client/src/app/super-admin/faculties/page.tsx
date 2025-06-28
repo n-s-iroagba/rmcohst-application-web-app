@@ -4,18 +4,14 @@
 import { CrudPageWrapper } from '@/components/CrudPageWrapper'
 import { FacultyCard } from '@/components/FacultyCard'
 import FacultyForm from '@/components/FacultyForm'
+import { apiRoutes } from '@/constants/apiRoutes'
 import { useGetList } from '@/hooks/useGet'
 import { Faculty } from '@/types/faculty'
 
 export default function FacultyCrudPage() {
-  const { data: faculties, loading, error } = useGetList<Faculty>('faculties')
+  const { data: faculties, loading, error } = useGetList<Faculty>(apiRoutes.faculty.all)
 
-  const handleSubmitUpdate = () => {
-    // update logic here
-  }
-  const onDelete = () => {
-    // delete logic here
-  }
+
 
   return (
     <CrudPageWrapper
@@ -23,7 +19,7 @@ export default function FacultyCrudPage() {
       entityKey="faculty"
       data={faculties || []}
       loading={loading}
-      error={error || 'An error occurred fetching faculties'}
+      error={error}
       FormComponent={FacultyForm}
       CardComponent={FacultyCard}
     />

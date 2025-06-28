@@ -11,6 +11,7 @@ class FacultyService {
    */
   public async createFaculty(data: FacultyCreationAttributes[]): Promise<Faculty[]> {
     try {
+      console.log(data)
       const faculties = await Faculty.bulkCreate(data)
       logger.info(`Faculties created`)
       return faculties
@@ -23,40 +24,16 @@ class FacultyService {
   /**
    * Get all faculties with optional pagination and include departments
    */
-  public async getAllFaculties(page: number = 1, limit: number = 10, includeDepartments: boolean = false): Promise<{
-    faculties: Faculty[]
-    totalCount: number
-    totalPages: number
-    currentPage: number
-    hasNext: boolean
-    hasPrev: boolean
-  }> {
+  public async getAllFaculties(page: number = 1, limit: number = 10, includeDepartments: boolean = false): Promise<
+ Faculty[]
+   > {
     try {
       const offset = (page - 1) * limit
       
-      const includeOptions = includeDepartments ? [{
-        model: Department,
-        as: 'departments',
-        required: false
-      }] : []
+  
 
-      const { count, rows } = await Faculty.findAndCountAll({
-        include: includeOptions,
-        order: [['createdAt', 'DESC']],
-        limit,
-        offset,
-      })
-
-      logger.info(`Retrieved ${rows.length} faculties (page ${page})`)
-      
-      return {
-        faculties: rows,
-        totalCount: count,
-        totalPages: Math.ceil(count / limit),
-        currentPage: page,
-        hasNext: page < Math.ceil(count / limit),
-        hasPrev: page > 1
-      }
+      return await Faculty.findAll()
+    
     } catch (error: any) {
       logger.error(`Failed to get all faculties: ${error.message}`)
       throw new AppError('Failed to retrieve faculties', 500)
@@ -72,10 +49,10 @@ class FacultyService {
       if (!faculty) {
         throw new AppError(`Faculty with id ${id} not found`, 404)
       }
-      // Use association mixin to get departments
-      const departments = await faculty.getDepartments()
-      // Attach departments as a property if needed
-      ;(faculty as any).departments = departments
+      // // Use association mixin to get departments
+      // const departments = await faculty.getDepartments()
+      // // Attach departments as a property if needed
+      // ;(faculty as any).departments = departments
       logger.info(`Faculty retrieved with id: ${id}`)
       return faculty
     } catch (error: any) {

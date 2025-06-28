@@ -24,7 +24,7 @@ export class FacultyController {
         includeDepartments = false 
       } = req.query
 
-      logger.info('Get all faculties endpoint called', {
+      logger.info('Get all data endpoint called', {
         page: Number(page),
         limit: Number(limit),
         includeDepartments: includeDepartments === 'true'
@@ -36,15 +36,9 @@ export class FacultyController {
         includeDepartments === 'true'
       )
 
-      res.status(200).json(
-        ApiResponseUtil.success(
-          result,
-          'Faculties retrieved successfully',
-          200
-        )
-      )
+      res.status(200).json(result)
     } catch (error) {
-      logger.error('Error fetching all faculties', { 
+      logger.error('Error fetching all data', { 
         error,
         query: req.query 
       })
@@ -67,11 +61,8 @@ export class FacultyController {
       const faculty = await this.facultyService.getFacultyById(Number(id))
 
       res.status(200).json(
-        ApiResponseUtil.success(
-          faculty,
-          'Faculty retrieved successfully',
-          200
-        )
+
+          faculty
       )
     } catch (error) {
       logger.error('Error fetching faculty by ID', {
@@ -82,62 +73,36 @@ export class FacultyController {
     }
   }
 
-  public getFacultiesWithDepartmentCounts = async (
+
+  public createFaculty = async (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
-      logger.info('Get faculties with department counts endpoint called')
+      // Authorization check - only admins can create data
+      // if (
+      //   !req.user?.id ||
+      //   !['ADMIN', 'SUPER_ADMIN'].includes(req.user.role)
+      // ) {
+      //   throw new AppError('Unauthorized to create data', 403)
+      // }
 
-      const faculties = await this.facultyService.getFacultiesWithDepartmentCounts()
+      console.log('data',req.body)
 
-      res.status(200).json(
-        ApiResponseUtil.success(
-          faculties,
-          'Faculties with department counts retrieved successfully',
-          200
-        )
-      )
+      // logger.info('Create faculty endpoint called', {
+      //   userId: req.user.id,
+      //   userRole: req.user.role,
+      //   facultyCount: data?.length
+      // })
+
+      const createdFaculties = await this.facultyService.createFaculty(req.body)
+
+      res.status(201).json(createdFaculties)
+    
+      return
     } catch (error) {
-      logger.error('Error fetching faculties with department counts', { error })
-      next(error)
-    }
-  }
-
-  public createFaculty = async (
-    req: AuthenticatedRequest,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      // Authorization check - only admins can create faculties
-      if (
-        !req.user?.id ||
-        !['ADMIN', 'SUPER_ADMIN'].includes(req.user.role)
-      ) {
-        throw new AppError('Unauthorized to create faculties', 403)
-      }
-
-      const { faculties } = req.body
-
-      logger.info('Create faculty endpoint called', {
-        userId: req.user.id,
-        userRole: req.user.role,
-        facultyCount: faculties?.length
-      })
-
-      const createdFaculties = await this.facultyService.createFaculty(faculties)
-
-      res.status(201).json(
-        ApiResponseUtil.success(
-          createdFaculties,
-          `${createdFaculties.length} faculties created successfully`,
-          201
-        )
-      )
-    } catch (error) {
-      logger.error('Error creating faculties', {
+      logger.error('Error creating data', {
         error,
         userId: req.user?.id,
         facultyData: req.body
@@ -152,12 +117,12 @@ export class FacultyController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      // Authorization check - only admins can update faculties
+      // Authorization check - only admins can update data
       if (
         !req.user?.id ||
         !['ADMIN', 'SUPER_ADMIN'].includes(req.user.role)
       ) {
-        throw new AppError('Unauthorized to update faculties', 403)
+        throw new AppError('Unauthorized to update data', 403)
       }
 
       const { id } = req.params
@@ -177,11 +142,10 @@ export class FacultyController {
       const updatedFaculty = await this.facultyService.updateFaculty(Number(id), name.trim())
 
       res.status(200).json(
-        ApiResponseUtil.success(
-          updatedFaculty,
-          'Faculty updated successfully',
-          200
-        )
+      
+          updatedFaculty
+          
+          
       )
     } catch (error) {
       logger.error('Error updating faculty', {
@@ -200,12 +164,12 @@ export class FacultyController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      // Authorization check - only admins can delete faculties
+      // Authorization check - only admins can delete data
       if (
         !req.user?.id ||
         !['ADMIN', 'SUPER_ADMIN'].includes(req.user.role)
       ) {
-        throw new AppError('Unauthorized to delete faculties', 403)
+        throw new AppError('Unauthorized to delete data', 403)
       }
 
       const { id } = req.params

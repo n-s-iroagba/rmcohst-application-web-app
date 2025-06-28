@@ -3,8 +3,8 @@ import axios, { AxiosResponse, type AxiosInstance, type AxiosRequestConfig } fro
 const baseURL =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
   (process.env.NODE_ENV === 'production'
-    ? 'https://rmcohst.onrender.com/api/v1'
-    : 'http://localhost:5000/api/v1')
+    ? 'https://rmcohst.onrender.com/api'
+    : 'http://localhost:3000/api')
 
 // Create Axios instance
 const apiClient: AxiosInstance = axios.create({
@@ -22,9 +22,15 @@ type ApiResponse<T> = Promise<T>
 /**
  * Generic GET request
  */
-export async function get<T>(path: string, config?: AxiosRequestConfig): ApiResponse<T> {
+export async function get<T>(path: string, config?: AxiosRequestConfig): ApiResponse<T|void> {
+  try{
   const response: AxiosResponse<T> = await apiClient.get(path, config)
+  console.log('response is',response)
   return response.data
+  }catch(error){
+    console.log('error is in service',error)
+    throw error
+  }
 }
 
 /**
@@ -34,9 +40,9 @@ export async function post<Req, Res>(
   path: string,
   data: Req,
   config: AxiosRequestConfig = {}
-): ApiResponse<Res> {
+): ApiResponse<Res|void> {
   const isFormData = typeof FormData !== 'undefined' && data instanceof FormData
-
+ try{
   const response: AxiosResponse<Res> = await apiClient.post(path, data, {
     ...config,
     headers: {
@@ -44,8 +50,12 @@ export async function post<Req, Res>(
       ...(isFormData ? {} : { 'Content-Type': 'application/json' })
     }
   })
-
+ console.log('response is',response)
   return response.data
+}catch(error){
+  console.log('error is in service',error)
+  throw error
+}
 }
 
 /**

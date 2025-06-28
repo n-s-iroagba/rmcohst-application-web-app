@@ -19,13 +19,7 @@ class AcademicSessionController {
         // Number(limit)
       )
 
-      res.status(200).json(
-        ApiResponseUtil.success(
-          result,
-          'Academic sessions retrieved successfully',
-          200
-        )
-      )
+      res.status(200).json(result)
     } catch (error) {
       logger.error('Error fetching academic sessions', { error })
       next(error)

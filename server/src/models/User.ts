@@ -2,13 +2,11 @@ import {
   Model,
   DataTypes,
   type Optional,
-  type HasOneGetAssociationMixin,
-  type HasOneSetAssociationMixin,
 } from 'sequelize'
 import sequelize from '../config/database'
 import bcrypt from 'bcryptjs'
 import { Staff } from './Staff'
-export type UserRole = 'APPLICANT' | 'STAFF' | 'SUPER_ADMIN'
+export type UserRole = 'APPLICANT' | 'HEAD_OF_ADMISSION' | 'SUPER_ADMIN'|'ADMISSION_OFFICER'
 
 interface UserAttributes {
   id: number
@@ -43,7 +41,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public password!: string
   public firstName!: string
   public lastName!: string
-  public role!: 'STAFF' | 'APPLICANT' | 'SUPER_ADMIN'
+  public role!: UserRole
   public isEmailVerified!: boolean
   public verificationToken!: string | null
   public passwordResetToken!: string | null
@@ -81,7 +79,7 @@ User.init(
       allowNull: false,
     },
     role: {
-      type: DataTypes.ENUM('STAFF', 'APPLICANT', 'SUPER_ADMIN'),
+      type: DataTypes.ENUM('HEAD_OF_ADMISSION','ADMISSION_OFFICER', 'APPLICANT', 'SUPER_ADMIN'),
       allowNull: false,
     },
     isEmailVerified: {
@@ -116,8 +114,5 @@ User.init(
     },
   }
 )
-
-// Define associations
-User.hasOne(Staff, { foreignKey: 'userId', as: 'staff' })
 
 export default User

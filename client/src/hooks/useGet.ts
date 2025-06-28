@@ -15,7 +15,7 @@ export function useGetList<T>(endpoint: string) {
       try {
         // Replace with actual API call
         const response = await get<T[]>(endpoint)
-
+        console.log(response)
         setData(response)
       } catch (err) {
         console.error(err)

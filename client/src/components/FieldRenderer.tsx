@@ -9,52 +9,23 @@ import {
   RadioField
 } from './FormFields'
 import { ChangeEvent } from 'react'
+import { FieldsConfig } from '@/types/fields_config'
 
-type FieldType = 'text' | 'textarea' | 'select' | 'checkbox' | 'file' | 'double-select' | 'radio'
 
-export type FieldConfig = {
-  onChangeHandler?:
-    | ((e: any, index: number, subFieldKey: string) => void)
-    | ((e: ChangeEvent<HTMLSelectElement>) => void)
-    | ((e: ChangeEvent<HTMLInputElement>) => void)
-
-  type: FieldType
-
-  /**
-   * Used by:
-   * - select
-   * - radio
-   */
-  options?: string[] | { id: string | number; label: string }[]
-
-  /**
-   * Used by double-select or multi-group fields
-   */
-  fieldGroup?: {
-    groupKey: string
-    fields: {
-      name: string
-      label: string
-      options: { id: string | number; label: string }[]
-    }[]
-    addHandler: () => void
-    removeHandler: (index: number) => void
-    onChangeHandler: (e: ChangeEvent<HTMLSelectElement>) => void
-  }
-}
 
 type FieldRendererProps<T> = {
   data: T
-  errors?: Partial<Record<keyof T, string>>
-  fieldsConfig: {
-    [K in keyof T]?: FieldConfig
-  }
+
+  fieldsConfig: FieldsConfig<T>
+   errors?: Partial<Record<keyof T, string>>
+  index?:number
 }
 
 export function FieldRenderer<T extends Record<string, any>>({
   data,
   errors = {},
-  fieldsConfig
+  fieldsConfig,
+  index
 }: FieldRendererProps<T>) {
   return (
     <>
@@ -75,7 +46,7 @@ export function FieldRenderer<T extends Record<string, any>>({
                 name={key}
                 label={formatCamelCase(key)}
                 value={value}
-                onChange={onChange}
+                onChange={(e:any)=>onChange(e,index)}
                 error={error}
               />
             )
@@ -88,7 +59,7 @@ export function FieldRenderer<T extends Record<string, any>>({
                 label={formatCamelCase(key)}
                 value={value}
                 options={config.options}
-                onChange={onChange}
+                onChange={(e:any)=>onChange(e,index)}
                 error={error}
               />
             )
@@ -111,7 +82,7 @@ export function FieldRenderer<T extends Record<string, any>>({
                 name={key}
                 label={formatCamelCase(key)}
                 checked={value}
-                onChange={onChange}
+                onChange={(e:any)=>onChange(e,index)}
                 error={error}
               />
             )
@@ -122,7 +93,7 @@ export function FieldRenderer<T extends Record<string, any>>({
                 key={key}
                 name={key}
                 label={formatCamelCase(key)}
-                onChange={onChange}
+                onChange={(e:any)=>onChange(e,index)}
                 error={error}
               />
             )
@@ -138,7 +109,19 @@ export function FieldRenderer<T extends Record<string, any>>({
                 error={error}
               />
             )
-
+         case 'date':
+        
+            return (
+              <TextField
+                key={key}
+                name={key}
+                label={formatCamelCase(key)}
+                value={value}
+                onChange={(e:any)=>onChange(e,index)}
+                error={error}
+                type="date"
+              />
+            )
           case 'text':
           default:
             return (
@@ -147,10 +130,13 @@ export function FieldRenderer<T extends Record<string, any>>({
                 name={key}
                 label={formatCamelCase(key)}
                 value={value}
-                onChange={onChange}
+                onChange={(e:any)=>onChange(e,index)}
                 error={error}
+                type='text'
               />
             )
+
+        
         }
       })}
     </>

@@ -9,7 +9,7 @@ import sickBayImage from '../images/sickbay.jpeg'
 import hallImage from '../images/hall.jpeg'
 import hostelImage from '../images/hostel.jpeg'
 
-import { MapPin, Users, BookOpen, Beaker, Dumbbell, Coffee } from 'lucide-react'
+import { MapPin, Users, BookOpen, Beaker } from 'lucide-react'
 const sections = [
   {
     title: 'Undergraduate',
@@ -86,13 +86,6 @@ const facilities = [
     icon: MapPin,
     description: 'Modern event and lecture halls'
   },
-  {
-    id: 6,
-    title: 'Admin Block',
-    image: '',
-    icon: Coffee,
-    description: 'Comfortable Admin Block to ensure quality education delivery'
-  }
 ]
 
 const Page = () => {

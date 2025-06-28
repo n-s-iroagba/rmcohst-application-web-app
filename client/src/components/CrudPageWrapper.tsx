@@ -1,5 +1,10 @@
-// components/icons.ts
-// components/icons.ts
+// components/CrudPageWrapper.tsx
+'use client'
+
+import { useState } from 'react'
+import { Spinner } from '@/components/Spinner'
+import ErrorAlert from '@/components/ErrorAlert'
+import { DeleteModal } from '@/components/DeleteModal'
 import {
   Users,
   BookOpen,
@@ -26,13 +31,7 @@ export const entityIcons: Record<string, React.ReactNode> = {
   departmentNew: <Building2 className="w-12 h-12 text-slate-600" />,
   programNew: <Timer className="w-12 h-12 text-slate-600" />
 }
-// components/CrudPageWrapper.tsx
-;('use client')
 
-import { useState } from 'react'
-import { Spinner } from '@/components/Spinner'
-import ErrorAlert from '@/components/ErrorAlert'
-import { DeleteModal } from '@/components/DeleteModal'
 interface HasIdAndName {
   id: number
   name?: string // optional if some types may not have name
@@ -49,7 +48,7 @@ interface CrudPageWrapperProps<T extends HasIdAndName> {
     | 'programSSCRequirement'
   data: T[]
   loading: boolean
-  error?: string
+  error: string|null
   FormComponent: React.ComponentType<any>
   CardComponent: React.ComponentType<{
     entity: T
@@ -58,7 +57,7 @@ interface CrudPageWrapperProps<T extends HasIdAndName> {
   }>
 }
 
-export function CrudPageWrapper<T extends HasIdAndName>({
+export function CrudPageWrapper<T extends HasIdAndName>({     
   title,
   entityKey,
   data,
@@ -72,6 +71,7 @@ export function CrudPageWrapper<T extends HasIdAndName>({
   const [toUpdate, setToUpdate] = useState<T | null>(null)
 
   if (loading) return <Spinner className="w-10 h-10 text-slate-600" />
+  if (error) console.log('error is', error)
   if (error) return <ErrorAlert message={error || 'Failed to load'} />
 
   return (
@@ -89,9 +89,9 @@ export function CrudPageWrapper<T extends HasIdAndName>({
 
         {createMode && <FormComponent onCancel={() => setCreateMode(false)} />}
         {toUpdate && (
-          <FormComponent existingEntity={toUpdate} patch onCancel={() => setToUpdate(null)} />
+          <FormComponent existingEntity={toUpdate} onCancel={() => setToUpdate(null)} />
         )}
-
+ 
         {!data || data.length === 0 ? (
           <div className="bg-slate-50 p-8 rounded-2xl border-2 border-slate-100 text-center max-w-md mx-auto">
             <div className="flex justify-center mb-4">{entityIcons[entityKey]}</div>
@@ -100,7 +100,7 @@ export function CrudPageWrapper<T extends HasIdAndName>({
           </div>
         ) : (
           <div className="space-y-6">
-            {data.map((item: any) => (
+            {data.map((item: T) => (
               <CardComponent
                 key={item.id}
                 entity={item}

@@ -13,8 +13,9 @@ import { FacultyCreationDto } from '@/types/faculty'
 import { ProgramCreationDto } from '@/types/program'
 import { ProgramSpecificRequirementCreationDto } from '@/types/program_specific_requirement'
 import { ProgramSSCRequirement } from '@/types/program_ssc_requirement'
-import { post } from '@/utils/apiClient'
+import apiClient, { post } from '@/utils/apiClient'
 import { apiRoutes } from '@/constants/apiRoutes'
+import { useRouter } from 'next/navigation'
 
 const tempDeptData: DepartmentCreationDto = {
   name: '',
@@ -40,7 +41,8 @@ export const useApplicationRequirements = () => {
     applicationStartDate: new Date(),
     applicationEndDate: new Date()
   })
-  const [facultyData, setFacultyData] = useState<FacultyCreationDto[]>([])
+  const [error, setError] = useState('')
+  const [facultyData, setFacultyData] = useState<FacultyCreationDto[]>([tempFacultyData])
   const [departmentData, setDepartmentData] = useState<DepartmentCreationDto[]>([tempDeptData])
   const [sscRequirementsData, setSCCRequirementsData] = useState<ProgramSSCRequirement[]>([])
   const [programSpecificRequirementsData, setProgramSpecificRequirementsData] = useState<
@@ -54,19 +56,30 @@ export const useApplicationRequirements = () => {
   const [preexistingProgamSpecificRequirementsId, setPreexistingProgamSpecificRequirementsId] =
     useState<number>(0)
 
+  const router = useRouter()
+  const handleCancel = ()=>{
+    router.push('/')
+  }
   // ========== SESSION MANAGEMENT ==========
   const handleChangeSessionData = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleChange(setSessionData, e)
   }
 
   const handleSubmitSession = async () => {
+    const payload = {
+  ...sessionData,
+  applicationStartDate: new Date(sessionData.applicationStartDate).toISOString(),
+  applicationEndDate: new Date(sessionData.applicationEndDate).toISOString(),
+}
+
     try {
-      const response = await post(apiRoutes.academicSession.create, sessionData)
-      console.log('Session created successfully:', response)
-      return response
-    } catch (error) {
+    await post(apiRoutes.academicSession.create, payload)
+ 
+      window.location.reload()
+    } catch (error:any) {
       console.error('Error creating session:', error)
-      throw error
+       const message = error.response?.data?.message||'Error creating session'
+      setError(message)
     }
   }
 
@@ -81,13 +94,12 @@ export const useApplicationRequirements = () => {
 
   const handleSubmitFaculty = async () => {
     try {
-      const promises = facultyData.map((faculty) => post(apiRoutes.faculty.create, faculty))
-      const responses = await Promise.all(promises)
-      console.log('Faculties created successfully:', responses)
-      return responses
+       await post(apiRoutes.faculty.create,facultyData)
+     
+      
     } catch (error) {
       console.error('Error creating faculties:', error)
-      throw error
+      
     }
   }
 
@@ -118,7 +130,7 @@ export const useApplicationRequirements = () => {
       return responses
     } catch (error) {
       console.error('Error creating departments:', error)
-      throw error
+      
     }
   }
 
@@ -145,7 +157,7 @@ export const useApplicationRequirements = () => {
       return responses
     } catch (error) {
       console.error('Error creating SSC requirements:', error)
-      throw error
+      
     }
   }
 
@@ -167,11 +179,13 @@ export const useApplicationRequirements = () => {
   }
 
   const addProgramSSCRequirement = (parentIndex: number, requirement: ProgramSSCRequirement) => {
-    handleAddToArrayOfArrays(parentIndex, setProgramData, 'sscRequirements', requirement)
+    console.log(parentIndex,requirement)
+    // handleAddToArrayOfArrays(parentIndex, setProgramData, 'sscRequirements', requirement)
   }
 
   const removeProgramSSCRequirement = (parentIndex: number, childIndex: number) => {
-    handleRemoveFromArrayOfArrays(parentIndex, childIndex, setProgramData, 'sscRequirements')
+    console.log(parentIndex, childIndex)
+    // handleRemoveFromArrayOfArrays(parentIndex, childIndex, setProgramData, 'sscRequirements')
   }
 
   // ========== PROGRAM SPECIFIC REQUIREMENTS MANAGEMENT ==========
@@ -192,23 +206,25 @@ export const useApplicationRequirements = () => {
       return responses
     } catch (error) {
       console.error('Error creating program specific requirements:', error)
-      throw error
+      
     }
   }
 
   const addProgramSpecificRequirment = (parentIndex: number) => {
-    handleAddToArrayOfArrays(parentIndex, setProgramData, 'programSpecificRequirements', {
-      ...tempProgramSpecificRequirement
-    })
+    console.log(parentIndex)
+    // handleAddToArrayOfArrays(parentIndex, setProgramData, 'programSpecificRequirements', {
+    //   ...tempProgramSpecificRequirement
+    // })
   }
 
   const removeProgramSpecificRequirment = (parentIndex: number, childIndex: number) => {
-    handleRemoveFromArrayOfArrays(
-      parentIndex,
-      childIndex,
-      setProgramData,
-      'programSpecificRequirements'
-    )
+    // handleRemoveFromArrayOfArrays(
+    //   parentIndex,
+    //   childIndex,
+    //   setProgramData,
+    //   'programSpecificRequirements'
+    // )
+    console.log(parentIndex,childIndex)
   }
 
   const addStandaloneProgramSpecificRequirement = () => {
@@ -239,7 +255,7 @@ export const useApplicationRequirements = () => {
       return responses
     } catch (error) {
       console.error('Error creating programs:', error)
-      throw error
+      
     }
   }
 
@@ -252,6 +268,8 @@ export const useApplicationRequirements = () => {
   }
 
   return {
+    error,
+    handleCancel,
     // ========== SESSION ==========
     sessionData,
     handleChangeSessionData,

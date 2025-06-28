@@ -1,6 +1,6 @@
 import express from 'express'
 import { AuthController } from '../controllers/AuthController'
-import { validateBody, validateParams } from '../middleware/validation/auth.validation'
+
 import {
   registerSchema,
   loginSchema,
@@ -9,6 +9,7 @@ import {
   verifyEmailCodeSchema,
   emailVerificationCodeSchema,
 } from '../validation/auth.validation'
+import { validateBody } from '../middleware/validation'
 
 const router = express.Router()
 const authController = new AuthController()

@@ -1,59 +1,7 @@
 // validation/schemas.validation.ts
 import { z } from 'zod'
 
-// ========== ACADEMIC SESSION VALIDATION ==========
-export const academicSessionCreationSchema = z.object({
-  name: z
-    .string()
-    .min(3, 'Session name must be at least 3 characters long')
-    .max(100, 'Session name must be less than 100 characters')
-    .regex(/^[a-zA-Z0-9\s\-\/]+$/, 'Session name can only contain letters, numbers, spaces, hyphens, and forward slashes'),
-  applicationStartDate: z
-    .string()
-    .datetime('Invalid application start date format')
-    .or(z.date()),
-  applicationEndDate: z
-    .string()
-    .datetime('Invalid application end date format')
-    .or(z.date())
-}).refine(data => {
-  const startDate = new Date(data.applicationStartDate)
-  const endDate = new Date(data.applicationEndDate)
-  return endDate > startDate
-}, {
-  message: 'Application end date must be after start date',
-  path: ['applicationEndDate']
-})
 
-export const academicSessionUpdateSchema = academicSessionCreationSchema.partial()
-
-// ========== FACULTY VALIDATION ==========
-export const facultyCreationSchema = z.object({
-  name: z
-    .string()
-    .min(2, 'Faculty name must be at least 2 characters long')
-    .max(100, 'Faculty name must be less than 100 characters')
-    .regex(/^[a-zA-Z\s&\-']+$/, 'Faculty name can only contain letters, spaces, ampersands, hyphens, and apostrophes'),
-  code: z
-    .string()
-    .min(2, 'Faculty code must be at least 2 characters long')
-    .max(10, 'Faculty code must be less than 10 characters')
-    .regex(/^[A-Z0-9]+$/, 'Faculty code must be uppercase letters and numbers only'),
-  description: z
-    .string()
-    .max(500, 'Description must be less than 500 characters')
-    .optional(),
-  nameOfDean: z
-    .string()
-    .min(2, 'Dean name must be at least 2 characters long')
-    .max(100, 'Dean name must be less than 100 characters')
-    .regex(/^[a-zA-Z\s\-'\.]+$/, 'Dean name can only contain letters, spaces, hyphens, apostrophes, and periods')
-    .optional()
-})
-
-export const facultyUpdateSchema = facultyCreationSchema.partial()
-
-// ========== DEPARTMENT VALIDATION ==========
 export const departmentCreationSchema = z.object({
   name: z
     .string()

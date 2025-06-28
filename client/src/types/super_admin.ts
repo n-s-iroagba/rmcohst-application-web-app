@@ -1,7 +1,7 @@
 export interface SuperAdminAttributes {
   id: number
   lastName: string
-  lastName: string
+  firstName: string
   userId: number
   createdAt?: Date
   updatedAt?: Date

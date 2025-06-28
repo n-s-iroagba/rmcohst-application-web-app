@@ -3,8 +3,8 @@ export interface ApplicationProgramSpecificQualification {
 
   applicationId: number
   qualificationType: string
-  gradeId: number
-  certificate: string
+  grade:string
+  certificates: File
   createdAt?: Date
   updatedAt?: Date
 }

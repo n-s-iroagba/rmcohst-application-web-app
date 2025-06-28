@@ -205,6 +205,7 @@ Program.belongsTo(Department, {
   onUpdate: 'CASCADE',
 })
 
+
 import ProgramSession from './ProgramSession'
 
 // Many-to-many relationship between Program and AcademicSession

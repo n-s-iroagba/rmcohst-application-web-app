@@ -1,5 +1,8 @@
 import React from 'react'
-import { FieldConfig, FieldRenderer } from './FieldRenderer'
+import { FieldRenderer } from './FieldRenderer'
+import { FieldsConfig } from '@/types/fields_config'
+import ErrorAlert from './ErrorAlert'
+
 
 // Generic Custom Form
 export function CustomForm<T extends Record<string, any>>({
@@ -11,17 +14,24 @@ export function CustomForm<T extends Record<string, any>>({
   submitButtonLabel = 'Submit',
   cancelButtonLabel = 'Cancel',
   submiting,
-  onCancel
+  formLabel,
+  error,
+  onCancel,
+
 }: {
   data: T
   errors?: Partial<Record<keyof T, string>>
-  fieldsConfig: { [K in keyof T]?: FieldConfig }
+  fieldsConfig: FieldsConfig<T>
   onSubmit: () => void
   icon?: React.ReactNode
+  formLabel:string
   submitButtonLabel?: string
   cancelButtonLabel?: string
-  onCancel?: () => void
+  onCancel: () => void
   submiting: boolean
+  error:string
+
+  
 }) {
   return (
     <form
@@ -30,13 +40,13 @@ export function CustomForm<T extends Record<string, any>>({
         onSubmit()
       }}
       className="w-full max-w-4xl my-16 mx-auto px-4 py-10 bg-slate-100 shadow-2xl rounded-2xl border border-slate-200"
-    >
+    > {error&&<ErrorAlert message={error} />}
       {/* Icon Display */}
       {icon && <div className="flex justify-center mb-6 text-slate-600">{icon}</div>}
 
       {/* Title if needed */}
       <h2 className="text-2xl font-bold mb-8 text-center text-slate-800 uppercase tracking-wide">
-        Application Form
+       {formLabel}
       </h2>
 
       <FieldRenderer data={data} errors={errors} fieldsConfig={fieldsConfig} />
@@ -64,7 +74,7 @@ export function CustomForm<T extends Record<string, any>>({
 
 // Custom Array Form
 export function CustomArrayForm<T extends Record<string, any>>({
-  arrayData,
+  arrayData=[],
   errors = {},
   fieldsConfig,
   onSubmit,
@@ -73,11 +83,13 @@ export function CustomArrayForm<T extends Record<string, any>>({
   cancelButtonLabel = 'Cancel',
   addOrRemovelabel,
   submiting,
-  onCancel
+  onCancel,
+    addFn,
+  removeFn
 }: {
   arrayData: T[]
   errors?: Partial<Record<keyof T, string>>
-  fieldsConfig: { [K in keyof T]?: FieldConfig }
+  fieldsConfig: FieldsConfig<T>
   onSubmit: (e: React.FormEvent) => void
   icon?: React.ReactNode
   submitButtonLabel?: string
@@ -85,6 +97,8 @@ export function CustomArrayForm<T extends Record<string, any>>({
   addOrRemovelabel: string
   onCancel?: () => void
   submiting: boolean
+    addFn:()=>void
+  removeFn: (index:number)=>void
 }) {
   return (
     <form
@@ -99,12 +113,13 @@ export function CustomArrayForm<T extends Record<string, any>>({
 
       {arrayData.map((data, index) => (
         <div key={index} className="mb-10">
-          <FieldRenderer data={data} errors={errors} fieldsConfig={fieldsConfig} />
+          <FieldRenderer data={data} errors={errors} fieldsConfig={fieldsConfig} index={index} />
           <div className="flex justify-end gap-4 mt-2">
             {arrayData.length > 1 && (
               <button
                 type="button"
                 className="text-sm text-red-600 hover:underline"
+                onClick={()=>removeFn(index)}
               >
                 Remove {addOrRemovelabel}
               </button>
@@ -112,6 +127,7 @@ export function CustomArrayForm<T extends Record<string, any>>({
             <button
               type="button"
               className="text-sm text-blue-600 hover:underline"
+              onClick={addFn}
             >
               Add {addOrRemovelabel}
             </button>

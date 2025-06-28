@@ -1,15 +1,15 @@
 import { Sequelize } from 'sequelize'
-import logger from '../utils/logger/logger' // Assuming logger is default export from its module
-import appConfig from './index' // Assuming config is default export
+import appConfig from './index' 
+import { logger } from '../utils/logger'
 
 const dbConfig = appConfig.database
 
-const sequelize = new Sequelize('rmcohst', dbConfig.username, '97chocho', {
+const sequelize = new Sequelize(dbConfig.database, dbConfig.username, '97chocho', {
   host: dbConfig.host,
   port: Number.parseInt(dbConfig.port || '3306'),
   dialect: 'mysql',
   logging: false, // Use logger.info
-  pool: {
+  pool: { 
     max: dbConfig.pool?.max || 5,
     min: dbConfig.pool?.min || 0,
     acquire: dbConfig.pool?.acquire || 30000,

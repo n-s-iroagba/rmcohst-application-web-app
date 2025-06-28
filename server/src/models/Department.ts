@@ -42,9 +42,9 @@ export class Department // Named export
 
   Department.init(
     {
-      id: { type: DataTypes.INTEGER, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+      id: { type: DataTypes.INTEGER, primaryKey: true },
       facultyId: {
-        type: DataTypes.UUID, // Match Faculty ID type
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: { model: 'Faculties', key: 'id' }, // Table name
       },

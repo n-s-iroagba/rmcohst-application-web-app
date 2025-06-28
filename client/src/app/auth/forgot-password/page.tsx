@@ -1,35 +1,34 @@
-import React from 'react'
-import { useAuth } from '@/hooks/useAuth'
-import DynamicFormTextFields from '@/helpers/formFields'
-import ErrorAlert from '@/components/ErrorAlert'
+// import React from 'react'
+// import { useAuth } from '@/hooks/useAuth'
+// import { CustomForm } from '@/components/CustomForm'
+// import {  FieldType } from '@/types/fields_config'
 
-const ForgotPasswordFormPage = () => {
-  const {
-    submitting,
-    forgotPasswordData,
-    handleChangeForgotPasswordData,
-    forgotPassword,
-    error: apiError,
-    validationErrors
-  } = useAuth()
+// const ForgotPasswordFormPage = () => {
+//   const {
+//     handleCancel,
+//     submitting,
+//     forgotPasswordData,
+//     handleChangeForgotPasswordData,
+//     handleSubmitForgotPassword,
+//     forgotPassword,
+//     error: apiError,
+//     validationErrors
+//   } = useAuth()
 
-  return (
-    <form onSubmit={forgotPassword}>
-      <h2>Enter Registration Email</h2>
+//   const fieldsConfig={
+//     email: {
+//       type:'text' as FieldType,
+//       onChangeHandler:  handleChangeForgotPasswordData
+//   }
+//   }
+//   return (
+//     <CustomForm data={forgotPasswordData} fieldsConfig={fieldsConfig} onSubmit={handleSubmitForgotPassword} formLabel={'Enter Email'} 
+//     onCancel={handleCancel} submiting={false}/>
+//   )
+// }
 
-      <DynamicFormTextFields
-        data={forgotPasswordData}
-        errors={validationErrors}
-        onChange={handleChangeForgotPasswordData}
-      />
-
-      {apiError && <ErrorAlert message={apiError} />}
-
-      <button disabled={submitting} type="submit">
-        {submitting ? 'Submitting' : 'Submit'}
-      </button>
-    </form>
-  )
+// export default ForgotPasswordFormPage
+const page = ()=>{
+  return <div>hi</div>
 }
-
-export default ForgotPasswordFormPage
+export default page

@@ -64,7 +64,7 @@ function SuperAdminOffCanvas({ children }: SuperAdminOffCanvas) {
                 text: 'Departments',
                 icon: Book
               },
-                { href: '/super-admin/accepted-subjects', text: "Accepted Subjects And Grades", icon: CheckCircle },
+                { href: '/super-admin/accepted-subjects-and-grades', text: "Accepted Subjects And Grades", icon: CheckCircle },
                 { href: '/super-admin/ssc-requirements', text: "O'Level Requirement", icon: BookIcon },
               {
                 href: '/super-admin/program-specific-requirements',
@@ -120,8 +120,8 @@ function SuperAdminOffCanvas({ children }: SuperAdminOffCanvas) {
 
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
   return (
-    // <AuthProvider>
+    <AuthProvider>
       <SuperAdminOffCanvas>{children}</SuperAdminOffCanvas>
-    // </AuthProvider>
+    </AuthProvider>
   )
 }

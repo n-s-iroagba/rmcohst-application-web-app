@@ -34,6 +34,7 @@ const ApplicantProgramSpecificQualificationForm: React.FC<Props> = ({
     ...initialData
   })
   const [submiting, setSubmiting] = useState<boolean>(false)
+  const [error,setError] = useState<string>('')
 
   // Convert input value based on type
   const handleFieldChange =
@@ -100,8 +101,7 @@ const ApplicantProgramSpecificQualificationForm: React.FC<Props> = ({
       submitButtonLabel="Save Qualification"
       cancelButtonLabel="Cancel"
       formLabel='Enter your qualifications'
-      icon={<GraduationCap size={48} />}
-    />
+      icon={<GraduationCap size={48} />} error={error}    />
   )
 }
 

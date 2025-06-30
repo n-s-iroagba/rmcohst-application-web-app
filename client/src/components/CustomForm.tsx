@@ -84,6 +84,7 @@ export function CustomArrayForm<T extends Record<string, any>>({
   addOrRemovelabel,
   submiting,
   onCancel,
+  apiError,
     addFn,
   removeFn
 }: {
@@ -96,6 +97,7 @@ export function CustomArrayForm<T extends Record<string, any>>({
   cancelButtonLabel?: string
   addOrRemovelabel: string
   onCancel?: () => void
+  apiError:string
   submiting: boolean
     addFn:()=>void
   removeFn: (index:number)=>void

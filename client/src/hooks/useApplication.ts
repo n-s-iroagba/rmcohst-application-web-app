@@ -1,3 +1,4 @@
+'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useState } from 'react'
@@ -111,7 +112,7 @@ export const useApplication = () => {
     e.preventDefault()
     if (biodata && validateBiodata()) {
       await saveBiodata(biodata)
-      alert('Biodata saved successfully')
+      console.log('Biodata saved successfully')
     }
   }
 

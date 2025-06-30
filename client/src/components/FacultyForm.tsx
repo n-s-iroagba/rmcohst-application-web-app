@@ -41,9 +41,9 @@ const FacultyForm: React.FC<FacultyFormProps> = ({
       onSubmit={onSaveFn}
       addOrRemovelabel={'Faculty'}
       onCancel={onCancel} submiting={false}
-      addFn = {addFaculty}
-      removeFn = {removeFaculty}
-    />
+      addFn={addFaculty}
+      removeFn={removeFaculty} apiError={''}    />
   )
 }
 export default FacultyForm
+    

@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const router = useRouter()
 
   if (!user && !loading) {
-    alert('You are not authenticated. Please log in.')
+    console.log('You are not authenticated. Please log in.')
     router.push('/')
     return null
   }

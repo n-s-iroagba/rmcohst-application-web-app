@@ -1,3 +1,5 @@
+
+'use client'
 import React, { useState, useEffect } from 'react'
 import { CustomForm } from './CustomForm'
 import { GraduationCap } from 'lucide-react'
@@ -49,6 +51,7 @@ export const ApplicantSSCQualificationForm: React.FC<ApplicantSSCQualificationFo
     minimumGrade: initialData.minimumGrade || '',
     subjectsAndGrades: initialData.subjectsAndGrades || []
   })
+  const [error,setError]= useState('')
 
   // Add a new subject-grade pair
   const addSubjectGrade = () => {
@@ -188,8 +191,7 @@ export const ApplicantSSCQualificationForm: React.FC<ApplicantSSCQualificationFo
       submitButtonLabel="Save SSC Qualification"
       cancelButtonLabel="Cancel"
       formLabel='Enter your own SSC Qualification'
-      icon={<GraduationCap size={48} />}
-    />
+      icon={<GraduationCap size={48} />} error={error}    />
   )
 }
 

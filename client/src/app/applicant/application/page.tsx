@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { useGetSingle } from '@/hooks/useGet'
 import { apiRoutes } from '@/constants/apiRoutes'
 import { Application, ApplicationStatus } from '@/types/application'
-
 import { 
   CreditCard, 
   User, 
@@ -135,7 +134,7 @@ const ApplicationPage = () => {
               </p>
               <button 
                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg transition"
-                onClick={() => alert('Paystack integration to be implemented')}
+           
               >
                 Proceed to Payment
               </button>

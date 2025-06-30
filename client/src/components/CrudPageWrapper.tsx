@@ -46,6 +46,8 @@ interface CrudPageWrapperProps<T extends HasIdAndName> {
     | 'session'
     | 'programSpecificRequirement'
     | 'programSSCRequirement'
+    |  "grade"
+    |   "subject"
   data: T[]
   loading: boolean
   error: string|null
@@ -124,7 +126,3 @@ export function CrudPageWrapper<T extends HasIdAndName>({
   )
 }
 
-// example pages
-// app/(dashboard)/departments/page.tsx
-
-// Do the same for session, programSpecificQualification, sscQualification, program, admissionOfficer

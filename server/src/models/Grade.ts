@@ -9,7 +9,7 @@ interface GradeAttributes {
   id: number
 
   grade: string
-  type: string
+
   gradePoint: number
 
   createdAt?: Date
@@ -21,7 +21,7 @@ interface GradeCreationAttributes
 
 class Grade extends Model<GradeAttributes, GradeCreationAttributes> implements GradeAttributes {
   public id!: number
-  public type!: string
+
   public grade!: string
 
   public gradePoint!: number
@@ -51,10 +51,7 @@ Grade.init(
         max: 8,
       },
     },
-    type: {
-      type: DataTypes.STRING(10),
-      allowNull: false,
-    },
+
   },
   {
     sequelize,

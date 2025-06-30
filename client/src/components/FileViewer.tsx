@@ -1,5 +1,6 @@
 import { Eye, Download } from 'lucide-react'
 import { useState } from 'react'
+import Image from 'next/image';
 
 export const FileViewer: React.FC<{ files: string[]; types: string[] }> = ({ files, types }) => {
   const [selectedFile, setSelectedFile] = useState<number | null>(null)
@@ -21,7 +22,8 @@ export const FileViewer: React.FC<{ files: string[]; types: string[] }> = ({ fil
             </div>
             {selectedFile === index && (
               <div className="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-600">
-                Certificate preview would appear here
+                <Image
+                  src={files[index]} alt={''}                 />
                 <button className="ml-2 text-slate-600 hover:text-slate-800">
                   <Download className="w-4 h-4 inline" />
                 </button>

@@ -1,3 +1,4 @@
+'use client'
 import { formatCamelCase } from '@/utils/formatCamelCase'
 import {
   TextField,
@@ -34,8 +35,11 @@ export function FieldRenderer<T extends Record<string, any>>({
 
         const value = data[key as keyof T]
         const error = errors?.[key as keyof T]
-        const onChange = config.onChangeHandler
-
+        if(!config?.onChangeHandler && !config.fieldGroup?.onChangeHandler) {
+          console.log('no change event handler field renderer config')
+          return null
+        }
+        const onChange = (config?.onChangeHandler as ((e: any, index?: number) => void))|| ( (e:any)=>{})
         if (!config) return null
 
         switch (config.type) {

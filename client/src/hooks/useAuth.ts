@@ -64,11 +64,11 @@ type UseAuthReturn = {
   ) => void
   handleResendEmailVerificationFormCode: () => void
   handleChangeLoginData: (e: React.ChangeEvent<HTMLInputElement>) => void
-  login: (e: React.FormEvent) => Promise<void>
+  login: () => Promise<void>
   handleSubmitSignup: (role: SignUpRole) => Promise<void>
-  forgotPassword: (e: React.FormEvent) => Promise<void>
+  handleSubmitForgotPassword: () => Promise<void>
   verifyCode: (e: React.FormEvent) => Promise<void>
-  resetPassword: (e: React.FormEvent) => Promise<void>
+  resetPassword: () => Promise<void>
   logout: () => Promise<void>
   signupData: RegisterationFormData
   loginData: LoginData
@@ -77,7 +77,7 @@ type UseAuthReturn = {
   resetPasswordFormData: ResetPasswordFormData
   validationErrors: Partial<Record<AuthFormKeys, string>>
   loading: boolean
-  error: string | null
+  error: string 
   submitting: boolean
   handleCancel: ()=>void
 }
@@ -87,7 +87,7 @@ export const useAuth = (): UseAuthReturn => {
 
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string >('')
 
   const [signupData, setSignupData] = useState<RegisterationFormData>({
     lastName: '',
@@ -201,7 +201,7 @@ export const useAuth = (): UseAuthReturn => {
 
   const login = async () => {
     setLoading(true)
-    setError(null)
+    setError('')
 
     try {
       const result = await post<LoginData, UserRole>(apiRoutes.auth.login, loginData)
@@ -216,7 +216,7 @@ export const useAuth = (): UseAuthReturn => {
 
   const register = async (role: SignUpRole) => {
     setLoading(true)
-    setError(null)
+    setError('')
     const route =
       role === 'SUPER_ADMIN' ? apiRoutes.auth.superAdminSignup : apiRoutes.auth.applicantSignup
 
@@ -237,10 +237,10 @@ export const useAuth = (): UseAuthReturn => {
     }
   }
 
-  const forgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmitForgotPassword = async () => {
+
     setSubmitting(true)
-    setError(null)
+    setError('')
 
     if (!validate(forgotPasswordData)) return
 
@@ -261,7 +261,7 @@ export const useAuth = (): UseAuthReturn => {
   const verifyCode = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
-    setError(null)
+    setError('')
 
     const code = emailVerificationFormCode.join('')
     try {
@@ -289,10 +289,10 @@ export const useAuth = (): UseAuthReturn => {
     }
   }
 
-  const resetPassword = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const resetPassword = async () => {
+
     setSubmitting(true)
-    setError(null)
+    setError('')
 
     if (!validate(resetPasswordFormData)) return
 
@@ -320,7 +320,7 @@ export const useAuth = (): UseAuthReturn => {
     handleChangeLoginData,
     login,
     handleSubmitSignup,
-    forgotPassword,
+    handleSubmitForgotPassword,
     verifyCode,
     resetPassword,
     logout,

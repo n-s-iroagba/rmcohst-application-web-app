@@ -1,3 +1,5 @@
+'use client'
+
 // import React, { useState, useEffect, useCallback } from 'react'
 // import {
 //   User,
@@ -20,6 +22,7 @@
 //   ChevronDown,
 //   ChevronUp
 // } from 'lucide-react'
+// import { ApplicationList } from '@/components/ApplicationList'
 
 // // Types
 // type ApplicationStatus = 'PENDING' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED' | 'WAITLISTED'
@@ -197,7 +200,8 @@
 // }
 
 // export default AdmissionReviewSystem
-const page = ()=>{
-  return <div>hi</div>
+
+const Pagee = ()=>{
+  return<div>a</div>
 }
-export default page
+export default Pagee

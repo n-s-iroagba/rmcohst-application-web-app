@@ -17,6 +17,8 @@ interface DeleteModalProps {
     | 'session'
     | 'programSpecificRequirement'
     | 'programSSCRequirement'
+     |  "grade"
+    |   "subject"
   message: string
 }
 
@@ -26,7 +28,9 @@ const API_ROUTES_MAP = {
   program: apiRoutes.program.delete,
   session: apiRoutes.academicSession.delete,
   programSpecificRequirement: apiRoutes.programSpecificRequirement.delete,
-  programSSCRequirement: apiRoutes.sscRequirement.delete
+  programSSCRequirement: apiRoutes.sscRequirement.delete,
+  grade:apiRoutes.grade.delete,
+  subject:apiRoutes.subject.delete
 }
 
 export function DeleteModal({ id, onClose, type, message }: DeleteModalProps) {

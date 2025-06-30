@@ -36,8 +36,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ signupRole }) => {
       fieldsConfig={fieldsConfig}
       submiting={submitting}
       formLabel="Create An Account to Apply"
-      icon={<UserCircleIcon/>}
-      onSubmit={() => handleSubmitSignup(signupRole)} onCancel={handleCancel}    />
+      icon={<UserCircleIcon />}
+      onSubmit={() => handleSubmitSignup(signupRole)} onCancel={handleCancel} error={''}    />
   )
 }
 

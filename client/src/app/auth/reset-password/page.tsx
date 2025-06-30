@@ -1,28 +1,31 @@
-// import React from 'react'
-// import { useAuth } from '@/hooks/useAuth'
-// import { CustomForm } from '@/components/CustomForm'
 
-// const ResetPasswordFormPage = () => {
-//   const {
-//     submitting,
-//     resetPasswordFormData,
-//     handleChangeForgotPasswordData,
-//     resetPassword,
-//     error: apiError,
-//     validationErrors
-//   } = useAuth()
+'use client'
+import React from 'react'
+import { useAuth } from '@/hooks/useAuth'
+import { CustomForm } from '@/components/CustomForm'
+import { FieldType } from '@/types/fields_config'
 
-//   return (
-//     <CustomForm data={resetPasswordFormData} fieldsConfig={undefined} onSubmit={function (): void {
-//       throw new Error('Function not implemented.')
-//     } } formLabel={''} onCancel={function (): void {
-//       throw new Error('Function not implemented.')
-//     } } submiting={false}/>
-//   )
-// }
-
-// export default ResetPasswordFormPage
-const page = ()=>{
-  return <div>hi</div>
+const ResetPasswordFormPage = () => {
+  const {
+    submitting,
+    resetPasswordFormData,
+    handleChangeForgotPasswordData,
+    resetPassword,
+    error,
+  } = useAuth()
+ const fieldsConfig = {
+    
+    
+     
+      password: { type: 'date' as FieldType, onChangeHandler: handleChangeForgotPasswordData},
+      confirmPassword: { type: 'text' as FieldType, onChangeHandler: handleChangeForgotPasswordData},
+  
+    }
+  return (
+    <CustomForm data={resetPasswordFormData} fieldsConfig={fieldsConfig} onSubmit={resetPassword} formLabel={''} onCancel={function (): void {
+      throw new Error('Function not implemented.')
+    } } submiting={submitting} error={error}/>
+  )
 }
-export default page
+
+export default ResetPasswordFormPage

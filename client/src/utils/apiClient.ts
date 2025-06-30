@@ -22,7 +22,7 @@ type ApiResponse<T> = Promise<T>
 /**
  * Generic GET request
  */
-export async function get<T>(path: string, config?: AxiosRequestConfig): ApiResponse<T|void> {
+export async function get<T>(path: string, config?: AxiosRequestConfig): ApiResponse<T> {
   try{
   const response: AxiosResponse<T> = await apiClient.get(path, config)
   console.log('response is',response)
@@ -40,7 +40,7 @@ export async function post<Req, Res>(
   path: string,
   data: Req,
   config: AxiosRequestConfig = {}
-): ApiResponse<Res|void> {
+): ApiResponse<Res> {
   const isFormData = typeof FormData !== 'undefined' && data instanceof FormData
  try{
   const response: AxiosResponse<Res> = await apiClient.post(path, data, {

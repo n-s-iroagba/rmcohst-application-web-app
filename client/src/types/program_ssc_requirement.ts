@@ -10,6 +10,10 @@ export interface ProgramSSCRequirement {
   updatedAt?: Date
 }
 
+export type ProgramSSCRequirementCreationDto = Omit<ProgramSSCRequirement,'id'|'subjectAndGrades'|'createAt'|'updateAt'|'programs'> & {
+  
+}
+
 export type SSCSubjectMinimumGradeCreationDto = Omit<
   SSCSubjectMinimumGrade,
   'id' | 'createdAt' | 'updatedAt'

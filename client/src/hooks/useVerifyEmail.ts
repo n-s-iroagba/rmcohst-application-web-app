@@ -1,3 +1,5 @@
+'use client'
+
 import { useParams } from 'next/navigation'
 import { useRouter } from 'next/router'
 import { useRef, useState, useEffect } from 'react'
@@ -23,7 +25,7 @@ const useVerifyEmail = (): UseVerifyEmailReturn => {
 
   useEffect(() => {
     if (!urlToken) {
-      alert('You are not authorised to view this page')
+      console.log('You are not authorised to view this page')
       router.push('/')
     } else {
       setToken(Array.isArray(urlToken) ? urlToken[0] : urlToken)

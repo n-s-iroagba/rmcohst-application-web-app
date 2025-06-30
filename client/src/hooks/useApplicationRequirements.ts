@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import {
-  handleAddToArrayOfArrays,
+  
   handleArrayOfObjectsChange,
   handleChange,
-  handleChangeArrayInArray,
-  handleRemoveFromArrayOfArrays
+
 } from '@/helpers/handleChange'
 
 import { AcademicSessionCreationDto } from '@/types/academic_session'
@@ -13,9 +12,11 @@ import { FacultyCreationDto } from '@/types/faculty'
 import { ProgramCreationDto } from '@/types/program'
 import { ProgramSpecificRequirementCreationDto } from '@/types/program_specific_requirement'
 import { ProgramSSCRequirement } from '@/types/program_ssc_requirement'
-import apiClient, { post } from '@/utils/apiClient'
+import  { post } from '@/utils/apiClient'
 import { apiRoutes } from '@/constants/apiRoutes'
 import { useRouter } from 'next/navigation'
+import { GradeCreationDto } from '@/types/grade'
+import { SSCSubject, SSCSubjectCreationAttributes } from '@/types/ssc_subject'
 
 const tempDeptData: DepartmentCreationDto = {
   name: '',
@@ -35,6 +36,12 @@ const tempProgramSpecificRequirement: ProgramSpecificRequirementCreationDto = {
   minimumGrade: ''
 }
 
+const tempGradeData:GradeCreationDto = {
+
+  grade:'',
+
+  gradePoint: 0
+}
 export const useApplicationRequirements = () => {
   const [sessionData, setSessionData] = useState<AcademicSessionCreationDto>({
     name: '',
@@ -55,11 +62,16 @@ export const useApplicationRequirements = () => {
   const [preexistingSSCRequirementsId, setPreexistingSSCRequirementsId] = useState<number>(0)
   const [preexistingProgamSpecificRequirementsId, setPreexistingProgamSpecificRequirementsId] =
     useState<number>(0)
-
+  const [gradeData, setGradeData] = useState<GradeCreationDto[]>([tempGradeData])
+  const [subject, setSubjects] = useState<SSCSubjectCreationAttributes[]>([{name:''}])
   const router = useRouter()
   const handleCancel = ()=>{
     router.push('/')
   }
+  const handleChangeSubject = (e:React.ChangeEvent<HTMLInputElement>)=>{
+    handleChange(setSubjects,e)
+  }
+  const handleSubmitSubject = ()=>{}
   // ========== SESSION MANAGEMENT ==========
   const handleChangeSessionData = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleChange(setSessionData, e)
@@ -169,24 +181,6 @@ export const useApplicationRequirements = () => {
     setSCCRequirementsData((prev) => prev.filter((_, i) => i !== index))
   }
 
-  // ========== PROGRAM SSC REQUIREMENTS MANAGEMENT ==========
-  const handleChangeProgramSSCRequirement = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-    programIndex: number,
-    sscIndex: number
-  ) => {
-    handleChangeArrayInArray(e, setProgramData, programIndex, sscIndex)
-  }
-
-  const addProgramSSCRequirement = (parentIndex: number, requirement: ProgramSSCRequirement) => {
-    console.log(parentIndex,requirement)
-    // handleAddToArrayOfArrays(parentIndex, setProgramData, 'sscRequirements', requirement)
-  }
-
-  const removeProgramSSCRequirement = (parentIndex: number, childIndex: number) => {
-    console.log(parentIndex, childIndex)
-    // handleRemoveFromArrayOfArrays(parentIndex, childIndex, setProgramData, 'sscRequirements')
-  }
 
   // ========== PROGRAM SPECIFIC REQUIREMENTS MANAGEMENT ==========
   const handleChangeProgramSpecificRequirementsData = (
@@ -246,7 +240,7 @@ export const useApplicationRequirements = () => {
       handleChange(setProgramData, e)
     }
   }
-
+  
   const handleSubmitProgram = async () => {
     try {
       const promises = programData.map((program) => post(apiRoutes.program.create, program))
@@ -258,7 +252,10 @@ export const useApplicationRequirements = () => {
       
     }
   }
-
+  const handleSubmitGrade = ()=>{}
+  const handleChangeGrade = (e: React.ChangeEvent<HTMLInputElement>)=>{
+    handleChange(setGradeData,e)
+  }
   const addProgram = (newProgram: ProgramCreationDto) => {
     setProgramData([...programData, newProgram])
   }
@@ -296,10 +293,6 @@ export const useApplicationRequirements = () => {
     addSSCRequirement,
     removeSSCRequirement,
 
-    // ========== PROGRAM SSC REQUIREMENTS ==========
-    handleChangeProgramSSCRequirement,
-    addProgramSSCRequirement,
-    removeProgramSSCRequirement,
 
     // ========== PROGRAM SPECIFIC REQUIREMENTS ==========
     programSpecificRequirementsData,
@@ -316,6 +309,14 @@ export const useApplicationRequirements = () => {
     handleSubmitProgram,
     addProgram,
     removeProgram,
+
+    subject,
+    handleChangeSubject,
+    handleSubmitSubject,
+
+    gradeData,
+    handleSubmitGrade,
+    handleChangeGrade,
 
     // ========== FLAGS ==========
     preexistingSSCRequirements,

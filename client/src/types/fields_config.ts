@@ -3,11 +3,13 @@ import { ChangeEvent } from "react"
 export type FieldType = 'text' | 'textarea' | 'select' | 'checkbox' | 'file' | 'double-select' | 'radio'|'date'
 
 export  type FieldConfig = {
-  onChangeHandler:
+  onChangeHandler?:
    | ((e: any, index?: number) => void)
+    | ((e: any, index: number) => void)
     // | ((e: any, index: number, subFieldKey: string) => void)
     | ((e: ChangeEvent<HTMLSelectElement>) => void)
     | ((e: ChangeEvent<HTMLInputElement>) => void)
+    
     
 
   type: FieldType

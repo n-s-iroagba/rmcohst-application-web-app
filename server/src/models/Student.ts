@@ -1,21 +1,15 @@
-import {
-  Model,
-  DataTypes,
-  ForeignKey,
-  Optional,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
-} from 'sequelize'
+import { Model, DataTypes, Optional } from 'sequelize'
 import sequelize from '../config/database'
 import User from './User'
-import { Application } from 'express'
+
+import { Application } from './Application'
 
 // Interface for full attributes (all columns)
 interface StudentAttributes {
   id: number
   studentId: string
-  userId: ForeignKey<User['id']>
-  applicationId: ForeignKey<Application['id']>
+  userId: number
+  applicationId: number
   department: string
   status: 'active' | 'inactive' | 'graduated'
   createdAt?: Date
@@ -29,19 +23,13 @@ interface StudentCreationAttributes
 class Student extends Model<StudentAttributes, StudentCreationAttributes> {
   public id!: number
   public studentId!: string
-  public userId!: ForeignKey<User['id']>
-  public applicationId!: ForeignKey<Application['id']>
+  public userId!: number
+  public applicationId!: number
   public department!: string
   public status!: 'active' | 'inactive' | 'graduated'
 
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
-
-  // Association mixins
-  public getUser!: BelongsToGetAssociationMixin<User>
-  public setUser!: BelongsToSetAssociationMixin<User, number>
-  public getApplication!: BelongsToGetAssociationMixin<Application>
-  public setApplication!: BelongsToSetAssociationMixin<Application, number>
 }
 
 Student.init(
@@ -68,7 +56,7 @@ Student.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Application,
+        model: 'Application',
         key: 'id',
       },
     },

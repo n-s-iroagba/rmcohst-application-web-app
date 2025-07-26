@@ -1,6 +1,6 @@
 import SSCSubject from '../models/SSCSubject'
-import { AppError } from '../utils/error/AppError'
-import logger from '../utils/logger/logger'
+import { NotFoundError } from '../utils/errors'
+import logger from '../utils/logger'
 
 class SSCSubjectService {
   /**
@@ -13,7 +13,7 @@ class SSCSubjectService {
       return subject
     } catch (error: any) {
       logger.error(`Failed to create SSCSubject: ${error.message}`)
-      throw new AppError('Failed to create SSCSubject', 500)
+      throw error
     }
   }
 
@@ -23,7 +23,7 @@ class SSCSubjectService {
   public static async getById(id: number): Promise<SSCSubject> {
     const subject = await SSCSubject.findByPk(id)
     if (!subject) {
-      throw new AppError(`SSCSubject with ID ${id} not found`, 404)
+      throw new NotFoundError(`SSCSubject with ID ${id} not found`)
     }
     return subject
   }
@@ -41,7 +41,7 @@ class SSCSubjectService {
   public static async update(id: number, updates: Partial<{ name: string }>): Promise<SSCSubject> {
     const subject = await SSCSubject.findByPk(id)
     if (!subject) {
-      throw new AppError(`SSCSubject with ID ${id} not found`, 404)
+      throw new NotFoundError(`SSCSubject with ID ${id} not found`)
     }
 
     await subject.update(updates)
@@ -55,7 +55,7 @@ class SSCSubjectService {
   public static async delete(id: number): Promise<void> {
     const subject = await SSCSubject.findByPk(id)
     if (!subject) {
-      throw new AppError(`SSCSubject with ID ${id} not found`, 404)
+      throw new NotFoundError(`SSCSubject with ID ${id} not found`)
     }
 
     await subject.destroy()

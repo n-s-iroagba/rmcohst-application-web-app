@@ -1,59 +1,76 @@
 export class AppError extends Error {
   public statusCode: number
-  public isOperational: boolean
+  public code: string
+  public details: any
 
-  constructor(message: string, statusCode: number = 500, isOperational: boolean = true) {
+  constructor(message: string, code: string, statusCode: number, details?: any) {
     super(message)
+    this.name = this.constructor.name
+    this.code = code
     this.statusCode = statusCode
-    this.isOperational = isOperational
+    this.details = details
 
-    Error.captureStackTrace(this, this.constructor)
-  }
-}
-
-export class ValidationError extends Error {
-  public statusCode: number
-  public errors: Array<{ field: string; message: string }>
-
-  constructor(message: string, errors: Array<{ field: string; message: string }>) {
-    super(message)
-    this.name = 'ValidationError'
-    this.statusCode = 400
-    this.errors = errors
-
-    // Maintains proper stack trace (only in V8)
+    // Maintain proper stack trace
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, ValidationError)
+      Error.captureStackTrace(this, this.constructor)
+    }
+  }
+
+  toJSON() {
+    return {
+      error: {
+        message: this.message,
+        code: this.code,
+        ...(this.details && { details: this.details }),
+      },
     }
   }
 }
 
-export class NotFoundError extends AppError {
-  constructor(message: string = 'Resource not found') {
-    super(message, 404)
+export class BadRequestError extends AppError {
+  constructor(message = 'Invalid request', code = 'BAD_REQUEST', details?: any) {
+    super(message, code, 400, details)
   }
 }
 
 export class UnauthorizedError extends AppError {
-  constructor(message: string = 'Unauthorized') {
-    super(message, 401)
+  constructor(message = 'Unauthorized', code = 'UNAUTHORIZED', details?: any) {
+    super(message, code, 401, details)
   }
 }
 
 export class ForbiddenError extends AppError {
-  constructor(message: string = 'Forbidden') {
-    super(message, 403)
+  constructor(message = 'Forbidden', code = 'FORBIDDEN', details?: any) {
+    super(message, code, 403, details)
+  }
+}
+
+export class NotFoundError extends AppError {
+  constructor(message = 'Resource not found', code = 'NOT_FOUND', details?: any) {
+    super(message, code, 404, details)
   }
 }
 
 export class ConflictError extends AppError {
-  constructor(message: string = 'Resource already exists') {
-    super(message, 409)
+  constructor(message = 'Conflict', code = 'CONFLICT', details?: any) {
+    super(message, code, 409, details)
   }
 }
 
-export class BadRequestError extends AppError {
-  constructor(message: string = 'Bad Request') {
-    super(message, 400)
+export class InternalServerError extends AppError {
+  constructor(message = 'Internal server error', code = 'INTERNAL_SERVER_ERROR', details?: any) {
+    super(message, code, 500, details)
+  }
+}
+
+export class ValidationError extends AppError {
+  constructor(errors: any[], message = 'Validation failed', code = 'VALIDATION_ERROR') {
+    super(message, code, 422, errors)
+  }
+}
+
+export class DatabaseError extends AppError {
+  constructor(message: string, details?: any) {
+    super(message, 'DATABASE_ERROR', 500, details)
   }
 }

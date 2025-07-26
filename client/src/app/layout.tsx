@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
-
 import './globals.css'
-
+import { Providers } from '@/components/Providers'
+import { FieldConfigProvider } from '@/context/FieldConfigContext'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -9,13 +9,20 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({
-  children
-}: Readonly<{
+  children,
+}: {
   children: React.ReactNode
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className={` antialiased`}>{children}</body>
+      <body>
+        <Providers>
+          <FieldConfigProvider>
+          {children}
+          </FieldConfigProvider>
+        </Providers>
+      </body>
     </html>
   )
 }
+

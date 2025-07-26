@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize'
-import appConfig from './index' 
-import { logger } from '../utils/logger'
+import appConfig from './index'
+import logger from '../utils/logger'
 
 const dbConfig = appConfig.database
 
@@ -9,7 +9,7 @@ const sequelize = new Sequelize(dbConfig.database, dbConfig.username, '97chocho'
   port: Number.parseInt(dbConfig.port || '3306'),
   dialect: 'mysql',
   logging: false, // Use logger.info
-  pool: { 
+  pool: {
     max: dbConfig.pool?.max || 5,
     min: dbConfig.pool?.min || 0,
     acquire: dbConfig.pool?.acquire || 30000,

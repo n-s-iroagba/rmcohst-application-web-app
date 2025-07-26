@@ -1,9 +1,7 @@
-
-import { Model, DataTypes} from 'sequelize'
+import { Model, DataTypes } from 'sequelize'
 import sequelize from '../config/database'
-import { Application } from './Application'
 
-interface BiodataAttributes {
+export interface BiodataAttributes {
   id: number
   applicationId: number
   firstName: string
@@ -19,7 +17,7 @@ interface BiodataAttributes {
   homeTown: string
   phoneNumber: string
   emailAddress: string
-  passportPhotograph: Blob|Buffer
+  passportPhotograph: Blob | Buffer
   nextOfKinFullName: string
   nextOfKinPhoneNumber: string
   nextOfKinAddress: string
@@ -98,7 +96,7 @@ Biodata.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Application,
+        model: 'Applications',
         key: 'id',
       },
       unique: true,
@@ -229,13 +227,4 @@ Biodata.init(
   }
 )
 
-Application.hasOne(Biodata, {
-  foreignKey: 'applicationId',
-  as: 'biodata', // Changed from 'bioData' to 'biodata' for consistency
-})
-
-Biodata.belongsTo(Application, {
-  foreignKey: 'applicationId',
-  as: 'application',
-})
 export default Biodata

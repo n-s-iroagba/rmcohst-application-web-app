@@ -1,6 +1,6 @@
 import { Department } from '../models/Department'
-import { AppError } from '../utils/errors'
-import { logger } from '../utils/logger'
+import { NotFoundError } from '../utils/errors'
+import logger from '../utils/logger'
 
 class DepartmentService {
   // CREATE
@@ -17,7 +17,7 @@ class DepartmentService {
       return department
     } catch (error) {
       logger.error('Failed to create department', { error })
-      throw new AppError('Could not create department', 500)
+      throw error
     }
   }
 
@@ -31,7 +31,7 @@ class DepartmentService {
       return departments
     } catch (error) {
       logger.error('Failed to fetch departments', { error })
-      throw new AppError('Could not fetch departments', 500)
+      throw error
     }
   }
 
@@ -42,13 +42,13 @@ class DepartmentService {
         include: [{ association: 'faculty' }],
       })
       if (!department) {
-        throw new AppError('Department not found', 404)
+        throw new NotFoundError('Department not found')
       }
       logger.info('Fetched department', { id })
       return department
     } catch (error) {
       logger.error(`Failed to fetch department ${id}`, { error })
-      throw error instanceof AppError ? error : new AppError('Could not fetch department', 500)
+      throw error
     }
   }
 
@@ -63,14 +63,14 @@ class DepartmentService {
     try {
       const department = await Department.findByPk(id)
       if (!department) {
-        throw new AppError('Department not found', 404)
+        throw new NotFoundError('Department not found')
       }
       await department.update(updates)
       logger.info('Updated department', { id })
       return department
     } catch (error) {
       logger.error(`Failed to update department ${id}`, { error })
-      throw error instanceof AppError ? error : new AppError('Could not update department', 500)
+      throw error
     }
   }
 }

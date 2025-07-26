@@ -1,25 +1,23 @@
-import sequelize from 'sequelize/types/sequelize'
-import AcademicSession from '../models/AcademicSession'
+import { fn, col } from 'sequelize'
+import AdmissionSession from '../models/AdmissionSession'
 
 import {
-  ApplicationStatus,
-  ApplicationCreationAttributes,
+  ApplicantSSCQualification,
   Application,
-} from '../models/Application'
+  Biodata,
+  ApplicantProgramSpecificQualification,
+} from '../models'
 import { Department } from '../models/Department'
 import { Faculty } from '../models/Faculty'
 import Program from '../models/Program'
 import ProgramSpecificRequirement from '../models/ProgramSpecificRequirement'
 import { Staff } from '../models/Staff'
 import User from '../models/User'
+import { BadRequestError, ForbiddenError, NotFoundError } from '../utils/errors'
+import logger from '../utils/logger'
+import {  FileData } from './DriveService'
+import { ApplicationCreationAttributes, ApplicationStatus } from '../models/Application'
 import ProgramSession from '../models/ProgramSession'
-import Biodata from '../models/Biodata'
-import ApplicantSSCQualification from '../models/ApplicantSSCQualification'
-import ApplicantProgramSpecificQualification from '../models/ApplicantProgramSpecificQualification'
-import ApplicantSSCSubjectAndGrade from '../models/ApplicantSSCSubjectAndGrade'
-import { AppError } from '../utils/errors'
-import { logger } from '../utils/logger'
-import { ApplicantData, ApplicationFiles, FileData } from './DriveService'
 
 interface ApplicationFilters {
   status?: string
@@ -47,9 +45,8 @@ class ApplicationService {
       })
 
       if (existingApplication)
-        throw new AppError(
-          'Application already exists for this user in this academic session.',
-          409
+        throw new BadRequestError(
+          'Application already exists for this user in this academic session.'
         )
 
       const program = await ProgramSession.findOne({
@@ -59,7 +56,7 @@ class ApplicationService {
         },
       })
 
-      if (!program) throw new AppError('The Program you wish to apply for in not available', 404)
+      if (!program) throw new BadRequestError('The Program you wish to apply for in not available')
 
       const application = await Application.create({
         ...data,
@@ -82,7 +79,7 @@ class ApplicationService {
       return application
     } catch (error) {
       logger.error('Error creating application', { error })
-      throw error instanceof AppError ? error : new AppError('Failed to create application', 500)
+      throw error
     }
   }
 
@@ -104,12 +101,7 @@ class ApplicationService {
             ],
           },
           { model: Biodata, as: 'biodata' },
-          { model: AcademicSession, as: 'academicSession' },
-          {
-            model: ApplicantSSCQualification,
-            as: 'sscQualifications',
-            include: [{ model: ApplicantSSCSubjectAndGrade, as: 'subjects' }],
-          },
+          { model: AdmissionSession, as: 'academicSession' },
           {
             model: ApplicantProgramSpecificQualification,
             as: 'programSpecificQualifications',
@@ -130,14 +122,12 @@ class ApplicationService {
       })
 
       if (!application) {
-        throw new AppError('Application not found', 404)
+        throw new BadRequestError('Application not found')
       }
       return application
     } catch (error) {
       logger.error('Error fetching application details', { error, id })
-      throw error instanceof AppError
-        ? error
-        : new AppError('Failed to fetch application details', 500)
+      throw error
     }
   }
 
@@ -163,7 +153,7 @@ class ApplicationService {
           { model: User, as: 'applicant', attributes: ['id', 'email', 'firstName', 'lastName'] },
           { model: Program, as: 'program', include: [{ model: Department, as: 'department' }] },
           { model: Biodata, as: 'biodata', attributes: ['firstName', 'lastName'] }, // Select only needed fields
-          { model: AcademicSession, as: 'academicSession' },
+          { model: AdmissionSession, as: 'academicSession' },
           {
             model: Staff,
             as: 'assignedOfficer',
@@ -190,7 +180,7 @@ class ApplicationService {
       }
     } catch (error) {
       logger.error('Error fetching all applications (filtered)', { error })
-      throw new AppError('Failed to fetch applications', 500)
+      throw error
     }
   }
 
@@ -198,12 +188,12 @@ class ApplicationService {
   public async assignToOfficer(applicationId: string, officerId: string): Promise<Application> {
     try {
       const application = await this.getApplicationDetailsById(applicationId)
-      if (!application) throw new AppError('Application not found', 404)
+      if (!application) throw new NotFoundError('Application not found')
 
       const officer = await Staff.findByPk(officerId)
-      if (!officer) throw new AppError('Admission officer not found', 404)
+      if (!officer) throw new NotFoundError('Admission officer not found')
 
-      application.assignedOfficerId = officerId
+      application.assignedOfficerId = officer.id
       // Optionally, update status if it was e.g. SUBMITTED and now assigned
       if (application.status === ApplicationStatus.SUBMITTED) {
         application.status = ApplicationStatus.UNDER_REVIEW
@@ -214,171 +204,194 @@ class ApplicationService {
       return application
     } catch (error) {
       logger.error('Error assigning application', { error })
-      throw error instanceof AppError ? error : new AppError('Failed to assign application', 500)
+      throw error
     }
   }
 
   // Final submission by applicant
-  public async finalizeApplicantSubmission(
+  public async finalizeApplicantSubmissionTypeSafe(
     applicationId: string,
     applicantUserId: number
   ): Promise<any> {
-    const application = await Application.findOne({
-      where: { id: applicationId, applicantUserId },
-      include: [
-        {
-          model: Biodata,
-          as: 'biodata',
-          required: false,
-        },
-        {
-          model: Program,
-          as: 'program',
-          required: false,
-        },
-        {
-          model: ApplicantSSCQualification,
-          as: 'sscQualification',
-          required: false,
-        },{
-          model:User,
-          as:'user'
+    try {
+      // Get the application first
+      const application = await Application.findOne({
+        where: { id: applicationId, applicantUserId },
+      })
 
-        },
-        {
-          model: ApplicantProgramSpecificQualification,
-          as: 'programSpecificQualifications',
-          required: false,
-        },
-      ],
-    })
-    const user = await User.findByPk(applicantUserId)
-    if (!user){
-      throw new AppError('user not found', 404)
-      
-    }
-    if (!application) {
-      throw new AppError('Application not found or you do not have permission.', 404)
-    }
+      if (!application) {
+        throw new NotFoundError('Application not found or you do not have permission.')
+      }
 
-    if (application.status !== ApplicationStatus.DRAFT) {
-      throw new AppError(
-        `Application is already ${application.status.toLowerCase()} and cannot be re-submitted.`,
-        400
-      )
-    }
+      if (application.status !== ApplicationStatus.DRAFT) {
+        throw new ForbiddenError(
+          `Application is already ${application.status.toLowerCase()} and cannot be re-submitted.`
+        )
+      }
 
-    // Comprehensive validation
+      // Fetch related models in parallel for better performance
+      const relatedDataPromises = {
+        user: User.findByPk(applicantUserId),
+        biodata: Biodata.findOne({ where: { applicationId: application.id } }),
+        program: application.programId
+          ? Program.findByPk(application.programId)
+          : Promise.resolve(null),
+        sscQualification: ApplicantSSCQualification.findOne({
+          where: { applicationId: application.id },
+        }),
+        programSpecificQualifications: ApplicantProgramSpecificQualification.findAll({
+          where: { applicationId: application.id },
+        }),
+        academicSession: AdmissionSession.findByPk(application.sessionId),
+      }
+
+      // Wait for all queries to complete
+      const relatedData = await Promise.allSettled([
+        relatedDataPromises.user,
+        relatedDataPromises.biodata,
+        relatedDataPromises.program,
+        relatedDataPromises.sscQualification,
+        relatedDataPromises.programSpecificQualifications,
+        relatedDataPromises.academicSession,
+      ])
+
+      // Extract results with error handling
+      const [
+        userResult,
+        biodataResult,
+        programResult,
+        sscResult,
+        programSpecificResult,
+        sessionResult,
+      ] = relatedData
+
+      const user = userResult.status === 'fulfilled' ? userResult.value : null
+      const biodata = biodataResult.status === 'fulfilled' ? biodataResult.value : null
+      const program = programResult.status === 'fulfilled' ? programResult.value : null
+      const sscQualification = sscResult.status === 'fulfilled' ? sscResult.value : null
+      const programSpecificQualifications =
+        programSpecificResult.status === 'fulfilled' ? programSpecificResult.value : []
+      const academicSession = sessionResult.status === 'fulfilled' ? sessionResult.value : null
+
+      // Log any failed promises
+      relatedData.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          const queryNames = [
+            'user',
+            'biodata',
+            'program',
+            'sscQualification',
+            'programSpecificQualifications',
+            'academicSession',
+          ]
+          logger.warn(`Failed to fetch ${queryNames[index]}:`, result.reason)
+        }
+      })
+
+      if (!user) {
+        throw new NotFoundError('User not found')
+      }
+
+      // Validate the application data
+      const validationErrors = this.validateApplicationData({
+        biodata,
+        program,
+        sscQualification,
+        programSpecificQualifications,
+      })
+
+      if (validationErrors.length > 0) {
+        throw new ForbiddenError(
+          `Application cannot be submitted due to the following issues: ${validationErrors.join('; ')}`
+        )
+      }
+
+      // All validations passed, update application status
+      application.status = ApplicationStatus.SUBMITTED
+      application.submittedAt = new Date()
+      await application.save()
+
+      logger.info('Applicant finalized submission', {
+        applicationId,
+        applicantUserId,
+        username: `${user.username}`,
+        programName: program?.name,
+        sessionName: academicSession?.name,
+      })
+
+      // TODO: Trigger notifications (email to applicant, alert to admins)
+
+      // Return the complete application data
+      return {
+        application,
+        user,
+        biodata,
+        program,
+        sscQualification,
+        programSpecificQualifications,
+        academicSession,
+      }
+    } catch (error) {
+      logger.error('Error finalizing application submission:', {
+        applicationId,
+        applicantUserId,
+        error: error,
+      })
+      throw error
+    }
+  }
+
+  // Helper method to validate application data
+  private validateApplicationData(data: {
+    biodata: any
+    program: any
+    sscQualification: any
+    programSpecificQualifications: any[]
+  }): string[] {
     const validationErrors: string[] = []
 
     // 1. Check if biodata exists and is complete
-    if (!application.biodata) {
+    if (!data.biodata) {
       validationErrors.push('Biodata information is required')
-    } else if (!application.biodata.isComplete()) {
+    } else if (typeof data.biodata.isComplete === 'function' && !data.biodata.isComplete()) {
       validationErrors.push('Biodata information is incomplete. Please fill in all required fields')
     }
 
     // 2. Check if program is selected
-    if (!application.program) {
+    if (!data.program) {
       validationErrors.push('Program selection is required')
     }
 
     // 3. Check if SSC qualification exists and is complete
-    if (!application.sscQualifications) {
+    if (!data.sscQualification) {
       validationErrors.push('SSC Qualification information is required')
-    } else if (!application.sscQualifications.isComplete()) {
+    } else if (
+      typeof data.sscQualification.isComplete === 'function' &&
+      !data.sscQualification.isComplete()
+    ) {
       validationErrors.push('SSC Qualification information is incomplete')
     }
 
     // 4. Check program-specific qualifications (if the program requires them)
-    if (application.program?.getProgramSpecificRequirements()) {
-      if (!application.programSpecificQualifications) {
+    if (
+      data.program &&
+      typeof data.program.getProgramSpecificRequirements === 'function' &&
+      data.program.getProgramSpecificRequirements()
+    ) {
+      if (!data.programSpecificQualifications || data.programSpecificQualifications.length === 0) {
         validationErrors.push('Program-specific qualifications are required for this program')
       } else {
-        const incompleteQualifications = !application.programSpecificQualifications.isComplete()
+        const incompleteQualifications = data.programSpecificQualifications.some(
+          qual => typeof qual.isComplete === 'function' && !qual.isComplete()
+        )
         if (incompleteQualifications) {
           validationErrors.push('Some program-specific qualifications are incomplete')
         }
       }
     }
 
-    // 5. Additional document validations (if needed)
-    // Add more validation logic here as needed
-
-    if (validationErrors.length > 0) {
-      throw new AppError(
-        `Application cannot be submitted due to the following issues: ${validationErrors.join('; ')}`,
-        400
-      )
-    }
-      // Prepare applicant data for folder structure
-      const applicantData: ApplicantData = {
-        applicationId: application.id.toString(),
-        firstName: user.firstName,
-        lastName:  user.lastName,
-        sessionName: (await application.getSessions()).name,
-        facultyName: (await ((await application.program.getDepartment()).getFaculty())).name,
-        departmentName: (await application.program.getDepartment()).name,
-        programName: application.program.name,
-      };
-
-      // Convert multer files to FileData format
-      const applicationFiles: ApplicationFiles = {
-        biodata: {
-          passportPhoto: application.biodata?.passportPhotograph
-  ? this.multerFileToFileData(application.biodata.passportPhotograph)
-  : undefined,
-
-          personalDetails: jsonData.personalDetails,
-        },
-        applicationReceipt: this.multerFileToFileData(files.applicationReceipt),
-        sscQualification: {
-          certificates: files.sscCertificates.map(file => this.multerFileToFileData(file)),
-          details: jsonData.sscDetails,
-        },
-        programSpecificQualification: files.programCertificates ? {
-          certificates: files.programCertificates.map(file => this.multerFileToFileData(file)),
-          details: jsonData.programDetails || {},
-        } : undefined,
-      };
-
-      // Save files to storage
-      const savedFiles = await this.driveService.saveApplicationFiles(applicantData, applicationFiles);
-
-      // Update application record with file references and blob data
-      await application.update({
-        passportPhotoBlob: files.passportPhoto.buffer,
-        applicationReceiptBlob: files.applicationReceipt.buffer,
-        sscCertificatesJson: JSON.stringify(files.sscCertificates.map(file => ({
-          filename: file.originalname,
-          mimetype: file.mimetype,
-          size: file.size,
-        }))),
-        sscCertificatesBlob: Buffer.concat(files.sscCertificates.map(file => file.buffer)),
-        programCertificatesJson: files.programCertificates ? JSON.stringify(files.programCertificates.map(file => ({
-          filename: file.originalname,
-          mimetype: file.mimetype,
-          size: file.size,
-        }))) : null,
-        programCertificatesBlob: files.programCertificates ? Buffer.concat(files.programCertificates.map(file => file.buffer)) : null,
-        personalDetailsJson: JSON.stringify(jsonData.personalDetails),
-        sscDetailsJson: JSON.stringify(jsonData.sscDetails),
-        programDetailsJson: jsonData.programDetails ? JSON.stringify(jsonData.programDetails) : null,
-        fileStoragePath: JSON.stringify(savedFiles),
-      });
-    // All validations passed, update application status
-    application.status = ApplicationStatus.SUBMITTED
-    application.submittedAt = new Date()
-    await application.save()
-
-    logger.info('Applicant finalized submission', { applicationId, applicantUserId })
-
-    // TODO: Trigger notifications (email to applicant, alert to admins)
-
-    // Return the fully populated application for the client to update its state
-    return this.getApplicationDetailsById(applicationId)
+    return validationErrors
   }
-
   // Get application counts by status (for Admin/HOA dashboards)
   public async getApplicationCountsByStatus(
     academicSessionId?: string
@@ -390,7 +403,7 @@ class ApplicationService {
       }
 
       const counts = (await Application.findAll({
-        attributes: ['status', [sequelize.fn('COUNT', sequelize.col('id')), 'count']],
+        attributes: ['status', [fn('COUNT', col('id')), 'count']],
         where: whereClause,
         group: ['status'],
         raw: true,
@@ -402,43 +415,27 @@ class ApplicationService {
       }))
     } catch (error) {
       logger.error('Error fetching application counts by status', { error })
-      throw new AppError('Failed to fetch application counts', 500)
+      throw error
     }
   }
-    /**
+  /**
    * Convert multer file to FileData interface
    */
-multerFileToFileData(file: Express.Multer.File | Buffer): FileData {
-  if (Buffer.isBuffer(file)) {
-    return {
-      filename: 'unknown.jpg', // fallback
-      buffer: file,
-      mimetype: 'image/jpeg', // assume or infer
+  multerFileToFileData(file: Express.Multer.File | Buffer): FileData {
+    if (Buffer.isBuffer(file)) {
+      return {
+        filename: 'unknown.jpg', // fallback
+        buffer: file,
+        mimetype: 'image/jpeg', // assume or infer
+      }
     }
-  }
-
-  return {
-    filename: file.originalname,
-    buffer: file.buffer,
-    mimetype: file.mimetype,
-  }
-}
-
-
-  return {
-    filename: file.originalname,
-    buffer: file.buffer,
-    mimetype: file.mimetype,
-  }
-}
 
     return {
       filename: file.originalname,
       buffer: file.buffer,
       mimetype: file.mimetype,
-    };
+    }
   }
-
 
   // Get application by ID with all related data
   static async getApplicationById(id: number) {
@@ -447,13 +444,8 @@ multerFileToFileData(file: Express.Multer.File | Buffer): FileData {
         include: [
           { model: User, as: 'user', attributes: ['id', 'email', 'firstName', 'lastName'] },
           { model: Program, as: 'program' },
-          { model: AcademicSession, as: 'academicSession' },
+          { model: AdmissionSession, as: 'academicSession' },
           { model: Biodata, as: 'bioData' },
-          {
-            model: ApplicantSSCQualification,
-            as: 'applicantSscQualifications',
-            include: [{ model: ApplicantSSCSubjectAndGrade, as: 'subjects' }],
-          },
           {
             model: ApplicantProgramSpecificQualification,
             as: 'applicantProgramSpecificQualifications',
@@ -464,13 +456,13 @@ multerFileToFileData(file: Express.Multer.File | Buffer): FileData {
       })
 
       if (!application) {
-        throw new AppError('Application not found', 404)
+        throw new NotFoundError('Application not found')
       }
 
       return application
     } catch (error) {
       logger.error('Error fetching application', { error, id })
-      throw error instanceof AppError ? error : new AppError('Failed to fetch application', 500)
+      throw error
     }
   }
 
@@ -479,7 +471,7 @@ multerFileToFileData(file: Express.Multer.File | Buffer): FileData {
     try {
       const application = await Application.findByPk(id)
       if (!application) {
-        throw new AppError('Application not found', 404)
+        throw new NotFoundError('Application not found')
       }
 
       await application.update({ status, adminComments: comments }) // Assuming adminComments field exists
@@ -494,7 +486,7 @@ multerFileToFileData(file: Express.Multer.File | Buffer): FileData {
       return application
     } catch (error) {
       logger.error('Error updating application status', { error })
-      throw error instanceof AppError ? error : new AppError('Failed to update status', 500)
+      throw error
     }
   }
 }

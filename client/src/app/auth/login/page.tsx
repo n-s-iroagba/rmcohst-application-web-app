@@ -2,8 +2,8 @@
 
 import React from 'react'
 import { useAuth } from '@/hooks/useAuth'
+import { FieldRenderer } from '@/components/FieldRenderer'
 import { FieldType } from '@/types/fields_config'
-import { CustomForm } from '@/components/CustomForm'
 
 const LoginPage = () => {
   const {
@@ -24,14 +24,7 @@ const LoginPage = () => {
   
     }
   return (
-    <CustomForm
-      data={loginData}
-      fieldsConfig={fieldsConfig}
-      submiting={submitting}
-      onSubmit={login} formLabel={''} onCancel={function (): void {
-        throw new Error('Function not implemented.')
-      } } error={apiError}    />
+    <FieldRenderer fieldsConfig={fieldsConfig}/>
   )
-}
 
 export default LoginPage

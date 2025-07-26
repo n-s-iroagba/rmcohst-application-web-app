@@ -8,4 +8,4 @@ applicationEndDate: Date
   updatedAt: Date
 }
 
-export type AcademicSessionCreationDto = Omit<Session, 'id' | 'isCurrent'|'createdAt'|'updatedAt'>
+export type AdmissionSessionCreationDto = Omit<Session, 'id' | 'isCurrent'|'createdAt'|'updatedAt'>

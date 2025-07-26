@@ -1,11 +1,4 @@
-import {
-  Model,
-  DataTypes,
-  Optional,
-  ForeignKey,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
-} from 'sequelize'
+import { Model, DataTypes, Optional, ForeignKey } from 'sequelize'
 import sequelize from '../config/database'
 import User from './User'
 
@@ -14,7 +7,7 @@ interface SuperAdminAttributes {
   id: number
   firstName: string
   lastName: string
-  userId: ForeignKey<User['id']>
+  userId: number
   createdAt?: Date
   updatedAt?: Date
 }
@@ -27,14 +20,12 @@ class SuperAdmin extends Model<SuperAdminAttributes, SuperAdminCreationAttribute
   public id!: number
   public firstName!: string
   public lastName!: string
-  public userId!: ForeignKey<User['id']>
+  public userId!: number
 
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 
-  // Mixins for association
-  public getUser!: BelongsToGetAssociationMixin<User>
-  public setUser!: BelongsToSetAssociationMixin<User, number>
+
 }
 
 SuperAdmin.init(
@@ -56,7 +47,7 @@ SuperAdmin.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: User,
+        model: ' User',
         key: 'id',
       },
     },

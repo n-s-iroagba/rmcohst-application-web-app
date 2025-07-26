@@ -16,14 +16,10 @@ export const loginSchema = z.object({
 export const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: passwordSchema,
-  firstName: z
+  username: z
     .string()
     .min(2, 'First name must be at least 2 characters long')
     .max(50, 'First name must be less than 50 characters'),
-  lastName: z
-    .string()
-    .min(2, 'Last name must be at least 2 characters long')
-    .max(50, 'Last name must be less than 50 characters'),
 })
 
 export const forgotPasswordSchema = z.object({
@@ -35,6 +31,7 @@ export const verifyEmailCodeSchema = z.object({
     .string()
     .length(6, 'Verification code must be 6 digits')
     .regex(/^\d{6}$/, 'Verification code must contain only numbers'),
+  token:z.string()
 })
 
 export const resetPasswordSchema = z
@@ -47,9 +44,8 @@ export const resetPasswordSchema = z
     path: ['confirmPassword'],
   })
 
-export const emailVerificationCodeSchema = z.object({
-  code: z
+export const resendCodeSchema = z.object({
+  token: z
     .string()
-    .length(6, 'Verification code must be 6 digits')
-    .regex(/^\d{6}$/, 'Verification code must contain only numbers'),
+  
 })

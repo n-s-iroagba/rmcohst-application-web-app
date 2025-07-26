@@ -16,6 +16,9 @@ import {
   Clock,
   XCircle
 } from 'lucide-react'
+import EditBiodataForm from '@/components/EditBiodataForm'
+import ApplicantSSCQualificationForm from '@/components/ApplicantSSCQualificationForm'
+import { CustomForm } from '@/components/CustomForm'
 
 
 type ApplicationStep = 'payment' | 'biodata' | 'ssc' | 'program-specific' | 'review' | 'submitted'
@@ -174,7 +177,7 @@ const ApplicationPage = () => {
                   <span className="font-medium">{ 'Not specified'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Session:</span>
+                  <span className="text-gray-600">AdmissionSession:</span>
                   <span className="font-medium">{ 'Not specified'}</span>
                 </div>
                 <div className="flex justify-between">
@@ -210,9 +213,9 @@ const ApplicationPage = () => {
         </div>
       </div>
     )
-  }
+  }else{
 
-  // Application is in draft status - show forms
+  
   const steps = [
     { id: 'biodata', label: 'Biodata', icon: User },
     { id: 'ssc', label: 'SSC Qualifications', icon: FileText },
@@ -251,11 +254,11 @@ const ApplicationPage = () => {
 
       {/* Form Content */}
       <div className="bg-white rounded-lg shadow-lg border border-slate-200">
-        {/* {currentStep === 'biodata' && <EditBiodataForm />}
+        {currentStep === 'biodata' && <CustomForm/>}
         
-        {currentStep === 'ssc' && <ApplicantSSCQualificationForm />}
+        {currentStep === 'ssc' && <CustomForm />}
         
-        {currentStep === 'program-specific' && <ApplicantProgramSpecificRequirementsForm />} */}
+        {currentStep === 'program-specific' && <CustomForm />}
         
         {currentStep === 'review' && (
           <div className="p-8">
@@ -352,5 +355,5 @@ const ApplicationPage = () => {
     </div>
   )
 }
-
+}
 export default ApplicationPage

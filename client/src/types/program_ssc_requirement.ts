@@ -1,34 +1,35 @@
-import { Program } from './program'
-import { SSCSubject } from './ssc_subject'
+
+export enum Grade{
+  A1='A1',
+  B2='B2',
+  B3='B3',
+  C4='C4',
+  C5='C5',
+  C6='C6',
+  D7='D7',
+  E8='E8',
+}
 
 export interface ProgramSSCRequirement {
   id: number
+  tag:string
   maximumNumberOfSittings: number
-  programs: Program[]
-  subjectAndGrades: SSCSubjectMinimumGrade[]
+  qualificationTypes: string[]
+  firstSubjectId: number
+  firstSubjectGrade: Grade
+  secondSubjectId: number
+  secondSubjectGrade: Grade
+  thirdSubjectId: number
+  alternateThirdSubjectId: number|null
+  thirdSubjectGrade: Grade
+  fourthSubjectId: number
+  alternateFourthSubjectId: number|null
+  fourthSubjectGrade: Grade
+  fifthSubjectId: number
+  alternateFifthSubjectId: number|null
+  fifthSubjectGrade: Grade
   createdAt?: Date
   updatedAt?: Date
 }
 
-export type ProgramSSCRequirementCreationDto = Omit<ProgramSSCRequirement,'id'|'subjectAndGrades'|'createAt'|'updateAt'|'programs'> & {
-  
-}
-
-export type SSCSubjectMinimumGradeCreationDto = Omit<
-  SSCSubjectMinimumGrade,
-  'id' | 'createdAt' | 'updatedAt'
->
-export interface Grade {
-  id: number
-  type: string
-  grade: string
-
-  gradePoint: number
-
-  readonly createdAt: Date
-  readonly updatedAt: Date
-}
-export interface SSCSubjectMinimumGrade {
-  subject: SSCSubject
-  grade: Grade
-}
+export type ProgramSSCRequirementCreationDto = Omit<ProgramSSCRequirement,'id'|'createAt'|'updateAt'> 

@@ -1,14 +1,5 @@
-import {
-  Model,
-  DataTypes,
-  Optional,
-  HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManyCreateAssociationMixin,
-  Association,
-} from 'sequelize'
+import { Model, DataTypes, Optional } from 'sequelize'
 import sequelize from '../config/database'
-import ProgramSSCSubject from './ProgramSSCSubject'
 
 // Define full attributes
 interface SSCSubjectAttributes {
@@ -28,15 +19,6 @@ class SSCSubject extends Model<SSCSubjectAttributes, SSCSubjectCreationAttribute
 
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
-
-  // Association mixins for ProgramSSCSubject
-  public getProgramSSCSubjects!: HasManyGetAssociationsMixin<ProgramSSCSubject>
-  public addProgramSSCSubject!: HasManyAddAssociationMixin<ProgramSSCSubject, number>
-  public createProgramSSCSubject!: HasManyCreateAssociationMixin<ProgramSSCSubject>
-
-  public static associations: {
-    programSSCSubjects: Association<SSCSubject, ProgramSSCSubject>
-  }
 }
 
 SSCSubject.init(

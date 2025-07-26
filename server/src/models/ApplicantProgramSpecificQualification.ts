@@ -1,35 +1,33 @@
 import { Model, DataTypes } from 'sequelize'
-import { Application } from './Application'
 import sequelize from '../config/database'
 
-
-interface ApplicationProgramSpecificQualificationAttributes {
+interface ApplicantProgramSpecificQualificationAttributes {
   id: number
   applicationId: number
   qualificationType?: string
-  grade: string  
-  isDocumentUploaded:boolean
+  grade: string
+  isDocumentUploaded: boolean
   createdAt?: Date
   updatedAt?: Date
 }
 
-interface ApplicationProgramSpecificQualificationCreationAttributes {
+interface ApplicantProgramSpecificQualificationCreationAttributes {
   qualificationType: string
   applicationId: number
 }
 
-class ApplicationProgramSpecificQualification
+class ApplicantProgramSpecificQualification
   extends Model<
-    ApplicationProgramSpecificQualificationAttributes,
-    ApplicationProgramSpecificQualificationCreationAttributes
+    ApplicantProgramSpecificQualificationAttributes,
+    ApplicantProgramSpecificQualificationCreationAttributes
   >
-  implements ApplicationProgramSpecificQualificationAttributes
+  implements ApplicantProgramSpecificQualificationAttributes
 {
   public id!: number
   public applicationId!: number
   public qualificationType!: string
-  public isDocumentUploaded!:boolean
-  public grade!:string
+  public isDocumentUploaded!: boolean
+  public grade!: string
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 
@@ -39,7 +37,7 @@ class ApplicationProgramSpecificQualification
   }
 }
 
-ApplicationProgramSpecificQualification.init(
+ApplicantProgramSpecificQualification.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -50,7 +48,7 @@ ApplicationProgramSpecificQualification.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Application,
+        model: 'Applications',
         key: 'id',
       },
     },
@@ -62,36 +60,22 @@ ApplicationProgramSpecificQualification.init(
       },
     },
     isDocumentUploaded: {
-      type: DataTypes.BOOLEAN, 
+      type: DataTypes.BOOLEAN,
       allowNull: true,
       validate: {
         notEmpty: true,
       },
     },
-    grade:{     
-      type:DataTypes.STRING,
+    grade: {
+      type: DataTypes.STRING,
       allowNull: true,
-      references: {
-        model: 'grade',
-        key: 'id',
-      },
     },
   },
   {
     sequelize,
     tableName: 'applicant_program_specific_qualifications',
-    modelName: 'ApplicationProgramSpecificQualification',
+    modelName: 'ApplicantProgramSpecificQualification',
   }
 )
 
-Application.hasMany(ApplicationProgramSpecificQualification, {
-  foreignKey: 'applicationId',
-  as: 'programSpecificQualifications',
-  onDelete: 'CASCADE',
-})
-
-ApplicationProgramSpecificQualification.belongsTo(Application, {
-  foreignKey: 'applicationId',
-  as: 'application',
-})
-export default ApplicationProgramSpecificQualification
+export default ApplicantProgramSpecificQualification

@@ -1,14 +1,13 @@
 import { Model, DataTypes, Optional, Association, BelongsToGetAssociationMixin } from 'sequelize'
 import sequelize from '../config/database'
-import Program from './Program'
-import Grade from './Grade'
+
 
 // Define all attributes
 interface ProgramSpecificRequirementAttributes {
   id: number
   programId: number
   qualificationType: string
-  minimumGradeId: number
+  minimumGrade: string
   createdAt?: Date
   updatedAt?: Date
 }
@@ -29,12 +28,6 @@ class ProgramSpecificRequirement extends Model<
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 
-  // Association mixins
-  public getProgram!: BelongsToGetAssociationMixin<Program>
-
-  public static associations: {
-    program: Association<ProgramSpecificRequirement, Program>
-  }
 }
 
 ProgramSpecificRequirement.init(
@@ -48,7 +41,7 @@ ProgramSpecificRequirement.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Program,
+        model: 'Programs',
         key: 'id',
       },
     },
@@ -56,13 +49,9 @@ ProgramSpecificRequirement.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    minimumGradeId: {
+    minimumGrade: {
       type: DataTypes.STRING,
       allowNull: false,
-      references: {
-        model: Grade,
-        key: 'id',
-      },
     },
   },
   {
@@ -73,16 +62,5 @@ ProgramSpecificRequirement.init(
   }
 )
 
-// Associations
-Program.hasMany(ProgramSpecificRequirement, {
-  sourceKey: 'id',
-  foreignKey: 'programId',
-  as: 'programSpecificQualifications',
-})
-
-ProgramSpecificRequirement.belongsTo(Program, {
-  foreignKey: 'programId',
-  as: 'program',
-})
 
 export default ProgramSpecificRequirement

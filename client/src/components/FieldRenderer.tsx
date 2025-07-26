@@ -1,5 +1,5 @@
-'use client'
-import { formatCamelCase } from '@/utils/formatCamelCase'
+'use client';
+import { formatCamelCase } from '@/utils/formatCamelCase';
 import {
   TextField,
   TextareaField,
@@ -7,40 +7,78 @@ import {
   CheckboxField,
   FileField,
   MultiGroupSelectField,
-  RadioField
-} from './FormFields'
-import { ChangeEvent } from 'react'
-import { FieldsConfig } from '@/types/fields_config'
-
-
+  RadioField,
+  PasswordField,
+} from './FormFields';
+import { ChangeEvent, useMemo } from 'react';
+import { useFieldConfigContext } from '@/context/FieldConfigContext';
 
 type FieldRendererProps<T> = {
-  data: T
+  data: T;
+  errors?: Partial<Record<keyof T, string>>;
+  index?: number;
+};
 
-  fieldsConfig: FieldsConfig<T>
-   errors?: Partial<Record<keyof T, string>>
-  index?:number
-}
+// Email validation regex
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function FieldRenderer<T extends Record<string, any>>({
   data,
   errors = {},
-  fieldsConfig,
-  index
+  index,
 }: FieldRendererProps<T>) {
+  const { fieldsConfig } = useFieldConfigContext<T>();
+  console.log('data', data);
+  console.log('config', fieldsConfig);
+
+  // Function to get validation error for a field
+  const getFieldError = useMemo(() => {
+    return (key: string): string | undefined => {
+      const existingError = errors?.[key as keyof T];
+      if (existingError) return existingError;
+
+      const value = data[key as keyof T];
+
+      // Email validation
+      if (key === 'email' || key.toLowerCase().includes('email')) {
+        if (value && !EMAIL_REGEX.test(value)) {
+          return 'Please enter a valid email address';
+        }
+      }
+
+      // Password confirmation validation
+      if (key === 'confirmPassword') {
+        const password = data['password' as keyof T];
+        const confirmPassword = data['confirmPassword' as keyof T];
+        
+        // Only show error if both fields have values and they don't match
+        if (password && confirmPassword && password !== confirmPassword) {
+          return 'Passwords do not match';
+        }
+      }
+
+      return undefined;
+    };
+  }, [data, errors]);
+
   return (
     <>
       {Object.entries(fieldsConfig).map(([key, config]) => {
-        if (!(key in data) || !config) return null
+        if (!(key in data) || !config) return null;
 
-        const value = data[key as keyof T]
-        const error = errors?.[key as keyof T]
-        if(!config?.onChangeHandler && !config.fieldGroup?.onChangeHandler) {
-          console.log('no change event handler field renderer config')
-          return null
+        const value = data[key as keyof T];
+        const error = getFieldError(key);
+        
+        if (!config?.onChangeHandler && !config.fieldGroup?.onChangeHandler) {
+          console.log('no change event handler field renderer config');
+          return null;
         }
-        const onChange = (config?.onChangeHandler as ((e: any, index?: number) => void))|| ( (e:any)=>{})
-        if (!config) return null
+        
+        const onChange =
+          (config?.onChangeHandler as (e: any, index?: number) => void) ||
+          ((e: any) => {});
+        
+        if (!config) return null;
 
         switch (config.type) {
           case 'textarea':
@@ -50,10 +88,10 @@ export function FieldRenderer<T extends Record<string, any>>({
                 name={key}
                 label={formatCamelCase(key)}
                 value={value}
-                onChange={(e:any)=>onChange(e,index)}
+                onChange={(e: any) => onChange(e, index)}
                 error={error}
               />
-            )
+            );
 
           case 'select':
             return (
@@ -63,22 +101,25 @@ export function FieldRenderer<T extends Record<string, any>>({
                 label={formatCamelCase(key)}
                 value={value}
                 options={config.options}
-                onChange={(e:any)=>onChange(e,index)}
+                onChange={(e: any) => onChange(e, index)}
                 error={error}
               />
-            )
+            );
+          
           case 'double-select':
             if (!config.fieldGroup) {
-              console.error('no field group')
-              return null
+              console.error('no field group');
+              return null;
             }
             return (
               <MultiGroupSelectField
+                key={key}
                 groupData={data[key]}
                 fieldGroup={config.fieldGroup}
                 onChange={config.fieldGroup.onChangeHandler}
               />
-            )
+            );
+          
           case 'checkbox':
             return (
               <CheckboxField
@@ -86,10 +127,10 @@ export function FieldRenderer<T extends Record<string, any>>({
                 name={key}
                 label={formatCamelCase(key)}
                 checked={value}
-                onChange={(e:any)=>onChange(e,index)}
+                onChange={(e: any) => onChange(e, index)}
                 error={error}
               />
-            )
+            );
 
           case 'file':
             return (
@@ -97,10 +138,11 @@ export function FieldRenderer<T extends Record<string, any>>({
                 key={key}
                 name={key}
                 label={formatCamelCase(key)}
-                onChange={(e:any)=>onChange(e,index)}
+                onChange={(e: any) => onChange(e, index)}
                 error={error}
               />
-            )
+            );
+          
           case 'radio':
             return (
               <RadioField
@@ -109,23 +151,51 @@ export function FieldRenderer<T extends Record<string, any>>({
                 label={formatCamelCase(key)}
                 value={value}
                 options={config.options || []}
-                onChange={onChange as (e: ChangeEvent<HTMLInputElement>) => void}
+                onChange={
+                  onChange as (e: ChangeEvent<HTMLInputElement>) => void
+                }
                 error={error}
               />
-            )
-         case 'date':
-        
+            );
+          
+          case 'date':
             return (
               <TextField
                 key={key}
                 name={key}
                 label={formatCamelCase(key)}
                 value={value}
-                onChange={(e:any)=>onChange(e,index)}
+                onChange={(e: any) => onChange(e, index)}
                 error={error}
                 type="date"
               />
-            )
+            );
+          
+          case 'password':
+            return (
+              <PasswordField
+                key={key}
+                name={key}
+                label={formatCamelCase(key)}
+                value={value}
+                onChange={(e: any) => onChange(e, index)}
+                error={error}
+              />
+            );
+
+          case 'email':
+            return (
+              <TextField
+                key={key}
+                name={key}
+                label={formatCamelCase(key)}
+                value={value}
+                onChange={(e: any) => onChange(e, index)}
+                error={error}
+                type="email"
+              />
+            );
+          
           case 'text':
           default:
             return (
@@ -134,15 +204,13 @@ export function FieldRenderer<T extends Record<string, any>>({
                 name={key}
                 label={formatCamelCase(key)}
                 value={value}
-                onChange={(e:any)=>onChange(e,index)}
+                onChange={(e: any) => onChange(e, index)}
                 error={error}
-                type='text'
+                type="text"
               />
-            )
-
-        
+            );
         }
       })}
     </>
-  )
+  );
 }

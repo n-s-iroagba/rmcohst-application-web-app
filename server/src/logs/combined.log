@@ -2692,9 +2692,9 @@
 {
   service: 'rmcohst-server',
   error: AppError: Could not retrieve academic sessions
-      at Function.getAllSessions (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/AcademicSessionService.ts:27:13)
+      at Function.getAllSessions (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/AdmissionSessionService.ts:27:13)
       at processTicksAndRejections (node:internal/process/task_queues:105:5)
-      at async AcademicSessionController.getAll (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/AcademicSessionController.ts:17:22) {
+      at async AdmissionSessionController.getAll (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/AdmissionSessionController.ts:17:22) {
     statusCode: 500,
     isOperational: true
   },
@@ -2989,10 +2989,10 @@
       at /home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/sequelize.js:650:28
       at processTicksAndRejections (node:internal/process/task_queues:105:5)
       at async MySQLQueryInterface.insert (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/dialects/abstract/query-interface.js:795:21)
-      at async AcademicSession.save (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/model.js:4154:35)
+      at async AdmissionSession.save (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/model.js:4154:35)
       at async Function.create (/home/udorakpuenyi/rmcohst-application-web-app/server/node_modules/sequelize/src/model.js:2305:12)
-      at async Function.createSession (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/AcademicSessionService.ts:10:23)
-      at async AcademicSessionController.create (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/AcademicSessionController.ts:38:23) {
+      at async Function.createSession (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/AdmissionSessionService.ts:10:23)
+      at async AdmissionSessionController.create (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/AdmissionSessionController.ts:38:23) {
     name: 'SequelizeUniqueConstraintError',
     errors: [
       ValidationErrorItem {
@@ -3001,7 +3001,7 @@
         path: 'name',
         value: 'IKDHFFN',
         origin: 'DB',
-        instance: AcademicSession {
+        instance: AdmissionSession {
           dataValues: {
             isCurrent: false,
             id: null,
@@ -3098,9 +3098,9 @@
 {
   service: 'rmcohst-server',
   error: AppError: Failed to create academic session
-      at Function.createSession (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/AcademicSessionService.ts:15:13)
+      at Function.createSession (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/AdmissionSessionService.ts:15:13)
       at processTicksAndRejections (node:internal/process/task_queues:105:5)
-      at async AcademicSessionController.create (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/AcademicSessionController.ts:38:23) {
+      at async AdmissionSessionController.create (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/AdmissionSessionController.ts:38:23) {
     statusCode: 500,
     isOperational: true
   },
@@ -3117,9 +3117,9 @@
   service: 'rmcohst-server',
   error: 'Failed to create academic session',
   stack: 'Error: Failed to create academic session\n' +
-    '    at Function.createSession (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/AcademicSessionService.ts:15:13)\n' +
+    '    at Function.createSession (/home/udorakpuenyi/rmcohst-application-web-app/server/src/services/AdmissionSessionService.ts:15:13)\n' +
     '    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
-    '    at async AcademicSessionController.create (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/AcademicSessionController.ts:38:23)',
+    '    at async AdmissionSessionController.create (/home/udorakpuenyi/rmcohst-application-web-app/server/src/controllers/AdmissionSessionController.ts:38:23)',
   url: '/api/academic-sessions',
   method: 'POST',
   ip: '::1',
@@ -6486,4 +6486,28 @@
   level: 'info',
   message: 'Get all data endpoint called',
   timestamp: '2025-06-28T11:19:11.062Z'
+}
+{
+  message: 'Database connection established successfully',
+  level: 'info',
+  service: 'rmcohst-server',
+  timestamp: '2025-07-01T06:24:44.569Z'
+}
+{
+  message: 'Database synchronized',
+  level: 'info',
+  service: 'rmcohst-server',
+  timestamp: '2025-07-01T06:26:15.963Z'
+}
+{
+  message: 'Server running on port 3000',
+  level: 'info',
+  service: 'rmcohst-server',
+  timestamp: '2025-07-01T06:26:15.973Z'
+}
+{
+  message: 'Database connection established successfully',
+  level: 'info',
+  service: 'rmcohst-server',
+  timestamp: '2025-07-01T06:31:17.774Z'
 }

@@ -1,84 +1,100 @@
-import { Model, DataTypes, Optional, BelongsToGetAssociationMixin } from 'sequelize';
-import sequelize from '../config/database';
-import Program from './Program'; // Import your Program model
-import SSCSubject from './SSCSubject';
-import Grade from './Grade';
+import {
+  DataTypes,
+  Model,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from 'sequelize'
+import sequelize from '../config/database'
 
-interface ProgramSSCRequirementAttributes {
-  id: number;
-  programId: number;
-  subjectId: number;
-  minimumGradeId: number;
-  createdAt: Date;
-  updatedAt: Date;
+// Grade enum
+export enum Grade {
+  A1 = 'A1',
+  B2 = 'B2',
+  B3 = 'B3',
+  C4 = 'C4',
+  C5 = 'C5',
+  C6 = 'C6',
+  D7 = 'D7',
+  E8 = 'E8',
 }
 
-interface ProgramSSCRequirementCreationAttributes
-  extends Optional<ProgramSSCRequirementAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
-
-class ProgramSSCRequirement
-  extends Model<ProgramSSCRequirementAttributes, ProgramSSCRequirementCreationAttributes>
-  implements ProgramSSCRequirementAttributes
-{
-  public id!: number;
-  public programId!: number;
-  public subjectId!: number;
-  public minimumGradeId!: number;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-
-  // Eager loading associations
-  public getProgram!: BelongsToGetAssociationMixin<Program>;
-  public getSubject!: BelongsToGetAssociationMixin<SSCSubject>;
-  public getMinimumGrade!: BelongsToGetAssociationMixin<Grade>;
+// Qualification types enum
+export enum QualificationType {
+  WAEC = 'WAEC',
+  NECO = 'NECO',
+  NABTEB = 'NABTEB',
+  GCE = 'GCE',
 }
 
+// Subject requirement structure
+export interface SubjectRequirement {
+  subjectId: number
+  grade: Grade
+  alternateSubjectId?: number // Optional alternate subject
+}
+
+export class ProgramSSCRequirement extends Model<
+  InferAttributes<ProgramSSCRequirement>,
+  InferCreationAttributes<ProgramSSCRequirement>
+> {
+  declare id: CreationOptional<number>
+  declare programId: number
+  declare tag: string
+  declare maximumSittings: number
+  declare qualificationTypes: QualificationType[]
+  declare subjects: SubjectRequirement[] // Store all subjects as JSON array
+  declare readonly createdAt: CreationOptional<Date>
+  declare readonly updatedAt: CreationOptional<Date>
+}
+
+/**
+ * Initialize the model
+ */
 ProgramSSCRequirement.init(
   {
     id: {
       type: DataTypes.INTEGER,
-      autoIncrement: true,
       primaryKey: true,
+      autoIncrement: true,
     },
     programId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: Program,
-        key: 'id',
-      },
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
+      // Remove references - let associations handle this
     },
-    subjectId: {
+    tag: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    maximumSittings: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: SSCSubject,
-        key: 'id',
-      },
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
+      defaultValue: 2,
     },
-    minimumGradeId: {
-      type: DataTypes.INTEGER,
+    qualificationTypes: {
+      type: DataTypes.JSON,
       allowNull: false,
-      references: {
-        model: Grade,
-        key: 'id',
+      defaultValue: [QualificationType.WAEC],
+    },
+    subjects: {
+      type: DataTypes.JSON,
+      allowNull: false,
+      validate: {
+        hasRequiredSubjects(value: SubjectRequirement[]) {
+          if (!Array.isArray(value) || value.length < 5) {
+            throw new Error('Must have at least 5 subjects')
+          }
+        },
       },
-      onDelete: 'RESTRICT',
-      onUpdate: 'CASCADE',
     },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW,
     },
     updatedAt: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW,
     },
   },
   {
@@ -86,52 +102,5 @@ ProgramSSCRequirement.init(
     tableName: 'program_ssc_requirements',
     modelName: 'ProgramSSCRequirement',
     timestamps: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ['programId', 'subjectId'], // Ensures unique subject requirement per program
-      },
-    ],
   }
-);
-
-// =====================
-// ASSOCIATIONS
-// =====================
-
-// Program has many SSC subject requirements
-Program.hasMany(ProgramSSCRequirement, {
-  foreignKey: 'programId',
-  as: 'sscRequirements',
-  onDelete: 'CASCADE',
-});
-
-ProgramSSCRequirement.belongsTo(Program, {
-  foreignKey: 'programId',
-  as: 'program',
-});
-
-// SSCSubject has many program requirements
-SSCSubject.hasMany(ProgramSSCRequirement, {
-  foreignKey: 'subjectId',
-  as: 'programRequirements',
-  onDelete: 'CASCADE',
-});
-
-ProgramSSCRequirement.belongsTo(SSCSubject, {
-  foreignKey: 'subjectId',
-  as: 'subject',
-});
-
-// Minimum grade requirement
-ProgramSSCRequirement.belongsTo(Grade, {
-  foreignKey: 'minimumGradeId',
-  as: 'minimumGrade',
-});
-
-Grade.hasMany(ProgramSSCRequirement, {
-  foreignKey: 'minimumGradeId',
-  as: 'usedInRequirements',
-});
-
-export default ProgramSSCRequirement;
+)

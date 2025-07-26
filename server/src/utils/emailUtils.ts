@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer'
 import path from 'path'
-import logger from './logger/logger'
+import logger from './logger'
 
 const EMAIL_TEMPLATES = {
   APPLICATION_SUBMITTED: {

@@ -2,7 +2,7 @@
 import { google, type drive_v3 } from 'googleapis'
 import type { Readable } from 'stream'
 import appConfig from '../config' // Default import
-import logger from './logger/logger' // Assuming logger is default export
+import logger from './logger'
 
 let drive: drive_v3.Drive | null = null
 

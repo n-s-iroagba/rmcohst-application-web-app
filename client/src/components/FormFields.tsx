@@ -1,7 +1,72 @@
 import { FieldConfig } from '@/types/fields_config'
-import React from 'react'
+import React, { useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react';
 
+interface PasswordFieldProps {
+  name: string;
+  label: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
+  placeholder?: string;
+  className?: string;
+}
 
+export const PasswordField: React.FC<PasswordFieldProps> = ({
+  name,
+  label,
+  value,
+  onChange,
+  error,
+  placeholder,
+  className = '',
+}) => {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  return (
+    <div className={`mb-4 ${className}`}>
+      <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
+        {label}
+      </label>
+      <div className="relative">
+        <input
+          type={showPassword ? 'text' : 'password'}
+          id={name}
+          name={name}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            error
+              ? 'border-red-500 focus:ring-red-500'
+              : 'border-gray-300'
+          }`}
+        />
+        <button
+          type="button"
+          onClick={togglePasswordVisibility}
+          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+          aria-label={showPassword ? 'Hide password' : 'Show password'}
+        >
+          {showPassword ? (
+            <EyeOff className="h-4 w-4" />
+          ) : (
+            <Eye className="h-4 w-4" />
+          )}
+        </button>
+      </div>
+      {error && (
+        <p className="mt-1 text-sm text-red-600" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+};
 export const TextField = ({ name, label, value, onChange, error,type }: any) => (
   <div className="mb-4">
     <label htmlFor={name} className="block font-medium mb-1">

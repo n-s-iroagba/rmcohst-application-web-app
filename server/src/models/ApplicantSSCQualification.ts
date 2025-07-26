@@ -1,16 +1,37 @@
-import { Optional, Model, DataTypes, HasManyGetAssociationsMixin } from 'sequelize'
-
-import { Application } from './Application'
+import { Model, DataTypes } from 'sequelize'
 import sequelize from '../config/database'
-import ApplicantSSCSubjectAndGrade from './ApplicantSSCSubjectAndGrade'
 
-// ApplicantSSCQualification Model
+export enum Grade {
+  A1 = 'A1',
+  B2 = 'B2',
+  B3 = 'B3',
+  C4 = 'C4',
+  C5 = 'C5',
+  C6 = 'C6',
+  D7 = 'D7',
+  E8 = 'E8',
+}
+
+export enum QualificationType {
+  WAEC = 'WAEC',
+  NECO = 'NECO',
+  NABTEB = 'NABTEB',
+  GCE = 'GCE',
+}
+
+export interface SubjectRequirement {
+  subjectId: number
+  grade: Grade
+  alternateSubjectId?: number
+}
+
 interface ApplicantSSCQualificationAttributes {
   id: number
   applicationId: number
   numberOfSittings: number
-  certificateTypes: string[]
-  isDocumentUploaded:boolean
+  qualificationTypes: QualificationType[]
+  subjects: SubjectRequirement[]
+  isDocumentUploaded: boolean
   createdAt?: Date
   updatedAt?: Date
 }
@@ -26,27 +47,25 @@ class ApplicantSSCQualification
   public id!: number
   public applicationId!: number
   public numberOfSittings!: number
-  public certificateTypes!: string[]
-  public isDocumentUploaded!:boolean
+  public subjects!: SubjectRequirement[]
+  public qualificationTypes!: QualificationType[]
+  public isDocumentUploaded!: boolean
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 
-  // Method to check if SSC qualification is complete
   public isComplete(): boolean {
     return !!(
       this.numberOfSittings &&
-      this.certificateTypes?.length > 0 &&
-      this.isDocumentUploaded
+      this.qualificationTypes?.length > 0 &&
+      this.isDocumentUploaded &&
+      this.subjects?.length >= 5
     )
   }
 
-  // Method to validate certificate types
   public hasValidCertificateTypes(): boolean {
-    const validTypes = ['WAEC', 'NECO', 'GCE', 'NABTEB']
-    return this.certificateTypes.every(type => validTypes.includes(type))
+    const validTypes = Object.values(QualificationType)
+    return this.qualificationTypes.every(type => validTypes.includes(type))
   }
-
-
 }
 
 ApplicantSSCQualification.init(
@@ -60,21 +79,19 @@ ApplicantSSCQualification.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Application,
+        model: 'Applications',
         key: 'id',
       },
-      onUpdate: 'CASCADE',
-      onDelete: 'CASCADE',
     },
     numberOfSittings: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       validate: {
         min: 1,
         max: 2,
       },
     },
-    certificateTypes: {
+    qualificationTypes: {
       type: DataTypes.JSON,
       allowNull: true,
       validate: {
@@ -91,34 +108,21 @@ ApplicantSSCQualification.init(
         },
       },
     },
+    subjects: {
+      type: DataTypes.JSON,
+      allowNull: false,
+    },
     isDocumentUploaded: {
       type: DataTypes.BOOLEAN,
-      allowNull: true,
-    }
+      allowNull: false,
+      defaultValue: false,
+    },
   },
   {
     sequelize,
     tableName: 'applicant_ssc_qualifications',
     modelName: 'ApplicantSSCQualification',
-    timestamps: true,
-    indexes: [
-      {
-        fields: ['applicationId'],
-      },
-    ],
   }
 )
-
-// Associations
-Application.hasOne(ApplicantSSCQualification, {
-  foreignKey: 'applicationId',
-  as: 'sscQualification',
-  onDelete: 'CASCADE',
-})
-
-ApplicantSSCQualification.belongsTo(Application, {
-  foreignKey: 'applicationId',
-  as: 'application',
-})
 
 export default ApplicantSSCQualification

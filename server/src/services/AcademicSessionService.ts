@@ -1,60 +1,59 @@
-import AcademicSession, { AcademicSessionCreationAttributes } from '../models/AcademicSession'
-import { AppError } from '../utils/errors'
-import { logger } from '../utils/logger'
+import AdmissionSession, { AdmissionSessionCreationAttributes } from '../models/AdmissionSession'
+import { AppError, BadRequestError, NotFoundError } from '../utils/errors'
+import logger from '../utils/logger'
 
-
-class AcademicSessionService {
+class AdmissionSessionService {
   // CREATE
-  static async createSession(data:AcademicSessionCreationAttributes) {
+  static async createSession(data: AdmissionSessionCreationAttributes) {
     try {
-      const session = await AcademicSession.create(data)
+      const session = await AdmissionSession.create(data)
       logger.info('Created academic session', { id: session.id })
       return session
     } catch (error) {
       logger.error('Error creating academic session', { error })
-      throw new AppError('Failed to create academic session', 500)
+      throw error
     }
   }
 
   // READ ALL
   static async getAllSessions() {
     try {
-      return await AcademicSession.findAll({
+      return await AdmissionSession.findAll({
         order: [['createdAt', 'DESC']],
       })
     } catch (error) {
       logger.error('Error fetching academic sessions', { error })
-      throw new AppError('Could not retrieve academic sessions', 500)
+      throw error
     }
   }
 
   // READ ONE
   static async getSessionById(id: number) {
     try {
-      const session = await AcademicSession.findByPk(id)
+      const session = await AdmissionSession.findByPk(id)
       if (!session) {
-        throw new AppError('Academic session not found', 404)
+        throw new NotFoundError('Academic session not found')
       }
       return session
     } catch (error) {
       logger.error(`Error fetching academic session with id ${id}`, { error })
-      throw error instanceof AppError ? error : new AppError('Could not fetch session', 500)
+      throw error
     }
   }
 
   // GET CURRENT SESSION
   static async getCurrentSession() {
     try {
-      const session = await AcademicSession.findOne({
+      const session = await AdmissionSession.findOne({
         where: { isCurrent: true },
       })
       if (!session) {
-        throw new AppError('No current academic session found', 404)
+        throw new NotFoundError('No current academic session found')
       }
       return session
     } catch (error) {
       logger.error('Error fetching current academic session', { error })
-      throw error instanceof AppError ? error : new AppError('Could not fetch current session', 500)
+      throw error
     }
   }
 
@@ -68,14 +67,14 @@ class AcademicSessionService {
     }>
   ) {
     try {
-      const session = await AcademicSession.findByPk(id)
+      const session = await AdmissionSession.findByPk(id)
       if (!session) {
-        throw new AppError('Academic session not found', 404)
+        throw new NotFoundError('Academic session not found')
       }
 
       // If setting this session as current, first unset all other sessions
       if (updates.isCurrent === true) {
-        await AcademicSession.update({ isCurrent: false }, { where: { isCurrent: true } })
+        await AdmissionSession.update({ isCurrent: false }, { where: { isCurrent: true } })
       }
 
       await session.update(updates)
@@ -83,20 +82,20 @@ class AcademicSessionService {
       return session
     } catch (error) {
       logger.error(`Error updating academic session with id ${id}`, { error })
-      throw error instanceof AppError ? error : new AppError('Could not update session', 500)
+      throw error
     }
   }
 
   // SET AS CURRENT SESSION
   static async setCurrentSession(id: number) {
     try {
-      const session = await AcademicSession.findByPk(id)
+      const session = await AdmissionSession.findByPk(id)
       if (!session) {
-        throw new AppError('Academic session not found', 404)
+        throw new NotFoundError('Academic session not found')
       }
 
       // First, unset all current sessions
-      await AcademicSession.update({ isCurrent: false }, { where: { isCurrent: true } })
+      await AdmissionSession.update({ isCurrent: false }, { where: { isCurrent: true } })
 
       // Set the specified session as current
       await session.update({ isCurrent: true })
@@ -104,23 +103,21 @@ class AcademicSessionService {
       return session
     } catch (error) {
       logger.error(`Error setting academic session with id ${id} as current`, { error })
-      throw error instanceof AppError
-        ? error
-        : new AppError('Could not set session as current', 500)
+      throw error
     }
   }
 
   // DELETE
   static async deleteSession(id: number) {
     try {
-      const session = await AcademicSession.findByPk(id)
+      const session = await AdmissionSession.findByPk(id)
       if (!session) {
-        throw new AppError('Academic session not found', 404)
+        throw new NotFoundError('Academic session not found')
       }
 
       // Prevent deletion of current session
       if (session.isCurrent) {
-        throw new AppError('Cannot delete current academic session', 400)
+        throw new BadRequestError('Cannot delete current academic session')
       }
 
       await session.destroy()
@@ -128,9 +125,9 @@ class AcademicSessionService {
       return { message: 'Academic session deleted successfully' }
     } catch (error) {
       logger.error(`Error deleting academic session with id ${id}`, { error })
-      throw error instanceof AppError ? error : new AppError('Could not delete session', 500)
+      throw error
     }
   }
 }
 
-export default AcademicSessionService
+export default AdmissionSessionService

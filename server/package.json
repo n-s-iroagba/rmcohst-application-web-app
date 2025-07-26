@@ -5,14 +5,15 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-      "build": "tsc",
-      "start": "NODE_ENV=production node dist/index.js",
-   "lint": "eslint .",
+    "build": "tsc",
+    "start": "NODE_ENV=production node dist/index.js",
+    "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-      "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",
-      "format:check": "prettier --check \"src/**/*.{ts,js,json,md}\"",
-      "type-check": "tsc --noEmit",
-      "clean": "rm -rf dist"
+    "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,js,json,md}\"",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist",
+   "seed:roles": "ts-node src/seeders/seed-roles.ts"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
   "homepage": "https://github.com/rmcohst/rmcohst-application-web-app#readme",
   "dependencies": {
     "@types/multer": "^1.4.12",
+    "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
@@ -40,10 +42,10 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.2",
     "mysql2": "^3.14.1",
+    "node-cache": "^5.1.2",
     "nodemailer": "^7.0.3",
     "nodemailer-express-handlebars": "^7.0.0",
     "nodemailer-handlebars": "^1.0.1",
-    "nodemon": "^3.1.10",
     "pdfkit": "^0.17.1",
     "sequelize": "latest",
     "sonner": "^1.7.1",
@@ -54,6 +56,7 @@
     "uuid": "^11.1.0",
     "vaul": "^0.9.6",
     "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0",
     "zod": "^3.24.4"
   },
   "devDependencies": {
@@ -62,11 +65,16 @@
     "@types/express-handlebars": "^6.0.2",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/morgan": "^1.9.9",
+    "@types/node": "^24.1.0",
     "@types/nodemailer": "^6.4.17",
-    "eslint-plugin-prettier": "^5.5.0",
     "@types/nodemailer-express-handlebars": "^4.0.5",
-       "eslint-config-prettier": "^10.1.5",
-    "@types/pdfkit": "^0.13.9"
+    "@types/pdfkit": "^0.13.9",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.5.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }
-  

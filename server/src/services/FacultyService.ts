@@ -2,8 +2,8 @@
 
 import { Faculty, FacultyCreationAttributes } from '../models/Faculty'
 import { Department } from '../models/Department'
-import { AppError } from '../utils/errors'
-import { logger } from '../utils/logger'
+import { AppError, NotFoundError } from '../utils/errors'
+import logger from '../utils/logger'
 
 class FacultyService {
   /**
@@ -17,26 +17,25 @@ class FacultyService {
       return faculties
     } catch (error: any) {
       logger.error(`Failed to create faculty: ${error.message}`)
-      throw new AppError('Failed to create faculty', 500)
+      throw error
     }
   }
 
   /**
    * Get all faculties with optional pagination and include departments
    */
-  public async getAllFaculties(page: number = 1, limit: number = 10, includeDepartments: boolean = false): Promise<
- Faculty[]
-   > {
+  public async getAllFaculties(
+    page: number = 1,
+    limit: number = 10,
+    includeDepartments: boolean = false
+  ): Promise<Faculty[]> {
     try {
       const offset = (page - 1) * limit
-      
-  
 
       return await Faculty.findAll()
-    
     } catch (error: any) {
       logger.error(`Failed to get all faculties: ${error.message}`)
-      throw new AppError('Failed to retrieve faculties', 500)
+      throw error
     }
   }
 
@@ -47,7 +46,7 @@ class FacultyService {
     try {
       const faculty = await Faculty.findByPk(id)
       if (!faculty) {
-        throw new AppError(`Faculty with id ${id} not found`, 404)
+        throw new NotFoundError(`Faculty with id ${id} not found`)
       }
       // // Use association mixin to get departments
       // const departments = await faculty.getDepartments()
@@ -58,7 +57,7 @@ class FacultyService {
     } catch (error: any) {
       logger.error(`Failed to get faculty: ${error.message}`)
       if (error instanceof AppError) throw error
-      throw new AppError('Failed to get faculty', 500)
+      throw error
     }
   }
 
@@ -69,7 +68,7 @@ class FacultyService {
     try {
       const faculty = await Faculty.findByPk(id)
       if (!faculty) {
-        throw new AppError(`Faculty with id ${id} not found`, 404)
+        throw new NotFoundError(`Faculty with id ${id} not found`)
       }
       faculty.name = name
       await faculty.save()
@@ -78,7 +77,7 @@ class FacultyService {
     } catch (error: any) {
       logger.error(`Failed to update faculty: ${error.message}`)
       if (error instanceof AppError) throw error
-      throw new AppError('Failed to update faculty', 500)
+      throw error
     }
   }
 
@@ -89,37 +88,37 @@ class FacultyService {
     try {
       const faculty = await Faculty.findByPk(id)
       if (!faculty) {
-        throw new AppError(`Faculty with id ${id} not found`, 404)
+        throw new NotFoundError(`Faculty with id ${id} not found`)
       }
       await faculty.destroy()
       logger.info(`Faculty deleted with id: ${id}`)
     } catch (error: any) {
       logger.error(`Failed to delete faculty: ${error.message}`)
-      if (error instanceof AppError) throw error
-      throw new AppError('Failed to delete faculty', 500)
+      throw error
     }
   }
 
+  public async getFacultiesWithDeparments(): Promise<Faculty[]> {
+    try {
+      const faculties = await Faculty.findAll({
+        include: [
+          {
+            model: Department,
+            as: 'departments',
+            attributes: [],
+          },
+        ],
 
- public async getFacultiesWithDeparments(): Promise<Faculty[]> {
-  try {
-    const faculties = await Faculty.findAll({
-      include: [{
-        model: Department,
-        as: 'departments',
-        attributes: []
-      }],
-    
-      group: ['Faculty.id'],
-      order: [['name', 'ASC']]
-    });
+        group: ['Faculty.id'],
+        order: [['name', 'ASC']],
+      })
 
-    logger.info(`Retrieved ${faculties.length} faculties with department counts`);
-    return faculties;
-  } catch (error: any) {
-    logger.error(`Failed to get faculties with department counts: ${error.message}`);
-    throw new AppError('Failed to retrieve faculties with department counts', 500);
+      logger.info(`Retrieved ${faculties.length} faculties with department counts`)
+      return faculties
+    } catch (error: any) {
+      logger.error(`Failed to get faculties with department counts: ${error.message}`)
+      throw error
+    }
   }
-}
 }
 export default new FacultyService()

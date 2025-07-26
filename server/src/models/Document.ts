@@ -1,33 +1,43 @@
-import { Model, DataTypes, Optional } from 'sequelize';
-import sequelize from '../config/database';
-import ApplicationProgramSpecificQualification from './ApplicantProgramSpecificQualification';
-import ApplicantSSCQualification from './ApplicantSSCQualification';
-import Biodata from './Biodata';
+import { Model, DataTypes, Optional } from 'sequelize'
+import sequelize from '../config/database'
+import ApplicationProgramSpecificQualification from './ApplicantProgramSpecificQualification'
+import ApplicantSSCQualification from './ApplicantSSCQualification'
+import Biodata from './Biodata'
 
 // Interface for document attributes
 interface DocumentAttributes {
-  id: number;
-  fileName: string;
-  mimeType: string;
-  buffer: Buffer;
-  documentableId: number;   // Polymorphic foreign key ID
-  documentableType: 'ApplicantSSCQualification'| 'ApplicationProgramSpecificQualification'| 'Biodata'; // Polymorphic type (model name)
-  createdAt: Date;
-  updatedAt: Date;
+  id: number
+  fileName: string
+  mimeType: string
+  buffer: Buffer
+  documentableId: number // Polymorphic foreign key ID
+  documentableType:
+    | 'ApplicantSSCQualification'
+    | 'ApplicationProgramSpecificQualification'
+    | 'Biodata' // Polymorphic type (model name)
+  createdAt: Date
+  updatedAt: Date
 }
 
 // Interface for creation attributes
-interface DocumentCreationAttributes extends Optional<DocumentAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
+interface DocumentCreationAttributes
+  extends Optional<DocumentAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
 
-class Document extends Model<DocumentAttributes, DocumentCreationAttributes> implements DocumentAttributes {
-  public id!: number;
-  public fileName!: string;
-  public mimeType!: string;
-  public buffer!: Buffer;
-  public documentableId!: number;
-  public documentableType!: 'ApplicantSSCQualification'| 'ApplicationProgramSpecificQualification'| 'Biodata';
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+class Document
+  extends Model<DocumentAttributes, DocumentCreationAttributes>
+  implements DocumentAttributes
+{
+  public id!: number
+  public fileName!: string
+  public mimeType!: string
+  public buffer!: Buffer
+  public documentableId!: number
+  public documentableType!:
+    | 'ApplicantSSCQualification'
+    | 'ApplicationProgramSpecificQualification'
+    | 'Biodata'
+  public readonly createdAt!: Date
+  public readonly updatedAt!: Date
 }
 
 Document.init(
@@ -92,29 +102,29 @@ Document.init(
       { fields: ['documentableId'] },
     ],
   }
-);
+)
 ApplicantSSCQualification.hasMany(Document, {
   foreignKey: 'documentableId',
   constraints: false,
   scope: {
-    documentableType: 'ApplicantSSCQualification'
+    documentableType: 'ApplicantSSCQualification',
   },
-  as: 'documents'
-});
+  as: 'documents',
+})
 ApplicationProgramSpecificQualification.hasMany(Document, {
   foreignKey: 'documentableId',
   constraints: false,
   scope: {
-    documentableType: 'ApplicationProgramSpecificQualification'
+    documentableType: 'ApplicationProgramSpecificQualification',
   },
-  as: 'documents'
-});
+  as: 'documents',
+})
 Biodata.hasMany(Document, {
   foreignKey: 'documentableId',
   constraints: false,
   scope: {
-    documentableType: 'Biodata'
+    documentableType: 'Biodata',
   },
-  as: 'documents'
-});
-export default Document;
+  as: 'documents',
+})
+export default Document

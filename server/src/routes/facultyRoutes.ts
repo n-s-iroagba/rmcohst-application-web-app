@@ -4,20 +4,15 @@ import {
   createFacultySchema,
   updateFacultySchema,
   idParamSchema,
-  getFacultiesQuerySchema
+  getFacultiesQuerySchema,
 } from '../validation/faculty.validationSchemas'
-import {
-  validateBody,
-  validateParams,
-  validateQuery
-} from '../middleware/validation'
+import { validateBody, validateParams, validateQuery } from '../middleware/validation'
 
 const router = Router()
 
 router.post('/', validateBody(createFacultySchema), FacultyController.createFaculty)
 
 router.get('/', FacultyController.getAllFaculties)
-
 
 router.get('/:id', validateParams(idParamSchema), FacultyController.getFacultyById)
 
@@ -29,6 +24,5 @@ router.get('/:id', validateParams(idParamSchema), FacultyController.getFacultyBy
 // )
 
 // router.delete('/:id', validateParams(idParamSchema), FacultyController.deleteFaculty)
-
 
 export default router

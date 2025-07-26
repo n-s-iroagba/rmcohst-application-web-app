@@ -30,12 +30,12 @@ export const apiRoutes = {
     addComment: (id: string): string => `/applications/${id}/comments`,
     review:(id:string):string =>`applications/review/${id}`
   },
-  academicSession: {
-    all: `/academic-sessions`,
-    create: `/academic-sessions`,
-    update: (id: number): string => `/academic-sessions/${id}`,
-    delete: (id: number): string => `/academic-sessions/${id}`,
-    getById: (id: number): string => `/academic-sessions/${id}`
+  admissionSession: {
+    all: `/admission-sessions`,
+    create: `/admission-sessions`,
+    update: (id: number): string => `/admission-sessions/${id}`,
+    delete: (id: number): string => `/admission-sessions/${id}`,
+    getById: (id: number): string => `/admission-sessions/${id}`
   },
   faculty: {
     all: `/faculties`,
@@ -60,7 +60,7 @@ export const apiRoutes = {
     getById: (id: number): string => `/programs/${id}`,
     getByDepartment: (departmentId: number): string => `/programs/department/${departmentId}`
   },
-  sscRequirement: {
+  programSSCRequirement: {
     all: `/ssc-requirements`,
     create: `/ssc-requirements`,
     update: (id: number): string => `/ssc-requirements/${id}`,

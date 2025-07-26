@@ -17,7 +17,7 @@ import {
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { useResizeWindow } from '@/hooks/useResizeWindow'
-import { AuthProvider } from '@/contexts/AuthContext'
+
 
 interface SuperAdminOffCanvas {
   children: React.ReactNode
@@ -120,8 +120,8 @@ function SuperAdminOffCanvas({ children }: SuperAdminOffCanvas) {
 
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
+
       <SuperAdminOffCanvas>{children}</SuperAdminOffCanvas>
-    </AuthProvider>
+
   )
 }

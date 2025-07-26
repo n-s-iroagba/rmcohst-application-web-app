@@ -1,5 +1,5 @@
 import express from 'express'
-import { AuthController } from '../controllers/AuthController'
+
 
 import {
   registerSchema,
@@ -7,14 +7,15 @@ import {
   forgotPasswordSchema,
   resetPasswordSchema,
   verifyEmailCodeSchema,
-  emailVerificationCodeSchema,
+  resendCodeSchema,
 } from '../validation/auth.validation'
 import { validateBody } from '../middleware/validation'
+import { AuthController } from '../controllers/AuthController'
 
 const router = express.Router()
 const authController = new AuthController()
 
-router.post('/register', validateBody(registerSchema), authController.register)
+router.post('/applicant/signup',validateBody(registerSchema), authController.signUpApplicant)
 router.post('/login', validateBody(loginSchema), authController.login)
 router.post('/forgot-password', validateBody(forgotPasswordSchema), authController.forgotPassword)
 router.post(
@@ -25,9 +26,9 @@ router.post(
 )
 router.post('/verify-email', validateBody(verifyEmailCodeSchema), authController.verifyEmail)
 router.post(
-  '/resend-verification',
-  validateBody(emailVerificationCodeSchema),
-  authController.resendVerificationCode
+  '/resend-verification-code',
+  validateBody(resendCodeSchema),
+  authController.resendCode
 )
 
 export default router

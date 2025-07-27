@@ -17,7 +17,7 @@ describe('Signup Flow', () => {
 
   // Add a test block
   it('should fill and submit the signup form', () => {
-    cy.visit('/signup'); // Add visit command
+    cy.visit('/auth/applicant-signup'); // Add visit command
 
     Object.keys(SIGNUP_FORM_DEFAULT_DATA).forEach((key) => {
       const typedKey = key as keyof typeof SIGNUP_FORM_DEFAULT_DATA;

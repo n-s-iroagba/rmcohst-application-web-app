@@ -15,8 +15,7 @@ export const LoginConfigInput: FieldConfigInput<LoginRequestDto> = {
 export const SignUpConfigInput: FieldConfigInput<SignUpRequestDto> = {
   email: 'text',
   password: 'text',
-  firstName: 'text',
-  lastName: 'text',
+  username: 'text',
   confirmPassword: 'text',
 };
 
@@ -25,13 +24,15 @@ export const ForgotPasswordConfigInput: FieldConfigInput<ForgotPasswordRequestDt
     email: 'text',
   };
 
-export const ResetPasswordConfigInput: FieldConfigInput<ResetPasswordRequestDto> =
+export const ResetPasswordConfigInput: FieldConfigInput<Omit<ResetPasswordRequestDto,'token'>> =
   {
-    token: 'text', // This might be hidden or readonly in the actual form
     password: 'text',
     confirmPassword: 'text',
   };
 
-export const VerifyEmailConfigInput: FieldConfigInput<VerifyEmailRequestDto> = {
-  verificationCode: 'text',
+export const VerifyEmailConfigInput: FieldConfigInput<Omit<VerifyEmailRequestDto,'id'>> = {
+    
+  code: 'text',
+  token: 'text'
+
 };

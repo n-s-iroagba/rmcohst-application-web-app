@@ -52,10 +52,13 @@ export const RESET_PASSWORD_DEFAULT_DATA: ResetPasswordRequestDto = {
   confirmPassword: '',
 };
 
-// export const VERIFY_EMAIL_DEFAULT_DATA: VerifyEmailRequestDto = {
-//   verificationCode: '',
-// };
+export const VERIFY_EMAIL_DEFAULT_DATA: VerifyEmailRequestDto= {
+   id:'',
+  code: '',
+  token: ''
+};
 
-// export const RESEND_VERIFICATION_DEFAULT_DATA: ResendVerificationRequestDto = {
-//   token: '',
-// };
+export const RESEND_VERIFICATION_DEFAULT_DATA: ResendVerificationRequestDto = {
+  token: '',
+  id:''
+};

@@ -166,9 +166,9 @@ const ApplicationPage = () => {
 
       {/* Step Content */}
       <div className="bg-white rounded-lg shadow-lg border border-slate-200">
-        {currentStep === 'biodata' && <CustomForm />}
+        {/* {currentStep === 'biodata' && <CustomForm />}
         {currentStep === 'ssc' && <CustomForm />}
-        {currentStep === 'program-specific' && <CustomForm />}
+        {currentStep === 'program-specific' && <CustomForm />} */}
         {currentStep === 'review' && (
           <div className="p-8">
             <div className="text-center mb-8">

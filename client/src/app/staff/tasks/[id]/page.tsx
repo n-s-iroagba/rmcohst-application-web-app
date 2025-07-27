@@ -1,15 +1,20 @@
 'use client'
 
 import ApplicationDetail from '@/components/ApplicationDetails'
-import useReviewApplication from '@/hooks/useReviewApplication'
+import { API_ROUTES } from '@/config/routes'
+import { useGet } from '@/hooks/useApiQuery'
+import { Application } from '@/types/application'
+
 import { FileText } from 'lucide-react'
+import { useParams } from 'next/navigation'
 
 
 
 const ApplicationDetailPage = () => {
+const id = useParams().id as string
+const {resourceData:application} = useGet<Application>(API_ROUTES.APPLICATION.GET_BY_ID(id))
 
 
-  const { application } = useReviewApplication('1')
   return (
     <div className="flex-1">
       {application ? (

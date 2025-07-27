@@ -14,7 +14,8 @@ import {
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { useResizeWindow } from '@/hooks/useResizeWindow'
-import { AuthProvider, useAuthContext } from '@/contexts/AuthContext'
+import { useAuthContext, AuthProvider } from '@/context/AuthContext'
+
 
 interface AdminOffcanvasProps {
   children: React.ReactNode
@@ -26,7 +27,7 @@ function StaffOffcanvas({ children }: AdminOffcanvasProps) {
   const { logout } = useAuth()
 
   const headOfAdmissionNav =
-    user?.role === 'HEAD_OF_ADMISSIONS'
+    user?.role === 'head-of-admissions'
       ? [
           {
             href: '/staff/head-of-admissions/all-applications',

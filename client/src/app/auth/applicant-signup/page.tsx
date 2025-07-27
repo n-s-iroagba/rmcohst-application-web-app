@@ -2,17 +2,14 @@
 
 import React, { useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { SignUpRole } from '@/types/role.types'
 import { CustomForm } from '@/components/CustomForm'
 import { useRoutes } from '@/hooks/useRoutes'
 import { useFieldConfigContext } from '@/context/FieldConfigContext'
 import { SignUpRequestDto } from '@/types/auth.types'
 
-type SignupFormProps = {
-  signupRole: SignUpRole
-}
 
-const SignupForm: React.FC<SignupFormProps> = ({ signupRole }) => {
+
+const SignupForm: React.FC = () => {
   const {
     signUpRequest,
     signUp,

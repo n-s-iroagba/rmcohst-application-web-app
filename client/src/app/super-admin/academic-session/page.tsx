@@ -1,25 +1,15 @@
 'use client'
 
-import { CrudPageWrapper } from '@/components/CrudPageWrapper'
-import { SessionCard } from '@/components/SessionCard'
-import SessionForm from '@/components/SessionForm'
-import { apiRoutes } from '@/constants/apiRoutes'
-import { useGetList } from '@/hooks/useGet'
+
+import { API_ROUTES } from '@/config/routes'
+import { useGet } from '@/hooks/useApiQuery'
 import { Session } from '@/types/academic_session'
 
 export default function SessionCrudPage() {
-  const { data: sessions, loading, error } = useGetList<Session>(apiRoutes.academicSession.all)
+  const { resourceData: sessions, loading, error } = useGet<Session>(API_ROUTES.SESSION.LIST)
   console.log('useGetlistEROR',error)
 
   return (
-    <CrudPageWrapper
-      title="sessions"
-      entityKey="session"
-      data={sessions}
-      loading={loading}
-      error={error}
-      FormComponent={SessionForm}
-      CardComponent={SessionCard}
-    />
+<></>
   )
 }

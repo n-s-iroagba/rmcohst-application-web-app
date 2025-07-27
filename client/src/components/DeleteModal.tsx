@@ -6,6 +6,7 @@ import { AlertTriangle, X } from 'lucide-react'
 import { useState } from 'react'
 import ErrorAlert from './ErrorAlert'
 import { Session } from 'inspector/promises'
+import { API_ROUTES } from '@/config/routes'
 
 interface DeleteModalProps {
   id: number
@@ -17,7 +18,6 @@ interface DeleteModalProps {
     | 'session'
     | 'programSpecificRequirement'
     | 'programSSCRequirement'
-     |  "grade"
     |   "subject"
   message: string
 }
@@ -26,10 +26,10 @@ const API_ROUTES_MAP = {
   faculty: apiRoutes.faculty.delete,
   department: apiRoutes.department.delete,
   program: apiRoutes.program.delete,
-  session: apiRoutes.academicSession.delete,
+  session: API_ROUTES.SESSION.BY_ID,
   programSpecificRequirement: apiRoutes.programSpecificRequirement.delete,
-  programSSCRequirement: apiRoutes.sscRequirement.delete,
-  grade:apiRoutes.grade.delete,
+  programSSCRequirement: API_ROUTES.SSC_REQUIREMENT.BY_ID,
+ 
   subject:apiRoutes.subject.delete
 }
 
@@ -42,12 +42,12 @@ export function DeleteModal({ id, onClose, type, message }: DeleteModalProps) {
     setError('')
 
     try {
-      const endpoint = API_ROUTES_MAP[type](id)
-      if (!endpoint) throw new Error('Invalid deletion type')
+      // const endpoint = API_ROUTES_MAP[type](id)
+      // if (!endpoint) throw new Error('Invalid deletion type')
 
-      await remove(endpoint)
+      // await remove(endpoint)
 
-      window.location.reload()
+      // window.location.reload()
       onClose()
     } catch (err) {
       console.error('Deletion failed:', err)

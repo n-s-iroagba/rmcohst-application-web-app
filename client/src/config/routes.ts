@@ -79,7 +79,7 @@ export const API_ROUTES = {
     },
   },
   APPLICATION:{
-    GET_BY_ID:(id:number) => `/applications/${id}`,
+    GET_BY_ID:(id:string) => `/applications/${id}`,
   },
   PAYMENT:{
     LIST: '/payments',
@@ -90,6 +90,18 @@ VERIFY:(reference:string) =>`/payments/verify/${reference}`
   PROGRAM:{
     LIST:'/programs',
     GET_BY_ID:(id:string)=>`programs/${id}`
+  },
+  SESSION:{
+    LIST:'/sessions',
+    BY_ID:(id:string)=>`/sessions/${id}`,
+    CREATE:(sessionID:string)=>`/sessions/${sessionID}/create`
+    
+  },
+  SSC_REQUIREMENT:{
+    LIST:'/ssc-requirement',
+    BY_ID:(id:string)=>`/ssc-requirement/${id}`,
+    CREATE:(requirementId:string)=>`/ssc-requirement/${requirementId}/create`
+    
   }
 };
 

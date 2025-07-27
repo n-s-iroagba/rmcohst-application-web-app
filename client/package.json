@@ -18,6 +18,7 @@
     ]
   },
   "dependencies": {
+    "@cypress/webpack-preprocessor": "^6.0.4",
     "@eslint/eslintrc": "latest",
     "@faker-js/faker": "latest",
     "@hookform/resolvers": "^3.9.1",
@@ -80,6 +81,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@cypress/webpack-dev-server": "^4.1.1",
     "@eslint/eslintrc": "^3",
     "@faker-js/faker": "^9.7.0",
     "@tailwindcss/postcss": "^4",
@@ -100,6 +102,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "prettier": "^3.5.3",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "webpack": "^5.100.2"
   }
 }

@@ -6,7 +6,7 @@ import { CryptoUtil } from '../utils/crpto.util'
 import User from '../models/User'
 import { BadRequestError, NotFoundError, UnauthorizedError } from '../utils/errors'
 import { SignUpRequestDto } from '../types/auth.types'
-import { UserWithRoles } from './RbacService'
+import { UserWithRole } from './RbacService'
 import { Role } from '../models'
 
 export class UserService {
@@ -30,14 +30,14 @@ export class UserService {
     }
   }
 
-  async findUserById(id: string|number): Promise<UserWithRoles> {
+  async findUserById(id: string|number): Promise<UserWithRole> {
     try {
       const user = await User.findByPk(id,{
         include:[{
           model:Role,
           as:'role'
         }]
-      })
+      }) as UserWithRole
 
       if (!user) {
         logger.warn('User not found by ID', { userId: id })

@@ -55,7 +55,9 @@ export const useRoutes = () => {
   const navigateToProgramSpecificRequirementDetails =(id:number)=>{
     router.push(INTERNAL_ROUTES.PROGRAM_SPECIFIC_REQUIREMENT.GET_BY_ID(id));
   }
-
+  const navigateToSelectProgram = ()=>{
+    router.push(INTERNAL_ROUTES.APPLICATION.SELECT_PROGRAM);
+  }
   return {
     navigateToHome,
     navigateToLogin,
@@ -70,6 +72,7 @@ export const useRoutes = () => {
     navigateToAdmissionSessionDetails,
      navigateToProgramSSCRequirementDetails,
      navigateToProgramSpecificRequirementDetails,
+     navigateToSelectProgram,
    
    
   };

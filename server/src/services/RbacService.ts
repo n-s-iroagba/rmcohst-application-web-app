@@ -2,8 +2,8 @@
 
 import { Permission, Role, User } from '../models'
 
-export interface UserWithRoles extends User {
-  roles?: RoleWithPermissions[]
+export interface UserWithRole extends User {
+  role: RoleWithPermissions[]
 }
 
 export interface RoleWithPermissions extends Role {
@@ -11,8 +11,8 @@ export interface RoleWithPermissions extends Role {
 }
 
 class RbacService {
-  // Fetch all roles with their permissions
-  async getAllRolesWithPermissions(): Promise<Role[]> {
+  // Fetch all role with their permissions
+  async getAllroleWithPermissions(): Promise<Role[]> {
     return await Role.findAll({
       include: [
         {
@@ -46,8 +46,8 @@ class RbacService {
     })
   }
 
-  // Fetch a user with their roles and permissions (eager loading)
-  async getUserWithRolesAndPermissions(userId: number): Promise<UserWithRoles | null> {
+  // Fetch a user with their role and permissions (eager loading)
+  async getUserWithRoleAndPermissions(userId: number): Promise<UserWithRole | null> {
     return (await User.findByPk(userId, {
       attributes: ['id', 'username', 'email'],
       include: [
@@ -55,7 +55,7 @@ class RbacService {
           model: Role,
           attributes: ['id', 'name'],
           through: { attributes: [] },
-          as: 'roles',
+          as: 'role',
           include: [
             {
               model: Permission,
@@ -66,15 +66,15 @@ class RbacService {
           ],
         },
       ],
-    })) as UserWithRoles | null
+    })) as UserWithRole | null
   }
 
   // Get all permissions for a specific user (flat list)
   async getUserPermissions(userId: number): Promise<Permission[]> {
-    const user = await this.getUserWithRolesAndPermissions(userId)
-    if (!user || !user.roles) return []
+    const user = await this.getUserWithRoleAndPermissions(userId)
+    if (!user || !user.role) return []
 
-    return user.roles.reduce((permissions: Permission[], role) => {
+    return user.role.reduce((permissions: Permission[], role) => {
       if (role.permissions) {
         return [...permissions, ...role.permissions]
       }
@@ -88,8 +88,8 @@ class RbacService {
     return permissions.some(perm => perm.name === permissionName)
   }
 
-  // Get roles that have a specific permission
-  async getRolesWithPermission(permissionName: string): Promise<Role[]> {
+  // Get role that have a specific permission
+  async getroleWithPermission(permissionName: string): Promise<Role[]> {
     return await Role.findAll({
       include: [
         {

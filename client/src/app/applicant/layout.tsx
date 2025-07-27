@@ -13,7 +13,8 @@ import {
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { useResizeWindow } from '@/hooks/useResizeWindow'
-import { AuthProvider } from '@/contexts/AuthContext'
+import { AuthProvider } from '@/context/AuthContext'
+
 
 interface AdminOffcanvasProps {
   children: React.ReactNode

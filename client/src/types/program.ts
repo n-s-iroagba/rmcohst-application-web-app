@@ -1,5 +1,8 @@
-import { ProgramSpecificRequirement, ProgramSpecificRequirementCreationDto } from './program_specific_requirement'
-import { SSCSubjectMinimumGradeCreationDto } from './program_ssc_requirement'
+import { Department } from "./department"
+import { ProgramSpecificRequirement } from "./program_specific_requirement"
+import { ProgramSSCRequirement } from "./program_ssc_requirement"
+
+
 
 
 export type ProgramLevel = 'OND' | 'HND' | 'Certificate'
@@ -12,10 +15,11 @@ export interface Program {
   level: ProgramLevel
   durationType:DurationType
   duration: number
+  department:Department
   applicationFeeInNaira: number
   acceptanceFeeInNaira: number
-  sscRequirement: SSCSubjectMinimumGradeCreationDto
-  programSpecificRequirements: ProgramSpecificRequirement[]
+  sscRequirement: ProgramSSCRequirement
+  programSpecificRequirements: ProgramSpecificRequirement
   description?: string
   sscRequirementId: number
   programSpecificRequirementsId: number
@@ -33,8 +37,6 @@ export type ProgramCreationDto = {
   applicationFeeInNaira: number
   acceptanceFeeInNaira: number
   description?: string
-  isUsingPreexistingSSCRequirements: boolean
-  isUsingPreexistingProgramSpecificRequirements: boolean
   sscRequirementId: number
   programSpecificRequirementsId: number
 }

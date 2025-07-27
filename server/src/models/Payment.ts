@@ -5,29 +5,37 @@ import { Application } from './Application'
 
 interface PaymentAttributes {
   id: number
-  applicationId: number
+  sessionId:number
+  applicantUserId: number
+  programId:number
   amount: number
-
-  isSuccessful: boolean
-
-  failureReason?: string
-
+  applicationId:number
+  status:'PAID'|'FAILED'
+  webhookEvent:string
+  paidAt:Date
+  reference:string
   createdAt: Date
   updatedAt: Date
 }
 
 interface PaymentCreationAttributes
-  extends Optional<PaymentAttributes, 'id' | 'failureReason' | 'createdAt' | 'updatedAt'> {}
+  extends Optional<PaymentAttributes, 'id'  | 'createdAt' | 'updatedAt'|'webhookEvent'|'applicationId'> {}
 
 class Payment
   extends Model<PaymentAttributes, PaymentCreationAttributes>
   implements PaymentAttributes
 {
   public id!: number
-  public applicationId!: number
-  public amount!: number
-  public isSuccessful!: boolean
-  public failureReason?: string
+  applicantUserId!:number
+  sessionId!:number
+  programId!:number
+  applicationId!: number
+  reference!: string
+  paidAt!: Date
+  amount!: number
+  status!:'PAID'|'FAILED'
+  webhookEvent!:string
+
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 
@@ -43,17 +51,7 @@ Payment.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    applicationId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      unique: true, // One-to-one relationship
-      references: {
-        model: 'Applications',
-        key: 'id',
-      },
-      onUpdate: 'CASCADE',
-      onDelete: 'CASCADE',
-    },
+
     amount: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
@@ -62,10 +60,6 @@ Payment.init(
       },
     },
 
-    failureReason: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
 
     createdAt: {
       type: DataTypes.DATE,
@@ -75,10 +69,58 @@ Payment.init(
       type: DataTypes.DATE,
       allowNull: false,
     },
-    isSuccessful: {
-      type: DataTypes.BOOLEAN,
+
+    sessionId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'academic_sessions',
+        key: 'id',
+      },
+    },
+    programId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Programs',
+        key: 'id',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
+    },
+    applicantUserId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
+    },
+    applicationId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Applications',
+        key: 'id',
+      },
+    },
+    reference: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
+    status: {
+      type: DataTypes.ENUM('FAILED','PAID'),
+      allowNull: false,
+    },
+    webhookEvent: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    paidAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+
+    }
   },
   {
     sequelize,

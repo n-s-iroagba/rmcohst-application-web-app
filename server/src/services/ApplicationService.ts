@@ -15,7 +15,7 @@ import { Staff } from '../models/Staff'
 import User from '../models/User'
 import { BadRequestError, ForbiddenError, NotFoundError } from '../utils/errors'
 import logger from '../utils/logger'
-import {  FileData } from './DriveService'
+import { FileData } from './DriveService'
 import { ApplicationCreationAttributes, ApplicationStatus } from '../models/Application'
 import ProgramSession from '../models/ProgramSession'
 
@@ -30,13 +30,15 @@ interface ApplicationFilters {
 
 class ApplicationService {
   public async createInitialApplication(
-    applicantUserId: number,
+    
     data: {
-      sessionId: string
-      programId?: string
+      applicantUserId: number,
+      sessionId: number
+      programId?: number
     }
   ): Promise<Application> {
     try {
+      const {applicantUserId} = data
       const existingApplication = await Application.findOne({
         where: {
           applicantUserId,
@@ -84,9 +86,10 @@ class ApplicationService {
   }
 
   // Get application by ID with all related data
-  public async getApplicationDetailsById(id: string): Promise<Application> {
+  public async getApplicationDetailsById(id:string,shouldThrowErrorIfNotFound:boolean=false): Promise<Application|null> {
+   
     try {
-      const application = await Application.findByPk(id, {
+      const application = await Application.findByPk(id,{
         include: [
           {
             model: User,
@@ -97,7 +100,11 @@ class ApplicationService {
             model: Program,
             as: 'program',
             include: [
-              { model: Department, as: 'department', include: [{ model: Faculty, as: 'faculty' }] },
+              {
+                model: Department,
+                as: 'department',
+                include: [{ model: Faculty, as: 'faculty' }],
+              },
             ],
           },
           { model: Biodata, as: 'biodata' },
@@ -105,28 +112,40 @@ class ApplicationService {
           {
             model: ApplicantProgramSpecificQualification,
             as: 'programSpecificQualifications',
-            include: [{ model: ProgramSpecificRequirement, as: 'qualificationDefinition' }],
+            include: [
+              {
+                model: ProgramSpecificRequirement,
+                as: 'qualificationDefinition',
+              },
+            ],
           },
           {
             model: Staff,
-            as: 'assignedOfficer', // Ensure alias matches model association
+            as: 'assignedOfficer',
             include: [
               {
                 model: Staff,
                 as: 'staff',
-                include: [{ model: User, as: 'user', attributes: ['firstName', 'lastName'] }],
+                include: [
+                  {
+                    model: User,
+                    as: 'user',
+                    attributes: ['firstName', 'lastName'],
+                  },
+                ],
               },
             ],
           },
         ],
-      })
+      });
 
-      if (!application) {
+
+      if (!application && shouldThrowErrorIfNotFound) {
         throw new BadRequestError('Application not found')
       }
       return application
     } catch (error) {
-      logger.error('Error fetching application details', { error, id })
+      logger.error('Error fetching application details', { error })
       throw error
     }
   }

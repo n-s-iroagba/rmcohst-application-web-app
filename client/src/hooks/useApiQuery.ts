@@ -177,7 +177,7 @@ export const usePost = <T, U>(
     }
   };
 
-  const handlePost = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handlePost = async (e: React.FormEvent<HTMLFormElement>|React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
       await mutation.mutateAsync(postResource);
@@ -213,9 +213,18 @@ export const usePost = <T, U>(
   };
 };
 
-export const useGet = <T>(resourceUrl: string) => {
+export const useGet = <T>(resourceUrl: string | null) => {
   const [apiError, setApiError] = useState('');
-  
+
+  if (!resourceUrl) {
+    return {
+      resourceData: undefined,
+      loading: false,
+      error: '',
+      refetch: async () => ({ data: undefined } as any), // noop
+    };
+  }
+
   const {
     data: resourceData,
     isLoading,
@@ -230,15 +239,18 @@ export const useGet = <T>(resourceUrl: string) => {
         return response.data;
       } catch (error) {
         handleError(error, setApiError);
-        throw error; // Re-throw to let React Query handle it
+        throw error;
       }
     },
     retry: (failureCount, error) => {
-      // Don't retry on network errors or 4xx errors
       if (error && typeof error === 'object' && 'code' in error) {
         const axiosError = error as any;
-        if (axiosError.code === 'ERR_NETWORK' || 
-            (axiosError.response && axiosError.response.status >= 400 && axiosError.response.status < 500)) {
+        if (
+          axiosError.code === 'ERR_NETWORK' ||
+          (axiosError.response &&
+            axiosError.response.status >= 400 &&
+            axiosError.response.status < 500)
+        ) {
           return false;
         }
       }
@@ -247,7 +259,6 @@ export const useGet = <T>(resourceUrl: string) => {
     staleTime: 0,
   });
 
-  // Handle errors using useEffect or directly in the component
   useEffect(() => {
     if (isError && error) {
       handleError(error, setApiError);
@@ -261,6 +272,7 @@ export const useGet = <T>(resourceUrl: string) => {
     refetch,
   };
 };
+
 
 export const usePut = <T, U>(
   putUrl: string,

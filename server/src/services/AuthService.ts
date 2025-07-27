@@ -14,8 +14,8 @@ import {
 } from "../types/auth.types";
 import logger from "../utils/logger";
 import { BadRequestError, NotFoundError } from "../utils/errors";
-import User from "../models/User";
-import { UserWithRoles } from "./RbacService";
+import User, { AuthUser } from "../models/User";
+
 
 export class AuthService {
   private tokenService: TokenService;
@@ -232,14 +232,14 @@ export class AuthService {
    * @param userId - Authenticated user's ID.
    * @returns User object.
    */
-  async getMe(userId: number):Promise<UserWithRoles> {
+  async getMe(userId: number):Promise<AuthUser> {
     try {
       logger.info("Get current user requested", { userId });
 
       const user = await this.userService.findUserById(userId);
       logger.info("Current user retrieved successfully", { userId });
 
-      return user;
+      return user as unknown as AuthUser;
     } catch (error) {
       return this.handleAuthError("Get current user", { userId }, error);
     }

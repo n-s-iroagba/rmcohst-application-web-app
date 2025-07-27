@@ -1,13 +1,15 @@
 import { Model, DataTypes, type Optional } from 'sequelize'
 import bcrypt from 'bcryptjs'
 import { Staff } from './Staff'
-import { RoleWithPermissions, UserWithRoles } from '../services/RbacService'
+import { RoleWithPermissions, UserWithRole } from '../services/RbacService'
 import sequelize from '../config/database'
 
 
-export interface AuthUser extends User{
- 
-  role:RoleWithPermissions
+export interface AuthUser{
+ id: number
+ username:string
+role:RoleWithPermissions
+email:string
 }
 
 

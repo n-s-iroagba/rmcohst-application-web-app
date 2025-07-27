@@ -12,6 +12,7 @@ export const INTERNAL_ROUTES = {
     REFRESH_ACCESS_TOKEN: '/auth/refresh-token',
   },
   DASHBOARD: (role: string) => `/${role}/dashboard`,
+
   DEPARTMENT:{
     EDIT: (id: number) => `/super-admin/departments/${id}/edit`,
     LIST: '/super-admin/departments',
@@ -42,6 +43,11 @@ export const INTERNAL_ROUTES = {
     CREATE: '/super-admin/program-specific-requirement/create',
     GET_BY_ID: (id: number) => `/super-admin/program-specific-requirement/${id}`
   },
+  APPLICATION:{
+    SELECT_PROGRAM:'/applicant/application/programs'
+  },
+
+  
   ACCOUNT: {
     PROFILE: '/account/profile',
   },
@@ -72,43 +78,19 @@ export const API_ROUTES = {
       LOGS: (id: string) => `/admin/users/${id}/logs`,
     },
   },
-  FEEDS: {
-    BULK: `/feeds`,
-
-    ITEMS: `/feeds/items`,
+  APPLICATION:{
+    GET_BY_ID:(id:number) => `/applications/${id}`,
   },
-  HEALTH: {
-    DETAIL: (id: string) => `/admin/feeds/${id}/health`,
-    DAILY_COUNT: (id: string) => `/admin/feeds/${id}/daily-count`,
-    BROKEN_IMAGES: (id: string) => `/admin/feeds/${id}/broken-images`,
-  },
-  ADS: {
-    SUBSCRIPTION: `/admin/subscription-plans`,
-    FALLBACK: `/admin/fallback-ads`,
-    CTR: (id: string) => `/admin/ads/${id}/ctr`,
-    SUSPICIOUS: `/admin/alerts/suspicious-clicks`,
-    INVENTORY: `/admin/alerts/fallback-inventory`,
-  },
-
-  AD_PLACER: {
-    CAMPAIGNS: `/ad-placer/campaigns`,
-    CAMPAIGN: (id: string) => `/ad-placer/campaigns/${id}`,
-    BUDGET: (id: string) => `/ad-placer/campaigns/${id}/budget`,
-    TARGETING: (id: string) => `/ad-placer/campaigns/${id}/targeting`,
-    ANALYTICS: (id: string) => `/ad-placer/campaigns/${id}/analytics`,
-    CONVERSIONS: (id: string) => `/ad-placer/campaigns/${id}/conversions`,
-  },
-  TRACKING: {
-    VIEW: (id: string) => `/content/${id}/views`,
-    TIME_SPENT: (id: string) => `/content/${id}/time-spent`,
-    AD_IMPRESSION: (id: string) => `/ads/${id}/impressions`,
-    AD_CLICK: (id: string) => `/ads/${id}/clicks`,
-  },
-  ARTICLE: {
-    VIEW: (id: string) => `/article/${id}/view`,
-    CREATE: `/article`,
-    MUTATE: (id: string) => `/article/${id}`,
-  },
+  PAYMENT:{
+    LIST: '/payments',
+    GET_BY_APPLICANT_USER_ID:(applicantUserId:string|number)=> `/payments/${applicantUserId}`,
+    INITIALIZE_GATEWAY:'/payments/initialize',
+VERIFY:(reference:string) =>`/payments/verify/${reference}`
+ },
+  PROGRAM:{
+    LIST:'/programs',
+    GET_BY_ID:(id:string)=>`programs/${id}`
+  }
 };
 
 // Utility types for route parameters

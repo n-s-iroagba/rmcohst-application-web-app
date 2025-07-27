@@ -4,6 +4,7 @@ export interface User {
   id: string;
   firstName: string;
   role: UserRole;
+  email:string
 }
 
 export interface LoginRequestDto {

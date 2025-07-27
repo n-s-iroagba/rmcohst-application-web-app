@@ -23,6 +23,7 @@ export interface ApplicationAttributes {
   adminComments?: string
   hoaComments?: string
   submittedAt?: Date
+  paymentId:number
   createdAt?: Date
   updatedAt?: Date
 }
@@ -43,6 +44,7 @@ export class Application
   public sessionId!: number
   public assignedOfficerId?: number
   public status!: ApplicationStatus
+  public paymentId!: number
   public adminComments?: string
   public hoaComments?: string
   public submittedAt?: Date
@@ -95,6 +97,15 @@ Application.init(
       type: DataTypes.DATE,
       allowNull: true,
     },
+    paymentId: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      references:{
+        model: 'Payment',
+        key: 'id'
+        
+      }
+    }
   },
   {
     sequelize,

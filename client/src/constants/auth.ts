@@ -10,11 +10,11 @@ import {
   ResendVerificationRequestDto,
 } from '@/types/auth.types';
 
-export const DEFAULT_USER: User = {
-  id: 'user-id-123',
-  firstName: 'John',
-  role: 'applicant',
-};
+// export const DEFAULT_USER: User = {
+//   id: 'user-id-123',
+//   user: 'John',
+//   role: 'applicant',
+// };
 
 export const LOGIN_FORM_DEFAULT_DATA: LoginRequestDto = {
   email: '',
@@ -52,10 +52,10 @@ export const RESET_PASSWORD_DEFAULT_DATA: ResetPasswordRequestDto = {
   confirmPassword: '',
 };
 
-export const VERIFY_EMAIL_DEFAULT_DATA: VerifyEmailRequestDto = {
-  verificationCode: '',
-};
+// export const VERIFY_EMAIL_DEFAULT_DATA: VerifyEmailRequestDto = {
+//   verificationCode: '',
+// };
 
-export const RESEND_VERIFICATION_DEFAULT_DATA: ResendVerificationRequestDto = {
-  token: '',
-};
+// export const RESEND_VERIFICATION_DEFAULT_DATA: ResendVerificationRequestDto = {
+//   token: '',
+// };

@@ -38,7 +38,7 @@ const ApplicationPage = () => {
     resourceData: application,
     loading,
     error,
-  } = useGet<Application>(applicationId ? API_ROUTES.APPLICATION.GET_BY_ID(applicationId) : null)
+  } = useGet<Application>(applicationId ? API_ROUTES.APPLICATION.GET_BY_ID(String(applicationId)) : null)
 
   const handleStepChange = (step: ApplicationStep) => setCurrentStep(step)
 

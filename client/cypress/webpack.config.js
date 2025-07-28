@@ -1,18 +1,26 @@
-// cypress/webpack.config.ts
-export default {
+const path = require('path');
+
+module.exports = {
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
     alias: {
-      // Remove fdir if not needed, or fix the path
-    }
+      '@': path.resolve(__dirname, '../src'), // Adjust path as needed
+    },
   },
   module: {
     rules: [
       {
-        test: /\.ts$/,
+        test: /\.tsx?$/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+            },
+          },
+        ],
         exclude: /node_modules/,
-        use: 'ts-loader'
-      }
-    ]
-  }
+      },
+    ],
+  },
 };

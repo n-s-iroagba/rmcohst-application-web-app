@@ -1,14 +1,17 @@
-// cypress.config.ts
 import { defineConfig } from "cypress";
-import webpackPreprocessor from '@cypress/webpack-preprocessor';
-import webpackConfig from "./cypress/webpack.config";
 
 export default defineConfig({
   projectId: "zbtqra",
- e2e: {
+  e2e: {
     setupNodeEvents(on, config) {
-      on('file:preprocessor', webpackPreprocessor({ webpackOptions: webpackConfig }));
+      // No webpack preprocessing needed
       return config;
     },
-  }
+    baseUrl: 'http://localhost:3000',
+    specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
+    supportFile: 'cypress/support/e2e.ts',
+    videosFolder: 'cypress/videos',
+    screenshotsFolder: 'cypress/screenshots',
+    fixturesFolder: 'cypress/fixtures',
+  },
 });

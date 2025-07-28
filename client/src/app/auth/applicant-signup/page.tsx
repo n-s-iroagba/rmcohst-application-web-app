@@ -6,6 +6,8 @@ import { CustomForm } from '@/components/CustomForm'
 import { useRoutes } from '@/hooks/useRoutes'
 import { useFieldConfigContext } from '@/context/FieldConfigContext'
 import { SignUpRequestDto } from '@/types/auth.types'
+import { SIGNUP_FORM_DEFAULT_DATA } from '@/constants/auth'
+import { testIdContext } from '@/test/utils/testIdContext'
 
 
 
@@ -33,7 +35,8 @@ const SignupForm: React.FC = () => {
     setChangeHandlers(signupChangeHandlers)
   }, [setFieldConfigInput])
 
-
+const TEST_ID_BASE = 'signup-form';
+testIdContext.setContext(SIGNUP_FORM_DEFAULT_DATA, TEST_ID_BASE);
 
 
   return (

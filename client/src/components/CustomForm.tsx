@@ -2,6 +2,7 @@ import React from 'react';
 import { FieldRenderer } from './FieldRenderer';
 import { FieldsConfig } from '@/types/fields_config';
 import ErrorAlert from './ErrorAlert';
+import { testIdContext } from '@/test/utils/testIdContext';
 
 // Generic Custom Form
 export function CustomForm<T extends Record<string, any>>({
@@ -29,6 +30,7 @@ export function CustomForm<T extends Record<string, any>>({
   submiting: boolean;
   error: string;
 }) {
+  const { SUBMIT_BUTTON_TEST_ID } = testIdContext.getContext();
   return (
     <form
       onSubmit={submitHandler}
@@ -58,6 +60,7 @@ export function CustomForm<T extends Record<string, any>>({
         <button
           type="submit"
           className="bg-slate-700 hover:bg-slate-800 text-white font-semibold px-6 py-2 rounded transition"
+          data-testid={SUBMIT_BUTTON_TEST_ID}
         >
           {submiting ? 'Submitting...' : submitButtonLabel}
         </button>

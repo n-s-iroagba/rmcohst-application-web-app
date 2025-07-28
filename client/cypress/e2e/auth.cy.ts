@@ -1,5 +1,6 @@
-import { generateComponentFormTestIds } from '../../src/utils/testIdGenerator';
-import { SIGNUP_FORM_DEFAULT_DATA } from '../../src/constants/auth';
+import { SIGNUP_FORM_DEFAULT_DATA } from "../../src/constants/auth";
+import { generateComponentFormTestIds } from "../../src/utils/testIdGenerator";
+
 
 describe('Signup Flow', () => {
   const TEST_ID_BASE = 'signup-form';

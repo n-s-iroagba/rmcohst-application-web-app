@@ -36,14 +36,26 @@
 //   }
 // }
 
+// cypress/support/commands.ts
 
-import 'cypress'; // ✅ ensures type context is correctly loaded
+// Add custom command type definitions
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      navigateTo(path: string): Chainable<void>;
+      getByTestId(testId: string): Chainable<JQuery<HTMLElement>>;
+    }
+  }
+}
 
-export {}; // ✅ ensures file is treated as a module (not a script)
-
+// Implement the custom commands
 Cypress.Commands.add('getByTestId', (testId: string) => {
   return cy.get(`[data-testid="${testId}"]`);
 });
+
 Cypress.Commands.add('navigateTo', (path: string) => {
   cy.visit(path);
 });
+
+// Export to make this a module
+export {};

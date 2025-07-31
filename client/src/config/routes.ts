@@ -83,19 +83,23 @@ export const API_ROUTES = {
   },
   PAYMENT:{
     LIST: '/payments',
+    GET_CURRENT_SESSION_APPLICATION_PAYMENT_STATUS:(applicantUserId:number|string)=>`/applications/payment-status/${applicantUserId}`,
     GET_BY_APPLICANT_USER_ID:(applicantUserId:string|number)=> `/payments/${applicantUserId}`,
     INITIALIZE_GATEWAY:'/payments/initialize',
 VERIFY:(reference:string) =>`/payments/verify/${reference}`
  },
   PROGRAM:{
     LIST:'/programs',
-    GET_BY_ID:(id:string)=>`programs/${id}`
+    GET_BY_ID:(id:string)=>`/programs/${id}`
   },
   SESSION:{
     LIST:'/sessions',
     BY_ID:(id:string)=>`/sessions/${id}`,
     CREATE:(sessionID:string)=>`/sessions/${sessionID}/create`
     
+  },
+  BIODATA:{
+    UPDATE:(id:number)=>`/biodata/${id}`
   },
   SSC_REQUIREMENT:{
     LIST:'/ssc-requirement',

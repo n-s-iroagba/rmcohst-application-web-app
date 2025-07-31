@@ -1,13 +1,16 @@
 import type { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import appConfig from '../config' // Default import
-import User, { UserRole } from '../models/User' // Assuming User model and UserRole enum
-import { logger } from '../utils/logger'
+import User from '../models/User' // Assuming User model and UserRole enum
+
 // Import your custom error classes
 import { UnauthorizedError, ForbiddenError, NotFoundError, BadRequestError } from '../utils/errors' // Adjust path as needed
+import logger from '../utils/logger'
+import { UserRole } from '../models'
 
+// Fix: Make user optional to match Express Request interface
 export interface AuthenticatedRequest extends Request {
-  user: User // Or a more specific user payload type from JWT
+  user?: User // Changed from required to optional
 }
 
 // JWT Payload interfaces
@@ -196,22 +199,32 @@ export const verifyPasswordResetTokenMiddleware = async (
   }
 }
 
-// Role-based authorization middleware
-export const requireRole = (roles: UserRole[]) => {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      if (!req.user || !roles.includes(req.user.role)) {
-        logger.warn(
-          `Forbidden: User ${req.user?.email} (Role: ${req.user?.role}) tried to access resource requiring roles: ${roles.join(', ')}`
-        )
-        throw new ForbiddenError('You do not have the required role')
-      }
-      next()
-    } catch (error) {
-      next(error)
-    }
+// Type guard helper for authenticated routes
+export const assertUser = (req: AuthenticatedRequest): asserts req is AuthenticatedRequest & { user: User } => {
+  if (!req.user) {
+    throw new UnauthorizedError('User not authenticated')
   }
 }
+
+// // Role-based authorization middleware (uncommented and fixed)
+// export const requireRole = (roles: UserRole[]) => {
+//   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+//     try {
+//       // Use type guard to ensure user exists
+//       assertUser(req)
+      
+//       if (!roles.includes(req.user.role)) {
+//         logger.warn(
+//           `Forbidden: User ${req.user.email} (Role: ${req.user.role}) tried to access resource requiring roles: ${roles.join(', ')}`
+//         )
+//         throw new ForbiddenError('You do not have the required role')
+//       }
+//       next()
+//     } catch (error) {
+//       next(error)
+//     }
+//   }
+// }
 
 // Extend Request interface to include additional properties
 declare global {

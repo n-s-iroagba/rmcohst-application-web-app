@@ -10,7 +10,7 @@ interface PaymentAttributes {
   programId:number
   amount: number
   applicationId:number
-  status:'PAID'|'FAILED'
+  status:'PAID'|'FAILED'|'PENDING'
   webhookEvent:string
   paidAt:Date
   reference:string
@@ -33,7 +33,7 @@ class Payment
   reference!: string
   paidAt!: Date
   amount!: number
-  status!:'PAID'|'FAILED'
+  status!:'PAID'|'FAILED'|'PENDING'
   webhookEvent!:string
 
   public readonly createdAt!: Date
@@ -109,7 +109,7 @@ Payment.init(
       allowNull: false,
     },
     status: {
-      type: DataTypes.ENUM('FAILED','PAID'),
+      type: DataTypes.ENUM('FAILED','PAID','PENDING'),
       allowNull: false,
     },
     webhookEvent: {

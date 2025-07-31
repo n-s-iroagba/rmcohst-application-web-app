@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useParams, useSearchParams } from 'next/navigation'
 import api, { setAccessToken } from '@/lib/apiUtils'
 import { API_ROUTES } from '@/config/routes'
-import { ResendVerificationRequestDto, VerifyEmailRequestDto } from '@/types/auth.types'
+import { LoginResponseDto, ResendVerificationRequestDto, VerifyEmailRequestDto } from '@/types/auth.types'
 import { useAuthContext } from '@/context/AuthContext'
 import { useRoutes } from './useRoutes'
 
@@ -61,8 +61,8 @@ export const useVerifyEmail = () => {
   // Verify email mutation
   const verifyMutation = useMutation({
     mutationFn: verifyEmailCode,
-    onSuccess: (loginResponse) => {
-
+    onSuccess: (loginResponse:LoginResponseDto) => {
+              console.log('login response is',loginResponse)
               setAccessToken(loginResponse.accessToken);
               setUser(loginResponse.user);
               navigateToDashboard(loginResponse.user.role);

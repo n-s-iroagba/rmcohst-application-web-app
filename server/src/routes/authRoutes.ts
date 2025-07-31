@@ -11,6 +11,7 @@ import {
 } from '../validation/auth.validation'
 import { validateBody } from '../middleware/validation'
 import { AuthController } from '../controllers/AuthController'
+import { authMiddleware } from '../middleware/auth'
 
 const router = express.Router()
 const authController = new AuthController()
@@ -30,5 +31,6 @@ router.post(
   validateBody(resendCodeSchema),
   authController.resendCode
 )
+router.get('/me', authMiddleware,authController.getMe)
 
 export default router

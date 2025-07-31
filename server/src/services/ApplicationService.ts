@@ -18,6 +18,7 @@ import logger from '../utils/logger'
 import { FileData } from './DriveService'
 import { ApplicationCreationAttributes, ApplicationStatus } from '../models/Application'
 import ProgramSession from '../models/ProgramSession'
+import Payment from '../models/Payment'
 
 interface ApplicationFilters {
   status?: string
@@ -27,14 +28,38 @@ interface ApplicationFilters {
   page?: number
   limit?: number
 }
-
+export type ApplicationPaymentStatus = {
+  status:'PENDING'|'PAID'|'FAILED'|'NO-PAYMENT'
+  payment:Payment[]
+}
 class ApplicationService {
+
+  public async getApplcationPaymentStatus(userId:string):Promise<ApplicationPaymentStatus>{
+    const currentSession = await AdmissionSession.findOne({where:{
+      isCurrent:true
+    }})
+  if(!currentSession) throw new NotFoundError('Session not found ')
+  const payments = await Payment.findAll({where:{
+    applicantUserId:userId,
+    sessionId:currentSession.id
+  },
+  order: [['paidAt', 'DESC']],
+  })
+const completePayment = payments.filter((p)=>p.status ==='PAID')
+if(completePayment) return {status:'PAID',payment:completePayment}
+const pendingPayment = payments.filter((p)=>p.status ==='PENDING')
+if(pendingPayment) return {status:'PENDING',payment:pendingPayment}
+const failedPayment = payments.filter((p)=>p.status ==='FAILED')
+if(failedPayment) return {status:'FAILED',payment:failedPayment}
+return {status:'NO-PAYMENT',payment:[]}
+
+  }
   public async createInitialApplication(
     
     data: {
       applicantUserId: number,
       sessionId: number
-      programId?: number
+      programId?: number  
     }
   ): Promise<Application> {
     try {
@@ -50,13 +75,8 @@ class ApplicationService {
         throw new BadRequestError(
           'Application already exists for this user in this academic session.'
         )
-
-      const program = await ProgramSession.findOne({
-        where: {
-          programId: data.programId,
-          sessionId: data.sessionId,
-        },
-      })
+  
+      const program = await Program.findByPk(data.programId)
 
       if (!program) throw new BadRequestError('The Program you wish to apply for in not available')
 
@@ -78,6 +98,7 @@ class ApplicationService {
         })
 
       logger.info('Application created successfully', { applicationId: application.id })
+      console.log('created application is,', application)
       return application
     } catch (error) {
       logger.error('Error creating application', { error })
@@ -91,11 +112,7 @@ class ApplicationService {
     try {
       const application = await Application.findByPk(id,{
         include: [
-          {
-            model: User,
-            as: 'applicant',
-            attributes: ['id', 'email', 'firstName', 'lastName', 'role'],
-          },
+
           {
             model: Program,
             as: 'program',
@@ -111,31 +128,26 @@ class ApplicationService {
           { model: AdmissionSession, as: 'academicSession' },
           {
             model: ApplicantProgramSpecificQualification,
-            as: 'programSpecificQualifications',
-            include: [
-              {
-                model: ProgramSpecificRequirement,
-                as: 'qualificationDefinition',
-              },
-            ],
+                    as: 'programSpecificQualifications',
+    
           },
-          {
-            model: Staff,
-            as: 'assignedOfficer',
-            include: [
-              {
-                model: Staff,
-                as: 'staff',
-                include: [
-                  {
-                    model: User,
-                    as: 'user',
-                    attributes: ['firstName', 'lastName'],
-                  },
-                ],
-              },
-            ],
-          },
+          // {
+          //   model: Staff,
+          //   as: 'assignedOfficer',
+          //   include: [
+          //     {
+          //       model: Staff,
+          //       as: 'staff',
+          //       include: [
+          //         {
+          //           model: User,
+          //           as: 'user',
+          //           attributes: ['firstName', 'lastName'],
+          //         },
+          //       ],
+          //     },
+          //   ],
+          // },
         ],
       });
 
@@ -143,6 +155,7 @@ class ApplicationService {
       if (!application && shouldThrowErrorIfNotFound) {
         throw new BadRequestError('Application not found')
       }
+      console.log(application)
       return application
     } catch (error) {
       logger.error('Error fetching application details', { error })

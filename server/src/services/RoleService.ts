@@ -26,23 +26,6 @@ class RoleService {
     }
   }
 
-  /**
-   * Assign a role to a user by role ID.
-   * @param userId - The ID of the user.
-   * @param roleId - The ID of the role.
-   * @returns The created UserRole instance.
-   * @throws Error if assignment fails.
-   */
-  async assignRoleToUser(userId: number, roleId: number): Promise<UserRole> {
-    try {
-      const userRole = await UserRole.create({ userId, roleId })
-      logger.info(`Assigned roleId ${roleId} to userId ${userId}`)
-      return userRole
-    } catch (error) {
-      logger.error('Failed to assign role to user', { userId, roleId, error })
-      throw new Error(`Failed to assign role to user: ${error instanceof Error ? error.message : error}`)
-    }
-  }
 
   /**
    * Get a role by its name.

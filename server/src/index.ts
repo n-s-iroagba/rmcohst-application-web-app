@@ -8,6 +8,8 @@ import appConfig from './config'
 import authRoutes from './routes/authRoutes'
 import sequelize from './config/database'
 import applicationRoutes from './routes/applicationRoutes'
+import programRoutes from './routes/programRoutes'
+import paymentRoutes from './routes/paymentRoutes'
 
 
 const app = express()
@@ -49,6 +51,8 @@ app.get('/health', (req, res) => {
 })
 app.use('/auth',authRoutes)
 app.use('/applications', applicationRoutes)
+app.use('/programs',programRoutes)
+app.use('/payments',paymentRoutes)
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' })
@@ -66,12 +70,12 @@ const startServer = async () => {
     console.log('✅ DB connected');
 
     console.log('📦 Syncing DB...');
-    await sequelize.sync(
-      { 
-      force: true,
-       logging: console.log 
-      }
-    )
+    // await sequelize.sync(
+    //   { 
+    //     force:true,
+    //    logging: console.log 
+    //   }
+    // )
     console.log('✅ DB synced');
 
     const server = app.listen(PORT, () => {
@@ -92,7 +96,7 @@ const startServer = async () => {
       })
     })
 
-    process.on('SIGINT', () => {
+    process.on('SIGINT', () => { 
       console.warn('🛑 SIGINT received, shutting down gracefully')
       server.close(() => {
         console.log('✅ Server closed')

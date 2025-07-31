@@ -50,6 +50,7 @@ const containsFiles = (data: any): boolean => {
 api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
+    console.log('access token is',token)
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

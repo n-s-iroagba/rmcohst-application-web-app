@@ -19,12 +19,12 @@ class UserRole extends Model<InferAttributes<UserRole>, InferCreationAttributes<
 UserRole.init(
   {
     id: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
     userId: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       allowNull: false,
       // Use string reference instead of direct model import
       references: {
@@ -33,7 +33,7 @@ UserRole.init(
       },
     },
     roleId: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       allowNull: false,
       // Use string reference instead of direct model import
       references: {

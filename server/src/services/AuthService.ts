@@ -15,6 +15,7 @@ import {
 import logger from "../utils/logger";
 import { BadRequestError, NotFoundError } from "../utils/errors";
 import User, { AuthUser } from "../models/User";
+import { Role } from "../models";
 
 
 export class AuthService {
@@ -137,13 +138,19 @@ export class AuthService {
       }
 
       const user = await this.userService.findUserById(userId);
+      const role = await Role.findByPk(user.roleId)
+      if(!role) throw new NotFoundError('Role not found')
+    
+      
       this.verificationService.validateVerificationCode(user, data.code);
       await this.userService.markUserAsVerified(user);
 
       const { accessToken, refreshToken } = this.generateTokenPair(user.id);
       logger.info("Email verification successful", { userId: user.id });
-
-      return this.saveRefreshTokenAndReturn(user, accessToken, refreshToken);
+     const returnUser = {...user, role:role.name}
+     user.refreshToken = refreshToken
+     await user.save()
+      return {user:returnUser, accessToken, refreshToken};
     } catch (error) {
       return this.handleAuthError("Email verification", {}, error);
     }
@@ -286,8 +293,7 @@ export class AuthService {
    * @returns Full login/auth return object.
    */
   private async saveRefreshTokenAndReturn(user: any, accessToken: string, refreshToken: string): Promise<LoginAuthServiceReturn> {
-    user.refreshToken = refreshToken;
-    await user.save();
+    
     return { accessToken, user, refreshToken };
   }
 

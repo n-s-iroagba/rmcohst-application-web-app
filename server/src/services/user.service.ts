@@ -10,10 +10,16 @@ import { UserWithRole } from './RbacService'
 import { Role } from '../models'
 
 export class UserService {
-  async findUserByEmail(email: string, shouldThrowError:boolean=false): Promise<User|null> {
+  async findUserByEmail(email: string, shouldThrowError:boolean=false): Promise<UserWithRole|null> {
     try {
-      const user = await User.findOne({ where: { email } })
-
+      const user = await User.findOne({ where: { email },
+        include:[{
+          model:Role,
+          as:'role'
+        }]
+      },
+      )as UserWithRole
+      
       if (!user && shouldThrowError) {
         logger.warn('User not found by email', { email })
         throw new BadRequestError('INVALID_CREDENTIALS')
@@ -30,14 +36,9 @@ export class UserService {
     }
   }
 
-  async findUserById(id: string|number): Promise<UserWithRole> {
+  async findUserById(id: string|number): Promise<User> {
     try {
-      const user = await User.findByPk(id,{
-        include:[{
-          model:Role,
-          as:'role'
-        }]
-      }) as UserWithRole
+      const user = await User.findByPk(id)
 
       if (!user) {
         logger.warn('User not found by ID', { userId: id })

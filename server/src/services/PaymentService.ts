@@ -8,7 +8,7 @@ import logger from '../utils/logger'; // Ensure your logger path is correct
 import { AdmissionSession } from '../models';
 import { NotFoundError } from '../utils/errors';
 
-const PAYSTACK_KEY = process.env.PAYSTACK_SECRET_KEY || '';
+const PAYSTACK_KEY = process.env.PAYSTACK_SECRET_KEY || 'sk_test_afebde26ed66d974615c5b212af460dbdde8507d';
 const applicationService = new ApplicationService();
 
 export class PaymentService {
@@ -21,6 +21,11 @@ export class PaymentService {
           email,
           amount: amount * 100,
           callback_url: '',
+          metadata:{
+            sessionId:1,
+            applicantUserId:1,
+            programId:2
+          }
         },
         {
           headers: {
@@ -51,9 +56,19 @@ export class PaymentService {
           },
         }
       );
-
+     console.log(response.data)
       const { status, data: responseData } = response.data;
-
+      
+      const metadata = responseData.metadata;
+        await this.handleSuccessfulPayment({
+          applicantUserId: metadata.applicantUserId,
+          sessionId: metadata.sessionId,
+          programId: metadata.programId,
+          amount: responseData.amount,
+          paidAt: responseData.paid_at,
+          reference: responseData.reference,
+          webhookEvent: 'verify.success',
+        });
       if (status && responseData.status === 'success') {
         const metadata = responseData.metadata;
         await this.handleSuccessfulPayment({

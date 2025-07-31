@@ -11,7 +11,7 @@ describe('Signup Flow', () => {
 
   const testUser = {
     username:'UdorAkpuEnyi',
-    email: 'john.doe@example.com',
+    email: 'nnamdisolomon1@.com', 
     password: 'SecurePassword123!',
     confirmPassword: 'SecurePassword123!',
   };
@@ -28,6 +28,6 @@ describe('Signup Flow', () => {
     cy.getByTestId(SUBMIT_BUTTON_TEST_ID).click();
 
     // Add assertions to verify successful submission
-    cy.url().should('include', '/verify-email'); // Example assertion
+    cy.url().should('include', '/auth/verify-email'); // Example assertion
   });
 });

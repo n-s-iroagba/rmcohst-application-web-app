@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { Providers } from '@/components/Providers'
 import { FieldConfigProvider } from '@/context/FieldConfigContext'
-import { ProgramProvider } from '@/context/ProgramContext'
+
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -18,11 +18,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Providers>
-            <ProgramProvider>
           <FieldConfigProvider>
           {children}
           </FieldConfigProvider>
-          </ProgramProvider>
         </Providers>
       </body>
     </html>

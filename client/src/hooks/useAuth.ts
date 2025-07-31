@@ -29,19 +29,21 @@ import {
 
 import { usePost } from './useApiQuery';
 import { useRoutes } from './useRoutes';
+import { useRouter } from 'next/navigation';
 
 
 export const useAuth = () => {
   const { setUser } = useAuthContext();
   const { navigateToDashboard, navigateToLogin, navigateToVerifyEmail } =
     useRoutes();
+    const router = useRouter()
 
   const [authError, setAuthError] = useState<string>('');
 
   // SIGNUP
   const {
     postResource: signUpRequest,
-    postResponse: signUpResponse,
+  
     handlePost: handleSignup,
     posting: signUpLoading,
     changeHandlers: signupChangeHandlers
@@ -53,7 +55,7 @@ export const useAuth = () => {
 
    const {
     postResource: superAdminSignUpRequest,
-    postResponse: superAdminSignUpResponse,
+
     handlePost: handlesuperAdminSignUp,
     posting: superAdminSignUpLoading,
   } = usePost<SignUpRequestDto, SignUpResponseDto>(
@@ -64,7 +66,7 @@ export const useAuth = () => {
   // LOGIN
   const {
     postResource: loginRequest,
-    postResponse: loginResponse,
+ 
     handlePost: handleLogin,
     posting: loginLoading,
   } = usePost<LoginRequestDto, LoginResponseDto | SignUpResponseDto>(
@@ -75,7 +77,7 @@ export const useAuth = () => {
   // VERIFY EMAIL
   const {
     postResource: verifyEmailRequest,
-    postResponse: verifyEmailResponse,
+  
     handlePost: handleVerifyEmail,
     posting: verifyEmailLoading,
   } = usePost<VerifyEmailRequestDto, LoginResponseDto>(
@@ -86,7 +88,7 @@ export const useAuth = () => {
   // RESEND VERIFICATION
   const {
     postResource: resendVerificationRequest,
-    postResponse: resendVerificationResponse,
+
     handlePost: handleResendVerification,
     posting: resendVerificationLoading,
   } = usePost<ResendVerificationRequestDto, SignUpResponseDto>(
@@ -108,7 +110,7 @@ export const useAuth = () => {
   // RESET PASSWORD
   const {
     postResource: resetPasswordRequest,
-    postResponse: resetPasswordResponse,
+
     handlePost: handleResetPassword,
     posting: resetPasswordLoading,
   } = usePost<ResetPasswordRequestDto, LoginResponseDto>(
@@ -125,14 +127,15 @@ export const useAuth = () => {
 
   // SIGNUP action
   const signUp = async (e: React.FormEvent<HTMLFormElement>) => {
-    await handleSignup(e);
-    console.log(signUpResponse)
+  const responsee =  await handleSignup(e) ;
+    console.log('signup respnse is',responsee)
+    const signUpResponse = responsee as unknown as SignUpResponseDto
     if (signUpResponse?.verificationToken) {
-      navigateToVerifyEmail(signUpResponse.verificationToken,signUpResponse.id);
+      router.push(`/auth/verify-email/${signUpResponse.verificationToken}/${signUpResponse.id}`)
     }
   };
   const signUpSuperAdmin = async (e: React.FormEvent<HTMLFormElement>) => {
-    await handlesuperAdminSignUp(e);
+   const superAdminSignUpResponse=  await handlesuperAdminSignUp(e) as unknown as  SignUpResponseDto;;
     if (superAdminSignUpResponse?.verificationToken) {
       navigateToVerifyEmail(superAdminSignUpResponse.verificationToken,superAdminSignUpResponse.id);
     }
@@ -142,9 +145,9 @@ export const useAuth = () => {
   const login = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    await handleLogin(e);
+    const loginResponse = await handleLogin(e) as unknown as  LoginResponseDto|SignUpResponseDto;;
 
-    if (!loginResponse) return;
+  
 
     if ('accessToken' in loginResponse && 'user' in loginResponse) {
       setAccessToken(loginResponse.accessToken);
@@ -157,7 +160,7 @@ export const useAuth = () => {
 
   // VERIFY EMAIL action
   const verifyEmail = async (e: React.FormEvent<HTMLFormElement>) => {
-    await handleVerifyEmail(e);
+    const verifyEmailResponse =await handleVerifyEmail(e) as unknown as  LoginResponseDto;
     if (verifyEmailResponse?.accessToken) {
       setAccessToken(verifyEmailResponse.accessToken);
       setUser(verifyEmailResponse.user);
@@ -179,7 +182,7 @@ export const useAuth = () => {
 
   // RESET password
   const resetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
-    await handleResetPassword(e);
+  const resetPasswordResponse =  await handleResetPassword(e) as any;
     if (resetPasswordResponse) {
       navigateToLogin();
     }
@@ -196,7 +199,7 @@ export const useAuth = () => {
   return {
     loading: isAuthLoading,
     error: authError,
-    signUpResponse,
+  
     // loginResponse,
     // verifyEmailResponse,
     // resendVerificationResponse,

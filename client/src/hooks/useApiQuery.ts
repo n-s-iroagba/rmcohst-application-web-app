@@ -6,7 +6,24 @@ import {
 } from '@tanstack/react-query';
 import { handleError } from '@/utils/api';
 import api from '@/lib/apiUtils';
-import { ChangeHandler } from '@/types/fields_config';
+// Define input types for different handlers
+type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
+type TextAreaChangeEvent = React.ChangeEvent<HTMLTextAreaElement>;
+type SelectChangeEvent = React.ChangeEvent<HTMLSelectElement>;
+type FileChangeEvent = React.ChangeEvent<HTMLInputElement>;
+
+// Define the change handler types
+interface ChangeHandler {
+  text: (e: InputChangeEvent) => void;
+  password: (e: InputChangeEvent) => void;
+  email: (e: InputChangeEvent) => void;
+  textarea: (e: TextAreaChangeEvent) => void;
+  select: (e: SelectChangeEvent) => void;
+  checkbox: (e: InputChangeEvent) => void;
+  radio: (e: InputChangeEvent) => void;
+  date: (e: InputChangeEvent) => void;
+  file: (e: FileChangeEvent) => void;
+}
 
 type TransformFn = (name: string, value: string) => any;
 
@@ -104,23 +121,20 @@ export const usePost = <T, U>(
   transformField?: TransformFn
 ) => {
   const [postResource, setPostResource] = useState<T>(initialData);
-  const [postResponse, setPostResponse] = useState<U | null>(null);
+
   const [apiError, setApiError] = useState<string>('');
 
   const mutation = useMutation<U, unknown, T>({
     mutationFn: async (payload: T) => {
       try {
         const response = await api.post(postResourceUrl, payload);
-   
-        return response.data as U;
+        console.log('response is ',response.data)
+       
+        return response.data;
       } catch (error) {
         handleError(error, setApiError);
         throw error;
       }
-    },
-    onSuccess: (data: U) => {
-      setPostResponse(data);
-      setApiError('');
     },
     onError: (err: unknown) => {
       handleError(err, setApiError);
@@ -180,7 +194,9 @@ export const usePost = <T, U>(
   const handlePost = async (e: React.FormEvent<HTMLFormElement>|React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      await mutation.mutateAsync(postResource);
+      const data = await mutation.mutateAsync(postResource);
+      return data
+    
     } catch (error) {
       console.error('Post failed:', error);
     }
@@ -201,7 +217,7 @@ export const usePost = <T, U>(
 
   return {
     postResource,
-    postResponse,
+
     posting: mutation.isPending,
     apiError,
     changeHandlers,
@@ -274,11 +290,23 @@ export const useGet = <T>(resourceUrl: string | null) => {
 };
 
 
-export const usePut = <T, U>(
-  putUrl: string,
+
+
+
+interface UsePutReturn<T, U> {
+  putResource: T;
+  updating: boolean;
+  apiError: string;
+  changeHandlers: ChangeHandler;
+  handlePut: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+}
+
+export const usePut = <T, U = any>(
+  putUrl: string | null,
   initialData: T,
-  transformField?: (name: string, value: string) => any
-) => {
+  transformField?: (name: string, value: string | boolean | File | null) => any
+): UsePutReturn<T, U> => {
+  
   const [putResource, setPutResource] = useState<T>(initialData);
   const [putResponse, setPutResponse] = useState<U | null>(null);
   const [apiError, setApiError] = useState('');
@@ -286,6 +314,7 @@ export const usePut = <T, U>(
   const mutation = useMutation<U, unknown, T>({
     mutationFn: async (payload: T) => {
       try {
+        if (!putUrl) return null;
         const response = await api.put(putUrl, payload);
         return response.data;
       } catch (error) {
@@ -302,7 +331,8 @@ export const usePut = <T, U>(
     },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle text, email, password, date, number, textarea, select inputs
+  const handleTextChange = (e: InputChangeEvent | TextAreaChangeEvent | SelectChangeEvent) => {
     const { name, value } = e.target;
     const transformedValue = transformField
       ? transformField(name, value)
@@ -314,6 +344,82 @@ export const usePut = <T, U>(
     }));
   };
 
+  // Handle checkbox inputs
+  const handleCheckboxChange = (e: InputChangeEvent) => {
+    const { name, checked } = e.target;
+    const transformedValue = transformField
+      ? transformField(name, checked)
+      : checked;
+
+    setPutResource((prev) => ({
+      ...prev,
+      [name]: transformedValue,
+    }));
+  };
+
+  // Handle file inputs
+  const handleFileChange = (e: FileChangeEvent) => {
+    const { name, files } = e.target;
+    const file = files?.[0] || null;
+    
+    // For file inputs, you might want to handle the file differently
+    // Option 1: Store the File object directly
+    const transformedValue = transformField
+      ? transformField(name, file)
+      : file;
+
+    setPutResource((prev) => ({
+      ...prev,
+      [name]: transformedValue,
+    }));
+
+    // Option 2: Convert to base64 or handle file upload separately
+    // if (file) {
+    //   const reader = new FileReader();
+    //   reader.onload = (event) => {
+    //     const base64 = event.target?.result;
+    //     const transformedValue = transformField
+    //       ? transformField(name, base64 as string)
+    //       : base64;
+    //     
+    //     setPutResource((prev) => ({
+    //       ...prev,
+    //       [name]: transformedValue,
+    //     }));
+    //   };
+    //   reader.readAsDataURL(file);
+    // }
+  };
+
+  // Handle file input with base64 conversion (alternative implementation)
+  const handleFileChangeAsBase64 = (e: FileChangeEvent) => {
+    const { name, files } = e.target;
+    const file = files?.[0];
+    
+    if (!file) {
+      setPutResource((prev) => ({
+        ...prev,
+        [name]: null,
+      }));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      const transformedValue = transformField
+        ? transformField(name, base64)
+        : base64;
+      
+      setPutResource((prev) => ({
+        ...prev,
+        [name]: transformedValue,
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+
   const handlePut = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -324,12 +430,28 @@ export const usePut = <T, U>(
     }
   };
 
+  // Create change handlers object
+  const changeHandlers: ChangeHandler = {
+    text: handleTextChange,
+    password: handleTextChange,
+    email: handleTextChange,
+    textarea: handleTextChange as (e: TextAreaChangeEvent) => void,
+    select: handleTextChange as (e: SelectChangeEvent) => void,
+    checkbox: handleCheckboxChange,
+    radio: handleTextChange,
+    date: handleTextChange,
+    // Choose the appropriate file handler based on your needs:
+    file: handleFileChange, // Stores File object directly
+    // file: handleFileChangeAsBase64, // Converts to base64 string
+    // file: handleFileChangeAsBuffer, // Converts to Buffer (for biodata)
+  };
+
   return {
     putResource,
-    putResponse,
     updating: mutation.isPending,
     apiError,
-    handleChange,
+    changeHandlers,
+  
     handlePut,
   };
 };

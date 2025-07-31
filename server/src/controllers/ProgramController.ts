@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import ProgramService from '../services/ProgramService'
 import logger from '../utils/logger'
+import { Program } from '../models'
 
 export default class ProgramController {
   static async createBulk(req: Request, res: Response) {
@@ -17,6 +18,16 @@ export default class ProgramController {
     try {
       const { page = 1, limit = 10 } = req.query
       const programs = await ProgramService.getAll(+page, +limit)
+       res.json(programs)
+    } catch (error) {
+      logger.error('Fetch all programs failed:', error)
+       res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+  static async getOne(req: Request, res: Response) {
+    try {
+      const {id} = req.params
+      const programs = await Program.findByPk(id)
        res.json(programs)
     } catch (error) {
       logger.error('Fetch all programs failed:', error)

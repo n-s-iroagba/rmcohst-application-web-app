@@ -1,9 +1,12 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FilterDropdown } from '@/components/FilterDropdown';
-import { useProgramContext } from '@/context/ProgramContext';
+import { usePrograms } from '@/context/ProgramContext';
+import { GenericSearchBar } from '@/components/SearchBar';
+import { Program } from '@/types/program';
+
 
 
 export default function SelectProgramPage() {
@@ -13,14 +16,15 @@ export default function SelectProgramPage() {
     selectedLevel,
     setSelectedLevel,
    
-  } = useProgramContext();
+  } = usePrograms();
+  const [searchResults,setSearchResults] = useState<Program[]>([])
 
   const router = useRouter();
 
 
 
   const handleProgramClick = (programId: number) => {
-    router.push(`/programs/${programId}`);
+    router.push(`/applicant/application/programs/${programId}`);
   };
 
   return (
@@ -36,6 +40,13 @@ export default function SelectProgramPage() {
         placeholder="Select Program Level"
         label="Program Level"
       />
+         <GenericSearchBar<Program>
+                data={filteredPrograms||[]}
+                searchKeys={['name']}
+                onResults={setSearchResults}
+                placeholder="Search Programs by name ..."
+                className="mb-4"
+              />
 
       <div className="grid gap-4">
         {filteredPrograms.map(program => (
@@ -45,9 +56,9 @@ export default function SelectProgramPage() {
             onClick={() => handleProgramClick(program.id)}
           >
             <h3 className="font-semibold text-lg">{program.name}</h3>
-            <p className="text-sm text-gray-500">
+            {/* <p className="text-sm text-gray-500">
               {program.department.name} • {program.department.faculty?.name}
-            </p>
+            </p> */}
           </div>
         ))}
         {filteredPrograms.length === 0 && selectedLevel && (

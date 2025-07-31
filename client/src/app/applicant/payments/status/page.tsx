@@ -10,6 +10,7 @@ import ErrorAlert from '@/components/ErrorAlert';
 export default function PaymentStatusPage() {
   const searchParams = useSearchParams();
   const reference = searchParams.get('reference');
+ 
 
   const { resourceData, error, loading } = useGet<any>(
     reference ? API_ROUTES.PAYMENT.VERIFY(reference) : ''
@@ -41,3 +42,13 @@ export default function PaymentStatusPage() {
     </div>
   );
 }
+  // const { user } = useAuthContext()
+  // const {navigateToSelectProgram}= useRoutes()
+
+
+
+  // const {
+  //   resourceData: payment,
+  //   loading: isPaymentLoading,
+  //   error: paymentError,
+  // } = useGet<Payment>(user?API_ROUTES.PAYMENT.GET_BY_APPLICANT_USER_ID(user.id):'')

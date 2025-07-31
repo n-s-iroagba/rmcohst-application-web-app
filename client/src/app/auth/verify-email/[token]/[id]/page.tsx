@@ -46,7 +46,9 @@ const VerifyEmail = () => {
 
         {error && <ErrorAlert message={error} />}
 
-        <form onSubmit={verifyCode} className="space-y-6">
+        <form onSubmit={(e)=>{
+          e.preventDefault()
+          verifyCode(e)}} className="space-y-6">
           <div className="flex justify-center gap-3">
             {emailVerificationFormCode.map((digit, index) => (
               <input
@@ -66,7 +68,7 @@ const VerifyEmail = () => {
 
           <button
             type="submit"
-            disabled={submitting}
+            
             className="w-full py-3 bg-slate-700 text-white rounded-xl hover:bg-slate-800 disabled:bg-slate-400 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
           >
             {submitting ? (

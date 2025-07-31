@@ -36,7 +36,12 @@ export class Department // Named export
 
 Department.init(
   {
-    id: { type: DataTypes.INTEGER, primaryKey: true },
+   id: {
+  type: DataTypes.INTEGER,
+  autoIncrement: true,
+  primaryKey: true,
+  allowNull: false,
+},
     facultyId: {
       type: DataTypes.INTEGER,
       allowNull: false,

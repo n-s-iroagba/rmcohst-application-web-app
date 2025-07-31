@@ -8,7 +8,7 @@ import sequelize from '../config/database'
 export interface AuthUser{
  id: number
  username:string
-role:RoleWithPermissions
+role:string
 email:string
 }
 
@@ -23,6 +23,7 @@ interface UserAttributes {
   verificationCode?: string | null
   verificationToken?: string | null
   passwordResetToken?: string | null
+  refreshToken?: string|null
   createdAt?: Date
   updatedAt?: Date
 }
@@ -37,6 +38,7 @@ export interface UserCreationAttributes
     | 'passwordResetToken'
     | 'roleId'
     | 'createdAt'
+    |'refreshToken'
     | 'updatedAt'
   > {}
 
@@ -48,6 +50,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public roleId!: number
   public isEmailVerified!: boolean
   public verificationToken!: string | null
+  public refreshToken?: string | null 
   public verificationCode!: string | null
   public passwordResetToken!: string | null
 
@@ -91,13 +94,22 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
           type: DataTypes.STRING,
           allowNull: true,
         },
+        refreshToken: {
+          type: DataTypes.STRING,
+          allowNull:true
+        },
+
         username: {
           type: DataTypes.STRING,
           allowNull: false
         },
         roleId: {
-          type:DataTypes.STRING,
-          allowNull:true
+          type:DataTypes.INTEGER,
+          allowNull:true,
+          references: {
+            model: 'roles',
+            key: 'id'
+          }
         }
       },
       {

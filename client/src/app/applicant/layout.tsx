@@ -16,6 +16,7 @@ import { useResizeWindow } from '@/hooks/useResizeWindow'
 import { AuthProvider } from '@/context/AuthContext'
 
 
+
 interface AdminOffcanvasProps {
   children: React.ReactNode
 }
@@ -108,7 +109,10 @@ function ApplicantOffcanvas({ children }: AdminOffcanvasProps) {
 export default function ApplicantLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <ApplicantOffcanvas>{children}</ApplicantOffcanvas>
+
+ <ApplicantOffcanvas>{children}</ApplicantOffcanvas>
+  
+     
     </AuthProvider>
   )
 }

@@ -8,7 +8,7 @@ export default class ProgramService {
   }
 
   static async getAll(page: number, limit: number) {
-    return await Program.findAndCountAll({
+    return await Program.findAll({
       where: { isActive: true },
       limit,
       offset: (page - 1) * limit,

@@ -3,11 +3,12 @@ import { ApplicationController } from '../controllers/ApplicationController'
 
 const router = express.Router()
 
-router.post('/paystack/create', ApplicationController.createApplicationAfterPayment)
+
 
 router.get('/:id', ApplicationController.getApplicationDetails)
 
 router.get('/', ApplicationController.getAllApplications)
+router.get('/payment-status/:applicantUserId',ApplicationController.getApplicationPaymentStatus)
 
 router.post('/:applicationId/submit', ApplicationController.submitApplication)
 

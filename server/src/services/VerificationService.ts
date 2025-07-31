@@ -8,6 +8,7 @@ import { TokenService } from './TokenService'
 import { BadRequestError, ForbiddenError } from '../utils/errors'
 import { AuthConfig } from '../types/auth.types'
 import { EmailService } from './MailService'
+import config from '../config'
 export class VerificationService {
   constructor(
     private readonly tokenService: TokenService,
@@ -23,7 +24,7 @@ export class VerificationService {
         this.config.tokenExpiration.verification
       )
 
-      const verificationCode = CodeHelper.generateVerificationCode()
+      const verificationCode = config.nodeEnv ==='production'?CodeHelper.generateVerificationCode():'123456'
       console.log('VVVV', verificationCode)
 
       await this.userService.updateUserVerification(user, verificationCode, verificationToken)

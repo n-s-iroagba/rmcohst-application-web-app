@@ -4,24 +4,24 @@ import sequelize from '../config/database'
 export interface BiodataAttributes {
   id: number
   applicationId: number
-  firstName: string
-  middleName?: string | null
-  surname: string
-  gender: string
+  firstName?:string|null
+  middleName?:string|null | null
+  surname?:string|null
+  gender?:string|null
   dateOfBirth: Date
-  maritalStatus: string
-  homeAddress: string
-  nationality: string
-  stateOfOrigin: string
-  lga: string
-  homeTown: string
-  phoneNumber: string
-  emailAddress: string
+  maritalStatus?:string|null
+  homeAddress?:string|null
+  nationality?:string|null
+  stateOfOrigin?:string|null
+  lga?:string|null
+  homeTown?:string|null
+  phoneNumber?:string|null
+  emailAddress?:string|null
   passportPhotograph: Blob | Buffer
-  nextOfKinFullName: string
-  nextOfKinPhoneNumber: string
-  nextOfKinAddress: string
-  relationshipWithNextOfKin: string
+  nextOfKinFullName?:string|null
+  nextOfKinPhoneNumber?:string|null
+  nextOfKinAddress?:string|null
+  relationshipWithNextOfKin?:string|null
 }
 
 interface BiodataCreationAttributes {
@@ -34,24 +34,24 @@ class Biodata
 {
   public id!: number
   public applicationId!: number
-  public firstName!: string
+  public firstName?: string|null
   public middleName?: string | null
-  public surname!: string
-  public gender!: string
+  public surname?: string|null
+  public gender?: string|null
   public dateOfBirth!: Date
-  public maritalStatus!: string
-  public homeAddress!: string
-  public nationality!: string
-  public stateOfOrigin!: string
-  public lga!: string
-  public homeTown!: string
-  public phoneNumber!: string
-  public emailAddress!: string
+  public maritalStatus?: string|null
+  public homeAddress?: string|null
+  public nationality?: string|null
+  public stateOfOrigin?: string|null
+  public lga?: string|null
+  public homeTown?: string|null
+  public phoneNumber?: string|null
+  public emailAddress?: string|null
   public passportPhotograph!: Buffer
-  public nextOfKinFullName!: string
-  public nextOfKinPhoneNumber!: string
-  public nextOfKinAddress!: string
-  public relationshipWithNextOfKin!: string
+  public nextOfKinFullName?: string|null
+  public nextOfKinPhoneNumber?: string|null
+  public nextOfKinAddress?: string|null
+  public relationshipWithNextOfKin?: string|null
 
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
@@ -103,7 +103,7 @@ Biodata.init(
     },
     firstName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull:true,
       validate: {
         notEmpty: true,
       },
@@ -114,74 +114,74 @@ Biodata.init(
     },
     surname: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull:true,
       validate: {
         notEmpty: true,
       },
     },
     gender: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull:true,
       validate: {
         notEmpty: true,
       },
     },
     dateOfBirth: {
       type: DataTypes.DATEONLY,
-      allowNull: false,
+      allowNull:true,
     },
     maritalStatus: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull:true,
       validate: {
         notEmpty: true,
       },
     },
     homeAddress: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull:true,
       validate: {
         notEmpty: true,
       },
     },
     nationality: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull:true,
       validate: {
         notEmpty: true,
       },
     },
     stateOfOrigin: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull:true,
       validate: {
         notEmpty: true,
       },
     },
     lga: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull:true,
       validate: {
         notEmpty: true,
       },
     },
     homeTown: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull:true,
       validate: {
         notEmpty: true,
       },
     },
     phoneNumber: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull:true,
       validate: {
         notEmpty: true,
       },
     },
     emailAddress: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull:true,
       validate: {
         notEmpty: true,
         isEmail: true,
@@ -189,32 +189,32 @@ Biodata.init(
     },
     passportPhotograph: {
       type: DataTypes.BLOB('long'),
-      allowNull: false,
+      allowNull:true,
     },
     nextOfKinFullName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull:true,
       validate: {
         notEmpty: true,
       },
     },
     nextOfKinPhoneNumber: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull:true,
       validate: {
         notEmpty: true,
       },
     },
     nextOfKinAddress: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull:true,
       validate: {
         notEmpty: true,
       },
     },
     relationshipWithNextOfKin: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull:true,
       validate: {
         notEmpty: true,
       },

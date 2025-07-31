@@ -33,18 +33,20 @@ export class AuthController {
         throw new BadRequestError('Failed to create user')
       }
 
-      const role = await this.roleService.getRoleByName('APPLICANT')
+      const role = await this.roleService.getRoleByName('applicant')
       if (!role) {
         logger.error(`Role 'APPLICANT' not found during signup for userId ${userId}`)
         throw new NotFoundError(`Role 'APPLICANT' not found`)
       }
 
   
-      await this.roleService.assignRoleToUser(userId, role.id)
+       user.roleId = role.id
+       await user.save()
       logger.info(`Assigned 'APPLICANT' role to userId ${userId}`)
 
       
       res.status(201).json({verificationToken:result.verificationToken,id:user.id} as SignUpResponseDto)
+      return
     } catch (error) {
       next(error)
     }
@@ -111,7 +113,8 @@ export class AuthController {
 
       const result = await this.authService.verifyEmail(req.body)
       res.cookie('refreshToken', result.refreshToken, getCookieOptions())
-      const authUser = result.user as AuthUser
+      const authUser = result.user
+      console.log('auth user',authUser)
       res.status(200).json({ user: authUser, accessToken: result.accessToken } as LoginResponseDto)
     } catch (error) {
       next(error)

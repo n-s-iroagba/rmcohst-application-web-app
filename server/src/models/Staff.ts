@@ -45,10 +45,10 @@ export class Staff // Named export
       id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
       phoneNumber: { type: DataTypes.STRING, allowNull: false },
       userId: {
-        type: DataTypes.UUID, // Match User ID type
+        type: DataTypes.INTEGER, // Match User ID type
         allowNull: false,
         unique: true,
-        references: { model: 'Users', key: 'id' }, // Table name
+        references: { model: 'users', key: 'id' }, // Table name
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },

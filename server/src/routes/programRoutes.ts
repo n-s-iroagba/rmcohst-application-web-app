@@ -8,6 +8,7 @@ const router = Router()
 
 router.post('/bulk', validateBody(bulkProgramSchema), ProgramController.createBulk)
 router.get('/', ProgramController.getAll)
+router.get('/:id', ProgramController.getOne)
 router.get('/faculty/:facultyId', ProgramController.getByFaculty)
 router.get('/department/:departmentId', ProgramController.getByDepartment)
 router.patch('/:id', validateBody(updateProgramSchema), ProgramController.update)

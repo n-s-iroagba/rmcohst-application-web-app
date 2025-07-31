@@ -27,11 +27,11 @@ export interface SubjectRequirement {
 
 interface ApplicantSSCQualificationAttributes {
   id: number
-  applicationId: number
-  numberOfSittings: number
-  qualificationTypes: QualificationType[]
-  subjects: SubjectRequirement[]
-  isDocumentUploaded: boolean
+  applicationId: number|null
+  numberOfSittings: number|null
+  qualificationTypes: QualificationType[]|[]
+  subjects: SubjectRequirement[]|[]
+  isDocumentUploaded: boolean |null
   createdAt?: Date
   updatedAt?: Date
 }
@@ -46,10 +46,10 @@ class ApplicantSSCQualification
 {
   public id!: number
   public applicationId!: number
-  public numberOfSittings!: number
-  public subjects!: SubjectRequirement[]
-  public qualificationTypes!: QualificationType[]
-  public isDocumentUploaded!: boolean
+  public numberOfSittings!: number |null
+  public subjects!: SubjectRequirement[]|[]
+  public qualificationTypes!: QualificationType[]|[]
+  public isDocumentUploaded!: boolean |null
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 
@@ -85,7 +85,7 @@ ApplicantSSCQualification.init(
     },
     numberOfSittings: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       validate: {
         min: 1,
         max: 2,
@@ -94,27 +94,27 @@ ApplicantSSCQualification.init(
     qualificationTypes: {
       type: DataTypes.JSON,
       allowNull: true,
-      validate: {
-        isValidArray(value: any) {
-          if (!Array.isArray(value) || value.length === 0) {
-            throw new Error('Certificate types must be a non-empty array')
-          }
-          // Validate certificate types
-          const validTypes = ['WAEC', 'NECO', 'GCE', 'NABTEB']
-          const invalidTypes = value.filter((type: string) => !validTypes.includes(type))
-          if (invalidTypes.length > 0) {
-            throw new Error(`Invalid certificate types: ${invalidTypes.join(', ')}`)
-          }
-        },
-      },
+      // validate: {
+      //   isValidArray(value: any) {
+      //     if (!Array.isArray(value) || value.length === 0) {
+      //       throw new Error('Certificate types must be a non-empty array')
+      //     }
+      //     // Validate certificate types
+      //     const validTypes = ['WAEC', 'NECO', 'GCE', 'NABTEB']
+      //     const invalidTypes = value.filter((type: string) => !validTypes.includes(type))
+      //     if (invalidTypes.length > 0) {
+      //       throw new Error(`Invalid certificate types: ${invalidTypes.join(', ')}`)
+      //     }
+      //   },
+      // },
     },
     subjects: {
       type: DataTypes.JSON,
-      allowNull: false,
+      allowNull: true,
     },
     isDocumentUploaded: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
+      allowNull: true,
       defaultValue: false,
     },
   },

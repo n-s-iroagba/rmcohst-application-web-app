@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useGet } from '@/hooks/useApiQuery'
+import { useGet, usePut } from '@/hooks/useApiQuery'
 import { API_ROUTES } from '@/config/routes'
 import {Payment} from '@/types/payment'
 import { Application, ApplicationStatus } from '@/types/application'
@@ -13,9 +13,14 @@ import {
 import { CustomForm } from '@/components/CustomForm'
 import { useAuthContext } from '@/context/AuthContext'
 import { useRoutes } from '@/hooks/useRoutes'
+import { Spinner } from '@/components/Spinner'
+import BiodataForm from '@/components/BiodataForm'
 
 type ApplicationStep = 'payment' | 'biodata' | 'ssc' | 'program-specific' | 'review' | 'submitted'
-
+export type ApplicationPaymentStatus = {
+  status:'PENDING'|'PAID'|'FAILED'|'NO-PAYMENT'
+  payment:Payment[]
+}
 const ApplicationPage = () => {
 
   const [currentStep, setCurrentStep] = useState<ApplicationStep>('biodata')
@@ -24,21 +29,25 @@ const ApplicationPage = () => {
   const { user } = useAuthContext()
   const {navigateToSelectProgram}= useRoutes()
 
-  if (!user) return null
+
 
   const {
-    resourceData: payment,
+    resourceData: paymentData,
     loading: isPaymentLoading,
     error: paymentError,
-  } = useGet<Payment>(API_ROUTES.PAYMENT.GET_BY_APPLICANT_USER_ID(user.id))
+  } = useGet<ApplicationPaymentStatus>(API_ROUTES.PAYMENT.GET_CURRENT_SESSION_APPLICATION_PAYMENT_STATUS(1))
+  console.log('data is',paymentData)
 
-  const applicationId = payment?.applicationId ||null
+  const applicationId = 8
+  // ?.status==='PAID'? paymentData?.payment[0].applicationId :null
 
   const {
     resourceData: application,
     loading,
     error,
   } = useGet<Application>(applicationId ? API_ROUTES.APPLICATION.GET_BY_ID(String(applicationId)) : null)
+  console.log('application', application)
+
 
   const handleStepChange = (step: ApplicationStep) => setCurrentStep(step)
 
@@ -78,14 +87,7 @@ const ApplicationPage = () => {
     }
   }
 
-  if (loading || isPaymentLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600"></div>
-      </div>
-    )
-  }
-
+  if (loading || isPaymentLoading)return <Spinner/>
   if (error || paymentError) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -98,38 +100,44 @@ const ApplicationPage = () => {
     )
   }
 
-  if (!application) {
+  if (paymentData?.status==='NO-PAYMENT') {
     return (
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
           <CreditCard className="h-16 w-16 text-slate-600 mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-slate-800 mb-2">Start Your Application</h1>
-          <button onClick={navigateToSelectProgram} >Click Here To Begin</button>
-        </div>
-
-        
+          <button className='bg-teal-900' onClick={navigateToSelectProgram} >Click Here To Begin</button>
+        </div>        
         </div>
       
     )
   }
 
-  if (application.status !== ApplicationStatus.DRAFT) {
+
+  if (paymentData?.status==='PENDING') {
     return (
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            {getStatusIcon(application.status)}
-          </div>
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">Your Application</h1>
-          <div className={`inline-flex items-center px-4 py-2 rounded-full border ${getStatusColor(application.status)}`}>
-            {getStatusIcon(application.status)}
-            <span className="ml-2 font-medium">{application.status.replace('_', ' ')}</span>
-          </div>
+          <CreditCard className="h-16 w-16 text-slate-600 mx-auto mb-4" />
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">Your Payment is pending, please check back later</h1>
+       
+        </div>        
         </div>
-      </div>
+      
     )
   }
-
+  if (paymentData?.status==='FAILED') {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-8">
+          <CreditCard className="h-16 w-16 text-slate-600 mx-auto mb-4" />
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">Your previous attemp to start an application failed, as the payment was reversed</h1>
+          <button className='bg-teal-900' onClick={navigateToSelectProgram} >Click Here To Start Another Application</button>
+        </div>        
+        </div>
+      
+    )
+  }
   const steps = [
     { id: 'biodata', label: 'Biodata', icon: User },
     { id: 'ssc', label: 'SSC Qualifications', icon: FileText },
@@ -137,8 +145,16 @@ const ApplicationPage = () => {
     { id: 'review', label: 'Review & Submit', icon: Eye },
   ]
 
-  return (
-    <div className="max-w-6xl mx-auto">
+  if (application && application.status === ApplicationStatus.DRAFT) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-8">
+          <div className={`inline-flex items-center px-4 py-2 rounded-full border ${getStatusColor(application.status)}`}>
+            {getStatusIcon(application.status)}
+            <span className="ml-2 font-medium">{application.status.replace('_', ' ')}</span>
+          </div>
+        </div>
+        <div className="max-w-6xl mx-auto">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-slate-800 mb-2">Complete Your Application</h1>
         <p className="text-gray-600">Fill out all required sections to submit your application</p>
@@ -164,12 +180,12 @@ const ApplicationPage = () => {
         </div>
       </div>
 
-      {/* Step Content */}
+      
       <div className="bg-white rounded-lg shadow-lg border border-slate-200">
-        {/* {currentStep === 'biodata' && <CustomForm />}
-        {currentStep === 'ssc' && <CustomForm />}
+        {currentStep === 'biodata' && <BiodataForm application={application}/>}
+        {/* {currentStep === 'ssc' && <CustomForm />}
         {currentStep === 'program-specific' && <CustomForm />} */}
-        {currentStep === 'review' && (
+        {currentStep === 'review' && ( 
           <div className="p-8">
             <div className="text-center mb-8">
               <Eye className="h-12 w-12 text-slate-600 mx-auto mb-4" />
@@ -255,7 +271,23 @@ const ApplicationPage = () => {
         </div>
       )}
     </div>
+      </div>
+    )
+  }else{
+
+   
+
+  return (
+       <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-8">
+          <CreditCard className="h-16 w-16 text-slate-600 mx-auto mb-4" />
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">Begin your journey to healthcare proffessionalism</h1>
+          <button className='bg-teal-900' onClick={navigateToSelectProgram} >Click Here To Start Your Application</button>
+        </div>        
+        </div>
+    
   )
+}
 }
 
 export default ApplicationPage

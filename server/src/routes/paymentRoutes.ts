@@ -4,7 +4,7 @@ import { PaymentController } from '../controllers/PaymentController'
 const router = Router()
 
 
-router.get('/initialize', PaymentController.initializePayment)
+router.post('/initialize', PaymentController.initializePayment)
 router.get('/verify/:reference', PaymentController.verifyTransaction)
 router.get('/:applicantUserId', PaymentController.getSuccessfulApplicantPaymentForCurrentSession)
 router.get('/all/:applicantUserId', PaymentController.getPaymentsByApplicantUserId)

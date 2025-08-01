@@ -1,27 +1,28 @@
+// ===== FIXED BIODATA MODEL =====
 import { Model, DataTypes } from 'sequelize'
 import sequelize from '../config/database'
 
 export interface BiodataAttributes {
   id: number
   applicationId: number
-  firstName?:string|null
-  middleName?:string|null | null
-  surname?:string|null
-  gender?:string|null
-  dateOfBirth: Date
-  maritalStatus?:string|null
-  homeAddress?:string|null
-  nationality?:string|null
-  stateOfOrigin?:string|null
-  lga?:string|null
-  homeTown?:string|null
-  phoneNumber?:string|null
-  emailAddress?:string|null
-  passportPhotograph: Blob | Buffer
-  nextOfKinFullName?:string|null
-  nextOfKinPhoneNumber?:string|null
-  nextOfKinAddress?:string|null
-  relationshipWithNextOfKin?:string|null
+  firstName?: string | null
+  middleName?: string | null
+  surname?: string | null
+  gender?: string | null
+  dateOfBirth?: Date | null
+  maritalStatus?: string | null
+  homeAddress?: string | null
+  nationality?: string | null
+  stateOfOrigin?: string | null
+  lga?: string | null
+  homeTown?: string | null
+  phoneNumber?: string | null
+  emailAddress?: string | null
+  passportPhotograph?: Buffer | null
+  nextOfKinFullName?: string | null
+  nextOfKinPhoneNumber?: string | null
+  nextOfKinAddress?: string | null
+  relationshipWithNextOfKin?: string | null
 }
 
 interface BiodataCreationAttributes {
@@ -34,24 +35,24 @@ class Biodata
 {
   public id!: number
   public applicationId!: number
-  public firstName?: string|null
+  public firstName?: string | null
   public middleName?: string | null
-  public surname?: string|null
-  public gender?: string|null
-  public dateOfBirth!: Date
-  public maritalStatus?: string|null
-  public homeAddress?: string|null
-  public nationality?: string|null
-  public stateOfOrigin?: string|null
-  public lga?: string|null
-  public homeTown?: string|null
-  public phoneNumber?: string|null
-  public emailAddress?: string|null
-  public passportPhotograph!: Buffer
-  public nextOfKinFullName?: string|null
-  public nextOfKinPhoneNumber?: string|null
-  public nextOfKinAddress?: string|null
-  public relationshipWithNextOfKin?: string|null
+  public surname?: string | null
+  public gender?: string | null
+  public dateOfBirth?: Date | null
+  public maritalStatus?: string | null
+  public homeAddress?: string | null
+  public nationality?: string | null
+  public stateOfOrigin?: string | null
+  public lga?: string | null
+  public homeTown?: string | null
+  public phoneNumber?: string | null
+  public emailAddress?: string | null
+  public passportPhotograph?: Buffer | null
+  public nextOfKinFullName?: string | null
+  public nextOfKinPhoneNumber?: string | null
+  public nextOfKinAddress?: string | null
+  public relationshipWithNextOfKin?: string | null
 
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
@@ -103,10 +104,7 @@ Biodata.init(
     },
     firstName: {
       type: DataTypes.STRING,
-      allowNull:true,
-      validate: {
-        notEmpty: true,
-      },
+      allowNull: true,
     },
     middleName: {
       type: DataTypes.STRING,
@@ -114,110 +112,70 @@ Biodata.init(
     },
     surname: {
       type: DataTypes.STRING,
-      allowNull:true,
-      validate: {
-        notEmpty: true,
-      },
+      allowNull: true,
     },
     gender: {
       type: DataTypes.STRING,
-      allowNull:true,
-      validate: {
-        notEmpty: true,
-      },
+      allowNull: true,
     },
     dateOfBirth: {
       type: DataTypes.DATEONLY,
-      allowNull:true,
+      allowNull: true,
     },
     maritalStatus: {
       type: DataTypes.STRING,
-      allowNull:true,
-      validate: {
-        notEmpty: true,
-      },
+      allowNull: true,
     },
     homeAddress: {
       type: DataTypes.STRING,
-      allowNull:true,
-      validate: {
-        notEmpty: true,
-      },
+      allowNull: true,
     },
     nationality: {
       type: DataTypes.STRING,
-      allowNull:true,
-      validate: {
-        notEmpty: true,
-      },
+      allowNull: true,
     },
     stateOfOrigin: {
       type: DataTypes.STRING,
-      allowNull:true,
-      validate: {
-        notEmpty: true,
-      },
+      allowNull: true,
     },
     lga: {
       type: DataTypes.STRING,
-      allowNull:true,
-      validate: {
-        notEmpty: true,
-      },
+      allowNull: true,
     },
     homeTown: {
       type: DataTypes.STRING,
-      allowNull:true,
-      validate: {
-        notEmpty: true,
-      },
+      allowNull: true,
     },
     phoneNumber: {
       type: DataTypes.STRING,
-      allowNull:true,
-      validate: {
-        notEmpty: true,
-      },
+      allowNull: true,
     },
     emailAddress: {
       type: DataTypes.STRING,
-      allowNull:true,
+      allowNull: true,
       validate: {
-        notEmpty: true,
         isEmail: true,
       },
     },
     passportPhotograph: {
       type: DataTypes.BLOB('long'),
-      allowNull:true,
+      allowNull: true,
     },
     nextOfKinFullName: {
       type: DataTypes.STRING,
-      allowNull:true,
-      validate: {
-        notEmpty: true,
-      },
+      allowNull: true,
     },
     nextOfKinPhoneNumber: {
       type: DataTypes.STRING,
-      allowNull:true,
-      validate: {
-        notEmpty: true,
-      },
+      allowNull: true,
     },
     nextOfKinAddress: {
       type: DataTypes.STRING,
-      allowNull:true,
-      validate: {
-        notEmpty: true,
-      },
+      allowNull: true,
     },
     relationshipWithNextOfKin: {
       type: DataTypes.STRING,
-      allowNull:true,
-      validate: {
-        notEmpty: true,
-      },
+      allowNull: true,
     },
   },
   {
@@ -228,3 +186,5 @@ Biodata.init(
 )
 
 export default Biodata
+
+

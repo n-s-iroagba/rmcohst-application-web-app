@@ -1,19 +1,28 @@
 import { Model, DataTypes } from 'sequelize'
 import sequelize from '../config/database'
 
+
+// ===== FIXED PROGRAM SPECIFIC QUALIFICATION MODEL =====
 interface ApplicantProgramSpecificQualificationAttributes {
   id: number
   applicationId: number
-  qualificationType?: string
-  grade: string
-  isDocumentUploaded: boolean
+  qualificationType?: string | null
+  grade?: string | null
+  isDocumentUploaded?: boolean | null
   createdAt?: Date
   updatedAt?: Date
 }
 
 interface ApplicantProgramSpecificQualificationCreationAttributes {
-  qualificationType: string
+
   applicationId: number
+}
+
+
+
+interface ApplicantProgramSpecificQualificationCreationAttributes {
+  applicationId: number
+  qualificationType?: string
 }
 
 class ApplicantProgramSpecificQualification
@@ -25,9 +34,9 @@ class ApplicantProgramSpecificQualification
 {
   public id!: number
   public applicationId!: number
-  public qualificationType!: string
-  public isDocumentUploaded!: boolean
-  public grade!: string
+  public qualificationType?: string | null
+  public isDocumentUploaded?: boolean | null
+  public grade?: string | null
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 
@@ -54,17 +63,12 @@ ApplicantProgramSpecificQualification.init(
     },
     qualificationType: {
       type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
+      allowNull: true, // Changed to allow null for draft applications
     },
     isDocumentUploaded: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
-      validate: {
-        notEmpty: true,
-      },
+      defaultValue: false, // Added default value
     },
     grade: {
       type: DataTypes.STRING,

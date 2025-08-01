@@ -7,6 +7,7 @@ import User from '../models/User' // Assuming User model and UserRole enum
 import { UnauthorizedError, ForbiddenError, NotFoundError, BadRequestError } from '../utils/errors' // Adjust path as needed
 import logger from '../utils/logger'
 import { UserRole } from '../models'
+import { TokenService } from '../services/TokenService'
 
 // Fix: Make user optional to match Express Request interface
 export interface AuthenticatedRequest extends Request {
@@ -236,3 +237,33 @@ declare global {
     }
   }
 }
+
+export class TokenMiddleware {
+  constructor(private tokenService: TokenService) {}
+
+  /**
+   * Express middleware for token verification
+   */
+  verifyAccessToken() {
+    return (req: any, res: any, next: any) => {
+      const authHeader = req.headers.authorization
+      try{
+      const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
+
+      if (!token) {
+          throw new BadRequestError('No access Token provided')
+      }
+
+      const result = this.tokenService.verifyToken(token)
+      req.user = result.decoded
+      next()
+    }catch(error){
+     next(error)
+    }
+
+     
+    }
+  }
+}
+
+export default TokenService

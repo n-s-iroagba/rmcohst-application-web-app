@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import {
-  LoginAuthServiceReturn,
+  AuthServiceLoginResponse,
   LoginResponseDto,
   ResendVerificationRespnseDto,
   SignUpResponseDto,
@@ -44,8 +44,8 @@ export class AuthController {
        await user.save()
       logger.info(`Assigned 'APPLICANT' role to userId ${userId}`)
 
-      
-      res.status(201).json({verificationToken:result.verificationToken,id:user.id} as SignUpResponseDto)
+      const response:SignUpResponseDto = {verificationToken:result.verificationToken,id:user.id} 
+      res.status(201).json(response)
       return
     } catch (error) {
       next(error)
@@ -87,7 +87,7 @@ export class AuthController {
 
       const result = await this.authService.login({ email, password })
       const unverified = result as SignUpResponseDto
-      const verified = result as LoginAuthServiceReturn
+      const verified = result as AuthServiceLoginResponse
 
       if (unverified) {
         // User not verified
@@ -131,7 +131,7 @@ export class AuthController {
     try {
       const { token,id } = req.body
       const newToken = await this.authService.generateNewCode(token,id)
-      res.json({ token:newToken,id }as  ResendVerificationRespnseDto)
+      res.json({ verificationToken:newToken,id }as  ResendVerificationRespnseDto)
     } catch (error) {
       next(error)
     }

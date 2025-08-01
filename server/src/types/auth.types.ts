@@ -12,56 +12,28 @@ export interface AuthConfig {
   }
 }
 
-export interface JwtPayload extends JwtPayloadBase {
-  id?: number
-  role?: string
-  [key: string]: any
-}
-
-export type LoginAuthServiceReturn = {
-  user: AuthUser
-  accessToken: string
-  refreshToken: string
-}
-export interface LoginRequestDto {
-  email: string
-  password: string
-}
-
 export type SignUpRequestDto= {
   email: string
   password: string
   username:string
   confirmPassword: string
 }
-
-export interface ForgotPasswordRequestDto {
-  email: string
-}
-
-export interface ResetPasswordRequestDto {
-  token: string
-  password: string
-  confirmPassword: string
-}
-
-export interface VerifyEmailRequestDto {
-  code: string
-  token: string
-}
-
-export interface ResendVerificationRequestDto {
-  id:string
-  token: string
-}
-export interface ResendVerificationRespnseDto {
-  id:string
-  token: string
-}
 export type SignUpResponseDto = {
   verificationToken: string
   id:number
-
+}
+export interface VerifyEmailRequestDto {
+  verificationCode: string
+  verificationToken: string
+}
+export interface LoginRequestDto {
+  email: string
+  password: string
+}
+export type AuthServiceLoginResponse = {
+  user: AuthUser
+  accessToken: string
+  refreshToken: string
 }
 
 export type LoginResponseDto = {
@@ -69,6 +41,22 @@ export type LoginResponseDto = {
   user: AuthUser
 }
 
-export type ResetPasswordResponseDto = {
+export interface ForgotPasswordRequestDto {
+  email: string
+}
+
+export type ForgotPasswordResponseDto = {
   resetPasswordToken: string
 }
+
+export interface ResetPasswordRequestDto {
+  resetPasswordToken: string
+  password: string
+  confirmPassword: string
+}
+export interface ResendVerificationRequestDto extends SignUpResponseDto{}
+export interface ResendVerificationRespnseDto extends SignUpResponseDto{}
+
+
+
+

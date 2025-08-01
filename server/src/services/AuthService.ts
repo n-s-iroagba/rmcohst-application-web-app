@@ -5,7 +5,7 @@ import { UserService } from "./user.service";
 import { VerificationService } from "./VerificationService";
 import {
   AuthConfig,
-  LoginAuthServiceReturn,
+  AuthServiceLoginResponse,
   LoginRequestDto,
   ResetPasswordRequestDto,
   SignUpRequestDto,
@@ -16,6 +16,7 @@ import logger from "../utils/logger";
 import { BadRequestError, NotFoundError } from "../utils/errors";
 import User, { AuthUser } from "../models/User";
 import { Role } from "../models";
+import { UserWithRole } from "./RbacService";
 
 
 export class AuthService {
@@ -70,7 +71,7 @@ export class AuthService {
    * @param data - Login DTO containing email and password.
    * @returns LoginAuthServiceReturn or SignUpResponseDto for unverified users.
    */
-  async login(data: LoginRequestDto): Promise<LoginAuthServiceReturn | SignUpResponseDto|void> {
+  async login(data: LoginRequestDto): Promise<AuthServiceLoginResponse | SignUpResponseDto|void> {
     try {
       logger.info("Login attempt started", { email: data.email });
 
@@ -85,7 +86,7 @@ export class AuthService {
         return { id:user.id,verificationToken };
       }
 
-      const { accessToken, refreshToken } = this.generateTokenPair(user.id);
+      const { accessToken, refreshToken } = this.generateTokenPair(user);
       logger.info("Login successful", { userId: user?.id });
 
       return this.saveRefreshTokenAndReturn(user, accessToken, refreshToken);
@@ -103,17 +104,14 @@ export class AuthService {
     try {
       logger.info("Token refresh attempted");
 
-      const payload = this.tokenService.verifyToken(refreshToken);
-      if (!payload.adminId) {
+      const {decoded} = this.tokenService.verifyToken(refreshToken);
+      if (!decoded.id) {
         logger.warn("Invalid refresh token provided");
         throw new BadRequestError("Invalid refresh token");
       }
 
-      const user = await this.userService.findUserById(payload.adminId);
-      const newAccessToken = this.tokenService.generateToken(
-        { adminId: user.id },
-        this.config.tokenExpiration.login
-      );
+      const user = await this.userService.findUserById(decoded.id);
+      const newAccessToken = this.tokenService.generateAccessToken(user)
 
       logger.info("Token refreshed successfully", { userId: user.id });
       return { accessToken: newAccessToken };
@@ -127,11 +125,12 @@ export class AuthService {
    * @param data - DTO containing token and verification code.
    * @returns Auth tokens for the verified user.
    */
-  async verifyEmail(data: VerifyEmailRequestDto): Promise<LoginAuthServiceReturn> {
+  async verifyEmail(data: VerifyEmailRequestDto): Promise<AuthServiceLoginResponse> {
     try {
       logger.info("Email verification started");
 
-      const { userId } = this.tokenService.verifyToken(data.token);
+      const { decoded } = this.tokenService.verifyToken(data.verificationToken);
+      const userId = decoded.id
       if (!userId) {
         logger.warn("Invalid verification token provided");
         throw new BadRequestError("Unsuitable token");
@@ -142,10 +141,10 @@ export class AuthService {
       if(!role) throw new NotFoundError('Role not found')
     
       
-      this.verificationService.validateVerificationCode(user, data.code);
+      this.verificationService.validateVerificationCode(user, data.verificationCode);
       await this.userService.markUserAsVerified(user);
 
-      const { accessToken, refreshToken } = this.generateTokenPair(user.id);
+      const { accessToken, refreshToken } = this.generateTokenPair(user);
       logger.info("Email verification successful", { userId: user.id });
      const returnUser = {...user, role:role.name}
      user.refreshToken = refreshToken
@@ -199,15 +198,15 @@ export class AuthService {
    * @param data - DTO with new password and reset token.
    * @returns New auth tokens.
    */
-  async resetPassword(data: ResetPasswordRequestDto): Promise<LoginAuthServiceReturn> {
+  async resetPassword(data: ResetPasswordRequestDto): Promise<AuthServiceLoginResponse> {
     try {
       logger.info("Password reset process started");
 
-      const user = await this.userService.findUserByResetToken(data.token);
+      const user = await this.userService.findUserByResetToken(data.resetPasswordToken);
       const hashedPassword = await this.passwordService.hashPassword(data.password);
       await this.userService.updateUserPassword(user, hashedPassword);
 
-      const { accessToken, refreshToken } = this.generateTokenPair(user.id);
+      const { accessToken, refreshToken } = this.generateTokenPair(user);
       logger.info("Password reset successful", { userId: user.id });
 
       return this.saveRefreshTokenAndReturn(user, accessToken, refreshToken);
@@ -271,16 +270,10 @@ export class AuthService {
    * @param userId - ID of the user.
    * @returns Object containing access and refresh tokens.
    */
-  private generateTokenPair(userId: number): { accessToken: string; refreshToken: string } {
-    const accessToken = this.tokenService.generateToken(
-      { adminId: userId },
-      this.config.tokenExpiration.login
-    );
+  private generateTokenPair(user:UserWithRole): { accessToken: string; refreshToken: string } {
+    const accessToken = this.tokenService.generateAccessToken(user)
 
-    const refreshToken = this.tokenService.generateToken(
-      { adminId: userId },
-      this.config.tokenExpiration.refresh
-    );
+    const refreshToken = this.tokenService.generateRefreshToken(user);
 
     return { accessToken, refreshToken };
   }
@@ -292,7 +285,9 @@ export class AuthService {
    * @param refreshToken - JWT refresh token.
    * @returns Full login/auth return object.
    */
-  private async saveRefreshTokenAndReturn(user: any, accessToken: string, refreshToken: string): Promise<LoginAuthServiceReturn> {
+  private async saveRefreshTokenAndReturn(user: any, accessToken: string, refreshToken: string): Promise<AuthServiceLoginResponse> {
+    user.refreshToken = refreshToken
+    await user.save()
     
     return { accessToken, user, refreshToken };
   }

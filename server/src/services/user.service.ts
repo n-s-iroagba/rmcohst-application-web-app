@@ -36,9 +36,14 @@ export class UserService {
     }
   }
 
-  async findUserById(id: string|number): Promise<User> {
+  async findUserById(id: string|number): Promise<UserWithRole> {
     try {
-      const user = await User.findByPk(id)
+      const user = await User.findByPk(id,{
+           include:[{
+          model:Role,
+          as:'role'
+        }]
+    })as UserWithRole
 
       if (!user) {
         logger.warn('User not found by ID', { userId: id })
@@ -53,14 +58,18 @@ export class UserService {
     }
   }
 
-  async findUserByResetToken(token: string): Promise<User> {
+  async findUserByResetToken(token: string): Promise<UserWithRole> {
     try {
       const hashedToken = CryptoUtil.hashString(token)
       const user = await User.findOne({
         where: {
           passwordResetToken: hashedToken,
         },
-      })
+         include:[{
+          model:Role,
+          as:'role'
+        }]
+      }) as UserWithRole
 
       if (!user) {
         logger.warn('User not found by reset token or token expired')

@@ -1,51 +1,54 @@
 'use client'
-
 import React, { useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { CustomForm } from '@/components/CustomForm'
 import { useRoutes } from '@/hooks/useRoutes'
 import { useFieldConfigContext } from '@/context/FieldConfigContext'
-import { LoginRequestDto, ResetPasswordRequestDto } from '@/types/auth.types'
-import { SIGNUP_FORM_DEFAULT_DATA } from '@/constants/auth'
+import { ResetPasswordRequestDto } from '@/types/auth.types'
+import { RESET_PASSWORD_DEFAULT_DATA } from '@/constants/auth'
 import { testIdContext } from '@/test/utils/testIdContext'
 
-
-
-const LoginForm: React.FC = () => {
+const ResetPasswordForm: React.FC = () => {
   const {
-    loginRequest,
-    login,
+    resetPasswordRequest,
+    resetPassword,
     loading,
-    signupChangeHandlers,
     error
   } = useAuth()
 
-  const { navigateToHome, navigateToLogin } = useRoutes()
-  const {  setFieldConfigInput,setChangeHandlers } = useFieldConfigContext<Partial<ResetPasswordRequestDto>>()
+  const { navigateToLogin } = useRoutes()
+  const { setFieldConfigInput, setChangeHandlers } = useFieldConfigContext<Partial<ResetPasswordRequestDto>>()
 
-  // Move the context setters inside useEffect to prevent infinite re-renders
   useEffect(() => {
     setFieldConfigInput({
+  
       password: 'password',
-      confirmPassword:'password'
+      confirmPassword: 'password'
     })
-    setChangeHandlers(signupChangeHandlers)
-  }, [setFieldConfigInput])
+  }, [setFieldConfigInput, setChangeHandlers])
 
-// const TEST_ID_BASE = 'signup-form';
-// testIdContext.setContext(SIGNUP_FORM_DEFAULT_DATA, TEST_ID_BASE);
-
+  const TEST_ID_BASE = 'reset-password-form'
+  testIdContext.setContext(RESET_PASSWORD_DEFAULT_DATA, TEST_ID_BASE)
 
   return (
-    <CustomForm 
-      data={loginRequest} 
-      submitHandler={login} 
-      formLabel={'Applicant Sign Up'} 
-      onCancel={navigateToHome} 
-      submiting={loading} 
-      error={error} 
-    />
+    <div className="max-w-md mx-auto">
+      <div className="mb-6 text-center">
+        <h2 className="text-2xl font-bold text-gray-900">Reset Password</h2>
+        <p className="mt-2 text-sm text-gray-600">
+          Enter your new password below.
+        </p>
+      </div>
+      
+      <CustomForm
+        data={resetPasswordRequest}
+        submitHandler={resetPassword}
+        formLabel={'Reset Password'}
+        onCancel={navigateToLogin}
+        submiting={loading}
+        error={error}
+      />
+    </div>
   )
 }
 
-export default LoginForm
+export default ResetPasswordForm

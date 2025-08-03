@@ -14,8 +14,8 @@ import {
   ResetPasswordRequestDto,
   User,
   LoginResponseDto,
-  ResetPasswordResponseDto,
   SignUpResponseDto,
+  ForgotPasswordResponseDto,
 } from '@/types/auth.types';
 
 import {
@@ -102,7 +102,7 @@ export const useAuth = () => {
     changeHandlers: forgotPasswordChangeHandler,
     handlePost: handleForgotPassword,
     posting: forgotPasswordLoading,
-  } = usePost<ForgotPasswordRequestDto, ResetPasswordResponseDto>(
+  } = usePost<ForgotPasswordRequestDto, ForgotPasswordResponseDto>(
     API_ROUTES.AUTH.FORGOT_PASSWORD,
     FORGOT_PASSWORD_DEFAULT_DATA
   );

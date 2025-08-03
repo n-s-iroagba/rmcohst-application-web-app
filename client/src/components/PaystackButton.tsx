@@ -10,14 +10,16 @@ import { useRouter } from 'next/navigation'
 interface PaymentButtonProps {
   email: string
   amount: number
+  programId:number
+  applicantUserId:number
 }
 
-export default function PaymentButton({ email, amount }: PaymentButtonProps) {
+export default function PaymentButton({ email, amount,programId,applicantUserId }: PaymentButtonProps) {
   const router = useRouter()
   const { handlePost, posting } = usePost<
-    { email: string; amount: number },
+    PaymentButtonProps,
     { status: boolean; message: string; data: { access_code: string,reference:string } }
-  >(API_ROUTES.PAYMENT.INITIALIZE_GATEWAY, { email, amount });
+  >(API_ROUTES.PAYMENT.INITIALIZE_GATEWAY, { email, amount,programId,applicantUserId });
   let r:any;
 
   const initiateTransaction = async (e: any) => {

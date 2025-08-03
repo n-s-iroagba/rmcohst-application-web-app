@@ -28,6 +28,8 @@ export interface PaystackInitTransactionResponse {
 export interface PaystackInitTransactionRequest {
   email: string
   amount: number;
+ applicantUserId:number,
+ programId:number 
 }
 
 // Dynamic import for the payment button component
@@ -100,6 +102,8 @@ export default function ProgramDetailsPage() {
         <PaymentButton 
           email={'nnamdisolomon1@gmail.com'}
           amount={program.applicationFeeInNaira}
+          programId={program.id}
+          applicantUserId={Number(user.id)}
         />
       </div>
     </div>

@@ -4,16 +4,19 @@ import { Op } from 'sequelize';
 import { PaystackWebhookEvent } from '../types/PaystackVerification';
 import ApplicationService from './ApplicationService';
 import { PaystackVerificationResponse } from '../types/PaystackVerification';
-import logger from '../utils/logger'; // Ensure your logger path is correct
+import logger from '../utils/logger';
 import { AdmissionSession } from '../models';
 import { NotFoundError } from '../utils/errors';
+import AdmissionSessionService from './AcademicSessionService';
 
 const PAYSTACK_KEY = process.env.PAYSTACK_SECRET_KEY || 'sk_test_afebde26ed66d974615c5b212af460dbdde8507d';
 const applicationService = new ApplicationService();
-
+interface InitializePayment  { email: string; amount: number,applicantUserId:number,programId:number }
 export class PaymentService {
-  static async initializePayment(data: { email: string; amount: number }) {
+  static async initializePayment(data:InitializePayment) {
     try {
+      const session = await AdmissionSessionService.getCurrentSession()
+      if (!session) throw new NotFoundError('Session not found')
       const { email, amount } = data;
       return await axios.post(
         'https://api.paystack.co/transaction/initialize',
@@ -22,9 +25,9 @@ export class PaymentService {
           amount: amount * 100,
           callback_url: '',
           metadata:{
-            sessionId:1,
-            applicantUserId:1,
-            programId:2
+            sessionId:session.id,
+            applicantUserId:data.applicantUserId,
+            programId:data.programId
           }
         },
         {
@@ -56,13 +59,11 @@ export class PaymentService {
           },
         }
       );
-     console.log(response.data)
+    
       const { status, data: responseData } = response.data;
-      const  existingPayment = await Payment.findOne({where:{reference}})
-      if(!existingPayment){
-        console.log('status   kkkkkkkkkkk',status)
-
-       const metadata = responseData.metadata;
+         const metadata = responseData.metadata;
+      if (status){
+    
         await this.handleSuccessfulPayment({
           applicantUserId: metadata.applicantUserId,
           sessionId: metadata.sessionId,
@@ -70,23 +71,20 @@ export class PaymentService {
           amount: responseData.amount,
           paidAt: responseData.paid_at,
           reference: responseData.reference,
-          status:status?'PAID':'PENDING',
+          status:'PAID',
           webhookEvent: 'verify.success',
         });
-      }
-      
-      // const metadata = responseData.metadata;
-      //   await this.handleSuccessfulPayment({
-      //     applicantUserId: metadata.applicantUserId,
-      //     sessionId: metadata.sessionId,
-      //     programId: metadata.programId,
-      //     amount: responseData.amount,
-      //     paidAt: responseData.paid_at,
-      //     reference: responseData.reference,
-      //     webhookEvent: 'verify.success',
-      //   });
-      if (status && responseData.status === 'success') {
- 
+      }else{
+           await this.createPaymentRecord({
+        applicantUserId: metadata.applicantUserId,
+        sessionId: metadata.sessionId,
+        programId: metadata.programId,
+        amount: responseData.amount,
+        paidAt: responseData.paid_at,
+        reference: responseData.reference,
+        webhookEvent: 'verify.failed',
+        status: 'PENDING',
+      });
       }
 
       return response.data;
@@ -101,44 +99,53 @@ export class PaymentService {
   }
 
   static async processEvent(payload: PaystackWebhookEvent) {
-    const { event, data } = payload;
-    const { metadata } = data;
+    const { event, data: responseData } = payload;
+    const { metadata } = responseData;
 
     try {
-      if (event === 'charge.success' && data.status === 'success') {
-        // await this.handleSuccessfulPayment({
-        //   applicantUserId: metadata.applicantUserId,
-        //   sessionId: metadata.sessionId,
-        //   programId: metadata.programId,
-        //   amount: data.amount,
-        //   paidAt: data.paid_at,
-        //   reference: data.reference,
-        //   webhookEvent: event,
-        // });
-        return true;
+      
+         const metadata = responseData.metadata;
+      if (event=="charge.success"){
+    
+        await this.handleSuccessfulPayment({
+          applicantUserId: metadata.applicantUserId,
+          sessionId: metadata.sessionId,
+          programId: metadata.programId,
+          amount: responseData.amount,
+          paidAt: responseData.paid_at,
+          reference: responseData.reference,
+          status:'PAID',
+          webhookEvent: 'verify.success',
+        });
+          return true;
+      }else{
+        const reference = responseData.reference
+         const existing = await Payment.findOne({ where: { reference } });
+      if (existing) {
+         existing.status ='FAILED'
+         await existing.save()
       }
 
-      // await this.createPaymentRecord({
-      //   applicantUserId: metadata.applicantUserId,
-      //   sessionId: metadata.sessionId,
-      //   programId: metadata.programId,
-      //   amount: data.amount,
-      //   paidAt: data.paid_at,
-      //   reference: data.reference,
-      //   webhookEvent: event,
-      //   status: 'FAILED',
-      // });
-
-      return false;
-    } catch (error: any) {
-      logger.error('Paystack processEvent error', {
-        message: error.message,
-        event,
-        payload,
-        response: error.response?.data,
+        await this.createPaymentRecord({
+        applicantUserId: metadata.applicantUserId,
+        sessionId: metadata.sessionId,
+        programId: metadata.programId,
+        amount: responseData.amount,
+        paidAt: responseData.paid_at,
+        reference: responseData.reference,
+        webhookEvent: 'verify.failed',
+        status: 'PENDING',
       });
-      throw error;
-    }
+      return false
+      }
+
+      
+      }catch(error){
+        throw error
+      }
+
+   
+
   }
 
   private static async handleSuccessfulPayment(data: {
@@ -153,9 +160,7 @@ export class PaymentService {
   }) {
     const { reference } = data;
     try {
-      const existing = await Payment.findOne({ where: { reference } });
-      if (existing) return;
-
+      
       const application = await applicationService.createInitialApplication({
         sessionId: data.sessionId,
         programId: data.programId,

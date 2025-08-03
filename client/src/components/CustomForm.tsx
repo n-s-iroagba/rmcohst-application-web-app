@@ -4,11 +4,18 @@ import { FieldsConfig } from '@/types/fields_config';
 import ErrorAlert from './ErrorAlert';
 import { testIdContext } from '@/test/utils/testIdContext';
 
+// Define the type for additional actions
+interface AdditionalAction {
+  label: string;
+  onClick: () => void;
+  type: 'button' | 'link';
+  className?: string;
+}
+
 // Generic Custom Form
 export function CustomForm<T extends Record<string, any>>({
   data,
   errors = {},
-
   submitHandler,
   icon,
   submitButtonLabel = 'Submit',
@@ -17,10 +24,10 @@ export function CustomForm<T extends Record<string, any>>({
   formLabel,
   error,
   onCancel,
+  additionalActions = [],
 }: {
   data: T;
   errors?: Partial<Record<keyof T, string>>;
-
   submitHandler: (e: React.FormEvent<HTMLFormElement>) => void;
   icon?: React.ReactNode;
   formLabel: string;
@@ -29,24 +36,30 @@ export function CustomForm<T extends Record<string, any>>({
   onCancel: () => void;
   submiting: boolean;
   error: string;
+  additionalActions?: AdditionalAction[];
 }) {
   const { SUBMIT_BUTTON_TEST_ID } = testIdContext.getContext();
+  
   return (
     <form
       onSubmit={submitHandler}
       className="w-full max-w-4xl my-16 mx-auto px-4 py-10 bg-slate-100 shadow-2xl rounded-2xl border border-slate-200"
     >
-      {' '}
       {error && <ErrorAlert message={error} />}
+      
       {/* Icon Display */}
       {icon && ( 
         <div className="flex justify-center mb-6 text-slate-600">{icon}</div>
       )}
-      {/* Title if needed */}
+      
+      {/* Title */}
       <h2 className="text-2xl font-bold mb-8 text-center text-slate-800 uppercase tracking-wide">
         {formLabel}
       </h2>
+      
       <FieldRenderer data={data} errors={errors} />
+      
+      {/* Form Action Buttons */}
       <div className="flex justify-end gap-4 mt-8">
         {onCancel && (
           <button
@@ -61,10 +74,32 @@ export function CustomForm<T extends Record<string, any>>({
           type="submit"
           className="bg-slate-700 hover:bg-slate-800 text-white font-semibold px-6 py-2 rounded transition"
           data-testid={SUBMIT_BUTTON_TEST_ID}
+          disabled={submiting}
         >
           {submiting ? 'Submitting...' : submitButtonLabel}
         </button>
       </div>
+      
+      {/* Additional Actions */}
+      {additionalActions.length > 0 && (
+        <div className="flex flex-col items-center gap-2 mt-6 pt-6 border-t border-slate-300">
+          {additionalActions.map((action, index) => (
+            <button
+              key={index}
+              type="button"
+              onClick={action.onClick}
+              className={
+                action.className ||
+                (action.type === 'link'
+                  ? 'text-blue-600 hover:text-blue-800 hover:underline text-sm font-medium transition-colors'
+                  : 'bg-transparent hover:bg-slate-50 text-slate-700 font-medium px-4 py-2 rounded border border-slate-300 transition-colors text-sm')
+              }
+            >
+              {action.label}
+            </button>
+          ))}
+        </div>
+      )}
     </form>
   );
 }

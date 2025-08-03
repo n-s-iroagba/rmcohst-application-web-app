@@ -2,7 +2,7 @@ export type UserRole = 'admin' | 'applicant' | 'head-of-admissions'|'admission-o
 
 export interface User {
   id: string;
-  firstName: string;
+  username: string;
   role: UserRole;
   email:string
 }
@@ -56,5 +56,6 @@ export interface ResetPasswordRequestDto {
   password: string
   confirmPassword: string
 }
+
 export interface ResendVerificationRequestDto extends SignUpResponseDto{}
 export interface ResendVerificationRespnseDto extends SignUpResponseDto{}

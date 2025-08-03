@@ -17,8 +17,8 @@ export interface Application {
   programId: number
   biodataId: number
   biodata: Biodata
-  sscQualifications: ApplicantSSCQualification[]
-  programSpecificQualifications: ApplicationProgramSpecificQualification[]
+  sscQualification: ApplicantSSCQualification
+  programSpecificQualifications: ApplicationProgramSpecificQualification
   
   sessionId: number
   assignedOfficerId?: string

@@ -58,28 +58,35 @@ export class PaymentService {
       );
      console.log(response.data)
       const { status, data: responseData } = response.data;
+      const  existingPayment = await Payment.findOne({where:{reference}})
+      if(!existingPayment){
+        console.log('status   kkkkkkkkkkk',status)
+
+       const metadata = responseData.metadata;
+        await this.handleSuccessfulPayment({
+          applicantUserId: metadata.applicantUserId,
+          sessionId: metadata.sessionId,
+          programId: metadata.programId,
+          amount: responseData.amount,
+          paidAt: responseData.paid_at,
+          reference: responseData.reference,
+          status:status?'PAID':'PENDING',
+          webhookEvent: 'verify.success',
+        });
+      }
       
-      const metadata = responseData.metadata;
-        await this.handleSuccessfulPayment({
-          applicantUserId: metadata.applicantUserId,
-          sessionId: metadata.sessionId,
-          programId: metadata.programId,
-          amount: responseData.amount,
-          paidAt: responseData.paid_at,
-          reference: responseData.reference,
-          webhookEvent: 'verify.success',
-        });
+      // const metadata = responseData.metadata;
+      //   await this.handleSuccessfulPayment({
+      //     applicantUserId: metadata.applicantUserId,
+      //     sessionId: metadata.sessionId,
+      //     programId: metadata.programId,
+      //     amount: responseData.amount,
+      //     paidAt: responseData.paid_at,
+      //     reference: responseData.reference,
+      //     webhookEvent: 'verify.success',
+      //   });
       if (status && responseData.status === 'success') {
-        const metadata = responseData.metadata;
-        await this.handleSuccessfulPayment({
-          applicantUserId: metadata.applicantUserId,
-          sessionId: metadata.sessionId,
-          programId: metadata.programId,
-          amount: responseData.amount,
-          paidAt: responseData.paid_at,
-          reference: responseData.reference,
-          webhookEvent: 'verify.success',
-        });
+ 
       }
 
       return response.data;
@@ -99,28 +106,28 @@ export class PaymentService {
 
     try {
       if (event === 'charge.success' && data.status === 'success') {
-        await this.handleSuccessfulPayment({
-          applicantUserId: metadata.applicantUserId,
-          sessionId: metadata.sessionId,
-          programId: metadata.programId,
-          amount: data.amount,
-          paidAt: data.paid_at,
-          reference: data.reference,
-          webhookEvent: event,
-        });
+        // await this.handleSuccessfulPayment({
+        //   applicantUserId: metadata.applicantUserId,
+        //   sessionId: metadata.sessionId,
+        //   programId: metadata.programId,
+        //   amount: data.amount,
+        //   paidAt: data.paid_at,
+        //   reference: data.reference,
+        //   webhookEvent: event,
+        // });
         return true;
       }
 
-      await this.createPaymentRecord({
-        applicantUserId: metadata.applicantUserId,
-        sessionId: metadata.sessionId,
-        programId: metadata.programId,
-        amount: data.amount,
-        paidAt: data.paid_at,
-        reference: data.reference,
-        webhookEvent: event,
-        status: 'FAILED',
-      });
+      // await this.createPaymentRecord({
+      //   applicantUserId: metadata.applicantUserId,
+      //   sessionId: metadata.sessionId,
+      //   programId: metadata.programId,
+      //   amount: data.amount,
+      //   paidAt: data.paid_at,
+      //   reference: data.reference,
+      //   webhookEvent: event,
+      //   status: 'FAILED',
+      // });
 
       return false;
     } catch (error: any) {
@@ -139,6 +146,7 @@ export class PaymentService {
     sessionId: number;
     programId: number;
     amount: number;
+    status:'PAID'|'PENDING'
     paidAt: string;
     reference: string;
     webhookEvent: string;
@@ -157,7 +165,7 @@ export class PaymentService {
       await this.createPaymentRecord({
         ...data,
         applicationId: application.id,
-        status: 'PAID',
+      
       });
   
     } catch (error: any) {
@@ -178,7 +186,7 @@ export class PaymentService {
     paidAt: string;
     reference: string;
     webhookEvent: string;
-    status: 'PAID' | 'FAILED';
+    status: 'PAID' | 'PENDING';
     applicationId?: number;
   }) {
     try {

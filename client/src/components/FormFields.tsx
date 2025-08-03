@@ -121,13 +121,16 @@ export const TextareaField: React.FC<TextareaProps> = ({
     {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
   </div>
 );
+export interface SelectOption {
+  id: string|number;
+  label: string;
+}
 
 interface SelectFieldProps extends BaseFieldProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  options: string[];
+  options: SelectOption[];
 }
-
 export const SelectField: React.FC<SelectFieldProps> = ({
   name,
   label,
@@ -150,15 +153,16 @@ export const SelectField: React.FC<SelectFieldProps> = ({
       className="w-full border rounded px-3 py-2"
     >
       <option value="">Select {label}</option>
-      {options?.map((opt) => (
-        <option key={opt} value={opt}>
-          {opt}
+      {options.map((opt) => (
+        <option className='text-black' key={opt.id} value={opt.id}>
+          {opt.label}
         </option>
       ))}
     </select>
     {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
   </div>
-);
+)
+
 
 interface CheckboxFieldProps extends BaseFieldProps {
   checked: boolean;

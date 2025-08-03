@@ -15,10 +15,10 @@ import { Staff } from '../models/Staff'
 import User from '../models/User'
 import { BadRequestError, ForbiddenError, NotFoundError } from '../utils/errors'
 import logger from '../utils/logger'
-import { FileData } from './DriveService'
 import { ApplicationCreationAttributes, ApplicationStatus } from '../models/Application'
-import ProgramSession from '../models/ProgramSession'
 import Payment from '../models/Payment'
+import { FullApplication } from '../types/models'
+import GoogleDriveApplicationService from './DriveService'
 
 interface ApplicationFilters {
   status?: string
@@ -33,6 +33,12 @@ export type ApplicationPaymentStatus = {
   payment:Payment[]
 }
 class ApplicationService {
+  private googleDriveService: GoogleDriveApplicationService
+
+// Add this to your constructor
+constructor() {
+  this.googleDriveService = new GoogleDriveApplicationService()
+}
 
   public async getApplcationPaymentStatus(userId:string):Promise<ApplicationPaymentStatus>{
     const currentSession = await AdmissionSession.findOne({where:{
@@ -70,7 +76,7 @@ return {status:'NO-PAYMENT',payment:[]}
           sessionId: data.sessionId,
         },
       })
-
+ 
       if (existingApplication)
         throw new BadRequestError(
           'Application already exists for this user in this academic session.'
@@ -107,7 +113,7 @@ return {status:'NO-PAYMENT',payment:[]}
   }
 
   // Get application by ID with all related data
-  public async getApplicationDetailsById(id:string,shouldThrowErrorIfNotFound:boolean=false): Promise<Application|null> {
+  public async getApplicationDetailsById(id:string,shouldThrowErrorIfNotFound:boolean=false): Promise<FullApplication|null> {
    
     try {
       const application = await Application.findByPk(id,{
@@ -126,6 +132,7 @@ return {status:'NO-PAYMENT',payment:[]}
           },
           { model: Biodata, as: 'biodata' },
           { model: AdmissionSession, as: 'academicSession' },
+            { model: ApplicantSSCQualification, as: 'sscQualification' },
           {
             model: ApplicantProgramSpecificQualification,
                     as: 'programSpecificQualifications',
@@ -149,7 +156,7 @@ return {status:'NO-PAYMENT',payment:[]}
           //   ],
           // },
         ],
-      });
+      })as FullApplication
 
 
       if (!application && shouldThrowErrorIfNotFound) {
@@ -241,7 +248,7 @@ return {status:'NO-PAYMENT',payment:[]}
   }
 
   // Final submission by applicant
-  public async finalizeApplicantSubmissionTypeSafe(
+  public async finalizeApplicantSubmission(
     applicationId: string,
     applicantUserId: number
   ): Promise<any> {
@@ -450,24 +457,7 @@ return {status:'NO-PAYMENT',payment:[]}
       throw error
     }
   }
-  /**
-   * Convert multer file to FileData interface
-   */
-  multerFileToFileData(file: Express.Multer.File | Buffer): FileData {
-    if (Buffer.isBuffer(file)) {
-      return {
-        filename: 'unknown.jpg', // fallback
-        buffer: file,
-        mimetype: 'image/jpeg', // assume or infer
-      }
-    }
 
-    return {
-      filename: file.originalname,
-      buffer: file.buffer,
-      mimetype: file.mimetype,
-    }
-  }
 
   // Get application by ID with all related data
   static async getApplicationById(id: number) {
@@ -485,7 +475,7 @@ return {status:'NO-PAYMENT',payment:[]}
           },
           { model: Staff, as: 'Staff' },
         ],
-      })
+      }) as FullApplication
 
       if (!application) {
         throw new NotFoundError('Application not found')

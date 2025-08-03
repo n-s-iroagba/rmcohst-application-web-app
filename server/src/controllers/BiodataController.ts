@@ -130,6 +130,7 @@ class BiodataController {
         'nationality',
         'stateOfOrigin',
         'lga',
+        'passportPhotograph',
         'homeTown',
         'phoneNumber',
         'emailAddress',
@@ -146,6 +147,10 @@ class BiodataController {
           updateData[field as keyof UpdateBiodataInput] = req.body[field]
         }
       })
+
+      if(req.file){
+        updateData['passportPhotograph']=req.file.buffer
+      }
 
       // Handle date conversion if dateOfBirth is provided
       if (updateData.dateOfBirth && typeof updateData.dateOfBirth === 'string') {
@@ -237,6 +242,9 @@ class BiodataController {
           updateData[field as keyof UpdateBiodataInput] = req.body[field]
         }
       })
+       if(req.file){
+        updateData['passportPhotograph']=req.file.buffer
+      }
 
       // Handle date conversion if dateOfBirth is provided
       if (updateData.dateOfBirth && typeof updateData.dateOfBirth === 'string') {

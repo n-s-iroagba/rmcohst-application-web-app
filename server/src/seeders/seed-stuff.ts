@@ -9,8 +9,8 @@ import Subject from "../models/Subject";
 
 async function seedDatabase() {
   try {
-    await Subject.drop()
-    await Subject.sync()
+    // await Subject.drop()
+    // await Subject.sync()
 
     // Create Subjects (common subjects for SSC requirements)
     const subjects = await Subject.bulkCreate([

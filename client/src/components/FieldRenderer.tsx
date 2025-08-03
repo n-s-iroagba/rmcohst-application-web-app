@@ -95,19 +95,23 @@ export function FieldRenderer<T extends Record<string, any>>({
               />
             );
 
-          // case 'select':
-          //   return (
-          //     <SelectField
-          //       key={key}
-          //       name={key}
-          //       label={formatCamelCase(key)}
-          //       value={value}
-          //       options={config.options}
-          //       onChange={(e: any) => onChange(e, index)}
-          //       error={error}
-          //       testId={testId}
-          //     />
-          //   );
+          case 'select':
+            // if(!config.options){
+            //   console.error('no options');
+            //   return null;
+            // }
+            return (
+              <SelectField
+                key={key}
+                name={key}
+                label={formatCamelCase(key)}
+                value={value}
+                options={config.options||[]}
+                onChange={(e: any) => onChange(e, index)}
+                error={error}
+                testId={testId}
+              />
+            );
 
           case 'double-select':
             if (!config.fieldGroup) {

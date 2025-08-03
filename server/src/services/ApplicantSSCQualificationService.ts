@@ -1,109 +1,132 @@
-// import ApplicantSSCQualification from '../models/ApplicantSSCQualification'
-// import { AppError } from '../utils/error/AppError'
-// import logger from '../utils/logger/logger'
-// import { ApplicantSubjectAndGradeDto } from '../dtos/request/ApplicantSubjectAndGrade'
-// import { Application } from '../models/Application'
-// import Program from '../models/Program'
-// import ApplicantSSCSubjectAndGrade from '../models/ApplicantSSCSubjectAndGrade'
-// import Grade from '../models/Grade'
+import ApplicantSSCQualification from '../models/ApplicantSSCQualification'
+import logger from '../utils/logger'
+import { idParamSchema } from '../validation/faculty.validationSchemas'
 
-// class ApplicantSSCQualificationService {
-//   public static async create(applicationId: number): Promise<ApplicantSSCQualification> {
-//     try {
-//       const qualification = await ApplicantSSCQualification.create({ applicationId })
-//       logger.info(`SSC Qualification created with ID ${qualification.id}`)
-//       return qualification
-//     } catch (error: any) {
-//       logger.error(`Failed to create SSC Qualification: ${error.message}`)
-//       throw new AppError('Failed to create SSC Qualification', 500)
-//     }
-//   }
+class ApplicantSSCQualificationService {
+  public static async create(applicationId: number): Promise<ApplicantSSCQualification> {
+    try {
+      const qualification = await ApplicantSSCQualification.create({ applicationId })
+      logger.info(`SSC Qualification created with ID ${qualification.id}`)
+      return qualification
+    } catch (error: any) {
+      logger.error(`Failed to create SSC Qualification: ${error.message}`)
+      throw error
+    }
+  }
 
-//   /**
-//    *
-//    * Update SSC Qualification by ID
-//    */
-//   public static async update(
-//     id: number,
-//     updates: Partial<{
-//       certificateTypes: string[]
-//       certificates: Buffer[]
-//       numberOfSittings: number
-//       minimumGrade: string
-//       subjectsAndGrades: ApplicantSubjectAndGradeDto[]
-//     }>
-//   ): Promise<ApplicantSSCQualification> {
-//     const qualification = await ApplicantSSCQualification.findByPk(id)
-//     if (!qualification) {
-//       throw new AppError(`SSC Qualification with ID ${id} not found`, 404)
-//     }
+  public static async update(
+    id: number,
+    updateData: any,
+    files?: Express.Multer.File[]
+  ): Promise<ApplicantSSCQualification> {
+    try {
+      // Find the existing qualification
+      const existingQualification = await ApplicantSSCQualification.findByPk(id)
+      if (!existingQualification) {
+        throw new Error(`SSC Qualification with ID ${id} not found`)
+      }
 
-//     const application = await Application.findByPk(qualification.applicationId)
-//     if (!application) {
-//       throw new AppError(`Application for SSC Qualification ID ${id} not found`, 404)
-//     }
+      const {
+        applicationId,
+        numberOfSittings,
+        certificateTypes,
+        firstSubjectId,
+        firstSubjectGrade,
+        secondSubjectId,
+        secondSubjectGrade,
+        thirdSubjectId,
+        thirdSubjectGrade,
+        fourthSubjectId,
+        fourthSubjectGrade,
+        fifthSubjectId,
+        fifthSubjectGrade,
+        ...otherFields
+      } = updateData
 
-//     const program = await Program.findByPk(application.programId)
-//     if (!program) {
-//       throw new AppError(`Program for Application ID ${application.id} not found`, 404)
-//     }
+      // Handle certificate files if provided
+      let certificates: any[] = existingQualification.certificates || []
+      
+      if (files && files.length > 0) {
+        if (numberOfSittings && files.length !== Number(numberOfSittings)) {
+          logger.error(
+            `File count mismatch: expected ${numberOfSittings}, got ${files.length}`
+          )
+          throw new Error('Number of files must match number of sittings.')
+        }
 
-//     const programSSCRequirements = await program.getSSCQualification()
-//     const programSubjectsAndGrades = await programSSCRequirements.getSSCSubjectMinimumGrades() // Presumably for validation (currently unused)
+        certificates = files.map(file => ({
+          fileName: file.originalname,
+          mimeType: file.mimetype,
+          size: file.size,
+          buffer: file.buffer.toString('base64'),
+        }))
+      }
 
-//     const existingSubjectsAndGrades = await qualification.getApplicantSubjectAndGrades()
+      // Parse certificateTypes if it's a string
+      let parsedCertificateTypes = certificateTypes
+      if (typeof certificateTypes === 'string') {
+        try {
+          parsedCertificateTypes = JSON.parse(certificateTypes)
+        } catch (parseError) {
+          logger.error('Failed to parse certificateTypes JSON')
+          throw new Error('Invalid certificateTypes format')
+        }
+      }
 
-//     if (updates.subjectsAndGrades && Array.isArray(updates.subjectsAndGrades)) {
-//       for (const updateEntry of updates.subjectsAndGrades) {
-//         const programRequirement = programSubjectsAndGrades.find(
-//           req => req.subjectId === updateEntry.subjectId
-//         )
+      // Prepare update data
+      const updatePayload = {
+        ...(applicationId && { applicationId }),
+        ...(numberOfSittings && { numberOfSittings: Number(numberOfSittings) }),
+        ...(parsedCertificateTypes && { certificateTypes: parsedCertificateTypes }),
+        certificates,
+        ...(firstSubjectId && { firstSubjectId: Number(firstSubjectId) }),
+        ...(firstSubjectGrade && { firstSubjectGrade }),
+        ...(secondSubjectId && { secondSubjectId: Number(secondSubjectId) }),
+        ...(secondSubjectGrade && { secondSubjectGrade }),
+        ...(thirdSubjectId && { thirdSubjectId: Number(thirdSubjectId) }),
+        ...(thirdSubjectGrade && { thirdSubjectGrade }),
+        ...(fourthSubjectId && { fourthSubjectId: Number(fourthSubjectId) }),
+        ...(fourthSubjectGrade && { fourthSubjectGrade }),
+        ...(fifthSubjectId && { fifthSubjectId: Number(fifthSubjectId) }),
+        ...(fifthSubjectGrade && { fifthSubjectGrade }),
+        ...otherFields,
+      }
 
-//         if (!programRequirement) {
-//           throw new AppError(
-//             `Subject with ID ${updateEntry.subjectId} is not part of the program requirements.`,
-//             400
-//           )
-//         }
+      // Update the qualification
+      await existingQualification.update(updatePayload)
 
-//         const requiredGrade = await Grade.findByPk(programRequirement.gradeId)
-//         const applicantGrade = await Grade.findByPk(updateEntry.gradeId)
+      // Fetch and return the updated qualification
+      const updatedQualification = await ApplicantSSCQualification.findByPk(id)
+      
+      logger.info(`SSC Qualification updated for ID ${id}`)
+      return updatedQualification!
+    } catch (error: any) {
+      logger.error('Failed to update SSC Qualification', error)
+      throw error
+    }
+  }
 
-//         if (!requiredGrade || !applicantGrade) {
-//           throw new AppError(`Invalid grade ID provided.`, 400)
-//         }
+  public static async findById(id: number): Promise<ApplicantSSCQualification | null> {
+    try {
+      const qualification = await ApplicantSSCQualification.findByPk(id)
+      return qualification
+    } catch (error: any) {
+      logger.error(`Failed to find SSC Qualification with ID ${id}: ${error.message}`)
+      throw error
+    }
+  }
 
-//         // Check if applicant's grade is equal or better (lower gradePoint is better)
-//         if (applicantGrade.gradePoint > requiredGrade.gradePoint) {
-//           throw new AppError(
-//             `Grade for subject ID ${updateEntry.subjectId} does not meet minimum requirement.`,
-//             400
-//           )
-//         }
+  public static async findByApplicationId(applicationId: number): Promise<ApplicantSSCQualification | null> {
+    try {
+      const qualification = await ApplicantSSCQualification.findOne({
+        where: { applicationId }
+      })
+      return qualification
+    } catch (error: any) {
+      logger.error(`Failed to find SSC Qualification for application ${applicationId}: ${error.message}`)
+      throw error
+    }
+  }
+}
 
-//         const existingEntry = existingSubjectsAndGrades.find(
-//           entry => entry.subjectId === updateEntry.subjectId
-//         )
-
-//         if (existingEntry) {
-//           await existingEntry.update({ gradeId: updateEntry.gradeId })
-//         } else {
-//           await ApplicantSSCSubjectAndGrade.create({
-//             subjectId: updateEntry.subjectId,
-//             gradeId: updateEntry.gradeId,
-//             applicantSSCQualificationId: qualification.id,
-//           })
-//         }
-//       }
-//     }
-
-//     // Update remaining fields on qualification (excluding subjectsAndGrades)
-//     const { subjectsAndGrades, ...otherUpdates } = updates
-//     await qualification.update(otherUpdates)
-
-//     logger.info(`SSC Qualification with ID ${id} updated`)
-//     return qualification
-//   }
-// }
-
-// export default ApplicantSSCQualificationService
+export default ApplicantSSCQualificationService

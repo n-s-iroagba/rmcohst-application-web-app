@@ -2,7 +2,7 @@
 
 import AdmissionSession from "./AdmissionSession"
 import ApplicantProgramSpecificQualification from "./ApplicantProgramSpecificQualification"
-import ApplicantSSCQualification from "./ApplicantSSCQualification"
+import ApplicantSSCQualification, { SSCQualification } from "./ApplicantSSCQualification"
 import { Application } from "./Application"
 import Biodata from "./Biodata"
 import { Department } from "./Department"
@@ -13,6 +13,7 @@ import ProgramSpecificRequirement from "./ProgramSpecificRequirement"
 import { ProgramSSCRequirement } from "./ProgramSSCRequirement"
 import Role from "./Role"
 import RolePermission from "./RolePermission"
+import Subject from "./Subject"
 import User from "./User"
 
 
@@ -173,6 +174,8 @@ export default function setupAssociations() {
     onDelete: 'CASCADE',
   })
 
+
+
   ApplicantSSCQualification.belongsTo(Application, {
     foreignKey: 'applicationId',
     as: 'application',
@@ -191,6 +194,46 @@ export default function setupAssociations() {
     as: 'application',
     onDelete: 'CASCADE',
   })
+
+
+ 
+
+      SSCQualification.hasMany(Subject, {
+    foreignKey: 'firstSubjectId',
+    as: 'firstSubject'
+  })
+      SSCQualification.hasMany(Subject, {
+    foreignKey: 'secondSubjectId',
+    as: 'secondSubject'
+  })
+      SSCQualification.hasMany(Subject, {
+    foreignKey: 'thirdSubjectId',
+    as: 'thirdSubject'
+  })
+      SSCQualification.hasMany(Subject, {
+    foreignKey: 'alternateThirdSubjectId',
+    as: 'alternateThirdSubject'
+  })
+      SSCQualification.hasMany(Subject, {
+    foreignKey: 'fourthSubjectId',
+    as: 'fourthSubject'
+  })
+
+      SSCQualification.hasMany(Subject, {
+    foreignKey: 'alternateFourthSubjectId',
+    as: 'alternateFourthSubject'
+  })
+      SSCQualification.hasMany(Subject, {
+    foreignKey: 'fifthSubjectId',
+    as: 'fifthSubject'
+  })
+
+
+
+//   CertificateFile.belongsTo(SSCQualification, {
+//     foreignKey: 'sscQualificationId',
+//     as: 'sscQualification'
+//   })
 
   // Reverse associations
   User.hasMany(Application, {

@@ -82,7 +82,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
           defaultValue: false,
         },
         verificationToken: {
-          type: DataTypes.STRING,
+          type: DataTypes.STRING(400),
           allowNull: true,
         },
         verificationCode: {
@@ -91,11 +91,11 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
         },
 
         passwordResetToken: {
-          type: DataTypes.STRING,
+          type: DataTypes.STRING(400),
           allowNull: true,
         },
         refreshToken: {
-          type: DataTypes.STRING,
+          type: DataTypes.STRING(400),
           allowNull:true
         },
 

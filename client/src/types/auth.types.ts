@@ -19,45 +19,42 @@ export interface SignUpRequestDto {
   confirmPassword: string;
 }
 
+
+export type SignUpResponseDto = {
+  verificationToken: string
+  id:number
+}
+export interface VerifyEmailRequestDto {
+  verificationCode: string
+  verificationToken: string
+}
+export interface LoginRequestDto {
+  email: string
+  password: string
+}
+export type AuthServiceLoginResponse = {
+  user:User
+  accessToken: string
+  refreshToken: string
+}
+
+export type LoginResponseDto = {
+  accessToken: string
+  user:User
+}
+
 export interface ForgotPasswordRequestDto {
-  email: string;
+  email: string
+}
+
+export type ForgotPasswordResponseDto = {
+  resetPasswordToken: string
 }
 
 export interface ResetPasswordRequestDto {
-  token: string;
-  password: string;
-  confirmPassword: string;
+  resetPasswordToken: string
+  password: string
+  confirmPassword: string
 }
-
-export interface VerifyEmailRequestDto {
-  id:string
-  code: string
-  token: string
-}
-export interface ResendVerificationRequestDto {
-  id:string
-  token: string;
-}
-
-export type SignUpResponseDto = {
-  id:string
-  verificationToken: string;
-};
-
-export type LoginResponseDto = {
-  accessToken: string;
-  user: User;
-};
-
-export type ResetPasswordResponseDto = {
-  resetPasswordToken: string;
-};
-export interface ResendVerificationRespnseDto {
-  id:string
-  token: string
-}
-
-export interface ForgotPasswordRequestDto {
-  email: string;
-}
-
+export interface ResendVerificationRequestDto extends SignUpResponseDto{}
+export interface ResendVerificationRespnseDto extends SignUpResponseDto{}

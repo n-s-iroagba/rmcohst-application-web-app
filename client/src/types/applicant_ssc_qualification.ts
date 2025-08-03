@@ -15,8 +15,9 @@ export interface ApplicantSSCQualification {
   fourthSubjectGrade: Grade
   fifthSubjectId: number
   fifthSubjectGrade: Grade
+  completed:boolean
 }
 
 
 
-export interface SSCQualificationFormData extends Omit<ApplicantSSCQualification,'id'>{}
+export interface SSCQualificationFormData extends Omit<ApplicantSSCQualification,'id'|'applicationId'|'isComplete'>{}

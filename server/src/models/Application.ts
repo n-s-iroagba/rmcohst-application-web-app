@@ -23,7 +23,6 @@ export interface ApplicationAttributes {
   adminComments?: string
   hoaComments?: string
   submittedAt?: Date
-
   createdAt?: Date
   updatedAt?: Date
 }

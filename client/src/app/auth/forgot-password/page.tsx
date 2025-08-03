@@ -1,19 +1,51 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { CustomForm } from '@/components/CustomForm'
-import {  FieldType } from '@/types/fields_config'
+import { useRoutes } from '@/hooks/useRoutes'
+import { useFieldConfigContext } from '@/context/FieldConfigContext'
+import { ForgotPasswordRequestDto, LoginRequestDto } from '@/types/auth.types'
+import { SIGNUP_FORM_DEFAULT_DATA } from '@/constants/auth'
+import { testIdContext } from '@/test/utils/testIdContext'
 
-const ForgotPasswordFormPage = () => {
 
 
-  
+const ForgotPasswordPage: React.FC = () => {
+  const {
+    loginRequest,
+    login,
+    loading,
+    signupChangeHandlers,
+    error
+  } = useAuth()
+
+  const { navigateToHome, navigateToLogin } = useRoutes()
+  const {  setFieldConfigInput,setChangeHandlers } = useFieldConfigContext<ForgotPasswordRequestDto>()
+
+  // Move the context setters inside useEffect to prevent infinite re-renders
+  useEffect(() => {
+    setFieldConfigInput({
+       email: 'email',
+    })
+    setChangeHandlers(signupChangeHandlers)
+  }, [setFieldConfigInput])
+
+// const TEST_ID_BASE = 'signup-form';
+// testIdContext.setContext(SIGNUP_FORM_DEFAULT_DATA, TEST_ID_BASE);
+
+
   return (
-    <></>
-    // <CustomForm data={forgotPasswordData} fieldsConfig={fieldsConfig} onSubmit={handleSubmitForgotPassword} formLabel={'Enter Email'}
-    // onCancel={handleCancel} submiting={submitting} error={apiError}/>
+    <CustomForm 
+      data={loginRequest} 
+      submitHandler={login} 
+      formLabel={'Applicant Sign Up'} 
+      onCancel={navigateToHome} 
+      submiting={loading} 
+      error={error} 
+    />
   )
 }
 
-export default ForgotPasswordFormPage
+export default ForgotPasswordPage
+

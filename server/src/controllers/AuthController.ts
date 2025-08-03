@@ -115,7 +115,11 @@ export class AuthController {
       res.cookie('refreshToken', result.refreshToken, getCookieOptions())
       const authUser = result.user
       console.log('auth user',authUser)
-      res.status(200).json({ user: authUser, accessToken: result.accessToken } as LoginResponseDto)
+     res.status(200).json({
+  user: authUser, // 👈 convert to plain object
+  accessToken: result.accessToken
+})
+
     } catch (error) {
       next(error)
     }

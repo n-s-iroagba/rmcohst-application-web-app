@@ -104,13 +104,13 @@ export class AuthService {
     try {
       logger.info("Token refresh attempted");
 
-      const {decoded} = this.tokenService.verifyToken(refreshToken);
-      if (!decoded.id) {
+      const {decoded} = this.tokenService.verifyToken(refreshToken,'refresh');
+      if (!decoded.userId) {
         logger.warn("Invalid refresh token provided");
         throw new BadRequestError("Invalid refresh token");
       }
 
-      const user = await this.userService.findUserById(decoded.id);
+      const user = await this.userService.findUserById(decoded.userId);
       const newAccessToken = this.tokenService.generateAccessToken(user)
 
       logger.info("Token refreshed successfully", { userId: user.id });
@@ -129,8 +129,10 @@ export class AuthService {
     try {
       logger.info("Email verification started");
 
-      const { decoded } = this.tokenService.verifyToken(data.verificationToken);
-      const userId = decoded.id
+      const { decoded } = this.tokenService.verifyToken(data.verificationToken,'email_verification');
+      console.log(decoded)
+      const userId = decoded.userId
+    
       if (!userId) {
         logger.warn("Invalid verification token provided");
         throw new BadRequestError("Unsuitable token");
@@ -146,7 +148,7 @@ export class AuthService {
 
       const { accessToken, refreshToken } = this.generateTokenPair(user);
       logger.info("Email verification successful", { userId: user.id });
-     const returnUser = {...user, role:role.name}
+     const returnUser = {...user.get({ plain: true }), role:role.name}
      user.refreshToken = refreshToken
      await user.save()
       return {user:returnUser, accessToken, refreshToken};
@@ -321,3 +323,4 @@ export function createAuthService(): AuthService {
   logger.info('AuthService factory creating new instance');
   return new AuthService(config);
 }
+ 

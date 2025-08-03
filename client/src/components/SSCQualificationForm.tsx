@@ -8,60 +8,102 @@ import { SIGNUP_FORM_DEFAULT_DATA } from '@/constants/auth'
 import { testIdContext } from '@/test/utils/testIdContext'
 import { Application } from '@/types/application'
 import { API_ROUTES } from '@/config/routes'
-import { usePut } from '@/hooks/useApiQuery'
+import { useGet, usePut } from '@/hooks/useApiQuery'
 import { Biodata } from '@/types/biodata'
+import { SSCQualificationFormData } from '@/types/applicant_ssc_qualification'
+import { SSCSubject } from '@/types/ssc_subject'
+import { Grade } from '@/types/program_ssc_requirement'
 
+interface Props {
+  application?: Application
+}
 
+const SSCQualificationForm: React.FC<Props> = ({ application }) => {
+  const { navigateToHome } = useRoutes()
 
-const BiodataForm: React.FC<{application:Application}> = ({application}) => {
+  const { resourceData: subjects } = useGet<SSCSubject[]>(API_ROUTES.SUBJECT.LIST)
 
+  const {
+    putResource: sscQualification,
+    changeHandlers,
+    handlePut,
+    updating,
+    apiError
+  } = usePut<SSCQualificationFormData>(
+    application?.sscQualification?.id
+      ? API_ROUTES.SSC_QUALIFICATION.UPDATE(application.sscQualification.id)
+      : null,
+    application?.sscQualification as SSCQualificationFormData
+  )
 
-  const { navigateToHome, navigateToLogin } = useRoutes()
-  const{putResource:biodata,changeHandlers,handlePut,updating,apiError} = usePut(application?API_ROUTES.BIODATA.UPDATE(application?.biodata.id):null,application?.biodata)
-  const {  setFieldConfigInput,setChangeHandlers } = useFieldConfigContext<Partial<Biodata>>()
+  const { setFieldsConfig } = useFieldConfigContext<SSCQualificationFormData>()
+  const  grades = Object.values(Grade);
 
-  // Move the context setters inside useEffect to prevent infinite re-renders
   useEffect(() => {
-    setFieldConfigInput({
-         
-  firstName: 'text',
-  middleName: 'text',
-  surname: 'text',
-  gender: 'select',
-  dateOfBirth: 'date',
-  maritalStatus: 'select',
-  homeAddress: 'textarea',
-  nationality: 'select',
-  stateOfOrigin: 'select',
-  lga: 'select',
-  homeTown: 'text',
-  phoneNumber: 'text',
-  emailAddress: 'email',
-  passportPhotograph: 'file',
-  nextOfKinFullName: 'text',
-  nextOfKinPhoneNumber: 'text',
-  nextOfKinAddress: 'textarea',
-  relationshipWithNextOfKin: 'select',
+    if (!subjects) return
 
+    const subjectOptions = subjects.map(subject => ({
+      id: subject.id,
+      label: subject.name
+    }))
+    const gradeOptions = grades.map(grade => ({
+      id: grade,
+      label: grade
+    }))
 
+    setFieldsConfig({
+      numberOfSittings: {
+        type: 'text',
+        onChangeHandler: changeHandlers['text']
+      },
+      certificateTypes: {
+        type: 'checkbox',
+        // fieldGroup: {
+        //   groupKey: 'certificateTypes',
+        //   fields: []
+        //   a
+        // }
+      },
+      certificates: {
+        type: 'file',
+        // fieldGroup: {
+        //   groupKey: 'certificates',
+        //   fields: subjects.map(subject => ({
+        //     name: subject.id.toString(),
+        //     label: subject.name,
+        //     options: []
+        //   }))
+        // }
+      },
+      firstSubjectId: { type: 'select', options: subjectOptions, onChangeHandler: changeHandlers['select']},
+      firstSubjectGrade: { type: 'select', options: gradeOptions, onChangeHandler: changeHandlers['select'] },
+      secondSubjectId: { type: 'select', options: subjectOptions, onChangeHandler: changeHandlers['select'] },
+      secondSubjectGrade: { type: 'select', options: gradeOptions, onChangeHandler: changeHandlers['select'] },
+      thirdSubjectId: { type: 'select', options: subjectOptions, onChangeHandler: changeHandlers['select'] },
+      thirdSubjectGrade: { type: 'select', options: gradeOptions, onChangeHandler: changeHandlers['select'] },
+      fourthSubjectId: { type: 'select', options: subjectOptions, onChangeHandler: changeHandlers['select'] },
+      fourthSubjectGrade: { type: 'select', options: gradeOptions, onChangeHandler: changeHandlers['select'] },
+      fifthSubjectId: { type: 'select', options: subjectOptions, onChangeHandler: changeHandlers['select'] },
+      fifthSubjectGrade: { type: 'select', options: gradeOptions, onChangeHandler: changeHandlers['select'] }
     })
-    setChangeHandlers(changeHandlers)
-  }, [setFieldConfigInput])
+  }, [subjects, changeHandlers, setFieldsConfig])
 
-const TEST_ID_BASE = 'signup-form';
-testIdContext.setContext(SIGNUP_FORM_DEFAULT_DATA, TEST_ID_BASE);
-
+  useEffect(() => {
+    testIdContext.setContext(SIGNUP_FORM_DEFAULT_DATA, 'signup-form')
+  }, [])
 
   return (
-    <CustomForm 
-      data={changeHandlers} 
-      submitHandler={handlePut} 
-      formLabel={'Applicant Sign Up'} 
-      onCancel={navigateToHome} 
-      submiting={updating} 
-      error={apiError} 
-    />
+    sscQualification && (
+      <CustomForm
+        data={sscQualification}
+        submitHandler={handlePut}
+        formLabel="Fill in O'level Qualification"
+        onCancel={navigateToHome}
+        submiting={updating}
+        error={apiError}
+      />
+    )
   )
 }
 
-export default BiodataForm
+export default SSCQualificationForm

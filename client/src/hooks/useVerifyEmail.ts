@@ -142,13 +142,16 @@ export const useVerifyEmail = () => {
       return
     }
 
-    verifyMutation.mutate({token:token as string,code,id:id as string})
+    verifyMutation.mutate({verificationToken:token as string,verificationCode:code})
   }
 
   // Handle resend code
   const handleResendEmailVerificationFormCode = () => {
     if (!canResend) return
-    resendMutation.mutate({token:token as string,id:id as string})
+    resendMutation.mutate({
+      verificationToken: token as string,
+      id: Number(id)
+    })
   }
 
   // Handle key navigation
@@ -176,7 +179,7 @@ export const useVerifyEmail = () => {
             setEmailVerificationFormCode(digits)
        
             if (token) {
-              verifyMutation.mutate({ token:token as string, code: digits.join(''),id:id as string })
+              verifyMutation.mutate({ verificationToken:token as string, verificationCode: digits.join('')})
             } else {
               setError('Verification token is missing. Please request a new code.')
             }

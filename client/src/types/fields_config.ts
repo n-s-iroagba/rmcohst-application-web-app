@@ -1,3 +1,4 @@
+import { SelectOption } from '@/components/FormFields';
 import { ChangeEvent } from 'react';
 
 export type FieldType =
@@ -41,7 +42,7 @@ export type FieldConfig = {
    * - select
    * - radio
    */
-  options?: string[] | { id: string | number; label: string }[];
+  options?: SelectOption[];
 
   /**
    * Used by double-select or multi-group fields

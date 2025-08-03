@@ -10,11 +10,12 @@ import {
   AlertCircle, CheckCircle, Clock, XCircle, LucideIcon
 } from 'lucide-react'
 
-import { CustomForm } from '@/components/CustomForm'
 import { useAuthContext } from '@/context/AuthContext'
 import { useRoutes } from '@/hooks/useRoutes'
 import { Spinner } from '@/components/Spinner'
 import BiodataForm from '@/components/BiodataForm'
+import SSCQualificationForm from '@/components/SSCQualificationForm'
+import ProgramSpecificQualificationForm from '@/components/ProgramSpecificQualificationForm'
 
 // Strict type definitions
 type ApplicationStep = 'biodata' | 'ssc' | 'program-specific' | 'review' | 'submitted'
@@ -36,7 +37,7 @@ interface StatusConfig {
 }
 
 // Constants
-const STEPS: readonly StepConfig[] = [
+const STEPS:readonly StepConfig[] = [
   { id: 'biodata', label: 'Biodata', icon: User },
   { id: 'ssc', label: 'SSC Qualifications', icon: FileText },
   { id: 'program-specific', label: 'Program Requirements', icon: GraduationCap },
@@ -92,7 +93,7 @@ const ApplicationPage: React.FC = () => {
   )
 
   // TODO: Fix hardcoded applicationId - should come from payment data or context
-  const applicationId = 8
+  const applicationId = 3
   const {
     resourceData: application,
     loading: isApplicationLoading,
@@ -185,26 +186,50 @@ const ApplicationPage: React.FC = () => {
     </div>
   )
 
-  const renderStepNavigation = () => (
-    <div className="flex justify-center mb-8">
-      <div className="flex space-x-4 bg-white rounded-lg shadow-sm border border-slate-200 p-2">
-        {STEPS.map(step => (
+const renderStepNavigation = (application: Application) => (
+  <div className="flex justify-center mb-8">
+    <div className="flex space-x-4 bg-white rounded-lg shadow-sm border border-slate-200 p-2">
+      {STEPS.map(step => {
+        // Hide program-specific step if not applicable
+        if (!application.programSpecificQualifications && step.id === 'program-specific') {
+          return null;
+        }
+
+        // Prevent showing review if biodata and ssc are not complete
+        if (
+          step.id === 'review' &&
+          (!application.biodata.completed || !application.sscQualification.completed)
+        ) {
+          return null;
+        }
+
+        // Prevent review if programSpecific exists but is incomplete
+        if (
+          application.programSpecificQualifications &&
+          !application.programSpecificQualifications.completed &&
+          step.id === 'review'
+        ) {
+          return null;
+        }
+
+        return (
           <button
             key={step.id}
             onClick={() => handleStepChange(step.id)}
             className={`flex items-center space-x-2 px-4 py-2 rounded-md transition ${
-              currentStep === step.id 
-                ? 'bg-slate-700 text-white' 
+              currentStep === step.id
+                ? 'bg-slate-700 text-white'
                 : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
             <step.icon className="h-4 w-4" />
             <span className="text-sm font-medium">{step.label}</span>
           </button>
-        ))}
-      </div>
+        );
+      })}
     </div>
-  )
+  </div>
+);
 
   const renderStepContent = () => {
     if (!application) return null
@@ -212,10 +237,10 @@ const ApplicationPage: React.FC = () => {
     switch (currentStep) {
       case 'biodata':
         return <BiodataForm application={application} />
-      // case 'ssc':
-      //   return <CustomForm />
-      // case 'program-specific':
-      //   return <CustomForm />
+      case 'ssc':
+        return <SSCQualificationForm application={application} />
+      case 'program-specific':
+        return <ProgramSpecificQualificationForm  application={application} />
       case 'review':
         return renderReviewStep()
       default:
@@ -311,7 +336,7 @@ const ApplicationPage: React.FC = () => {
             <p className="text-gray-600">Fill out all required sections to submit your application</p>
           </div>
 
-          {renderStepNavigation()}
+          {renderStepNavigation(application)}
 
           <div className="bg-white rounded-lg shadow-lg border border-slate-200">
             {renderStepContent()}

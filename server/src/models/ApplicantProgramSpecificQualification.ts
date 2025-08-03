@@ -8,7 +8,7 @@ interface ApplicantProgramSpecificQualificationAttributes {
   applicationId: number
   qualificationType?: string | null
   grade?: string | null
-  isDocumentUploaded?: boolean | null
+  certificate?:Buffer
   createdAt?: Date
   updatedAt?: Date
 }
@@ -35,14 +35,14 @@ class ApplicantProgramSpecificQualification
   public id!: number
   public applicationId!: number
   public qualificationType?: string | null
-  public isDocumentUploaded?: boolean | null
+  public certificate?: Buffer
   public grade?: string | null
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 
   // Method to check if program-specific qualification is complete
   public isComplete(): boolean {
-    return !!(this.qualificationType && this.grade && this.isDocumentUploaded)
+    return !!(this.qualificationType && this.grade && this.certificate)
   }
 }
 
@@ -65,10 +65,10 @@ ApplicantProgramSpecificQualification.init(
       type: DataTypes.STRING,
       allowNull: true, // Changed to allow null for draft applications
     },
-    isDocumentUploaded: {
-      type: DataTypes.BOOLEAN,
+    certificate: {
+      type: DataTypes.BLOB('long'),
       allowNull: true,
-      defaultValue: false, // Added default value
+    
     },
     grade: {
       type: DataTypes.STRING,

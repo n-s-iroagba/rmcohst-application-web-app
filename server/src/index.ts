@@ -10,6 +10,10 @@ import sequelize from './config/database'
 import applicationRoutes from './routes/applicationRoutes'
 import programRoutes from './routes/programRoutes'
 import paymentRoutes from './routes/paymentRoutes'
+import biodataRoutes from './routes/biodataRoutes'
+import subjectRoutes from './routes/subjectRoutes'
+import { ApplicantProgramSpecificQualification } from './models'
+import applicantProgramSpecificQualificationRoutes from './routes/applicantProgramSpecificQualificationRoutes'
 
 
 const app = express()
@@ -53,6 +57,10 @@ app.use('/auth',authRoutes)
 app.use('/applications', applicationRoutes)
 app.use('/programs',programRoutes)
 app.use('/payments',paymentRoutes)
+app.use('/biodata',biodataRoutes)
+app.use('/subjects', subjectRoutes)
+app.use ('/ssc-qualifications',applicantProgramSpecificQualificationRoutes)
+app.use ('/program-qualifications',applicantProgramSpecificQualificationRoutes)
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' })

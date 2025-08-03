@@ -88,6 +88,12 @@ export const API_ROUTES = {
     INITIALIZE_GATEWAY:'/payments/initialize',
 VERIFY:(reference:string) =>`/payments/verify/${reference}`
  },
+ SSC_QUALIFICATION:{
+  UPDATE:(id:string|number)=>`/ssc-qualifications/${id}`,
+ },
+ PROGRAM_QUALIFICATION:{
+UPDATE:(id:string|number)=>`/program-qualifications/${id}`,
+ },
   PROGRAM:{
     LIST:'/programs',
     GET_BY_ID:(id:string)=>`/programs/${id}`
@@ -106,6 +112,9 @@ VERIFY:(reference:string) =>`/payments/verify/${reference}`
     BY_ID:(id:string)=>`/ssc-requirement/${id}`,
     CREATE:(requirementId:string)=>`/ssc-requirement/${requirementId}/create`
     
+  },
+  SUBJECT:{
+    LIST:'/subjects'
   }
 };
 

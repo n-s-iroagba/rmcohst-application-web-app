@@ -8,6 +8,7 @@ import { StringValue } from 'ms'
 import logger from '../utils/logger'
 import { AccessTokenPayload, EmailVerificationTokenPayload, JwtPayload, ResetPasswordTokenPayload, TokenGenerationOptions, TokenVerificationResult } from '../types/token.types'
 import { UnauthorizedError, AppError, InternalServerError } from '../utils/errors'
+import User from '../models/User'
 
 // Extended interfaces for specialized tokens
 
@@ -51,8 +52,13 @@ export class TokenService {
     customExpiresIn?: number | StringValue
   ): string {
     try {
+      // Create minimal payload with only essential fields
       const accessTokenPayload: JwtPayload = {
-        ...payload,
+        id: payload.id,
+       
+        email: payload.email,
+        role: payload.role,
+        permissions: payload.permissions,
         tokenType: 'access'
       }
 
@@ -60,7 +66,7 @@ export class TokenService {
         expiresIn: customExpiresIn || this.tokenExpirations.access,
         issuer: this.defaultOptions.issuer,
         audience: this.defaultOptions.audience,
-        subject: payload.userId?.toString() || payload.adminId?.toString()
+        subject: payload.id?.toString()
       }
 
       const signOptions: SignOptions = {
@@ -74,11 +80,12 @@ export class TokenService {
       const token = jwt.sign(accessTokenPayload, this.secret, signOptions)
       
       logger.info('Access token generated successfully', {
-        userId: payload.userId || payload.adminId,
+        userId: payload.id,
         email: payload.email,
         role: payload.role,
         expiresIn: options.expiresIn,
-        hasPermissions: !!(payload.permissions && payload.permissions.length > 0)
+        hasPermissions: !!(payload.permissions && payload.permissions.length > 0),
+        tokenLength: token.length
       })
       
       return token
@@ -100,8 +107,12 @@ export class TokenService {
     customExpiresIn?:  number|StringValue
   ): string {
     try {
+      // Create minimal payload with only essential fields
       const resetTokenPayload: JwtPayload = {
-        ...payload,
+        id: payload.id,
+       
+        email: payload.email,
+        requestId: payload.requestId,
         tokenType: 'reset_password',
         purpose: 'password_reset'
       }
@@ -128,7 +139,8 @@ export class TokenService {
         userId: payload.userId || payload.adminId,
         email: payload.email,
         expiresIn: options.expiresIn,
-        requestId: payload.requestId
+        requestId: payload.requestId,
+        tokenLength: token.length
       })
       
       return token
@@ -145,12 +157,15 @@ export class TokenService {
    * Generate an email verification token
    */
   generateEmailVerificationToken(
-    payload: Omit<EmailVerificationTokenPayload, 'iat' | 'exp' | 'nbf' | 'purpose'>,
+    user: User,
     customExpiresIn?: StringValue | number
   ): string {
     try {
+      // Extract only essential fields from the User model
       const verificationTokenPayload: JwtPayload = {
-        ...payload,
+        userId: user.id,
+        email: user.email,
+        verificationCode: user.verificationCode,
         tokenType: 'email_verification',
         purpose: 'email_verification'
       }
@@ -160,7 +175,7 @@ export class TokenService {
         expiresIn: customExpiresIn || this.tokenExpirations.emailVerification,
         issuer: this.defaultOptions.issuer,
         audience: this.defaultOptions.audience,
-        subject: payload.userId?.toString() || payload.adminId?.toString()
+        subject: user.id?.toString() 
       }
 
       const signOptions: SignOptions = {
@@ -174,63 +189,20 @@ export class TokenService {
       const token = jwt.sign(verificationTokenPayload, secret, signOptions)
       
       logger.info('Email verification token generated successfully', {
-        userId: payload.userId || payload.adminId,
-        email: payload.email,
+        userId: user.id,
+        email: user.email,
         expiresIn: options.expiresIn,
-        verificationCode: payload.verificationCode
+        verificationCode: user.verificationCode,
+        tokenLength: token.length
       })
       
       return token
     } catch (error) {
       logger.error('Email verification token generation failed', { 
         error, 
-        email: payload.email
+        email: user.email
       })
       throw new Error('Email verification token generation failed')
-    }
-  }
-
-  /**
-   * Generate a JWT token with enhanced options (original method)
-   */
-  generateToken(
-    payload: Omit<JwtPayload, 'iat' | 'exp' | 'nbf'>, 
-    options: TokenGenerationOptions
-  ): string {
-    try {
-      const tokenPayload: JwtPayload = {
-        ...payload,
-        tokenType: payload.tokenType || 'access'
-      }
-
-      // Convert our options to SignOptions format
-      const signOptions: SignOptions = {
-        expiresIn: options.expiresIn,
-        issuer: options.issuer || this.defaultOptions.issuer,
-        audience: options.audience || this.defaultOptions.audience,
-        subject: options.subject,
-        notBefore: options.notBefore,
-        jwtid: options.jwtid,
-        algorithm: options.algorithm || 'HS256',
-        keyid: options.keyid,
-        header: options.header,
-        encoding: options.encoding,
-        allowInsecureKeySizes: options.allowInsecureKeySizes,
-        allowInvalidAsymmetricKeyTypes: options.allowInvalidAsymmetricKeyTypes
-      }
-
-      const token = jwt.sign(tokenPayload, this.secret, signOptions)
-      
-      logger.info('Token generated successfully', {
-        userId: payload.userId || payload.adminId,
-        tokenType: payload.tokenType || 'access',
-        expiresIn: options.expiresIn
-      })
-      
-      return token
-    } catch (error) {
-      logger.error('Token generation failed', { error, payload: { ...payload, sensitive: '[REDACTED]' } })
-      throw new Error('Token generation failed')
     }
   }
 
@@ -241,8 +213,12 @@ export class TokenService {
     payload: Omit<JwtPayload, 'iat' | 'exp' | 'nbf' | 'tokenType'>, 
     expiresIn: number | StringValue = '7d'
   ): string {
+    // Create minimal payload with only essential fields
     const refreshPayload: JwtPayload = {
-      ...payload,
+      id: payload.id,
+     
+      email: payload.email,
+      role: payload.role,
       tokenType: 'refresh'
     }
 
@@ -262,9 +238,12 @@ export class TokenService {
       }
 
       const token = jwt.sign(refreshPayload, secret, signOptions)
+      
       logger.info('Refresh token generated successfully', {
-        userId: payload.userId || payload.adminId
+        userId: payload.userId || payload.adminId,
+        tokenLength: token.length
       })
+      
       return token
     } catch (error) {
       logger.error('Refresh token generation failed', { error })
@@ -277,7 +256,7 @@ export class TokenService {
  * Now supports different token types with their respective secrets
  * Throws errors to be handled by middleware
  */
-verifyToken(token: string, tokenType: 'access' | 'refresh' | 'reset_password' | 'email_verification' = 'access'): TokenVerificationResult {
+verifyToken(token: string, tokenType: 'access' | 'refresh' | 'reset_password' | 'email_verification'): TokenVerificationResult {
   try {
     let secret = this.secret
     
@@ -299,13 +278,13 @@ verifyToken(token: string, tokenType: 'access' | 'refresh' | 'reset_password' | 
     const decoded = jwt.verify(token, secret, {
       algorithms: ['HS256']
     }) as JwtPayload
-
+   console.log('decoded is',decoded)
     // Validate token type matches expected type
     if (decoded.tokenType && decoded.tokenType !== tokenType) {
       logger.warn('Token type mismatch', {
         expected: tokenType,
         actual: decoded.tokenType,
-        userId: decoded.userId || decoded.adminId
+        userId: decoded.user.id
       })
       
       throw new UnauthorizedError(
@@ -321,7 +300,7 @@ verifyToken(token: string, tokenType: 'access' | 'refresh' | 'reset_password' | 
 
     if (isExpired) {
       logger.warn('Token is expired (manual check)', {
-        userId: decoded.userId || decoded.adminId,
+        userId: decoded.userId ,
         tokenType: decoded.tokenType,
         exp: decoded.exp,
         now
@@ -341,7 +320,7 @@ verifyToken(token: string, tokenType: 'access' | 'refresh' | 'reset_password' | 
     // Check not before claim
     if (decoded.nbf && decoded.nbf > now) {
       logger.warn('Token not yet valid', {
-        userId: decoded.userId || decoded.adminId,
+        userId: decoded.userId ,
         tokenType: decoded.tokenType,
         nbf: decoded.nbf,
         now
@@ -362,7 +341,7 @@ verifyToken(token: string, tokenType: 'access' | 'refresh' | 'reset_password' | 
     const expiresAt = decoded.exp ? new Date(decoded.exp * 1000) : undefined
 
     logger.info('Token verified successfully', {
-      userId: decoded.userId || decoded.adminId,
+      userId: decoded.userId ,
       tokenType: decoded.tokenType,
       expiresIn,
       expiresAt
@@ -449,8 +428,6 @@ verifyToken(token: string, tokenType: 'access' | 'refresh' | 'reset_password' | 
     return this.verifyToken(token, 'email_verification')
   }
 
-
- 
   /**
    * Check if token is expired without full verification
    */
@@ -591,11 +568,7 @@ verifyToken(token: string, tokenType: 'access' | 'refresh' | 'reset_password' | 
     accessExpiresIn: number
     refreshExpiresIn: number
   } {
-    const accessToken = this.generateToken(
-      { ...payload, tokenType: 'access' },
-      { expiresIn: '15m' }
-    )
-
+    const accessToken = this.generateAccessToken(payload)
     const refreshToken = this.generateRefreshToken(payload, '7d')
 
     return {
@@ -613,8 +586,6 @@ verifyToken(token: string, tokenType: 'access' | 'refresh' | 'reset_password' | 
     const parts = token.split('.')
     return parts.length === 3 && parts.every(part => part.length > 0)
   }
-
-
 
   /**
    * Get token expiration defaults

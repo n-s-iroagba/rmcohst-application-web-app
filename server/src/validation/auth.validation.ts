@@ -27,11 +27,11 @@ export const forgotPasswordSchema = z.object({
 })
 
 export const verifyEmailCodeSchema = z.object({
-  code: z
+  verificationCode: z
     .string()
     .length(6, 'Verification code must be 6 digits')
     .regex(/^\d{6}$/, 'Verification code must contain only numbers'),
-  token:z.string()
+  verificationToken:z.string()
 })
 
 export const resetPasswordSchema = z

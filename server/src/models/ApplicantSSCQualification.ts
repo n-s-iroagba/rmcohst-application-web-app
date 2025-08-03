@@ -93,10 +93,10 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
   public readonly updatedAt?: Date
 
   // Association declarations
-  public static associations: {
-    certificateFiles: Association<SSCQualification, CertificateFile>
-    application: Association<SSCQualification, any>
-  }
+  // public static associations: {
+  //   certificateFiles: Association<SSCQualification, CertificateFile>
+  //   application: Association<SSCQualification, any>
+  // }
 
 
 
@@ -396,6 +396,11 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
           max: 3
         }
       },
+      certificates: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        defaultValue: []
+      },
       certificateTypes: {
         type: DataTypes.JSON,
         allowNull: true,
@@ -479,116 +484,6 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
   )
 
 
-// Certificate Files model for file management
-export class CertificateFile extends Model<CertificateFile> {
-  public id!: number
-  public sscQualificationId!: number
-  public fileName!: string
-  public fileType!: string
-  public fileSize!: number
-  public fileUrl!: string
-  public certificateType!: CertificateType
-  public uploadedAt!: Date
-
-  public readonly createdAt!: Date
-  public readonly updatedAt!: Date
-}
-
-
-  CertificateFile.init(
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-      },
-      sscQualificationId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'ssc_qualifications',
-          key: 'id'
-        }
-      },
-      fileName: {
-        type: DataTypes.STRING,
-        allowNull: false
-      },
-      fileType: {
-        type: DataTypes.STRING,
-        allowNull: false
-      },
-      fileSize: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-      },
-      fileUrl: {
-        type: DataTypes.STRING,
-        allowNull: false
-      },
-      certificateType: {
-        type: DataTypes.ENUM(...Object.values(CertificateType)),
-        allowNull: false
-      },
-      uploadedAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-      },
-      _attributes: '',
-      sequelize: '',
-      destroy: '',
-      restore: '',
-      update: '',
-      increment: '',
-      decrement: '',
-      addHook: '',
-      removeHook: '',
-      hasHook: '',
-      hasHooks: '',
-      validate: '',
-      createdAt: '',
-      updatedAt: '',
-      dataValues: '',
-      _creationAttributes: '',
-      isNewRecord: '',
-      where: '',
-      getDataValue: '',
-      setDataValue: '',
-      get: '',
-      set: '',
-      setAttributes: '',
-      changed: '',
-      previous: '',
-      save: '',
-      reload: '',
-      equals: '',
-      equalsOneOf: '',
-      toJSON: '',
-      isSoftDeleted: '',
-      _model: ''
-    },
-    {
-      sequelize,
-      modelName: 'CertificateFile',
-      tableName: 'certificate_files',
-      timestamps: true
-    }
-  )
-
-
-// Define associations
-export const defineAssociations = () => {
-  SSCQualification.hasMany(CertificateFile, {
-    foreignKey: 'sscQualificationId',
-    as: 'certificateFiles'
-  })
-
-  CertificateFile.belongsTo(SSCQualification, {
-    foreignKey: 'sscQualificationId',
-    as: 'sscQualification'
-  })
-}
 
 export { SSCQualification }
 export default SSCQualification

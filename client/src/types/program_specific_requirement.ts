@@ -1,7 +1,7 @@
 export interface ProgramSpecificRequirement {
   id: number
-  tag:string
-  qualificationTypes: string []
+  tag: string
+  qualificationTypes: string[]
   minimumGrade: string
   createdAt?: Date
   updatedAt?: Date

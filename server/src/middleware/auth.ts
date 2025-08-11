@@ -36,7 +36,7 @@ interface PasswordResetTokenPayload {
   iat?: number
   exp?: number
 }
-
+const verificationService = new TokenService( process.env.JWT_SECRET || 'udorakpuenyi')
 // Main authentication middleware for login tokens
 export const authMiddleware = async (
   req: AuthenticatedRequest,
@@ -51,10 +51,11 @@ export const authMiddleware = async (
     }
 
     const token = authHeader.split(' ')[1]
+    console.log('access token',token)
+    const {decoded} = verificationService.verifyToken(token,'access')
+    console.log('DECODED',decoded)
 
-    const decoded = jwt.verify(token, appConfig.jwt.secret) as LoginTokenPayload
-
-    const user = await User.findByPk(decoded.userId, {
+    const user = await User.findByPk(decoded.id, {
       attributes: { exclude: ['password'] },
     })
 

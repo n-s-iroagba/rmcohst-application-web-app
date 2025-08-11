@@ -1,28 +1,27 @@
-export type UserRole = 'admin' | 'applicant' | 'head-of-admissions'|'admission-officer';
+export type UserRole = 'admin' | 'applicant' | 'head-of-admissions' | 'admission-officer'
 
 export interface User {
-  id: string;
-  username: string;
-  role: UserRole;
-  email:string
+  id: string
+  username: string
+  role: UserRole
+  email: string
 }
 
 export interface LoginRequestDto {
-  email: string;
-  password: string;
+  email: string
+  password: string
 }
 
 export interface SignUpRequestDto {
-  email: string;
-  password: string;
-  username:string
-  confirmPassword: string;
+  email: string
+  password: string
+  username: string
+  confirmPassword: string
 }
-
 
 export type SignUpResponseDto = {
   verificationToken: string
-  id:number
+  id: number
 }
 export interface VerifyEmailRequestDto {
   verificationCode: string
@@ -33,14 +32,14 @@ export interface LoginRequestDto {
   password: string
 }
 export type AuthServiceLoginResponse = {
-  user:User
+  user: User
   accessToken: string
   refreshToken: string
 }
 
 export type LoginResponseDto = {
   accessToken: string
-  user:User
+  user: User
 }
 
 export interface ForgotPasswordRequestDto {
@@ -57,5 +56,5 @@ export interface ResetPasswordRequestDto {
   confirmPassword: string
 }
 
-export interface ResendVerificationRequestDto extends SignUpResponseDto{}
-export interface ResendVerificationRespnseDto extends SignUpResponseDto{}
+export interface ResendVerificationRequestDto extends SignUpResponseDto {}
+export interface ResendVerificationRespnseDto extends SignUpResponseDto {}

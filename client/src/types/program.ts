@@ -1,21 +1,18 @@
-import { Department } from "./department"
-import { ProgramSpecificRequirement } from "./program_specific_requirement"
-import { ProgramSSCRequirement } from "./program_ssc_requirement"
-
-
-
+import { Department } from './department'
+import { ProgramSpecificRequirement } from './program_specific_requirement'
+import { ProgramSSCRequirement } from './program_ssc_requirement'
 
 export type ProgramLevel = 'OND' | 'HND' | 'Certificate'
-type DurationType =  'WEEK' | 'MONTH' | 'YEAR'
- 
+type DurationType = 'WEEK' | 'MONTH' | 'YEAR'
+
 export interface Program {
   id: number
   departmentId: number
   name: string
   level: ProgramLevel
-  durationType:DurationType
+  durationType: DurationType
   duration: number
-  department:Department
+  department: Department
   applicationFeeInNaira: number
   acceptanceFeeInNaira: number
   sscRequirement: ProgramSSCRequirement
@@ -28,11 +25,10 @@ export interface Program {
   updatedAt: Date
 }
 
-
 export type ProgramCreationDto = {
   name: string
   awardType: string
-  durationType:DurationType
+  durationType: DurationType
   duration: number
   applicationFeeInNaira: number
   acceptanceFeeInNaira: number
@@ -40,7 +36,6 @@ export type ProgramCreationDto = {
   sscRequirementId: number
   programSpecificRequirementsId: number
 }
-
 
 export interface ProgramFilters {
   faculty?: string

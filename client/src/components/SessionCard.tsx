@@ -16,9 +16,12 @@ export interface AdmissionSession {
 
 interface AdmissionSessionListItemProps {
   entity: AdmissionSession
-  viewMore:(id:number)=>void
+  viewMore: (id: number) => void
 }
- const AdmissionSessionListItem: React.FC<AdmissionSessionListItemProps> = ({ entity, viewMore }) => {
+const AdmissionSessionListItem: React.FC<AdmissionSessionListItemProps> = ({
+  entity,
+  viewMore
+}) => {
   const formatDate = (date: Date) =>
     new Date(date).toLocaleDateString(undefined, {
       year: 'numeric',
@@ -51,53 +54,50 @@ interface AdmissionSessionListItemProps {
       </div>
 
       <div className="flex gap-3">
-     <button
-           onClick={()=>viewMore(entity.id)}
-           className="bg-slate-600 hover:bg-slate-700 text-white px-3 py-1 rounded-lg"
-         >
-           <EyeIcon size={16} className="mr-1" />
-           View More
-         </button>
+        <button
+          onClick={() => viewMore(entity.id)}
+          className="bg-slate-600 hover:bg-slate-700 text-white px-3 py-1 rounded-lg"
+        >
+          <EyeIcon size={16} className="mr-1" />
+          View More
+        </button>
       </div>
     </div>
   )
 }
 
-const AdmissionSessionList = ()=>{
-  const {resourceData} = useGet<AdmissionSession[]>(apiRoutes.admissionSession.all)
-  const {navigateToAdmissionSessionDetails}= useRoutes()
+const AdmissionSessionList = () => {
+  const { resourceData } = useGet<AdmissionSession[]>(apiRoutes.admissionSession.all)
+  const { navigateToAdmissionSessionDetails } = useRoutes()
   const [searchResults, setSearchResults] = useState<AdmissionSession[]>([])
-
-
 
   return (
     <>
-      
-       <GenericSearchBar<AdmissionSession>
-          data={resourceData||[]}
-          searchKeys={['name']}
-          onResults={setSearchResults}
-          placeholder="Search departements by name ..."
-          className="mb-4"
-        />
-      
-    <div className="flex flex-col gap-4">
-      {searchResults?.length?(searchResults.map((AdmissionSession) => (
-        <AdmissionSessionListItem
-        key={AdmissionSession.id}
-        entity={AdmissionSession}
-        viewMore={navigateToAdmissionSessionDetails}
-        />
-      ))):(   
+      <GenericSearchBar<AdmissionSession>
+        data={resourceData || []}
+        searchKeys={['name']}
+        onResults={setSearchResults}
+        placeholder="Search departements by name ..."
+        className="mb-4"
+      />
+
+      <div className="flex flex-col gap-4">
+        {searchResults?.length ? (
+          searchResults.map((AdmissionSession) => (
+            <AdmissionSessionListItem
+              key={AdmissionSession.id}
+              entity={AdmissionSession}
+              viewMore={navigateToAdmissionSessionDetails}
+            />
+          ))
+        ) : (
           <div className="bg-slate-50 p-8 rounded-2xl border-2 border-slate-100 text-center max-w-md mx-auto">
             <div className="flex justify-center mb-4"></div>
             <h3 className="text-lg font-semibold text-slate-900 mb-2">No {title} Yet</h3>
             <p className="text-slate-700">Start by adding a new {title.toLowerCase()}.</p>
           </div>
-        ) 
-    
-    }
-    </div>
+        )}
+      </div>
     </>
   )
 }

@@ -9,12 +9,7 @@ import { LOGIN_FORM_DEFAULT_DATA } from '@/constants/auth'
 import { testIdContext } from '@/test/utils/testIdContext'
 
 const LoginForm: React.FC = () => {
-  const {
-    loginRequest,
-    login,
-    loading,
-    error
-  } = useAuth()
+  const { loginRequest, login, loading, loginChangeHandlers, error } = useAuth()
 
   const { navigateToHome, navigateToSignup } = useRoutes()
   const { setFieldConfigInput, setChangeHandlers } = useFieldConfigContext<LoginRequestDto>()
@@ -24,7 +19,7 @@ const LoginForm: React.FC = () => {
       email: 'email',
       password: 'password'
     })
-    // No change handlers provided for login in the hook
+    setChangeHandlers(loginChangeHandlers)
   }, [setFieldConfigInput, setChangeHandlers])
 
   const TEST_ID_BASE = 'login-form'
@@ -40,7 +35,7 @@ const LoginForm: React.FC = () => {
       error={error}
       additionalActions={[
         {
-          label: 'Don\'t have an account? Sign up',
+          label: "Don't have an account? Sign up",
           onClick: navigateToSignup,
           type: 'link'
         }

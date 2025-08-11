@@ -73,6 +73,26 @@ class AdmissionSessionController {
     }
   }
 
+
+  // SET AS CURRENT SESSION
+getCurrent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+   
+
+      const session = await AdmissionSessionService.getCurrentSession()
+
+      res
+        .status(200)
+        .json(session)
+    } catch (error) {
+      logger.error('Error fetching current academic session', {
+        error,
+      
+      })
+      next(error)
+    }
+  }
+
   // SET AS CURRENT SESSION
   setCurrent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -86,7 +106,7 @@ class AdmissionSessionController {
 
       res
         .status(200)
-        .json(ApiResponseUtil.success(session, 'Academic session set as current successfully', 200))
+        .json(session)
     } catch (error) {
       logger.error('Error setting current academic session', {
         error,

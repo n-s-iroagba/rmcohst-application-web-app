@@ -1,5 +1,6 @@
 import { ApplicantSSCQualification, Application, Biodata, Role, User } from "../models"
 import ApplicationService from "../services/ApplicationService";
+import { UserWithRole } from "../services/RbacService";
 import { NotFoundError } from "../utils/errors"
 
 const destroyStuff =async ()=>{
@@ -10,9 +11,14 @@ const destroyStuff =async ()=>{
     //     programId: 1,
         
     //   });
-          const a =     await new ApplicationService().getApplicationDetailsById('3');
-    
-      console.log(a)
+       
+   const user = await User.findByPk(4,{
+             include:[{
+            model:Role,
+            as:'role'
+          }]
+      })as UserWithRole
+      console.log(user)
   
     // await User.sync({force:true})
     //   await Role.sync({force:true})

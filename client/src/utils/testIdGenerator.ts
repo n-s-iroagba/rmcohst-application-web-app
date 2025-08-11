@@ -9,8 +9,8 @@ const generateTestId = (elementType: string, identifier: string): string => {
   return `${elementType.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()}-${identifier
     .replace(/\s+/g, '-')
     .replace(/[^a-zA-Z0-9-]/g, '')
-    .toLowerCase()}`;
-};
+    .toLowerCase()}`
+}
 
 /**
  * Generate test IDs for form fields
@@ -21,40 +21,39 @@ const generateFormInputTestIds = <T extends Record<string, any>>(
   formDefaultData: T,
   testIdBase: string
 ): { [K in keyof T]: string } => {
-  const result: any = {};
+  const result: any = {}
 
   Object.keys(formDefaultData).forEach((key) => {
-    const elementType =
-      typeof formDefaultData[key] === 'string' ? 'input' : 'custom';
-    result[key] = generateTestId(elementType, `${testIdBase}-${key}`);
-  });
+    const elementType = typeof formDefaultData[key] === 'string' ? 'input' : 'custom'
+    result[key] = generateTestId(elementType, `${testIdBase}-${key}`)
+  })
 
-  return result;
-};
+  return result
+}
 
 /**
  * Generate test ID for form container
  * @param testIdBase - Base identifier for the form
  */
 const generateFormContainerTestId = (testIdBase: string): string => {
-  return generateTestId('form', testIdBase);
-};
+  return generateTestId('form', testIdBase)
+}
 
 /**
  * Generate test ID for submit button
  * @param testIdBase - Base identifier for the form
  */
 const generateSubmitButtonTestId = (testIdBase: string): string => {
-  return generateTestId('button', `${testIdBase}-submit`);
-};
+  return generateTestId('button', `${testIdBase}-submit`)
+}
 
 /**
  * Generate test ID for form error message
  * @param testIdBase - Base identifier for the form
  */
 const generateErrorTestId = (testIdBase: string): string => {
-  return generateTestId('div', `${testIdBase}-error`);
-};
+  return generateTestId('div', `${testIdBase}-error`)
+}
 
 /**
  * Generate all test IDs for a form component
@@ -69,11 +68,9 @@ export const generateComponentFormTestIds = <T extends Record<string, any>>(
     FIELD_TEST_IDS: generateFormInputTestIds(formDefaultData, testIdBase),
     FORM_TEST_ID: generateFormContainerTestId(testIdBase),
     SUBMIT_BUTTON_TEST_ID: generateSubmitButtonTestId(testIdBase),
-    FORM_ERROR_TEST_ID: generateErrorTestId(testIdBase),
-  };
-};
+    FORM_ERROR_TEST_ID: generateErrorTestId(testIdBase)
+  }
+}
 
 // Type helper for the return value
-export type ComponentFormTestIds = ReturnType<
-  typeof generateComponentFormTestIds
->;
+export type ComponentFormTestIds = ReturnType<typeof generateComponentFormTestIds>

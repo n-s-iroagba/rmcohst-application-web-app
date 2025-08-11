@@ -1,11 +1,11 @@
 import express from 'express'
 import { validateQuery, validateParams, validateBody } from '../middleware/validation'
 
-import AdmissionSessionController from '../controllers/AdmissionSessionController'
 import {
   academicSessionCreationSchema,
   academicSessionUpdateSchema,
 } from '../validation/academicSession.validationSchemas'
+import AdmissionSessionController from '../controllers/AcademicSessionController'
 
 const router = express.Router()
 const academicSessionController = new AdmissionSessionController()
@@ -27,6 +27,8 @@ router.patch(
   validateBody(academicSessionUpdateSchema),
   academicSessionController.update
 )
+
+router.get('/current', academicSessionController.getCurrent)
 
 // SET AS CURRENT SESSION
 router.patch(

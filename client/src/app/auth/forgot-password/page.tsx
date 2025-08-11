@@ -1,4 +1,3 @@
-
 'use client'
 import React, { useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
@@ -10,16 +9,12 @@ import { FORGOT_PASSWORD_DEFAULT_DATA } from '@/constants/auth'
 import { testIdContext } from '@/test/utils/testIdContext'
 
 const ForgotPasswordForm: React.FC = () => {
-  const {
-    forgotPasswordRequest,
-    forgotPassword,
-    forgotPasswordChangeHandler,
-    loading,
-    error
-  } = useAuth()
+  const { forgotPasswordRequest, forgotPassword, forgotPasswordChangeHandler, loading, error } =
+    useAuth()
 
   const { navigateToLogin } = useRoutes()
-  const { setFieldConfigInput, setChangeHandlers } = useFieldConfigContext<ForgotPasswordRequestDto>()
+  const { setFieldConfigInput, setChangeHandlers } =
+    useFieldConfigContext<ForgotPasswordRequestDto>()
 
   useEffect(() => {
     setFieldConfigInput({
@@ -39,7 +34,7 @@ const ForgotPasswordForm: React.FC = () => {
           Enter your email address and we'll send you a link to reset your password.
         </p>
       </div>
-      
+
       <CustomForm
         data={forgotPasswordRequest}
         submitHandler={forgotPassword}

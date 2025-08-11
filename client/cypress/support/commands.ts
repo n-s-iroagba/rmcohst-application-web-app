@@ -42,20 +42,20 @@
 declare global {
   namespace Cypress {
     interface Chainable {
-      navigateTo(path: string): Chainable<void>;
-      getByTestId(testId: string): Chainable<JQuery<HTMLElement>>;
+      navigateTo(path: string): Chainable<void>
+      getByTestId(testId: string): Chainable<JQuery<HTMLElement>>
     }
   }
 }
 
 // Implement the custom commands
 Cypress.Commands.add('getByTestId', (testId: string) => {
-  return cy.get(`[data-testid="${testId}"]`);
-});
+  return cy.get(`[data-testid="${testId}"]`)
+})
 
 Cypress.Commands.add('navigateTo', (path: string) => {
-  cy.visit(path);
-});
+  cy.visit(path)
+})
 
 // Export to make this a module
-export {};
+export {}

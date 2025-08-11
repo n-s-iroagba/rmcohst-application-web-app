@@ -10,8 +10,6 @@ import { Application } from '@/types/application'
 import { API_ROUTES } from '@/config/routes'
 import { usePut } from '@/hooks/useApiQuery'
 
-
-
 import { ProgramSpecificQualificationFormdata } from '@/types/applicant_program_specific_qualification'
 
 interface Props {
@@ -20,8 +18,6 @@ interface Props {
 
 const ProgramSpecificQualificationForm: React.FC<Props> = ({ application }) => {
   const { navigateToHome } = useRoutes()
-
-
 
   const {
     putResource: programSpecificQualifications,
@@ -36,22 +32,17 @@ const ProgramSpecificQualificationForm: React.FC<Props> = ({ application }) => {
     application?.programSpecificQualifications as ProgramSpecificQualificationFormdata
   )
 
-  const { setChangeHandlers, setFieldConfigInput } = useFieldConfigContext<ProgramSpecificQualificationFormdata>()
-
+  const { setChangeHandlers, setFieldConfigInput } =
+    useFieldConfigContext<ProgramSpecificQualificationFormdata>()
 
   useEffect(() => {
-
-
-
     setFieldConfigInput({
       qualificationType: 'text',
       grade: 'text',
       certificate: 'file'
-
     })
     setChangeHandlers(changeHandlers)
-
-  }, [ setFieldConfigInput])
+  }, [setFieldConfigInput])
 
   useEffect(() => {
     testIdContext.setContext(SIGNUP_FORM_DEFAULT_DATA, 'signup-form')

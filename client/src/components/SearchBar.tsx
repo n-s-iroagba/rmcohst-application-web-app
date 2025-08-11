@@ -1,93 +1,96 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { Search, X } from 'lucide-react';
+import React, { useState, useCallback, useMemo } from 'react'
+import { Search, X } from 'lucide-react'
 
 // Generic search bar props
 interface SearchBarProps<T> {
-  data: T[];
-  searchKeys: (keyof T)[];
-  onResults: (results: T[]) => void;
-  placeholder?: string;
-  debounceMs?: number;
-  className?: string;
-  showClearButton?: boolean;
-  caseSensitive?: boolean;
-  exactMatch?: boolean;
+  data: T[]
+  searchKeys: (keyof T)[]
+  onResults: (results: T[]) => void
+  placeholder?: string
+  debounceMs?: number
+  className?: string
+  showClearButton?: boolean
+  caseSensitive?: boolean
+  exactMatch?: boolean
 }
 
 // Hook for debouncing search queries
 function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+  const [debouncedValue, setDebouncedValue] = useState<T>(value)
 
   React.useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
+      setDebouncedValue(value)
+    }, delay)
 
     return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
+      clearTimeout(handler)
+    }
+  }, [value, delay])
 
-  return debouncedValue;
+  return debouncedValue
 }
 
 export function GenericSearchBar<T extends Record<string, any>>({
   data,
   searchKeys,
   onResults,
-  placeholder = "Search...",
+  placeholder = 'Search...',
   debounceMs = 300,
-  className = "",
+  className = '',
   showClearButton = true,
   caseSensitive = false,
   exactMatch = false
 }: SearchBarProps<T>) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const debouncedSearchTerm = useDebounce(searchTerm, debounceMs);
+  const [searchTerm, setSearchTerm] = useState('')
+  const debouncedSearchTerm = useDebounce(searchTerm, debounceMs)
 
   // Search function
-  const performSearch = useCallback((term: string) => {
-    if (!term.trim()) {
-      onResults(data);
-      return;
-    }
+  const performSearch = useCallback(
+    (term: string) => {
+      if (!term.trim()) {
+        onResults(data)
+        return
+      }
 
-    const searchValue = caseSensitive ? term : term.toLowerCase();
-    
-    const filteredResults = data.filter((item) => {
-      return searchKeys.some((key) => {
-        const itemValue = item[key];
-        
-        // Handle null/undefined values
-        if (itemValue == null) return false;
-        
-        // Convert to string for searching
-        const stringValue = String(itemValue);
-        const searchableValue = caseSensitive ? stringValue : stringValue.toLowerCase();
-        
-        // Perform search based on match type
-        return exactMatch 
-          ? searchableValue === searchValue
-          : searchableValue.includes(searchValue);
-      });
-    });
+      const searchValue = caseSensitive ? term : term.toLowerCase()
 
-    onResults(filteredResults);
-  }, [data, searchKeys, onResults, caseSensitive, exactMatch]);
+      const filteredResults = data.filter((item) => {
+        return searchKeys.some((key) => {
+          const itemValue = item[key]
+
+          // Handle null/undefined values
+          if (itemValue == null) return false
+
+          // Convert to string for searching
+          const stringValue = String(itemValue)
+          const searchableValue = caseSensitive ? stringValue : stringValue.toLowerCase()
+
+          // Perform search based on match type
+          return exactMatch
+            ? searchableValue === searchValue
+            : searchableValue.includes(searchValue)
+        })
+      })
+
+      onResults(filteredResults)
+    },
+    [data, searchKeys, onResults, caseSensitive, exactMatch]
+  )
 
   // Trigger search when debounced term changes
   React.useEffect(() => {
-    performSearch(debouncedSearchTerm);
-  }, [debouncedSearchTerm, performSearch]);
+    performSearch(debouncedSearchTerm)
+  }, [debouncedSearchTerm, performSearch])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
+    setSearchTerm(e.target.value)
+  }
 
   const handleClear = () => {
-    setSearchTerm("");
-    onResults(data);
-  };
+    setSearchTerm('')
+    onResults(data)
+  }
 
   return (
     <div className={`relative flex items-center ${className}`}>
@@ -111,24 +114,24 @@ export function GenericSearchBar<T extends Record<string, any>>({
         )}
       </div>
     </div>
-  );
+  )
 }
 
 // Example usage component
 interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: 'admin' | 'technical_admin' | 'editor';
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  role: 'admin' | 'technical_admin' | 'editor'
 }
 
 interface Product {
-  id: number;
-  name: string;
-  category: string;
-  price: number;
-  description: string;
+  id: number
+  name: string
+  category: string
+  price: number
+  description: string
 }
 
 function SearchBarExample() {
@@ -136,24 +139,42 @@ function SearchBarExample() {
   const users: User[] = [
     { id: '1', firstName: 'John', lastName: 'Doe', email: 'john@example.com', role: 'admin' },
     { id: '2', firstName: 'Jane', lastName: 'Smith', email: 'jane@example.com', role: 'editor' },
-    { id: '3', firstName: 'Bob', lastName: 'Johnson', email: 'bob@example.com', role: 'technical_admin' },
+    {
+      id: '3',
+      firstName: 'Bob',
+      lastName: 'Johnson',
+      email: 'bob@example.com',
+      role: 'technical_admin'
+    },
     { id: '4', firstName: 'Alice', lastName: 'Brown', email: 'alice@example.com', role: 'editor' }
-  ];
+  ]
 
   const products: Product[] = [
-    { id: 1, name: 'Laptop', category: 'Electronics', price: 999, description: 'High-performance laptop' },
+    {
+      id: 1,
+      name: 'Laptop',
+      category: 'Electronics',
+      price: 999,
+      description: 'High-performance laptop'
+    },
     { id: 2, name: 'Mouse', category: 'Electronics', price: 25, description: 'Wireless mouse' },
-    { id: 3, name: 'Chair', category: 'Furniture', price: 199, description: 'Ergonomic office chair' },
+    {
+      id: 3,
+      name: 'Chair',
+      category: 'Furniture',
+      price: 199,
+      description: 'Ergonomic office chair'
+    },
     { id: 4, name: 'Desk', category: 'Furniture', price: 299, description: 'Standing desk' }
-  ];
+  ]
 
-  const [userResults, setUserResults] = useState<User[]>(users);
-  const [productResults, setProductResults] = useState<Product[]>(products);
+  const [userResults, setUserResults] = useState<User[]>(users)
+  const [productResults, setProductResults] = useState<Product[]>(products)
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-8">
       <h1 className="text-2xl font-bold text-gray-800">Generic Search Bar Examples</h1>
-      
+
       {/* User Search */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-gray-700">Search Users</h2>
@@ -167,8 +188,12 @@ function SearchBarExample() {
         <div className="grid gap-2">
           {userResults.map((user) => (
             <div key={user.id} className="p-3 border rounded-lg bg-gray-50">
-              <div className="font-medium">{user.firstName} {user.lastName}</div>
-              <div className="text-sm text-gray-600">{user.email} • {user.role}</div>
+              <div className="font-medium">
+                {user.firstName} {user.lastName}
+              </div>
+              <div className="text-sm text-gray-600">
+                {user.email} • {user.role}
+              </div>
             </div>
           ))}
         </div>
@@ -209,7 +234,9 @@ function SearchBarExample() {
 
       {/* Advanced Search Example */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-700">Advanced Search (Case Sensitive, Exact Match)</h2>
+        <h2 className="text-lg font-semibold text-gray-700">
+          Advanced Search (Case Sensitive, Exact Match)
+        </h2>
         <GenericSearchBar<User>
           data={users}
           searchKeys={['role']}
@@ -221,7 +248,7 @@ function SearchBarExample() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default SearchBarExample;
+export default SearchBarExample

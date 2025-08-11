@@ -1,4 +1,3 @@
-
 'use client'
 
 import React from 'react'
@@ -10,27 +9,32 @@ import { useRouter } from 'next/navigation'
 interface PaymentButtonProps {
   email: string
   amount: number
-  programId:number
-  applicantUserId:number
+  programId: number
+  applicantUserId: number
 }
 
-export default function PaymentButton({ email, amount,programId,applicantUserId }: PaymentButtonProps) {
+export default function PaymentButton({
+  email,
+  amount,
+  programId,
+  applicantUserId
+}: PaymentButtonProps) {
   const router = useRouter()
   const { handlePost, posting } = usePost<
     PaymentButtonProps,
-    { status: boolean; message: string; data: { access_code: string,reference:string } }
-  >(API_ROUTES.PAYMENT.INITIALIZE_GATEWAY, { email, amount,programId,applicantUserId });
-  let r:any;
+    { status: boolean; message: string; data: { access_code: string; reference: string } }
+  >(API_ROUTES.PAYMENT.INITIALIZE_GATEWAY, { email, amount, programId, applicantUserId })
+  console.log('weeeeeeeeeeeee', applicantUserId)
 
   const initiateTransaction = async (e: any) => {
     e.preventDefault()
-    
+
     try {
       const response = await handlePost(e)
       if (response?.data?.access_code) {
         const popup = new PaystackPop()
         popup.resumeTransaction(response.data.access_code)
-        console.log('PAYSSSSSSSSSTACK',response)
+        console.log('PAYSSSSSSSSSTACK', response)
         router.push(`/applicant/payments/status/?reference=${response.data.reference}`)
       }
     } catch (error) {

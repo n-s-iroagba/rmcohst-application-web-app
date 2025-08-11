@@ -69,61 +69,8 @@ export class AuthController {
     }
   }
 
-  /**
-   * Handles user login.
-   * Validates email and password, returns tokens or verification token if unverified.
-   * @param req Express request object
-   * @param res Express response object
-   * @param next Express next middleware function
-   */
-  login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const { email, password } = req.body
-
-      if (!email || !password) {
-        res.status(400).json({ message: 'Email and password are required' })
-        return
-      }
-
-      const result = await this.authService.login({ email, password })
-      const unverified = result as SignUpResponseDto
-      const verified = result as AuthServiceLoginResponse
-
-      if (unverified) {
-        // User not verified
-        res.status(200).json(unverified)
-      } else {
-        res.cookie('refreshToken', verified.refreshToken, getCookieOptions())
-        res.status(200).json({ user: verified.user, accessToken: verified.accessToken })
-      }
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  /**
-   * Verifies user's email using verification token and code.
-   * @param req Express request object
-   * @param res Express response object
-   * @param next Express next middleware function
-   */
-  verifyEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
 
 
-      const result = await this.authService.verifyEmail(req.body)
-      res.cookie('refreshToken', result.refreshToken, getCookieOptions())
-      const authUser = result.user
-      console.log('auth user',authUser)
-     res.status(200).json({
-  user: authUser, // 👈 convert to plain object
-  accessToken: result.accessToken
-})
-
-    } catch (error) {
-      next(error)
-    }
-  }
 
   /**
    * Resends email verification code.
@@ -162,21 +109,7 @@ export class AuthController {
     }
   }
 
-  /**
-   * Resets user's password with given token and new password.
-   * @param req Express request object
-   * @param res Express response object
-   * @param next Express next middleware function
-   */
-  resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const result = await this.authService.resetPassword(req.body)
-      res.cookie('refreshToken', result.refreshToken, getCookieOptions())
-      res.status(200).json({ user: result.user, accessToken: result.accessToken }as LoginResponseDto)
-    } catch (error) {
-      next(error)
-    }
-  }
+
 
   /**
    * Returns currently authenticated user details.
@@ -194,48 +127,146 @@ export class AuthController {
       }
 
       const user = await this.authService.getMe(userId)
+      console.log('AUTH USER',user)
       res.status(200).json(user as AuthUser)
     } catch (error) {
       next(error)
     }
   }
 
-  /**
-   * Generates new access token from refresh token.
-   * @param req Express request object
-   * @param res Express response object
-   * @param next Express next middleware function
-   */
-  refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const refreshToken = req.cookies?.refreshToken
 
-      if (!refreshToken) {
-        res.status(401).json({ message: 'No refresh token provided' })
+
+   login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { email, password } = req.body
+
+      if (!email || !password) {
+        res.status(400).json({ message: 'Email and password are required' })
         return
       }
 
-      const accessToken = await this.authService.refreshToken(refreshToken)
-      res.status(200).json({ accessToken })
+      const result = await this.authService.login({ email, password })
+      
+      // Check if result has refreshToken property (verified user)
+      if ('refreshToken' in result && 'accessToken' in result) {
+        // User is verified
+        const verified = result as AuthServiceLoginResponse
+        
+        const cookieOptions = getCookieOptions()
+        console.log('Setting refresh token cookie with options:', cookieOptions)
+        
+        res.cookie('refreshToken', verified.refreshToken, cookieOptions)
+        res.status(200).json({ 
+          user: verified.user, 
+          accessToken: verified.accessToken 
+        })
+      } else {
+        // User not verified
+        const unverified = result as SignUpResponseDto
+        res.status(200).json(unverified)
+      }
     } catch (error) {
       next(error)
     }
   }
 
   /**
-   * Logs out the user by clearing refresh token cookie.
-   * @param req Express request object
-   * @param res Express response object
-   * @param next Express next middleware function
+   * Verifies user's email with improved cookie setting
+   */
+  verifyEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.authService.verifyEmail(req.body)
+      
+      const cookieOptions = getCookieOptions()
+      console.log('Setting refresh token cookie after verification:', cookieOptions)
+      
+      res.cookie('refreshToken', result.refreshToken, cookieOptions)
+      
+      const authUser = result.user
+      console.log('auth user', authUser)
+      
+      res.status(200).json({
+        user: authUser,
+        accessToken: result.accessToken
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  /**
+   * Resets password with improved cookie setting
+   */
+  resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.authService.resetPassword(req.body)
+      
+      
+      const cookieOptions = getCookieOptions()
+      console.log('Setting refresh token cookie after password reset:', cookieOptions)
+      
+      res.cookie('refreshToken', result.refreshToken, cookieOptions)
+      res.status(200).json({ 
+        user: result.user, 
+        accessToken: result.accessToken 
+      } as LoginResponseDto)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    console.log('All cookies received:', req.cookies)
+    console.log('Headers:', req.headers.cookie)
+    
+    const cookieHeader = req.headers.cookie
+    console.log('Raw cookie header:', cookieHeader)
+    
+    if (!cookieHeader) {
+      res.status(401).json({ message: 'No cookies provided' })
+      return
+    }
+    
+    // Extract the refreshToken value from the cookie string
+    const refreshToken = cookieHeader
+      .split(';')
+      .find(cookie => cookie.trim().startsWith('refreshToken='))
+      ?.split('=')[1]
+    
+    console.log('Extracted refresh token:', refreshToken ? 'Present' : 'Missing')
+    console.log('Token preview:', refreshToken ? `${refreshToken.substring(0, 20)}...` : 'None')
+    
+    if (!refreshToken) {
+      res.status(401).json({ message: 'No refresh token found in cookies' })
+      return
+    }
+    
+    // Now pass just the token value (not the whole cookie header)
+    const accessToken = await this.authService.refreshToken(refreshToken)
+    res.status(200).json(accessToken )
+  } catch (error) {
+    next(error)
+  }
+}
+
+  /**
+   * Logout with improved cookie clearing
    */
   logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      res.clearCookie('refreshToken', {
+      const isProduction = process.env.NODE_ENV === 'production'
+      
+      const clearOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-        domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined,
-      })
+        secure: isProduction,
+        sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax' | 'strict',
+        domain: isProduction ? process.env.COOKIE_DOMAIN : undefined,
+        path: '/', // Important: match the path used when setting
+      }
+
+      console.log('Clearing cookie with options:', clearOptions)
+      res.clearCookie('refreshToken', clearOptions)
 
       res.status(200).json({ message: 'Logged out successfully' })
     } catch (error) {

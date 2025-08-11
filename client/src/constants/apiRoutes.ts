@@ -28,7 +28,7 @@ export const apiRoutes = {
   application: {
     myCurrentApplication: '/application/my-current-application',
     addComment: (id: string): string => `/applications/${id}/comments`,
-    review:(id:string):string =>`applications/review/${id}`
+    review: (id: string): string => `applications/review/${id}`
   },
   admissionSession: {
     all: `/admission-sessions`,

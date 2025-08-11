@@ -112,18 +112,26 @@ const Page = () => {
         <div className="relative z-10 flex flex-col justify-center items-center px-4 py-10 text-center h-full">
           <h1 className="text-3xl md:text-5xl font-bold mb-4">RMCOHST Application Portal</h1>
           <p className="text-base md:text-xl text-slate-300 mb-6 max-w-3xl">
-            Welcome to the Remington College of Health Science and Technology Online Application Portal.
+            Welcome to the Remington College of Health Science and Technology Online Application
+            Portal.
           </p>
           <div className="bg-slate-800 p-6 md:p-8 rounded-xl shadow-2xl w-full max-w-md sm:max-w-xl mx-auto transition-all duration-300">
             <h2 className="text-2xl md:text-3xl font-semibold mb-4 text-white">For Applicants</h2>
             <p className="mb-6 text-slate-300 text-sm md:text-base">
-              Start your journey with us. Register or log in to complete your application, upload documents, and track your admission status.
+              Start your journey with us. Register or log in to complete your application, upload
+              documents, and track your admission status.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/auth/applicant-signup" className="bg-white hover:bg-teal-300 text-slate-800 font-semibold flex-1 text-center py-2 rounded">
+              <Link
+                href="/auth/applicant-signup"
+                className="bg-white hover:bg-teal-300 text-slate-800 font-semibold flex-1 text-center py-2 rounded"
+              >
                 Register Now
               </Link>
-              <Link href="/auth/login" className="border border-white text-white hover:bg-teal-300 hover:text-slate-900 font-semibold flex-1 text-center py-2 rounded">
+              <Link
+                href="/auth/login"
+                className="border border-white text-white hover:bg-teal-300 hover:text-slate-900 font-semibold flex-1 text-center py-2 rounded"
+              >
                 Applicant Login
               </Link>
             </div>
@@ -133,21 +141,31 @@ const Page = () => {
 
       <section className="flex flex-col md:flex-row items-center justify-center px-6 md:px-16 gap-10">
         <div className="w-full md:w-1/2 relative">
-          <Image src={AdminBlock} alt="Admin Block" width={600} height={400} className="rounded-md shadow-lg w-full h-auto object-cover" />
+          <Image
+            src={AdminBlock}
+            alt="Admin Block"
+            width={600}
+            height={400}
+            className="rounded-md shadow-lg w-full h-auto object-cover"
+          />
         </div>
         <div className="w-full md:w-1/2 text-center md:text-left">
           <h2 className="text-3xl md:text-5xl font-serif font-bold leading-tight">
             REMINGTON COLLEGE OF HEALTH SCIENCE AND TECHNOLOGY
           </h2>
           <p className="mt-6 text-gray-700 text-base md:text-lg leading-relaxed">
-            At Remington College Of Health Science And Technology Port Harcourt, we believe in the transformative power of education and
-            the boundless potential within every individual. We are dedicated to fostering intellectual curiosity, academic excellence, and a vibrant campus community.
+            At Remington College Of Health Science And Technology Port Harcourt, we believe in the
+            transformative power of education and the boundless potential within every individual.
+            We are dedicated to fostering intellectual curiosity, academic excellence, and a vibrant
+            campus community.
           </p>
         </div>
       </section>
 
       <section className="py-6 px-6 md:px-10 bg-white">
-        <h2 className="text-3xl md:text-4xl font-serif font-semibold text-center mb-12">Academics & Programmes</h2>
+        <h2 className="text-3xl md:text-4xl font-serif font-semibold text-center mb-12">
+          Academics & Programmes
+        </h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {sections.map((section, index) => {
             const isEven = index % 2 === 0
@@ -161,37 +179,51 @@ const Page = () => {
                 }`}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-y-12 translate-y-full group-hover:translate-y-0 transition-transform duration-700"></div>
-                <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
-                  isEven
-                    ? 'bg-gradient-to-br from-slate-500 to-slate-700'
-                    : 'bg-gradient-to-br from-slate-600 to-indigo-700'
-                }`} />
+                <div
+                  className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
+                    isEven
+                      ? 'bg-gradient-to-br from-slate-500 to-slate-700'
+                      : 'bg-gradient-to-br from-slate-600 to-indigo-700'
+                  }`}
+                />
                 <div className="relative z-10">
-                  <h3 className={`text-2xl font-bold mb-6 transition-colors duration-300 ${
-                    isEven ? 'group-hover:text-white' : 'group-hover:text-slate-100'}`}>
+                  <h3
+                    className={`text-2xl font-bold mb-6 transition-colors duration-300 ${
+                      isEven ? 'group-hover:text-white' : 'group-hover:text-slate-100'
+                    }`}
+                  >
                     {section.title}
                   </h3>
                   <div className="space-y-4">
                     {section.links.map((link, i) => (
-                      <button key={i}
+                      <button
+                        key={i}
                         className={`group/link w-full text-left border px-4 py-3 rounded-lg transition-all duration-300 flex justify-between items-center relative overflow-hidden ${
                           isEven
                             ? 'border-gray-300 hover:border-slate-400 group-hover:border-white/30 group-hover:text-white'
                             : 'border-gray-600 hover:border-gray-400 group-hover:border-white/30 group-hover:text-white'
                         }`}
                       >
-                        <div className={`absolute inset-0 opacity-0 group-hover/link:opacity-20 transition-opacity duration-300 ${
-                          isEven ? 'bg-slate-600 group-hover:bg-white/10' : 'bg-slate-600 group-hover:bg-white/10'
-                        }`} />
+                        <div
+                          className={`absolute inset-0 opacity-0 group-hover/link:opacity-20 transition-opacity duration-300 ${
+                            isEven
+                              ? 'bg-slate-600 group-hover:bg-white/10'
+                              : 'bg-slate-600 group-hover:bg-white/10'
+                          }`}
+                        />
                         <span className="relative z-10 font-medium">{link}</span>
                         <ArrowRight className="w-4 h-4 transition-all duration-300 group-hover/link:translate-x-1 relative z-10" />
                       </button>
                     ))}
                   </div>
                 </div>
-                <div className={`absolute bottom-0 left-0 right-0 h-1 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left ${
-                  isEven ? 'bg-gradient-to-r from-slate-400 to-slate-600' : 'bg-gradient-to-r from-slate-400 to-indigo-500'
-                }`} />
+                <div
+                  className={`absolute bottom-0 left-0 right-0 h-1 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left ${
+                    isEven
+                      ? 'bg-gradient-to-r from-slate-400 to-slate-600'
+                      : 'bg-gradient-to-r from-slate-400 to-indigo-500'
+                  }`}
+                />
               </div>
             )
           })}
@@ -208,7 +240,10 @@ const Page = () => {
             {steps.map((step) => {
               const Icon = step.icon
               return (
-                <div key={step.id} className="group relative bg-gradient-to-br from-slate-600 to-slate-800 rounded-2xl p-8 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-slate-500/25 cursor-pointer overflow-hidden">
+                <div
+                  key={step.id}
+                  className="group relative bg-gradient-to-br from-slate-600 to-slate-800 rounded-2xl p-8 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-slate-500/25 cursor-pointer overflow-hidden"
+                >
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-y-12 translate-y-full group-hover:translate-y-0 transition-transform duration-700" />
                   <div className="relative z-10 flex items-start justify-between mb-6">
                     <div className="flex items-center justify-center w-16 h-16 bg-white/10 rounded-full backdrop-blur-sm group-hover:bg-white/20 transition-colors duration-300">
@@ -247,9 +282,18 @@ const Page = () => {
                   {facilities.map((facility, index) => {
                     const Icon = facility.icon
                     return (
-                      <div key={facility.id} className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:shadow-2xl cursor-pointer">
+                      <div
+                        key={facility.id}
+                        className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:shadow-2xl cursor-pointer"
+                      >
                         <div className="relative h-64 overflow-hidden">
-                          <Image src={facility.image} alt={facility.title} width={100} height={100} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                          <Image
+                            src={facility.image}
+                            alt={facility.title}
+                            width={100}
+                            height={100}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          />
                           <div className="absolute inset-0 opacity-60 group-hover:opacity-80 transition-opacity duration-500 bg-gradient-to-t from-slate-900/90 via-slate-600/50 to-transparent" />
                           <div className="absolute top-4 right-4 w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-sm bg-slate-500/20 text-white group-hover:bg-slate-400/30 transition-all duration-300">
                             <Icon className="w-6 h-6" />
@@ -272,7 +316,10 @@ const Page = () => {
               </div>
 
               <div className="mt-6 text-center">
-                <Link href="/auth/applicant-signup" className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-slate-600 to-slate-700 rounded-full transition-all duration-300 hover:from-slate-700 hover:to-slate-800 hover:shadow-lg hover:shadow-slate-500/25 transform hover:-translate-y-1">
+                <Link
+                  href="/auth/applicant-signup"
+                  className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-slate-600 to-slate-700 rounded-full transition-all duration-300 hover:from-slate-700 hover:to-slate-800 hover:shadow-lg hover:shadow-slate-500/25 transform hover:-translate-y-1"
+                >
                   <span className="relative z-10">Start Your Application</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-slate-400 to-slate-900 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
                 </Link>

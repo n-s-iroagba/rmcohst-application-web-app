@@ -77,9 +77,10 @@ export const ApplicationList: React.FC<{
             <div className="flex items-center text-xs text-gray-500 space-x-4">
               <span className="flex items-center">
                 <Calendar className="w-3 h-3 mr-1" />
-                {application.submittedAt?new Date(application.submittedAt).toLocaleDateString():'Not yet submitted'}
+                {application.submittedAt
+                  ? new Date(application.submittedAt).toLocaleDateString()
+                  : 'Not yet submitted'}
               </span>
-             
             </div>
           </div>
         ))}

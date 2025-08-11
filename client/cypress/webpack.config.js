@@ -1,11 +1,11 @@
-const path = require('path');
+const path = require('path')
 
 module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
     alias: {
-      '@': path.resolve(__dirname, '../src'), // Adjust path as needed
-    },
+      '@': path.resolve(__dirname, '../src') // Adjust path as needed
+    }
   },
   module: {
     rules: [
@@ -15,12 +15,12 @@ module.exports = {
           {
             loader: 'ts-loader',
             options: {
-              transpileOnly: true,
-            },
-          },
+              transpileOnly: true
+            }
+          }
         ],
-        exclude: /node_modules/,
-      },
-    ],
-  },
-};
+        exclude: /node_modules/
+      }
+    ]
+  }
+}

@@ -32,8 +32,7 @@ export interface Comment {
 }
 const ApplicationDetail: React.FC<{
   application: Application
-  
-}> = ({ application} ) => {
+}> = ({ application }) => {
   const [comments, setComments] = useState<Comment[]>([])
   const [newComment, setNewComment] = useState('')
   const [newStatus, setNewStatus] = useState<ApplicationStatus>(application.status)
@@ -63,7 +62,7 @@ const ApplicationDetail: React.FC<{
 
   const handleStatusUpdate = async () => {
     if (newStatus !== application.status) {
-    //   await onStatusUpdate(application.id.toString(), newStatus, statusComments)
+      //   await onStatusUpdate(application.id.toString(), newStatus, statusComments)
       setStatusComments('')
     }
   }

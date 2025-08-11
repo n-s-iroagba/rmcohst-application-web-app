@@ -1,8 +1,6 @@
 
-import { Request, Response, NextFunction, application } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import ApplicationService from '../services/ApplicationService'
-import { verifyPaystackTransaction } from '../utils/paystack'
-import logger from '../utils/logger'
 const applicationService = new ApplicationService()
 export class ApplicationController {
  static async getApplicationPaymentStatus(req:Request, res:Response,next:NextFunction){
@@ -19,13 +17,26 @@ export class ApplicationController {
   static async getApplicationDetails(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params
-      const application = await applicationService.getApplicationDetailsById(id)
+      const application = await applicationService.getApplicationById(id)
       res.json(application)
     } catch (error) {
       next(error)
     }
   }
 
+  static async getApplicationByUserId(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { applicantUserId } = req.params
+      const application = await applicationService.getApplicationByUserId(applicantUserId)
+      if(application){
+          res.json(application)
+    
+      }
+        res.end()
+    } catch (error) {
+      next(error)
+    }
+  }
   static async getAllApplications(req: Request, res: Response, next: NextFunction) {
     try {
       const filters = req.query
@@ -41,7 +52,7 @@ export class ApplicationController {
       const { applicationId } = req.params
       const { applicantUserId } = req.body
 
-      const submission = await applicationService.finalizeApplicantSubmissionTypeSafe(
+      const submission = await applicationService.finalizeApplicantSubmission(
         applicationId,
         applicantUserId
       )

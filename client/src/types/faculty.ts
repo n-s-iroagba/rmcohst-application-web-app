@@ -2,7 +2,7 @@ export interface Faculty {
   id: number
   name: string
   code: string
-  description?: string 
+  description?: string
   nameOfDean?: string
   isActive?: boolean
   createdAt: Date

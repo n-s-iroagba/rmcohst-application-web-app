@@ -19,7 +19,7 @@ export interface Application {
   biodata: Biodata
   sscQualification: ApplicantSSCQualification
   programSpecificQualifications: ApplicationProgramSpecificQualification
-  
+
   sessionId: number
   assignedOfficerId?: string
   status: ApplicationStatus

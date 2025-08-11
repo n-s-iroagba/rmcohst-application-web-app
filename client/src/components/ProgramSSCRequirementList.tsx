@@ -15,7 +15,10 @@ interface ProgramSSCRequirementCardProps {
   viewMore: (id: number) => void
 }
 
-const ProgramSSCRequirementListItem: React.FC<ProgramSSCRequirementCardProps> = ({ entity, viewMore }) => (
+const ProgramSSCRequirementListItem: React.FC<ProgramSSCRequirementCardProps> = ({
+  entity,
+  viewMore
+}) => (
   <div className="bg-slate-50 border border-slate-200 shadow-md rounded-2xl p-6 transition hover:shadow-lg">
     <div className="flex justify-between items-center mb-4">
       <div className="flex items-center gap-3">
@@ -27,39 +30,37 @@ const ProgramSSCRequirementListItem: React.FC<ProgramSSCRequirementCardProps> = 
         SSC Requirement
       </div>
     </div>
-    
+
     <div className="space-y-3 mb-4">
       <div className="flex items-center gap-2 text-sm text-slate-700">
         <Clock size={16} className="text-slate-500" />
         <span className="font-medium">Max Sittings:</span>
         <span>{entity.maximumNumberOfSittings}</span>
       </div>
-      
+
       <div className="flex items-start gap-2 text-sm text-slate-700">
         <Users size={16} className="text-slate-500 mt-0.5" />
         <div>
           <span className="font-medium">Qualification Types:</span>
           <div className="flex flex-wrap gap-1 mt-1">
             {entity.qualificationTypes.map((type, index) => (
-              <span 
-                key={index}
-                className="bg-slate-200 text-slate-700 px-2 py-1 rounded text-xs"
-              >
+              <span key={index} className="bg-slate-200 text-slate-700 px-2 py-1 rounded text-xs">
                 {type}
               </span>
             ))}
           </div>
         </div>
       </div>
-      
+
       <div className="text-sm text-slate-600">
         <span className="font-medium">Required Subjects:</span> 5 subjects with specific grades
         <div className="text-xs text-slate-500 mt-1">
-          Grades: {entity.firstSubjectGrade}, {entity.secondSubjectGrade}, {entity.thirdSubjectGrade}, {entity.fourthSubjectGrade}, {entity.fifthSubjectGrade}
+          Grades: {entity.firstSubjectGrade}, {entity.secondSubjectGrade},{' '}
+          {entity.thirdSubjectGrade}, {entity.fourthSubjectGrade}, {entity.fifthSubjectGrade}
         </div>
       </div>
     </div>
-    
+
     <div className="flex gap-3">
       <button
         onClick={() => viewMore(entity.id)}
@@ -73,10 +74,12 @@ const ProgramSSCRequirementListItem: React.FC<ProgramSSCRequirementCardProps> = 
 )
 
 const ProgramSSCRequirementList = () => {
-  const { resourceData,loading,error } = useGet<ProgramSSCRequirement[]>(apiRoutes.programSSCRequirement.all)
+  const { resourceData, loading, error } = useGet<ProgramSSCRequirement[]>(
+    apiRoutes.programSSCRequirement.all
+  )
   const { navigateToProgramSSCRequirementDetails } = useRoutes()
   const [searchResults, setSearchResults] = useState<ProgramSSCRequirement[]>([])
- if (loading) return <Spinner className="w-10 h-10 text-slate-600" />
+  if (loading) return <Spinner className="w-10 h-10 text-slate-600" />
 
   if (error) return <ErrorAlert message={error || 'Failed to load'} />
   return (

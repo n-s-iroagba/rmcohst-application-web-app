@@ -71,14 +71,14 @@ export class AuthService {
    * @param data - Login DTO containing email and password.
    * @returns LoginAuthServiceReturn or SignUpResponseDto for unverified users.
    */
-  async login(data: LoginRequestDto): Promise<AuthServiceLoginResponse | SignUpResponseDto|void> {
+  async login(data: LoginRequestDto): Promise<AuthServiceLoginResponse | SignUpResponseDto> {
     try {
       logger.info("Login attempt started", { email: data.email });
 
       const user = await this.userService.findUserByEmail(data.email,true);
       await this.validatePassword(user, data.password);
       if(!user){
-        return
+        throw new NotFoundError('user not found')
       }
       if (!user.isEmailVerified) {
         logger.warn("Login attempted by unverified user", { userId: user.id });
@@ -105,12 +105,13 @@ export class AuthService {
       logger.info("Token refresh attempted");
 
       const {decoded} = this.tokenService.verifyToken(refreshToken,'refresh');
-      if (!decoded.userId) {
+      
+      if (!decoded.id) {
         logger.warn("Invalid refresh token provided");
         throw new BadRequestError("Invalid refresh token");
       }
 
-      const user = await this.userService.findUserById(decoded.userId);
+      const user = await this.userService.findUserById(decoded.id);
       const newAccessToken = this.tokenService.generateAccessToken(user)
 
       logger.info("Token refreshed successfully", { userId: user.id });

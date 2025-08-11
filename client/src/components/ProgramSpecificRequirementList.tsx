@@ -14,7 +14,10 @@ interface ProgramSpecificRequirementCardProps {
   viewMore: (id: number) => void
 }
 
-const ProgramSpecificRequirementListItem: React.FC<ProgramSpecificRequirementCardProps> = ({ entity, viewMore }) => (
+const ProgramSpecificRequirementListItem: React.FC<ProgramSpecificRequirementCardProps> = ({
+  entity,
+  viewMore
+}) => (
   <div className="bg-slate-50 border border-slate-200 shadow-md rounded-2xl p-6 transition hover:shadow-lg">
     <div className="flex justify-between items-center mb-4">
       <div className="flex items-center gap-3">
@@ -26,7 +29,7 @@ const ProgramSpecificRequirementListItem: React.FC<ProgramSpecificRequirementCar
         Specific Requirement
       </div>
     </div>
-    
+
     <div className="space-y-3 mb-4">
       <div className="flex items-center gap-2 text-sm text-slate-700">
         <Award size={16} className="text-slate-500" />
@@ -35,17 +38,14 @@ const ProgramSpecificRequirementListItem: React.FC<ProgramSpecificRequirementCar
           {entity.minimumGrade}
         </span>
       </div>
-      
+
       <div className="flex items-start gap-2 text-sm text-slate-700">
         <Users size={16} className="text-slate-500 mt-0.5" />
         <div>
           <span className="font-medium">Qualification Types:</span>
           <div className="flex flex-wrap gap-1 mt-1">
             {entity.qualificationTypes.map((type, index) => (
-              <span 
-                key={index}
-                className="bg-slate-200 text-slate-700 px-2 py-1 rounded text-xs"
-              >
+              <span key={index} className="bg-slate-200 text-slate-700 px-2 py-1 rounded text-xs">
                 {type}
               </span>
             ))}
@@ -53,7 +53,7 @@ const ProgramSpecificRequirementListItem: React.FC<ProgramSpecificRequirementCar
         </div>
       </div>
     </div>
-    
+
     <div className="flex gap-3">
       <button
         onClick={() => viewMore(entity.id)}
@@ -67,10 +67,12 @@ const ProgramSpecificRequirementListItem: React.FC<ProgramSpecificRequirementCar
 )
 
 const ProgramSpecificRequirementList = () => {
-  const { resourceData,loading,error } = useGet<ProgramSpecificRequirement[]>(apiRoutes.programSpecificRequirement.all)
+  const { resourceData, loading, error } = useGet<ProgramSpecificRequirement[]>(
+    apiRoutes.programSpecificRequirement.all
+  )
   const { navigateToProgramSpecificRequirementDetails } = useRoutes()
   const [searchResults, setSearchResults] = useState<ProgramSpecificRequirement[]>([])
- if (loading) return <Spinner className="w-10 h-10 text-slate-600" />
+  if (loading) return <Spinner className="w-10 h-10 text-slate-600" />
 
   if (error) return <ErrorAlert message={error || 'Failed to load'} />
   return (
@@ -97,7 +99,9 @@ const ProgramSpecificRequirementList = () => {
             <div className="flex justify-center mb-4">
               <Star className="text-slate-400" size={48} />
             </div>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">No Specific Requirements Yet</h3>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              No Specific Requirements Yet
+            </h3>
             <p className="text-slate-700">Start by adding a new specific requirement.</p>
           </div>
         )}

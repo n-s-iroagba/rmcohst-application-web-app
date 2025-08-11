@@ -1,20 +1,20 @@
-import { FieldConfig } from '@/types/fields_config';
-import React, { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { FieldConfig } from '@/types/fields_config'
+import React, { useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
 
 interface BaseFieldProps {
-  name: string;
-  label: string;
-  testId?: string;
-  error?: string;
-  className?: string;
+  name: string
+  label: string
+  testId?: string
+  error?: string
+  className?: string
 }
 
 interface TextInputProps extends BaseFieldProps {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  type?: string;
-  placeholder?: string;
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  type?: string
+  placeholder?: string
 }
 
 export const TextField: React.FC<TextInputProps> = ({
@@ -24,7 +24,7 @@ export const TextField: React.FC<TextInputProps> = ({
   onChange,
   error,
   type = 'text',
-  testId,
+  testId
 }) => (
   <div className="mb-4">
     <label htmlFor={name} className="block font-medium mb-1">
@@ -41,7 +41,7 @@ export const TextField: React.FC<TextInputProps> = ({
     />
     {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
   </div>
-);
+)
 
 interface PasswordFieldProps extends TextInputProps {}
 
@@ -53,13 +53,13 @@ export const PasswordField: React.FC<PasswordFieldProps> = ({
   error,
   placeholder,
   className = '',
-  testId,
+  testId
 }) => {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
 
   const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+    setShowPassword(!showPassword)
+  }
 
   return (
     <div className={`mb-4 ${className}`}>
@@ -88,14 +88,18 @@ export const PasswordField: React.FC<PasswordFieldProps> = ({
           {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
       </div>
-      {error && <p className="mt-1 text-sm text-red-600" role="alert">{error}</p>}
+      {error && (
+        <p className="mt-1 text-sm text-red-600" role="alert">
+          {error}
+        </p>
+      )}
     </div>
-  );
-};
+  )
+}
 
 interface TextareaProps extends BaseFieldProps {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
 }
 
 export const TextareaField: React.FC<TextareaProps> = ({
@@ -104,7 +108,7 @@ export const TextareaField: React.FC<TextareaProps> = ({
   value,
   onChange,
   error,
-  testId,
+  testId
 }) => (
   <div className="mb-4">
     <label htmlFor={name} className="block font-medium mb-1">
@@ -120,16 +124,16 @@ export const TextareaField: React.FC<TextareaProps> = ({
     />
     {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
   </div>
-);
+)
 export interface SelectOption {
-  id: string|number;
-  label: string;
+  id: string | number
+  label: string
 }
 
 interface SelectFieldProps extends BaseFieldProps {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  options: SelectOption[];
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
+  options: SelectOption[]
 }
 export const SelectField: React.FC<SelectFieldProps> = ({
   name,
@@ -138,7 +142,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
   onChange,
   options,
   error,
-  testId,
+  testId
 }) => (
   <div className="mb-4">
     <label htmlFor={name} className="block font-medium mb-1">
@@ -154,7 +158,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
     >
       <option value="">Select {label}</option>
       {options.map((opt) => (
-        <option className='text-black' key={opt.id} value={opt.id}>
+        <option className="text-black" key={opt.id} value={opt.id}>
           {opt.label}
         </option>
       ))}
@@ -163,10 +167,9 @@ export const SelectField: React.FC<SelectFieldProps> = ({
   </div>
 )
 
-
 interface CheckboxFieldProps extends BaseFieldProps {
-  checked: boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  checked: boolean
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export const CheckboxField: React.FC<CheckboxFieldProps> = ({
@@ -175,7 +178,7 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
   checked,
   onChange,
   error,
-  testId,
+  testId
 }) => (
   <div className="mb-4 flex items-center space-x-2">
     <input
@@ -189,19 +192,13 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
     <label htmlFor={name}>{label}</label>
     {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
   </div>
-);
+)
 
 interface FileFieldProps extends BaseFieldProps {
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-export const FileField: React.FC<FileFieldProps> = ({
-  name,
-  label,
-  onChange,
-  error,
-  testId,
-}) => (
+export const FileField: React.FC<FileFieldProps> = ({ name, label, onChange, error, testId }) => (
   <div className="mb-4">
     <label htmlFor={name} className="block font-medium mb-1">
       {label}
@@ -217,14 +214,14 @@ export const FileField: React.FC<FileFieldProps> = ({
     />
     {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
   </div>
-);
+)
 
 type MultiGroupSelectFieldProps = {
-  groupData: any[];
-  fieldGroup: NonNullable<FieldConfig['fieldGroup']>;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>, index: number, subKey: string) => void;
-  testId:string
-};
+  groupData: any[]
+  fieldGroup: NonNullable<FieldConfig['fieldGroup']>
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>, index: number, subKey: string) => void
+  testId: string
+}
 
 export const MultiGroupSelectField: React.FC<MultiGroupSelectFieldProps> = ({
   groupData,
@@ -253,12 +250,12 @@ export const MultiGroupSelectField: React.FC<MultiGroupSelectFieldProps> = ({
       </div>
     ))}
   </div>
-);
+)
 
 interface RadioFieldProps extends BaseFieldProps {
-  options: { id: string | number; label: string }[] | string[];
-  value: string | number;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  options: { id: string | number; label: string }[] | string[]
+  value: string | number
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export const RadioField: React.FC<RadioFieldProps> = ({
@@ -268,12 +265,12 @@ export const RadioField: React.FC<RadioFieldProps> = ({
   value,
   onChange,
   error,
-  testId,
+  testId
 }) => {
   const normalizedOptions =
     typeof options[0] === 'string'
       ? (options as string[]).map((opt) => ({ id: opt, label: opt }))
-      : (options as { id: string | number; label: string }[]);
+      : (options as { id: string | number; label: string }[])
 
   return (
     <div className="mb-4">
@@ -295,5 +292,5 @@ export const RadioField: React.FC<RadioFieldProps> = ({
       </div>
       {error && <p className="text-red-500 text-sm">{error}</p>}
     </div>
-  );
-};
+  )
+}

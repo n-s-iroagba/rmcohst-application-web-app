@@ -31,6 +31,7 @@ router.post(
   validateBody(resendCodeSchema),
   authController.resendCode
 )
+router.get('/refresh-token',authController.refreshToken)
 router.get('/me', authMiddleware,authController.getMe)
 
 export default router

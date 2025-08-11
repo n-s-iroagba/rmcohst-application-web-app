@@ -6,8 +6,7 @@ const router = Router()
 
 router.post('/initialize', PaymentController.initializePayment)
 router.get('/verify/:reference', PaymentController.verifyTransaction)
-router.get('/:applicantUserId', PaymentController.getSuccessfulApplicantPaymentForCurrentSession)
-router.get('/all/:applicantUserId', PaymentController.getPaymentsByApplicantUserId)
+router.get('/:applicantUserId/current-session-payments', PaymentController.getPaymentsByApplicantUserId)
 router.get('/by-date', PaymentController.getPaymentsByDate)
 
 router.post('/webhook', PaymentController.handleWebhook);

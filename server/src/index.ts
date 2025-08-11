@@ -14,6 +14,7 @@ import biodataRoutes from './routes/biodataRoutes'
 import subjectRoutes from './routes/subjectRoutes'
 import { ApplicantProgramSpecificQualification } from './models'
 import applicantProgramSpecificQualificationRoutes from './routes/applicantProgramSpecificQualificationRoutes'
+import academicSessionRoutes from './routes/academicSessionRoutes'
 
 
 const app = express()
@@ -39,7 +40,7 @@ console.log('✅ CORS middleware applied')
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 1000,
 })
 app.use(limiter)
 console.log('✅ Rate limiter middleware applied')
@@ -59,6 +60,7 @@ app.use('/programs',programRoutes)
 app.use('/payments',paymentRoutes)
 app.use('/biodata',biodataRoutes)
 app.use('/subjects', subjectRoutes)
+app.use('/sessions',academicSessionRoutes)
 app.use ('/ssc-qualifications',applicantProgramSpecificQualificationRoutes)
 app.use ('/program-qualifications',applicantProgramSpecificQualificationRoutes)
 
@@ -77,14 +79,14 @@ const startServer = async () => {
     await sequelize.authenticate()
     console.log('✅ DB connected');
 
-    console.log('📦 Syncing DB...');
+    // console.log('📦 Syncing DB...');
     // await sequelize.sync(
     //   { 
     //     force:true,
     //    logging: console.log 
     //   }
     // )
-    console.log('✅ DB synced');
+    // console.log('✅ DB synced');
 
     const server = app.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`)

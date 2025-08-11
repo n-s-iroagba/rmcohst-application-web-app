@@ -23,12 +23,12 @@ type ApiResponse<T> = Promise<T>
  * Generic GET request
  */
 export async function get<T>(path: string, config?: AxiosRequestConfig): ApiResponse<T> {
-  try{
-  const response: AxiosResponse<T> = await apiClient.get(path, config)
-  console.log('response is',response)
-  return response.data
-  }catch(error){
-    console.log('error is in service',error)
+  try {
+    const response: AxiosResponse<T> = await apiClient.get(path, config)
+    console.log('response is', response)
+    return response.data
+  } catch (error) {
+    console.log('error is in service', error)
     throw error
   }
 }
@@ -42,20 +42,20 @@ export async function post<Req, Res>(
   config: AxiosRequestConfig = {}
 ): ApiResponse<Res> {
   const isFormData = typeof FormData !== 'undefined' && data instanceof FormData
- try{
-  const response: AxiosResponse<Res> = await apiClient.post(path, data, {
-    ...config,
-    headers: {
-      ...(config.headers || {}),
-      ...(isFormData ? {} : { 'Content-Type': 'application/json' })
-    }
-  })
- console.log('response is',response)
-  return response.data
-}catch(error){
-  console.log('error is in service',error)
-  throw error
-}
+  try {
+    const response: AxiosResponse<Res> = await apiClient.post(path, data, {
+      ...config,
+      headers: {
+        ...(config.headers || {}),
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' })
+      }
+    })
+    console.log('response is', response)
+    return response.data
+  } catch (error) {
+    console.log('error is in service', error)
+    throw error
+  }
 }
 
 /**

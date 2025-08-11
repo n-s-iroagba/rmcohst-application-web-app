@@ -18,10 +18,8 @@ const VerifyEmail = () => {
     handleChangeEmailVerificationCodeData,
     verifyCode,
     handleResendEmailVerificationFormCode,
-    handleKeyDown,
+    handleKeyDown
   } = useVerifyEmail()
-
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
@@ -39,16 +37,18 @@ const VerifyEmail = () => {
             <CheckCircle className="w-8 h-8 text-slate-700" />
           </div>
           <h2 className="text-2xl font-bold text-slate-900">Verify Your Email</h2>
-          <p className="text-slate-600 mt-2">
-            Enter the 6-digit code sent to your email
-          </p>
+          <p className="text-slate-600 mt-2">Enter the 6-digit code sent to your email</p>
         </div>
 
         {error && <ErrorAlert message={error} />}
 
-        <form onSubmit={(e)=>{
-          e.preventDefault()
-          verifyCode(e)}} className="space-y-6">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            verifyCode(e)
+          }}
+          className="space-y-6"
+        >
           <div className="flex justify-center gap-3">
             {emailVerificationFormCode.map((digit, index) => (
               <input
@@ -68,7 +68,6 @@ const VerifyEmail = () => {
 
           <button
             type="submit"
-            
             className="w-full py-3 bg-slate-700 text-white rounded-xl hover:bg-slate-800 disabled:bg-slate-400 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
           >
             {submitting ? (

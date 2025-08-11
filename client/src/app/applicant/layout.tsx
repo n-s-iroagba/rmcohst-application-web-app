@@ -15,13 +15,11 @@ import { useAuth } from '@/hooks/useAuth'
 import { useResizeWindow } from '@/hooks/useResizeWindow'
 import { AuthProvider } from '@/context/AuthContext'
 
-
-
-interface AdminOffcanvasProps {
+interface AApplicantOffcanvasProps {
   children: React.ReactNode
 }
 
-function ApplicantOffcanvas({ children }: AdminOffcanvasProps) {
+function ApplicantOffcanvas({ children }: AApplicantOffcanvasProps) {
   const { isDesktop, isOpen, handleNavClick } = useResizeWindow()
   const { logout } = useAuth()
 
@@ -109,10 +107,7 @@ function ApplicantOffcanvas({ children }: AdminOffcanvasProps) {
 export default function ApplicantLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-
- <ApplicantOffcanvas>{children}</ApplicantOffcanvas>
-  
-     
+      <ApplicantOffcanvas>{children}</ApplicantOffcanvas>
     </AuthProvider>
   )
 }

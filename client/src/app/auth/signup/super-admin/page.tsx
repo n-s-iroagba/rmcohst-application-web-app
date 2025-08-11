@@ -1,21 +1,16 @@
 'use client'
 
-import { CustomForm } from "@/components/CustomForm"
-import { SIGNUP_FORM_DEFAULT_DATA } from "@/constants/auth"
-import { useFieldConfigContext } from "@/context/FieldConfigContext"
-import { useAuth } from "@/hooks/useAuth"
-import { useRoutes } from "@/hooks/useRoutes"
-import { testIdContext } from "@/test/utils/testIdContext"
-import { SignUpRequestDto } from "@/types/auth.types"
-import { useEffect } from "react"
+import { CustomForm } from '@/components/CustomForm'
+import { SIGNUP_FORM_DEFAULT_DATA } from '@/constants/auth'
+import { useFieldConfigContext } from '@/context/FieldConfigContext'
+import { useAuth } from '@/hooks/useAuth'
+import { useRoutes } from '@/hooks/useRoutes'
+import { testIdContext } from '@/test/utils/testIdContext'
+import { SignUpRequestDto } from '@/types/auth.types'
+import { useEffect } from 'react'
 
 const SuperAdminSignupForm: React.FC = () => {
-  const {
-    superAdminSignUpRequest,
-    signUpSuperAdmin,
-    loading,
-    error
-  } = useAuth()
+  const { superAdminSignUpRequest, signUpSuperAdmin, loading, error } = useAuth()
 
   const { navigateToHome, navigateToLogin } = useRoutes()
   const { setFieldConfigInput, setChangeHandlers } = useFieldConfigContext<SignUpRequestDto>()

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import {  Edit, Star, Trash2, } from 'lucide-react'
+import { Edit, Star, Trash2 } from 'lucide-react'
 
 import { SSCSubject, SSCSubjectCreationAttributes } from '@/types/ssc_subject'
 import { useGet } from '@/hooks/useApiQuery'
@@ -9,7 +9,6 @@ import { CustomForm } from './CustomForm'
 import ErrorAlert from './ErrorAlert'
 import { Spinner } from './Spinner'
 
-
 interface SSCSubjectCardProps {
   entity: SSCSubject
   onEdit: () => void
@@ -17,14 +16,9 @@ interface SSCSubjectCardProps {
 }
 
 export const SubjectCard: React.FC<SSCSubjectCardProps> = ({ entity, onEdit, onDelete }) => {
-
-
   return (
     <div className="bg-slate-50 border border-slate-200 shadow-md rounded-2xl p-6 transition hover:shadow-lg">
-      <div className="flex justify-between items-center mb-4">
-  
-   
-      </div>
+      <div className="flex justify-between items-center mb-4"></div>
 
       <div className="text-slate-800 text-sm mb-4 space-y-1">
         <p>
@@ -46,9 +40,8 @@ export const SubjectCard: React.FC<SSCSubjectCardProps> = ({ entity, onEdit, onD
   )
 }
 
-
 const SubjectList = () => {
-  const { resourceData,loading,error } = useGet<SSCSubject[]>(apiRoutes.subject.all)
+  const { resourceData, loading, error } = useGet<SSCSubject[]>(apiRoutes.subject.all)
   const [subjectToBeDeleted, setSubjectToBeDeleted] = useState<SSCSubject | null>(null)
   const [subjectToBeEdited, setSubjectToBeEdited] = useState<SSCSubject | null>(null)
 
@@ -62,7 +55,7 @@ const SubjectList = () => {
   const handleEditCancel = () => {
     setSubjectToBeEdited(null)
   }
-   if (loading) return <Spinner className="w-10 h-10 text-slate-600" />
+  if (loading) return <Spinner className="w-10 h-10 text-slate-600" />
 
   if (error) return <ErrorAlert message={error || 'Failed to load'} />
 
@@ -70,39 +63,39 @@ const SubjectList = () => {
     <div className="flex flex-col gap-4">
       {resourceData?.length ? (
         resourceData.map((subject) => (
-          <SubjectCard 
-            key={subject.id} 
-            entity={subject} 
+          <SubjectCard
+            key={subject.id}
+            entity={subject}
             onEdit={() => setSubjectToBeEdited(subject)}
             onDelete={() => setSubjectToBeDeleted(subject)}
           />
         ))
       ) : (
-            <div className="bg-slate-50 p-8 rounded-2xl border-2 border-slate-100 text-center max-w-md mx-auto">
-            <div className="flex justify-center mb-4">
-              <Star className="text-slate-400" size={48} />
-            </div>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">No O'Level Subjects  Yet</h3>
-            <p className="text-slate-700">Start by adding a new subject.</p>
+        <div className="bg-slate-50 p-8 rounded-2xl border-2 border-slate-100 text-center max-w-md mx-auto">
+          <div className="flex justify-center mb-4">
+            <Star className="text-slate-400" size={48} />
           </div>
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">No O'Level Subjects Yet</h3>
+          <p className="text-slate-700">Start by adding a new subject.</p>
+        </div>
       )}
-      
+
       {subjectToBeDeleted && (
-        <DeleteModal 
-          id={subjectToBeDeleted.id} 
-          onClose={() => setSubjectToBeDeleted(null)} 
-          type={'subject'} 
+        <DeleteModal
+          id={subjectToBeDeleted.id}
+          onClose={() => setSubjectToBeDeleted(null)}
+          type={'subject'}
           message={"Delete O'Level Subject"}
         />
       )}
-      
+
       {subjectToBeEdited && (
-        <CustomForm  
-          data={subjectToBeEdited as SSCSubjectCreationAttributes} 
+        <CustomForm
+          data={subjectToBeEdited as SSCSubjectCreationAttributes}
           submitHandler={handleEditSubmit}
-          formLabel={'Edit Subject'} 
+          formLabel={'Edit Subject'}
           onCancel={handleEditCancel}
-          submiting={false} 
+          submiting={false}
           error={''}
         />
       )}

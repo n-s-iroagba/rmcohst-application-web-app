@@ -1,4 +1,4 @@
-import { Model, DataTypes, Optional, ForeignKey } from 'sequelize'
+Pimport { Model, DataTypes, Optional, ForeignKey } from 'sequelize'
 import sequelize from '../config/database'
 import { Application } from './Application'
 

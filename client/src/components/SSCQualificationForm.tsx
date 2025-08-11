@@ -37,16 +37,16 @@ const SSCQualificationForm: React.FC<Props> = ({ application }) => {
   )
 
   const { setFieldsConfig } = useFieldConfigContext<SSCQualificationFormData>()
-  const  grades = Object.values(Grade);
+  const grades = Object.values(Grade)
 
   useEffect(() => {
     if (!subjects) return
 
-    const subjectOptions = subjects.map(subject => ({
+    const subjectOptions = subjects.map((subject) => ({
       id: subject.id,
       label: subject.name
     }))
-    const gradeOptions = grades.map(grade => ({
+    const gradeOptions = grades.map((grade) => ({
       id: grade,
       label: grade
     }))
@@ -57,7 +57,7 @@ const SSCQualificationForm: React.FC<Props> = ({ application }) => {
         onChangeHandler: changeHandlers['text']
       },
       certificateTypes: {
-        type: 'checkbox',
+        type: 'checkbox'
         // fieldGroup: {
         //   groupKey: 'certificateTypes',
         //   fields: []
@@ -65,7 +65,7 @@ const SSCQualificationForm: React.FC<Props> = ({ application }) => {
         // }
       },
       certificates: {
-        type: 'file',
+        type: 'file'
         // fieldGroup: {
         //   groupKey: 'certificates',
         //   fields: subjects.map(subject => ({
@@ -75,16 +75,56 @@ const SSCQualificationForm: React.FC<Props> = ({ application }) => {
         //   }))
         // }
       },
-      firstSubjectId: { type: 'select', options: subjectOptions, onChangeHandler: changeHandlers['select']},
-      firstSubjectGrade: { type: 'select', options: gradeOptions, onChangeHandler: changeHandlers['select'] },
-      secondSubjectId: { type: 'select', options: subjectOptions, onChangeHandler: changeHandlers['select'] },
-      secondSubjectGrade: { type: 'select', options: gradeOptions, onChangeHandler: changeHandlers['select'] },
-      thirdSubjectId: { type: 'select', options: subjectOptions, onChangeHandler: changeHandlers['select'] },
-      thirdSubjectGrade: { type: 'select', options: gradeOptions, onChangeHandler: changeHandlers['select'] },
-      fourthSubjectId: { type: 'select', options: subjectOptions, onChangeHandler: changeHandlers['select'] },
-      fourthSubjectGrade: { type: 'select', options: gradeOptions, onChangeHandler: changeHandlers['select'] },
-      fifthSubjectId: { type: 'select', options: subjectOptions, onChangeHandler: changeHandlers['select'] },
-      fifthSubjectGrade: { type: 'select', options: gradeOptions, onChangeHandler: changeHandlers['select'] }
+      firstSubjectId: {
+        type: 'select',
+        options: subjectOptions,
+        onChangeHandler: changeHandlers['select']
+      },
+      firstSubjectGrade: {
+        type: 'select',
+        options: gradeOptions,
+        onChangeHandler: changeHandlers['select']
+      },
+      secondSubjectId: {
+        type: 'select',
+        options: subjectOptions,
+        onChangeHandler: changeHandlers['select']
+      },
+      secondSubjectGrade: {
+        type: 'select',
+        options: gradeOptions,
+        onChangeHandler: changeHandlers['select']
+      },
+      thirdSubjectId: {
+        type: 'select',
+        options: subjectOptions,
+        onChangeHandler: changeHandlers['select']
+      },
+      thirdSubjectGrade: {
+        type: 'select',
+        options: gradeOptions,
+        onChangeHandler: changeHandlers['select']
+      },
+      fourthSubjectId: {
+        type: 'select',
+        options: subjectOptions,
+        onChangeHandler: changeHandlers['select']
+      },
+      fourthSubjectGrade: {
+        type: 'select',
+        options: gradeOptions,
+        onChangeHandler: changeHandlers['select']
+      },
+      fifthSubjectId: {
+        type: 'select',
+        options: subjectOptions,
+        onChangeHandler: changeHandlers['select']
+      },
+      fifthSubjectGrade: {
+        type: 'select',
+        options: gradeOptions,
+        onChangeHandler: changeHandlers['select']
+      }
     })
   }, [subjects, changeHandlers, setFieldsConfig])
 

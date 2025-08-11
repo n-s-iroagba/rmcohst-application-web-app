@@ -1,5 +1,5 @@
-import { ApplicationStatus } from "@/types/application"
-import { Clock, Eye, CheckCircle, XCircle, AlertCircle } from "lucide-react"
+import { ApplicationStatus } from '@/types/application'
+import { Clock, Eye, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
 
 const StatusBadge: React.FC<{ status: ApplicationStatus }> = ({ status }) => {
   const getStatusConfig = (status: ApplicationStatus) => {

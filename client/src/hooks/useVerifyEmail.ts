@@ -5,24 +5,26 @@ import { useMutation } from '@tanstack/react-query'
 import { useParams, useSearchParams } from 'next/navigation'
 import api, { setAccessToken } from '@/lib/apiUtils'
 import { API_ROUTES } from '@/config/routes'
-import { LoginResponseDto, ResendVerificationRequestDto, VerifyEmailRequestDto } from '@/types/auth.types'
+import {
+  LoginResponseDto,
+  ResendVerificationRequestDto,
+  VerifyEmailRequestDto
+} from '@/types/auth.types'
 import { useAuthContext } from '@/context/AuthContext'
 import { useRoutes } from './useRoutes'
-
-
 
 // API functions
 const verifyEmailCode = async (data: VerifyEmailRequestDto) => {
   try {
     const response = await api.post(API_ROUTES.AUTH.VERIFY_EMAIL, data)
-    console.log('dddddddddddddd',response.data)
+    console.log('dddddddddddddd', response.data)
     return response.data
   } catch (error) {
     throw error
   }
 }
 
-const resendVerificationCode = async (data:ResendVerificationRequestDto) => {
+const resendVerificationCode = async (data: ResendVerificationRequestDto) => {
   try {
     const response = await api.post(API_ROUTES.AUTH.RESEND_VERIFICATION_CODE, data)
     return response.data
@@ -35,18 +37,16 @@ export const useVerifyEmail = () => {
   const [emailVerificationFormCode, setEmailVerificationFormCode] = useState<string[]>(
     new Array(6).fill('')
   )
-  const {setUser} = useAuthContext()
-  const {navigateToDashboard,navigateToVerifyEmail} = useRoutes()
+  const { setUser } = useAuthContext()
+  const { navigateToDashboard, navigateToVerifyEmail } = useRoutes()
   const [timeLeft, setTimeLeft] = useState(300) // 5 minutes in seconds
   const [canResend, setCanResend] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
+
   const inputRefs = useRef<HTMLInputElement[]>([])
-  
+
   const token = useParams().token
   const id = useParams().id
-  
-
 
   // Countdown timer effect
   useEffect(() => {
@@ -61,14 +61,14 @@ export const useVerifyEmail = () => {
   // Verify email mutation
   const verifyMutation = useMutation({
     mutationFn: verifyEmailCode,
-    onSuccess: (loginResponse:LoginResponseDto) => {
-              console.log('login response is',loginResponse)
-              setAccessToken(loginResponse.accessToken);
-              setUser(loginResponse.user);
-              navigateToDashboard(loginResponse.user.role);
-            
+    onSuccess: (loginResponse: LoginResponseDto) => {
+      console.log('login response is', loginResponse)
+      setAccessToken(loginResponse.accessToken)
+      setUser(loginResponse.user)
+      navigateToDashboard(loginResponse.user.role)
+
       setError(null)
-   
+
       if (typeof window !== 'undefined') {
         localStorage.removeItem('verification_token')
       }
@@ -79,25 +79,24 @@ export const useVerifyEmail = () => {
       // Clear the form on error
       setEmailVerificationFormCode(new Array(6).fill(''))
       inputRefs.current[0]?.focus()
-    },
+    }
   })
 
   // Resend code mutation
   const resendMutation = useMutation({
     mutationFn: resendVerificationCode,
     onSuccess: (data) => {
-     
-      navigateToVerifyEmail(data.verificationToken,data.id);
-            
+      navigateToVerifyEmail(data.verificationToken, data.id)
+
       setError(null)
-     
 
       console.log('Verification code resent successfully')
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to resend code'
+      const errorMessage =
+        error?.response?.data?.message || error?.message || 'Failed to resend code'
       setError(errorMessage)
-    },
+    }
   })
 
   // Handle input change
@@ -106,7 +105,7 @@ export const useVerifyEmail = () => {
     index: number
   ) => {
     const value = e.target.value
-    
+
     // Only allow numbers
     if (!/^\d*$/.test(value)) return
 
@@ -122,13 +121,11 @@ export const useVerifyEmail = () => {
     }
 
     // Auto-submit when all 6 digits are entered
-    if (newCode.every(digit => digit !== '') && newCode.join('').length === 6) {
-   
+    if (newCode.every((digit) => digit !== '') && newCode.join('').length === 6) {
       if (!token) {
         setError('Verification token is missing. Please request a new code.')
         return
       }
-      
     }
   }
 
@@ -136,13 +133,13 @@ export const useVerifyEmail = () => {
   const verifyCode = (e: React.FormEvent) => {
     e.preventDefault()
     const code = emailVerificationFormCode.join('')
-    
+
     if (code.length !== 6) {
       setError('Please enter all 6 digits')
       return
     }
 
-    verifyMutation.mutate({verificationToken:token as string,verificationCode:code})
+    verifyMutation.mutate({ verificationToken: token as string, verificationCode: code })
   }
 
   // Handle resend code
@@ -159,12 +156,12 @@ export const useVerifyEmail = () => {
     if (e.key === 'Backspace' && !emailVerificationFormCode[index] && index > 0) {
       inputRefs.current[index - 1]?.focus()
     }
-    
+
     // Handle arrow key navigation
     if (e.key === 'ArrowLeft' && index > 0) {
       inputRefs.current[index - 1]?.focus()
     }
-    
+
     if (e.key === 'ArrowRight' && index < 5) {
       inputRefs.current[index + 1]?.focus()
     }
@@ -173,20 +170,26 @@ export const useVerifyEmail = () => {
     if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
       if (typeof window !== 'undefined' && navigator.clipboard) {
-        navigator.clipboard.readText().then((text) => {
-          const digits = text.replace(/\D/g, '').slice(0, 6).split('')
-          if (digits.length === 6) {
-            setEmailVerificationFormCode(digits)
-       
-            if (token) {
-              verifyMutation.mutate({ verificationToken:token as string, verificationCode: digits.join('')})
-            } else {
-              setError('Verification token is missing. Please request a new code.')
+        navigator.clipboard
+          .readText()
+          .then((text) => {
+            const digits = text.replace(/\D/g, '').slice(0, 6).split('')
+            if (digits.length === 6) {
+              setEmailVerificationFormCode(digits)
+
+              if (token) {
+                verifyMutation.mutate({
+                  verificationToken: token as string,
+                  verificationCode: digits.join('')
+                })
+              } else {
+                setError('Verification token is missing. Please request a new code.')
+              }
             }
-          }
-        }).catch(() => {
-          // Handle clipboard access error silently
-        })
+          })
+          .catch(() => {
+            // Handle clipboard access error silently
+          })
       }
     }
   }
@@ -202,6 +205,6 @@ export const useVerifyEmail = () => {
     handleChangeEmailVerificationCodeData,
     verifyCode,
     handleResendEmailVerificationFormCode,
-    handleKeyDown,
+    handleKeyDown
   }
 }

@@ -32,13 +32,14 @@ export type ApplicationPaymentStatus = {
   status:'PENDING'|'PAID'|'FAILED'|'NO-PAYMENT'
   payment:Payment[]
 }
+
+  const googleDriveService = new GoogleDriveApplicationService()
+
 class ApplicationService {
-  private googleDriveService: GoogleDriveApplicationService
+
 
 // Add this to your constructor
-constructor() {
-  this.googleDriveService = new GoogleDriveApplicationService()
-}
+
 
   public async getApplcationPaymentStatus(userId:string):Promise<ApplicationPaymentStatus>{
     const currentSession = await AdmissionSession.findOne({where:{
@@ -77,10 +78,7 @@ return {status:'NO-PAYMENT',payment:[]}
         },
       })
  
-      if (existingApplication)
-        throw new BadRequestError(
-          'Application already exists for this user in this academic session.'
-        )
+      if (existingApplication) return existingApplication
   
       const program = await Program.findByPk(data.programId)
 
@@ -113,62 +111,62 @@ return {status:'NO-PAYMENT',payment:[]}
   }
 
   // Get application by ID with all related data
-  public async getApplicationDetailsById(id:string,shouldThrowErrorIfNotFound:boolean=false): Promise<FullApplication|null> {
-   
+  public async getApplicationById(id: number|string,shouldThrowErrorIfNotFound:boolean = false) {
     try {
-      const application = await Application.findByPk(id,{
+      const application = await Application.findByPk(id, {
         include: [
-
-          {
-            model: Program,
-            as: 'program',
-            include: [
-              {
-                model: Department,
-                as: 'department',
-                include: [{ model: Faculty, as: 'faculty' }],
-              },
-            ],
-          },
-          { model: Biodata, as: 'biodata' },
+          { model: User, as: 'user'},
+          { model: Program, as: 'program' },
           { model: AdmissionSession, as: 'academicSession' },
-            { model: ApplicantSSCQualification, as: 'sscQualification' },
+          { model: Biodata, as: 'biodata' },
           {
             model: ApplicantProgramSpecificQualification,
-                    as: 'programSpecificQualifications',
-    
-          },
-          // {
-          //   model: Staff,
-          //   as: 'assignedOfficer',
-          //   include: [
-          //     {
-          //       model: Staff,
-          //       as: 'staff',
-          //       include: [
-          //         {
-          //           model: User,
-          //           as: 'user',
-          //           attributes: ['firstName', 'lastName'],
-          //         },
-          //       ],
-          //     },
-          //   ],
-          // },
+              as: 'programSpecificQualifications'},
+          { model: ApplicantSSCQualification, as: 'sscQualification'},
+          
+          // { model: Staff, as: 'Staff' },
         ],
-      })as FullApplication
-
+      }) as FullApplication
 
       if (!application && shouldThrowErrorIfNotFound) {
-        throw new BadRequestError('Application not found')
+        throw new NotFoundError('Application not found')
       }
-      console.log(application)
+
       return application
     } catch (error) {
-      logger.error('Error fetching application details', { error })
+      logger.error('Error fetching application', { error, id })
       throw error
     }
   }
+public async getApplicationByUserId(id: string, shouldThrowErrorIfNotFound:boolean=false) {
+  try {
+    const application = await Application.findOne({
+      where: { applicantUserId: id },
+      include: [
+          { model: User, as: 'user'},
+          { model: Program, as: 'program' },
+          { model: AdmissionSession, as: 'academicSession' },
+          { model: Biodata, as: 'biodata' },
+          {
+            model: ApplicantProgramSpecificQualification,
+              as: 'programSpecificQualifications'},
+          { model: ApplicantSSCQualification, as: 'sscQualification'},
+          
+          // { model: Staff, as: 'Staff' },
+        ],
+      }) as FullApplication
+
+      if (!application && shouldThrowErrorIfNotFound) {
+        throw new NotFoundError('Application not found')
+      }
+
+      return application
+  } catch (error) {
+    logger.error('Error fetching application', { error, id });
+    throw error;
+  }
+}
+
 
   // Get all applications with filters and pagination (for Admin/HOA)
   public async getAllApplicationsFiltered(filters: ApplicationFilters) {
@@ -226,7 +224,7 @@ return {status:'NO-PAYMENT',payment:[]}
   // Assign application to admission officer (for HOA)
   public async assignToOfficer(applicationId: string, officerId: string): Promise<Application> {
     try {
-      const application = await this.getApplicationDetailsById(applicationId)
+      const application = await this.getApplicationById(applicationId)
       if (!application) throw new NotFoundError('Application not found')
 
       const officer = await Staff.findByPk(officerId)
@@ -254,11 +252,8 @@ return {status:'NO-PAYMENT',payment:[]}
   ): Promise<any> {
     try {
       // Get the application first
-      const application = await Application.findOne({
-        where: { id: applicationId, applicantUserId },
-      })
-
-      if (!application) {
+      const application = await this.getApplicationById(applicationId)
+      if (!application||application.applicantUserId !==applicantUserId) {
         throw new NotFoundError('Application not found or you do not have permission.')
       }
 
@@ -347,8 +342,10 @@ return {status:'NO-PAYMENT',payment:[]}
 
       // All validations passed, update application status
       application.status = ApplicationStatus.SUBMITTED
+      
       application.submittedAt = new Date()
       await application.save()
+      await googleDriveService.processApplicationSubmission(application)
 
       logger.info('Applicant finalized submission', {
         applicationId,
@@ -459,34 +456,6 @@ return {status:'NO-PAYMENT',payment:[]}
   }
 
 
-  // Get application by ID with all related data
-  static async getApplicationById(id: number) {
-    try {
-      const application = await Application.findByPk(id, {
-        include: [
-          { model: User, as: 'user', attributes: ['id', 'email', 'firstName', 'lastName'] },
-          { model: Program, as: 'program' },
-          { model: AdmissionSession, as: 'academicSession' },
-          { model: Biodata, as: 'bioData' },
-          {
-            model: ApplicantProgramSpecificQualification,
-            as: 'applicantProgramSpecificQualifications',
-            include: [{ model: ProgramSpecificRequirement, as: 'programSpecificQualification' }],
-          },
-          { model: Staff, as: 'Staff' },
-        ],
-      }) as FullApplication
-
-      if (!application) {
-        throw new NotFoundError('Application not found')
-      }
-
-      return application
-    } catch (error) {
-      logger.error('Error fetching application', { error, id })
-      throw error
-    }
-  }
 
   // Update application status
   public async updateApplicationStatus(id: string, status: ApplicationStatus, comments?: string) {

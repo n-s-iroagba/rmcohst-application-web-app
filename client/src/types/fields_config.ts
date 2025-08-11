@@ -1,5 +1,5 @@
-import { SelectOption } from '@/components/FormFields';
-import { ChangeEvent } from 'react';
+import { SelectOption } from '@/components/FormFields'
+import { ChangeEvent } from 'react'
 
 export type FieldType =
   | 'text'
@@ -10,57 +10,53 @@ export type FieldType =
   | 'double-select'
   | 'radio'
   | 'date'
-  |'password'
+  | 'password'
   | 'email'
 
 export type FieldGroupConfig = {
-  groupKey: string;
+  groupKey: string
   fields: {
-    name: string;
-    label: string;
-    options: { id: string | number; label: string }[];
-  }[];
-  addHandler: () => void;
-  removeHandler: (index: number) => void;
-  onChangeHandler: (
-    e: ChangeEvent<HTMLSelectElement>,
-    index: number,
-    field: string
-  ) => void;
-};
+    name: string
+    label: string
+    options: { id: string | number; label: string }[]
+  }[]
+  addHandler: () => void
+  removeHandler: (index: number) => void
+  onChangeHandler: (e: ChangeEvent<HTMLSelectElement>, index: number, field: string) => void
+}
 
 export type FieldConfig = {
-  type: FieldType;
+  type: FieldType
   onChangeHandler?:
     | ((e: any, index?: number) => void)
     | ((e: any, index: number) => void)
     | ((e: ChangeEvent<HTMLSelectElement>) => void)
-    | ((e: ChangeEvent<HTMLInputElement>) => void);
+    | ((e: ChangeEvent<HTMLInputElement>) => void)
 
   /**
    * Used by:
    * - select
    * - radio
    */
-  options?: SelectOption[];
+  options?: SelectOption[]
 
   /**
    * Used by double-select or multi-group fields
    */
-  fieldGroup?: FieldGroupConfig;
-};
+  fieldGroup?: FieldGroupConfig
+}
 
 export type FieldsConfig<T> = {
-  [key in keyof T]: FieldConfig;
-};
+  [key in keyof T]: FieldConfig
+}
 
 export type FieldConfigInput<T> = {
-  [K in keyof T]: FieldType;
-};
+  [K in keyof T]: FieldType
+}
 
 export type ChangeHandler = Partial<{
   [type in FieldType]:
-    | ((e: React.ChangeEvent<HTMLInputElement>) => void )
+    | ((e: React.ChangeEvent<HTMLInputElement>) => void)
     | ((e: React.ChangeEvent<HTMLTextAreaElement>) => void)
-    | ((e: React.ChangeEvent<HTMLSelectElement>) => void);
-}>;
+    | ((e: React.ChangeEvent<HTMLSelectElement>) => void)
+}>

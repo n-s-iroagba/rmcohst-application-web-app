@@ -3,59 +3,58 @@ export const INTERNAL_ROUTES = {
   AUTH: {
     LOGIN: '/auth/login',
     SIGNUP: '/auth/signup',
-    VERIFY_EMAIL: (token: string,id:number) => `/auth/verify-email/${token}/${id}`,
+    VERIFY_EMAIL: (token: string, id: number) => `/auth/verify-email/${token}/${id}`,
     RESEND_VERIFICATION_CODE: '/auth/resend-verification-code',
     LOGOUT: '/auth/logout',
     ME: '/auth/me',
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESET_PASSWORD: (token: string) => `/auth/reset-password/${token}`,
-    REFRESH_ACCESS_TOKEN: '/auth/refresh-token',
+    REFRESH_ACCESS_TOKEN: '/auth/refresh-token'
   },
   DASHBOARD: (role: string) => `/${role}/dashboard`,
 
-  DEPARTMENT:{
+  DEPARTMENT: {
     EDIT: (id: number) => `/super-admin/departments/${id}/edit`,
     LIST: '/super-admin/departments',
     CREATE: '/super-admin/departments/create',
-    GET_BY_ID: (id: number) => `/super-admin/departments/${id}`,
+    GET_BY_ID: (id: number) => `/super-admin/departments/${id}`
   },
-  FACULTY:{
+  FACULTY: {
     EDIT: (id: number) => `/super-admin/faculties/${id}/edit`,
     LIST: '/super-admin/faculties',
     CREATE: '/super-admin/faculties/create',
-    GET_BY_ID: (id: number) => `/super-admin/faculties/${id}`,
+    GET_BY_ID: (id: number) => `/super-admin/faculties/${id}`
   },
-  ACADEMIC_SESSION:{
+  ACADEMIC_SESSION: {
     EDIT: (id: number) => `/super-admin/academic-sessions/${id}/edit`,
     LIST: '/super-admin/academic-sessions',
     CREATE: '/super-admin/academic-sessions/create',
     GET_BY_ID: (id: number) => `/super-admin/academic-sessions/${id}`
   },
-  PROGRAM_SSC_REQUIREMENT:{
-     EDIT: (id: number) => `/super-admin/program-ssc-requirement/${id}/edit`,
+  PROGRAM_SSC_REQUIREMENT: {
+    EDIT: (id: number) => `/super-admin/program-ssc-requirement/${id}/edit`,
     LIST: '/super-admin/program-ssc-requirement',
     CREATE: '/super-admin/program-ssc-requirement/create',
     GET_BY_ID: (id: number) => `/super-admin/program-ssc-requirement/${id}`
   },
-    PROGRAM_SPECIFIC_REQUIREMENT:{
-     EDIT: (id: number) => `/super-admin/program-specific-requirement/${id}/edit`,
+  PROGRAM_SPECIFIC_REQUIREMENT: {
+    EDIT: (id: number) => `/super-admin/program-specific-requirement/${id}/edit`,
     LIST: '/super-admin/program-specific-requirement',
     CREATE: '/super-admin/program-specific-requirement/create',
     GET_BY_ID: (id: number) => `/super-admin/program-specific-requirement/${id}`
   },
-  APPLICATION:{
-    SELECT_PROGRAM:'/applicant/application/programs'
+  APPLICATION: {
+    SELECT_PROGRAM: '/applicant/application/programs'
   },
 
-  
   ACCOUNT: {
-    PROFILE: '/account/profile',
+    PROFILE: '/account/profile'
   },
   ERROR: {
     NOT_FOUND: '/404',
-    UNAUTHORIZED: '/403',
-  },
-};
+    UNAUTHORIZED: '/403'
+  }
+}
 
 export const API_ROUTES = {
   AUTH: {
@@ -68,76 +67,77 @@ export const API_ROUTES = {
     ME: '/auth/me',
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESET_PASSWORD: '/auth/reset-password',
-    REFRESH_ACCESS_TOKEN: '/auth/refresh-token',
+    REFRESH_ACCESS_TOKEN: '/auth/refresh-token'
   },
   ADMIN: {
-    USERS: {
+    USERS: { 
       INVITE: `/admin/users/invite`,
       STATUS: (id: string) => `/admin/users/${id}/status`,
       ROLE: (id: string) => `/admin/users/${id}/role`,
-      LOGS: (id: string) => `/admin/users/${id}/logs`,
-    },
+      LOGS: (id: string) => `/admin/users/${id}/logs`
+    } 
   },
-  APPLICATION:{
-    GET_BY_ID:(id:string) => `/applications/${id}`,
+  APPLICATION: {
+    GET_BY_ID: (id: string) => `/applications/${id}`,
+    GET_BY_APPLICANT_ID: (applicantUserId: number | string) => `/applications/applicant/${applicantUserId}`,
+    
   },
-  PAYMENT:{
+  PAYMENT: {
     LIST: '/payments',
-    GET_CURRENT_SESSION_APPLICATION_PAYMENT_STATUS:(applicantUserId:number|string)=>`/applications/payment-status/${applicantUserId}`,
-    GET_BY_APPLICANT_USER_ID:(applicantUserId:string|number)=> `/payments/${applicantUserId}`,
-    INITIALIZE_GATEWAY:'/payments/initialize',
-VERIFY:(reference:string) =>`/payments/verify/${reference}`
- },
- SSC_QUALIFICATION:{
-  UPDATE:(id:string|number)=>`/ssc-qualifications/${id}`,
- },
- PROGRAM_QUALIFICATION:{
-UPDATE:(id:string|number)=>`/program-qualifications/${id}`,
- },
-  PROGRAM:{
-    LIST:'/programs',
-    GET_BY_ID:(id:string)=>`/programs/${id}`
+
+    GET_CURRENT_SESSION_APPLICATION_PAYMENTS:(applicantUserId: number | string) => `/payments/${applicantUserId}/current-session-payments`,
+    INITIALIZE_GATEWAY: '/payments/initialize',
+    VERIFY: (reference: string) => `/payments/verify/${reference}`
   },
-  SESSION:{
-    LIST:'/sessions',
-    BY_ID:(id:string)=>`/sessions/${id}`,
-    CREATE:(sessionID:string)=>`/sessions/${sessionID}/create`
-    
+  SSC_QUALIFICATION: {
+    UPDATE: (id: string | number) => `/ssc-qualifications/${id}`
   },
-  BIODATA:{
-    UPDATE:(id:number)=>`/biodata/${id}`
+  PROGRAM_QUALIFICATION: {
+    UPDATE: (id: string | number) => `/program-qualifications/${id}`
   },
-  SSC_REQUIREMENT:{
-    LIST:'/ssc-requirement',
-    BY_ID:(id:string)=>`/ssc-requirement/${id}`,
-    CREATE:(requirementId:string)=>`/ssc-requirement/${requirementId}/create`
-    
+  PROGRAM: {
+    LIST: '/programs',
+    GET_BY_ID: (id: string) => `/programs/${id}`
   },
-  SUBJECT:{
-    LIST:'/subjects'
+  SESSION: {
+    LIST: '/sessions',
+    BY_ID: (id: string) => `/sessions/${id}`,
+    CREATE: (sessionID: string) => `/sessions/${sessionID}/create`,
+    CURRENT:'/sessions/current'
+  },
+  BIODATA: {
+    UPDATE: (id: number) => `/biodata/${id}`
+  },
+  SSC_REQUIREMENT: {
+    LIST: '/ssc-requirement',
+    BY_ID: (id: string) => `/ssc-requirement/${id}`,
+    CREATE: (requirementId: string) => `/ssc-requirement/${requirementId}/create`
+  },
+  SUBJECT: {
+    LIST: '/subjects'
   }
-};
+}
 
 // Utility types for route parameters
 export type RouteParams = {
   auth: {
-    invite: { token: string };
-  };
+    invite: { token: string }
+  }
   admin: {
-    users: { id: string };
-    feeds: { id: string };
-    health: { id: string };
-    categories: { id: string };
-  };
+    users: { id: string }
+    feeds: { id: string }
+    health: { id: string }
+    categories: { id: string }
+  }
   viewer: {
-    article: { id: string };
-  };
-  editor: {};
+    article: { id: string }
+  }
+  editor: {}
   adPlacer: {
-    campaign: { id: string };
-    analytics: { id: string };
-  };
-};
+    campaign: { id: string }
+    analytics: { id: string }
+  }
+}
 
 // Type-safe path generator
 export const buildPath = <T extends keyof RouteParams>(
@@ -148,5 +148,5 @@ export const buildPath = <T extends keyof RouteParams>(
   return Object.entries(params).reduce(
     (acc, [key, value]) => acc.replace(`:${key}`, value.toString()),
     path
-  );
-};
+  )
+}

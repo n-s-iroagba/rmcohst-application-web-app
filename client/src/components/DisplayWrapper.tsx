@@ -46,13 +46,12 @@ interface DisplayPageWrapperProps {
   ListComponent: React.ComponentType
 }
 
-export function DisplayPageWrapper({     
+export function DisplayPageWrapper({
   title,
   entityKey,
   navigateToCreate,
   ListComponent
 }: DisplayPageWrapperProps) {
-
   return (
     <div className="container mx-auto p-4 bg-slate-50 min-h-screen">
       <div className="max-w-6xl mx-auto">
@@ -61,7 +60,7 @@ export function DisplayPageWrapper({
             {entityIcons[entityKey]}
             <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">{title}</h1>
           </div>
-          
+
           <button
             onClick={() => navigateToCreate()}
             className="bg-slate-900 text-white px-4 py-2 sm:px-6 text-sm sm:text-base rounded-lg hover:bg-slate-700 transition-colors w-full sm:w-auto"
@@ -69,7 +68,7 @@ export function DisplayPageWrapper({
             Add New
           </button>
         </div>
-        
+
         <ListComponent />
       </div>
     </div>

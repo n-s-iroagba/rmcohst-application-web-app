@@ -9,19 +9,14 @@ import { RESET_PASSWORD_DEFAULT_DATA } from '@/constants/auth'
 import { testIdContext } from '@/test/utils/testIdContext'
 
 const ResetPasswordForm: React.FC = () => {
-  const {
-    resetPasswordRequest,
-    resetPassword,
-    loading,
-    error
-  } = useAuth()
+  const { resetPasswordRequest, resetPassword, loading, error } = useAuth()
 
   const { navigateToLogin } = useRoutes()
-  const { setFieldConfigInput, setChangeHandlers } = useFieldConfigContext<Partial<ResetPasswordRequestDto>>()
+  const { setFieldConfigInput, setChangeHandlers } =
+    useFieldConfigContext<Partial<ResetPasswordRequestDto>>()
 
   useEffect(() => {
     setFieldConfigInput({
-  
       password: 'password',
       confirmPassword: 'password'
     })
@@ -34,11 +29,9 @@ const ResetPasswordForm: React.FC = () => {
     <div className="max-w-md mx-auto">
       <div className="mb-6 text-center">
         <h2 className="text-2xl font-bold text-gray-900">Reset Password</h2>
-        <p className="mt-2 text-sm text-gray-600">
-          Enter your new password below.
-        </p>
+        <p className="mt-2 text-sm text-gray-600">Enter your new password below.</p>
       </div>
-      
+
       <CustomForm
         data={resetPasswordRequest}
         submitHandler={resetPassword}

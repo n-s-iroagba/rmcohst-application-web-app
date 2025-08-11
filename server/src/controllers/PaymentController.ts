@@ -20,13 +20,9 @@ export class PaymentController {
   }
   static async initializePayment(req: Request, res: Response) {
     try {
-      const { email, amount } = req.body;
 
-      if (!email || !amount) {
-         res.status(400).json({ error: 'Email and amount are required' });
-      }
 
-      const response = await PaymentService.initializePayment({ email, amount });
+      const response = await PaymentService.initializePayment(req.body);
        res.status(200).json(response.data);
     } catch (error: any) {
       logger.error('Failed to initialize payment:', error.response?.data || error.message);
@@ -61,15 +57,6 @@ export class PaymentController {
     }
   }
 
-  static async getSuccessfulApplicantPaymentForCurrentSession(req: Request, res: Response) {
-    try {
-      const applicantUserId = parseInt(req.params.applicantUserId)
-      const payments = await PaymentService.getSuccessfulApplicantPaymentForCurrentSession(applicantUserId)
-      res.status(200).json(payments)
-    } catch (error: any) {
-      res.status(500).json({ error: error.message })
-    }
-  }
 
   static async getPaymentsByDate(req: Request, res: Response) {
     try {

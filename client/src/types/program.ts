@@ -1,4 +1,4 @@
-import { Department } from './department'
+import { Department, DepartmentWithFaculty } from './department'
 import { ProgramSpecificRequirement } from './program_specific_requirement'
 import { ProgramSSCRequirement } from './program_ssc_requirement'
 
@@ -14,9 +14,7 @@ export interface Program {
   duration: number
   department: Department
   applicationFeeInNaira: number
-  acceptanceFeeInNaira: number
-  sscRequirement: ProgramSSCRequirement
-  programSpecificRequirements: ProgramSpecificRequirement
+  acceptanceFeeInNaira: number 
   description?: string
   sscRequirementId: number
   programSpecificRequirementsId: number
@@ -42,4 +40,10 @@ export interface ProgramFilters {
   department?: string
   level?: ProgramLevel
   searchTerm?: string
+}
+
+export interface FullProgram extends Program {
+   sscRequirements: ProgramSSCRequirement
+  specificRequirements: ProgramSpecificRequirement
+  department:DepartmentWithFaculty
 }

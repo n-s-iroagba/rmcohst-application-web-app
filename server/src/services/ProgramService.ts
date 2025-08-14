@@ -1,7 +1,16 @@
 // src/services/ProgramService.ts
 import Program from '../models/Program'
-import { Department } from '../models'
-
+import { Department, ProgramSpecificRequirement, ProgramSSCRequirement } from '../models'
+import Faculty from '../models/Faculty';
+import { NotFoundError } from '../utils/errors';
+export interface FullProgram extends Program {
+   sscRequirement: ProgramSSCRequirement
+  specificRequirements: ProgramSpecificRequirement
+  department:DepartmentWithFaculty
+}
+interface DepartmentWithFaculty extends Department {
+  faculty: Faculty
+}
 export default class ProgramService {
   static async createBulk(programs: any[]) {
     return await Program.bulkCreate(programs, { validate: true })
@@ -15,6 +24,37 @@ export default class ProgramService {
       order: [['createdAt', 'DESC']],
     })
   }
+static async getOne(id: string):Promise<FullProgram> {
+  try{
+  const program = await Program.findByPk(id, {
+    include: [
+      {
+        model: Department,
+        as: 'department',
+        include:[{
+          model: Faculty,
+          as:'faculty'
+        }
+      ]
+      },
+      {
+        model: ProgramSSCRequirement,
+        as:'sscRequirements'
+      },
+       {
+        model: ProgramSpecificRequirement,
+        as:'specificRequirements'
+
+      }
+    ]
+  })as FullProgram
+
+  if(!program) throw new NotFoundError('program not found')
+    return program
+}catch(error){
+  throw error
+}
+}
 
   static async getByFaculty(facultyId: number) {
     return await Program.findAll({

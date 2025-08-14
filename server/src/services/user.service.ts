@@ -63,7 +63,7 @@ export class UserService {
       const hashedToken = CryptoUtil.hashString(token)
       const user = await User.findOne({
         where: {
-          passwordResetToken: hashedToken,
+        passwordResetToken: hashedToken,
         },
          include:[{
           model:Role,
@@ -72,6 +72,9 @@ export class UserService {
       }) as UserWithRole
 
       if (!user) {
+        const users = await User.findAll({})
+        console.log(users)
+        console.log(hashedToken)
         logger.warn('User not found by reset token or token expired')
         throw new UnauthorizedError('Invalid or expired reset token', 'INVALID_RESET_TOKEN')
       }
@@ -159,9 +162,9 @@ export class UserService {
   async setPasswordResetDetails(user: User, hashedToken: string): Promise<User> {
     try {
       user.passwordResetToken = hashedToken
-
+      console.log('token',hashedToken)
       await user.save()
-
+      console.log(user)
       logger.info('Password reset details set', { userId: user.id })
       return user
     } catch (error) {

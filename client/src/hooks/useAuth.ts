@@ -107,9 +107,10 @@ export const useAuth = () => {
   // RESET PASSWORD
   const {
     postResource: resetPasswordRequest,
-
+    changeHandlers:resetPasswordChangeHandlers,
     handlePost: handleResetPassword,
-    posting: resetPasswordLoading
+    posting: resetPasswordLoading,
+      setPostResource:setResetPasswordPayload
   } = usePost<ResetPasswordRequestDto, LoginResponseDto>(
     API_ROUTES.AUTH.RESET_PASSWORD,
     RESET_PASSWORD_DEFAULT_DATA
@@ -149,6 +150,7 @@ export const useAuth = () => {
     if ('accessToken' in loginResponse && 'user' in loginResponse) {
       setAccessToken(loginResponse.accessToken)
       setUser(loginResponse.user)
+      console.log('USERS',loginResponse.user)
       navigateToDashboard(loginResponse.user.role)
     } else if ('verificationToken' in loginResponse && 'in' in loginResponse) {
       navigateToVerifyEmail(loginResponse.verificationToken, loginResponse.id)
@@ -176,7 +178,9 @@ export const useAuth = () => {
   }
 
   // RESET password
-  const resetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+  const resetPassword = async (e: React.FormEvent<HTMLFormElement>,resetPasswordToken:string) => {
+    setResetPasswordPayload({...resetPasswordRequest,resetPasswordToken})
+    e.preventDefault
     const resetPasswordResponse = (await handleResetPassword(e)) as any
     if (resetPasswordResponse) {
       navigateToLogin()
@@ -200,7 +204,7 @@ export const useAuth = () => {
     // resendVerificationResponse,
     // forgotPasswordResponse,
     // resetPasswordResponse,
-    forgotPasswordChangeHandler,
+   
     signUpRequest,
     loginRequest,
     verifyEmailRequest,
@@ -211,6 +215,8 @@ export const useAuth = () => {
 
     signupChangeHandlers,
     loginChangeHandlers,
+    resetPasswordChangeHandlers,
+     forgotPasswordChangeHandler,
     login,
     signUp,
     signUpSuperAdmin,

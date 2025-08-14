@@ -1,4 +1,5 @@
 import { SelectOption } from '@/components/FormFields'
+import { FileChangeEvent } from '@/hooks/useApiQuery'
 import { ChangeEvent } from 'react'
 
 export type FieldType =
@@ -12,17 +13,19 @@ export type FieldType =
   | 'date'
   | 'password'
   | 'email'
+  | 'number'
+  | 'fileArray'
 
 export type FieldGroupConfig = {
-  groupKey: string
+  // groupKey: string
   fields: {
     name: string
     label: string
-    options: { id: string | number; label: string }[]
+    options?: { id: string | number; label: string }[]
   }[]
-  addHandler: () => void
-  removeHandler: (index: number) => void
-  onChangeHandler: (e: ChangeEvent<HTMLSelectElement>, index: number, field: string) => void
+  addHandler?: () => void
+  removeHandler?: (index: number) => void
+  onChangeHandler: ((e: ChangeEvent<HTMLSelectElement>, index: number, field: string) => void)|((e: FileChangeEvent)=>void)
 }
 
 export type FieldConfig = {
@@ -50,9 +53,6 @@ export type FieldsConfig<T> = {
   [key in keyof T]: FieldConfig
 }
 
-export type FieldConfigInput<T> = {
-  [K in keyof T]: FieldType
-}
 
 export type ChangeHandler = Partial<{
   [type in FieldType]:

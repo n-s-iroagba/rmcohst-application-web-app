@@ -1,4 +1,4 @@
-import { EmailService } from "./MailService";
+
 import { PasswordService } from "./PasswordService";
 import { TokenService } from "./TokenService";
 import { UserService } from "./user.service";
@@ -17,6 +17,7 @@ import { BadRequestError, NotFoundError } from "../utils/errors";
 import User, { AuthUser } from "../models/User";
 import { Role } from "../models";
 import { UserWithRole } from "./RbacService";
+import { EmailService } from "./EmailService";
 
 
 export class AuthService {
@@ -76,20 +77,25 @@ export class AuthService {
       logger.info("Login attempt started", { email: data.email });
 
       const user = await this.userService.findUserByEmail(data.email,true);
+      console.log('PASSWORD',user?.password)
       await this.validatePassword(user, data.password);
       if(!user){
         throw new NotFoundError('user not found')
       }
+
       if (!user.isEmailVerified) {
         logger.warn("Login attempted by unverified user", { userId: user.id });
         const { verificationToken } = await this.verificationService.generateVerificationDetails(user);
         return { id:user.id,verificationToken };
       }
-
-      const { accessToken, refreshToken } = this.generateTokenPair(user);
+      const role = await Role.findByPk(user.roleId)
+      if(!role) throw new NotFoundError('role not found')
+const { accessToken, refreshToken } = this.generateTokenPair(user);
       logger.info("Login successful", { userId: user?.id });
-
-      return this.saveRefreshTokenAndReturn(user, accessToken, refreshToken);
+   const returnUser = {...user.get({ plain: true }), role:role.name}
+     user.refreshToken = refreshToken
+     await user.save()
+      return {user:returnUser, accessToken, refreshToken};
     } catch (error) {
       return this.handleAuthError("Login", { email: data.email }, error);
     }
@@ -211,8 +217,9 @@ export class AuthService {
 
       const { accessToken, refreshToken } = this.generateTokenPair(user);
       logger.info("Password reset successful", { userId: user.id });
-
-      return this.saveRefreshTokenAndReturn(user, accessToken, refreshToken);
+   const role = await Role.findByPk(user.roleId)
+      if(!role) throw new NotFoundError('role not found')
+      return this.saveRefreshTokenAndReturn(user, accessToken, refreshToken,role.name);
     } catch (error) {
       return this.handleAuthError("Password reset", {}, error);
     }
@@ -288,9 +295,10 @@ export class AuthService {
    * @param refreshToken - JWT refresh token.
    * @returns Full login/auth return object.
    */
-  private async saveRefreshTokenAndReturn(user: any, accessToken: string, refreshToken: string): Promise<AuthServiceLoginResponse> {
-    user.refreshToken = refreshToken
-    await user.save()
+  private async saveRefreshTokenAndReturn(passedUser: any, accessToken: string, refreshToken: string,role:string): Promise<AuthServiceLoginResponse> {
+    passedUser.refreshToken = refreshToken
+    await passedUser.save()
+    const user ={...passedUser, role}
     
     return { accessToken, user, refreshToken };
   }

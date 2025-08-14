@@ -19,4 +19,4 @@ export interface ApplicantSSCQualification {
 }
 
 export interface SSCQualificationFormData
-  extends Omit<ApplicantSSCQualification, 'id' | 'applicationId' | 'isComplete'> {}
+  extends Omit<ApplicantSSCQualification, 'id' | 'applicationId' | 'completed'> {}

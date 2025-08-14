@@ -3,22 +3,20 @@ export interface Biodata {
   applicationId: number
   firstName: string
   surname: string
-  otherNames: string // Changed from middleName
-  email: string // Changed from emailAddress
-  phoneNumber: string
-  dateOfBirth: Date
-  gender: string
+  otherNames: string 
+  email: string 
+  dateOfBirth: Date 
+   gender: string
   maritalStatus: string
   nationality: string
   stateOfOrigin: string
-  localGovernmentArea: string // Changed from lga
-  contactAddress: string // Changed from homeAddress
-  permanentHomeAddress: string // New field
+  localGovernmentArea: string
+  contactAddress: string 
   passportPhotograph: Buffer
-  nextOfKinName: string // Changed from nextOfKinFullName
+  nextOfKinName: string 
   nextOfKinPhoneNumber: string
   nextOfKinAddress: string
-  nextOfKinRelationship: string // Changed from relationshipWithNextOfKin
+  nextOfKinRelationship: string 
   completed: boolean
-  homeTown: string // Kept for backward compatibility if needed
+  homeTown: string
 }

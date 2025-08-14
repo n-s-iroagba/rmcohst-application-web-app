@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic'
 
 import { Spinner } from '@/components/Spinner'
 import { useGet } from '@/hooks/useApiQuery'
-import { Program } from '@/types/program'
+import { FullProgram, Program } from '@/types/program'
 import { API_ROUTES } from '@/config/routes'
 import { Grade } from '@/types/program_ssc_requirement'
 import { useAuthContext } from '@/context/AuthContext'
@@ -38,13 +38,13 @@ export default function ProgramDetailsPage() {
     resourceData: program,
     error,
     loading
-  } = useGet<Program>(API_ROUTES.PROGRAM.GET_BY_ID(programId))
+  } = useGet<FullProgram>(API_ROUTES.PROGRAM.GET_BY_ID(programId))
 
   if (loading) return <Spinner />
   if (error) return <p className="text-danger">Failed to load program details.</p>
   if (!program) return null
 
-  const ssc = program.sscRequirement
+  const ssc = program.sscRequirements
   const getGradeText = (grade: Grade) => `${grade} or better`
 
   return (
@@ -53,7 +53,7 @@ export default function ProgramDetailsPage() {
         &larr; Back
       </button>
 
-      {/* <div className="shadow-sm mb-4">
+      <div className="shadow-sm mb-4">
         <div>
           <h2>{program.name}</h2>
           <p className="text-muted">
@@ -79,7 +79,7 @@ export default function ProgramDetailsPage() {
         </div>
       </div>
 
-      <div className="shadow-sm mb-4">
+      {/* <div className="shadow-sm mb-4">
         <div>
           <strong>SSC Requirements</strong>
         </div>

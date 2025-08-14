@@ -5,14 +5,21 @@ import { CustomForm } from '@/components/CustomForm'
 import { useRoutes } from '@/hooks/useRoutes'
 import { useFieldConfigContext } from '@/context/FieldConfigContext'
 import { SIGNUP_FORM_DEFAULT_DATA } from '@/constants/auth'
-import { testIdContext } from '@/test/utils/testIdContext'
+
 import { Application } from '@/types/application'
 import { API_ROUTES } from '@/config/routes'
-import { useGet, usePut } from '@/hooks/useApiQuery'
-import { Biodata } from '@/types/biodata'
+import { FileChangeEvent, useGet, usePut } from '@/hooks/useApiQuery'
 import { SSCQualificationFormData } from '@/types/applicant_ssc_qualification'
 import { SSCSubject } from '@/types/ssc_subject'
 import { Grade } from '@/types/program_ssc_requirement'
+import { Certificate } from 'crypto'
+import { ChangeHandler, FieldType } from '@/types/fields_config'
+export enum QualificationType {
+  WAEC = 'WAEC',
+  NECO = 'NECO',
+  NABTEB = 'NABTEB',
+  GCE = 'GCE',
+}
 
 interface Props {
   application?: Application
@@ -38,6 +45,7 @@ const SSCQualificationForm: React.FC<Props> = ({ application }) => {
 
   const { setFieldsConfig } = useFieldConfigContext<SSCQualificationFormData>()
   const grades = Object.values(Grade)
+  const certificates = Object.values(QualificationType)
 
   useEffect(() => {
     if (!subjects) return
@@ -50,6 +58,17 @@ const SSCQualificationForm: React.FC<Props> = ({ application }) => {
       id: grade,
       label: grade
     }))
+     const certificationOpitons = certificates.map((certificate) => ({
+      id: certificate,
+      label: certificate
+    }))
+     const certificateFileFields =  Array.from({ length: sscQualification.numberOfSittings||1 }, (_, index) => {
+    const sittingNumber = index + 1
+    return {
+      name: `certificateFile${sittingNumber}`,
+      label: `Certificate File - Sitting ${sittingNumber}`,
+    }})
+    
 
     setFieldsConfig({
       numberOfSittings: {
@@ -57,23 +76,16 @@ const SSCQualificationForm: React.FC<Props> = ({ application }) => {
         onChangeHandler: changeHandlers['text']
       },
       certificateTypes: {
-        type: 'checkbox'
-        // fieldGroup: {
-        //   groupKey: 'certificateTypes',
-        //   fields: []
-        //   a
-        // }
+        type: 'checkbox',
+        options:certificationOpitons
       },
       certificates: {
-        type: 'file'
-        // fieldGroup: {
-        //   groupKey: 'certificates',
-        //   fields: subjects.map(subject => ({
-        //     name: subject.id.toString(),
-        //     label: subject.name,
-        //     options: []
-        //   }))
-        // }
+        type: 'fileArray',
+        fieldGroup: {
+          // groupKey: 'certificates',
+          fields: certificateFileFields,
+          onChangeHandler:changeHandlers['fileArray'] as (e:FileChangeEvent)=>void
+        }
       },
       firstSubjectId: {
         type: 'select',
@@ -128,9 +140,6 @@ const SSCQualificationForm: React.FC<Props> = ({ application }) => {
     })
   }, [subjects, changeHandlers, setFieldsConfig])
 
-  useEffect(() => {
-    testIdContext.setContext(SIGNUP_FORM_DEFAULT_DATA, 'signup-form')
-  }, [])
 
   return (
     sscQualification && (

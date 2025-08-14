@@ -45,18 +45,18 @@ export const FORGOT_PASSWORD_DEFAULT_DATA: ForgotPasswordRequestDto = {
 }
 
 export const RESET_PASSWORD_DEFAULT_DATA: ResetPasswordRequestDto = {
-  token: '',
+  resetPasswordToken: '',
   password: '',
   confirmPassword: ''
 }
 
 export const VERIFY_EMAIL_DEFAULT_DATA: VerifyEmailRequestDto = {
-  id: '',
-  code: '',
-  token: ''
+ 
+  verificationCode: '',
+  verificationToken: ''
 }
 
 export const RESEND_VERIFICATION_DEFAULT_DATA: ResendVerificationRequestDto = {
-  token: '',
-  id: ''
+  verificationToken: '',
+  id: 0
 }

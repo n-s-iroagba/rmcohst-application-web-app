@@ -2,25 +2,23 @@ import { useState, useEffect } from 'react'
 import { useMutation, UseMutationResult, useQuery } from '@tanstack/react-query'
 import { handleError } from '@/utils/api'
 import api from '@/lib/apiUtils'
+import { FieldType } from '@/types/fields_config'
 // Define input types for different handlers
 type InputChangeEvent = React.ChangeEvent<HTMLInputElement>
 type TextAreaChangeEvent = React.ChangeEvent<HTMLTextAreaElement>
 type SelectChangeEvent = React.ChangeEvent<HTMLSelectElement>
-type FileChangeEvent = React.ChangeEvent<HTMLInputElement>
+export type FileChangeEvent = React.ChangeEvent<HTMLInputElement>
 
 // Define the change handler types
-interface ChangeHandler {
-  text: (e: InputChangeEvent) => void
-  password: (e: InputChangeEvent) => void
-  email: (e: InputChangeEvent) => void
-  textarea: (e: TextAreaChangeEvent) => void
-  select: (e: SelectChangeEvent) => void
-  checkbox: (e: InputChangeEvent) => void
-  radio: (e: InputChangeEvent) => void
-  date: (e: InputChangeEvent) => void
-  file: (e: FileChangeEvent) => void
+export type ChangeHandler = {
+  [K in FieldType]?: K extends 'textarea'
+    ? (e: TextAreaChangeEvent) => void
+    : K extends 'select' | 'double-select'
+    ? (e: SelectChangeEvent) => void
+    : K extends 'file' | 'fileArray'
+    ? (e: FileChangeEvent) => void
+    : (e: InputChangeEvent) => void
 }
-
 type TransformFn = (name: string, value: string) => any
 
 export function usePostBulk<T, U>(
@@ -111,7 +109,9 @@ export const usePost = <T, U>(
   const mutation = useMutation<U, unknown, T>({
     mutationFn: async (payload: T) => {
       try {
+        console.log('payload is', payload)
         const response = await api.post(postResourceUrl, payload)
+      
         console.log('response is ', response.data)
 
         return response.data
@@ -201,12 +201,13 @@ export const usePost = <T, U>(
     checkbox: handleCheckboxChange,
     radio: handleTextChange,
     date: handleTextChange,
-    file: handleFileChange
+    file: handleFileChange,
+  
   }
 
   return {
     postResource,
-
+    setPostResource,
     posting: mutation.isPending,
     apiError,
     changeHandlers,
@@ -323,7 +324,7 @@ export const usePut = <T, U = any>(
     setPutResource((prev) => ({
       ...prev,
       [name]: transformedValue
-    }))
+    } as T))
   }
 
   // Handle checkbox inputs
@@ -334,7 +335,7 @@ export const usePut = <T, U = any>(
     setPutResource((prev) => ({
       ...prev,
       [name]: transformedValue
-    }))
+    } as T))
   }
 
   // Handle file inputs
@@ -342,31 +343,60 @@ export const usePut = <T, U = any>(
     const { name, files } = e.target
     const file = files?.[0] || null
 
-    // For file inputs, you might want to handle the file differently
-    // Option 1: Store the File object directly
     const transformedValue = transformField ? transformField(name, file) : file
 
     setPutResource((prev) => ({
       ...prev,
       [name]: transformedValue
-    }))
+    } as T))
+  }
 
-    // Option 2: Convert to base64 or handle file upload separately
-    // if (file) {
-    //   const reader = new FileReader();
-    //   reader.onload = (event) => {
-    //     const base64 = event.target?.result;
-    //     const transformedValue = transformField
-    //       ? transformField(name, base64 as string)
-    //       : base64;
-    //
-    //     setPutResource((prev) => ({
-    //       ...prev,
-    //       [name]: transformedValue,
-    //     }));
-    //   };
-    //   reader.readAsDataURL(file);
-    // }
+  // FIXED: Remove conflicting generic T and use the hook's T
+  const handleArrayFileChangeAppend = (e: FileChangeEvent) => {
+    const { name, files } = e.target
+    const file = files?.[0] || null
+
+    if (!file) return
+
+    const transformedValue = transformField ? transformField(name, file) : file
+
+    setPutResource((prev) => {
+      // Type assertion to safely access dynamic properties
+      const prevObj = prev as Record<string, any>
+      const existingArray = Array.isArray(prevObj[name]) ? prevObj[name] : []
+      return {
+        ...prev,
+        [name]: [...existingArray, transformedValue]
+      } as T
+    })
+  }
+
+  // Alternative: More type-safe version with constraint
+  const handleArrayFileChangeAppendSafe = (e: FileChangeEvent) => {
+    const { name, files } = e.target
+    const file = files?.[0] || null
+
+    if (!file) return
+
+    const transformedValue = transformField ? transformField(name, file) : file
+
+    setPutResource((prev) => {
+      // Ensure T extends Record<string, any> for safe property access
+      if (typeof prev === 'object' && prev !== null) {
+        const prevObj = prev as T & Record<string, any>
+        const existingArray = Array.isArray(prevObj[name]) ? prevObj[name] : []
+        return {
+          ...prev,
+          [name]: [...existingArray, transformedValue]
+        } as T
+      }
+      
+      // Fallback if prev is not an object
+      return {
+        ...prev,
+        [name]: [transformedValue]
+      } as T
+    })
   }
 
   // Handle file input with base64 conversion (alternative implementation)
@@ -378,7 +408,7 @@ export const usePut = <T, U = any>(
       setPutResource((prev) => ({
         ...prev,
         [name]: null
-      }))
+      } as T))
       return
     }
 
@@ -390,7 +420,7 @@ export const usePut = <T, U = any>(
       setPutResource((prev) => ({
         ...prev,
         [name]: transformedValue
-      }))
+      } as T))
     }
     reader.readAsDataURL(file)
   }
@@ -415,10 +445,9 @@ export const usePut = <T, U = any>(
     checkbox: handleCheckboxChange,
     radio: handleTextChange,
     date: handleTextChange,
-    // Choose the appropriate file handler based on your needs:
-    file: handleFileChange // Stores File object directly
-    // file: handleFileChangeAsBase64, // Converts to base64 string
-    // file: handleFileChangeAsBuffer, // Converts to Buffer (for biodata)
+    file: handleFileChange,
+    // Add the array file handler
+    fileArray: handleArrayFileChangeAppend
   }
 
   return {
@@ -426,8 +455,8 @@ export const usePut = <T, U = any>(
     updating: mutation.isPending,
     apiError,
     changeHandlers,
-
-    handlePut
+    handlePut,
+ 
   }
 }
 

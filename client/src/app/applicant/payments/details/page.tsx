@@ -6,9 +6,11 @@ import { useGet } from '@/hooks/useApiQuery'
 import { API_ROUTES } from '@/config/routes'
 import { Spinner } from '@/components/Spinner'
 import ErrorAlert from '@/components/ErrorAlert'
+import { useRouter } from 'next/navigation'
 
 export default function PaymentStatusPage() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const reference = searchParams.get('reference')
 
   const { resourceData, error, loading } = useGet<any>(
@@ -24,7 +26,7 @@ export default function PaymentStatusPage() {
   return (
     <div className="container py-5">
       <h2 className="mb-4">Payment Verification</h2>
-
+       <button>Dashboard</button>
       <div className="shadow p-4 mb-3 bg-white rounded">
         <p>
           <strong>Status:</strong> {payment.status}
@@ -63,11 +65,4 @@ export default function PaymentStatusPage() {
     </div>
   )
 }
-// const { user } = useAuthContext()
-// const {navigateToSelectProgram}= useRoutes()
 
-// const {
-//   resourceData: payment,
-//   loading: isPaymentLoading,
-//   error: paymentError,
-// } = useGet<Payment>(user?API_ROUTES.PAYMENT.GET_BY_APPLICANT_USER_ID(user.id):'')

@@ -27,12 +27,29 @@ export class AppError extends Error {
   }
 }
 
+
+
 export class BadRequestError extends AppError {
   constructor(message = 'Invalid request', code = 'BAD_REQUEST', details?: any) {
     super(message, code, 400, details)
   }
 }
 
+
+
+export class PaymentError extends AppError {
+  
+  readonly isOperational = true
+
+  constructor(
+    message: string,
+    code = 'PAYMENT_ERROR',
+     statusCode = 400,
+     details?:any
+  ) {
+    super(message,code, statusCode,details)
+  }
+}
 export class UnauthorizedError extends AppError {
   constructor(message = 'Unauthorized', code = 'UNAUTHORIZED', details?: any) {
     super(message, code, 401, details)

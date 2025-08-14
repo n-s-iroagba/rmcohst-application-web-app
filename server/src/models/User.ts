@@ -116,18 +116,6 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
         sequelize,
         tableName: 'users',
         paranoid: true, // Enable soft deletes
-        hooks: {
-          beforeCreate: async (user: User) => {
-            if (user.password) {
-              user.password = await bcrypt.hash(user.password, 10)
-            }
-          },
-          beforeUpdate: async (user: User) => {
-            if (user.changed('password') && user.password) {
-              user.password = await bcrypt.hash(user.password, 10)
-            }
-          },
-        },
       }
     )
 

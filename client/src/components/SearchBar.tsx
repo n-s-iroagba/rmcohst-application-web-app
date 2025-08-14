@@ -12,6 +12,7 @@ interface SearchBarProps<T> {
   showClearButton?: boolean
   caseSensitive?: boolean
   exactMatch?: boolean
+  testId:string
 }
 
 // Hook for debouncing search queries
@@ -40,7 +41,8 @@ export function GenericSearchBar<T extends Record<string, any>>({
   className = '',
   showClearButton = true,
   caseSensitive = false,
-  exactMatch = false
+  exactMatch = false,
+  testId
 }: SearchBarProps<T>) {
   const [searchTerm, setSearchTerm] = useState('')
   const debouncedSearchTerm = useDebounce(searchTerm, debounceMs)
@@ -98,6 +100,7 @@ export function GenericSearchBar<T extends Record<string, any>>({
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
         <input
           type="text"
+          data-testId={testId}
           value={searchTerm}
           onChange={handleInputChange}
           placeholder={placeholder}
@@ -179,6 +182,7 @@ function SearchBarExample() {
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-gray-700">Search Users</h2>
         <GenericSearchBar<User>
+          testId=''
           data={users}
           searchKeys={['firstName', 'lastName', 'email', 'role']}
           onResults={setUserResults}
@@ -207,6 +211,7 @@ function SearchBarExample() {
         <h2 className="text-lg font-semibold text-gray-700">Search Products</h2>
         <GenericSearchBar<Product>
           data={products}
+             testId=''
           searchKeys={['name', 'category', 'description']}
           onResults={setProductResults}
           placeholder="Search products by name, category, or description..."
@@ -239,6 +244,7 @@ function SearchBarExample() {
         </h2>
         <GenericSearchBar<User>
           data={users}
+             testId=''
           searchKeys={['role']}
           onResults={setUserResults}
           placeholder="Search exact role (try 'admin' vs 'Admin')..."

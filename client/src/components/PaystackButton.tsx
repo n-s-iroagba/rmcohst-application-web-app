@@ -5,6 +5,7 @@ import PaystackPop from '@paystack/inline-js'
 import { usePost } from '@/hooks/useApiQuery'
 import { API_ROUTES } from '@/config/routes'
 import { useRouter } from 'next/navigation'
+import { ApplicationTestIds } from '@/test/testIds'
 
 interface PaymentButtonProps {
   email: string
@@ -22,20 +23,21 @@ export default function PaymentButton({
   const router = useRouter()
   const { handlePost, posting } = usePost<
     PaymentButtonProps,
-    { status: boolean; message: string; data: { access_code: string; reference: string } }
+    { status: boolean; message: string ;access_code: string; reference: string  }
   >(API_ROUTES.PAYMENT.INITIALIZE_GATEWAY, { email, amount, programId, applicantUserId })
-  console.log('weeeeeeeeeeeee', applicantUserId)
+
 
   const initiateTransaction = async (e: any) => {
     e.preventDefault()
 
     try {
       const response = await handlePost(e)
-      if (response?.data?.access_code) {
+      console.log('paystack response',response)
+      if (response?.access_code) {
         const popup = new PaystackPop()
-        popup.resumeTransaction(response.data.access_code)
+        popup.resumeTransaction(response.access_code)
         console.log('PAYSSSSSSSSSTACK', response)
-        router.push(`/applicant/payments/status/?reference=${response.data.reference}`)
+        router.push(`/applicant/payments/details/?reference=${response.reference}`)
       }
     } catch (error) {
       console.error('Transaction initiation failed:', error)
@@ -43,7 +45,9 @@ export default function PaymentButton({
   }
 
   return (
-    <button onClick={initiateTransaction} disabled={posting}>
+    <button onClick={initiateTransaction}
+    data-testId={ApplicationTestIds.initiatePayment}
+    disabled={posting}>
       {posting ? 'Processing...' : 'Apply'}
     </button>
   )

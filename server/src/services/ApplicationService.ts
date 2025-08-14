@@ -155,7 +155,7 @@ public async getApplicationByUserId(id: string, shouldThrowErrorIfNotFound:boole
           // { model: Staff, as: 'Staff' },
         ],
       }) as FullApplication
-
+      console.log(application)
       if (!application && shouldThrowErrorIfNotFound) {
         throw new NotFoundError('Application not found')
       }

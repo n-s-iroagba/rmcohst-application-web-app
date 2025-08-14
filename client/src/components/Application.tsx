@@ -96,36 +96,22 @@ const ApplicationPage: React.FC = () => {
     []
   )
 
-  // API calls
-  const {
-    resourceData: paymentData,
-    loading: isPaymentLoading,
-    error: paymentError
-  } = useGet<ApplicationPaymentStatus>(
-    API_ROUTES.PAYMENT.GET_CURRENT_SESSION_APPLICATION_PAYMENT_STATUS(user.id)
-  )
+
 
   // TODO: Fix hardcoded applicationId - should come from payment data or context
-  const applicationId = 1
+  const applicationId = '1'
   //
   const {
     resourceData: application,
     loading: isApplicationLoading,
     error: applicationError
   } = useGet<Application>(
-    paymentData?.payment[0]
-      ? API_ROUTES.APPLICATION.GET_BY_ID(String(paymentData.payment[0].id))
-      : null
-  )
 
-  // Memoized computed values
-  const isLoading = useMemo(
-    () => isApplicationLoading || isPaymentLoading,
-    [isApplicationLoading, isPaymentLoading]
-  )
+API_ROUTES.APPLICATION.GET_BY_ID(applicationId))
 
-  const hasError = useMemo(() => applicationError || paymentError, [applicationError, paymentError])
 
+
+  
   // Event handlers
   const handleStepChange = useCallback((step: ApplicationStep) => {
     setCurrentStep(step)
@@ -178,7 +164,7 @@ const ApplicationPage: React.FC = () => {
       <div className="text-center">
         <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
         <p className="text-red-600 font-medium">Failed to load application data</p>
-        <p className="text-gray-500 text-sm mt-2">{hasError?.toString()}</p>
+        <p className="text-gray-500 text-sm mt-2">{applicationError?.toString()}</p>
       </div>
     </div>
   )
@@ -367,28 +353,8 @@ const ApplicationPage: React.FC = () => {
   }
 
   // Main render logic
-  if (isLoading) return renderLoadingState()
-  if (hasError) return renderErrorState()
-
-  // Handle different payment statuses
-  switch (paymentData?.status) {
-    case 'NO-PAYMENT':
-      return renderPaymentStatusScreen('Start Your Application', true, 'Click Here To Begin')
-    case 'PENDING':
-      return renderPaymentStatusScreen('Your Payment is pending, please check back later')
-    case 'FAILED':
-      return renderPaymentStatusScreen(
-        'Your previous attempt to start an application failed, as the payment was reversed',
-        true,
-        'Click Here To Start Another Application'
-      )
-    case 'PAID':
-      // Handle paid status - check if application exists and its status
-      if (application?.status === ApplicationStatus.DRAFT) {
-        return renderDraftApplication()
-      }
-      break
-  }
+  if (isApplicationLoading) return renderLoadingState()
+  if (applicationError) return renderErrorState()
 
   // Default fallback
   return renderPaymentStatusScreen(

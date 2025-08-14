@@ -27,7 +27,7 @@ export default class ProgramController {
   static async getOne(req: Request, res: Response) {
     try {
       const {id} = req.params
-      const programs = await Program.findByPk(id)
+      const programs = await ProgramService.getOne(id)
        res.json(programs)
     } catch (error) {
       logger.error('Fetch all programs failed:', error)

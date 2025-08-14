@@ -6,10 +6,11 @@ import { FilterDropdown } from '@/components/FilterDropdown'
 import { usePrograms } from '@/context/ProgramContext'
 import { GenericSearchBar } from '@/components/SearchBar'
 import { Program } from '@/types/program'
+import { ApplicationTestIds } from '@/test/testIds'
 
 export default function SelectProgramPage() {
   const { programs, filteredPrograms, selectedLevel, setSelectedLevel } = usePrograms()
-  const [searchResults, setSearchResults] = useState<Program[]>([])
+  const [searchResults, setSearchResults] = useState<Program[]>(filteredPrograms)
 
   const router = useRouter()
 
@@ -22,6 +23,8 @@ export default function SelectProgramPage() {
       <h1 className="text-2xl font-bold text-gray-800">Choose a Program to Apply</h1>
 
       <FilterDropdown
+        optionsTestId={ApplicationTestIds.selectLevel}
+        dropDownTestId={ApplicationTestIds.clickFilterDropDown}
         data={programs || []}
         filterKey="level"
         filterValue={selectedLevel}
@@ -39,16 +42,14 @@ export default function SelectProgramPage() {
       />
 
       <div className="grid gap-4">
-        {filteredPrograms.map((program) => (
+        {searchResults.map((program,index) => (
           <div
             key={program.id}
             className="p-4 cursor-pointer hover:shadow-md transition border"
             onClick={() => handleProgramClick(program.id)}
+            data-testId={ApplicationTestIds.selectProgram(index)}
           >
             <h3 className="font-semibold text-lg">{program.name}</h3>
-            {/* <p className="text-sm text-gray-500">
-              {program.department.name} • {program.department.faculty?.name}
-            </p> */}
           </div>
         ))}
         {filteredPrograms.length === 0 && selectedLevel && (

@@ -12,14 +12,17 @@ interface PaymentAttributes {
   applicationId:number
   status:'PAID'|'FAILED'|'PENDING'
   webhookEvent:string
-  paidAt:Date
+  paidAt?:Date
+  receiptFileId?:string
+   receiptLink?:string
+     receiptGeneratedAt?: Date
   reference:string
   createdAt: Date
   updatedAt: Date
 }
 
 interface PaymentCreationAttributes
-  extends Optional<PaymentAttributes, 'id'  | 'createdAt' | 'updatedAt'|'webhookEvent'|'applicationId'> {}
+  extends Optional<PaymentAttributes, 'id'  | 'createdAt' | 'updatedAt'|'webhookEvent'|'applicationId'|"paidAt"|'receiptFileId'|'receiptGeneratedAt'|'receiptLink'> {}
 
 class Payment
   extends Model<PaymentAttributes, PaymentCreationAttributes>
@@ -33,6 +36,9 @@ class Payment
   reference!: string
   paidAt!: Date
   amount!: number
+  receiptFileId?:string
+  receiptLink?:string
+  receiptGeneratedAt?: Date
   status!:'PAID'|'FAILED'|'PENDING'
   webhookEvent!:string
 
@@ -51,7 +57,18 @@ Payment.init(
       autoIncrement: true,
       primaryKey: true,
     },
-
+    receiptFileId: {
+      type: DataTypes.STRING,
+      allowNull:true
+    },
+   receiptLink: {
+      type: DataTypes.STRING,
+      allowNull:true
+    },
+     receiptGeneratedAt: {
+      type: DataTypes.DATE,
+      allowNull:true
+    },
     amount: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,

@@ -1,4 +1,6 @@
 /// <reference types="cypress" />
+
+
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -39,14 +41,29 @@
 // cypress/support/commands.ts
 
 // Add custom command type definitions
-declare global {
+import {loginFormTestIds} from '../../src/utils/formTestIds'
+declare global { 
   namespace Cypress {
     interface Chainable {
       navigateTo(path: string): Chainable<void>
       getByTestId(testId: string): Chainable<JQuery<HTMLElement>>
+      login : (credentials: { email: string; password: string }) =>  Chainable<void>
     }
   }
 }
+ 
+// cypress/support/commands.ts
+
+Cypress.Commands.add('login', (credentials: { email: string; password: string }) => {
+  cy.visit('/auth/login')
+
+  Object.keys(credentials).forEach((key) => {
+      const typedKey = key as keyof typeof credentials
+      cy.getByTestId(loginFormTestIds.FIELD_TEST_IDS[typedKey]).type(credentials[typedKey])
+    })
+  cy.getByTestId(loginFormTestIds.SUBMIT_BUTTON_TEST_ID).click()
+})
+
 
 // Implement the custom commands
 Cypress.Commands.add('getByTestId', (testId: string) => {

@@ -7,6 +7,8 @@ import { useFieldConfigContext } from '@/context/FieldConfigContext'
 import { LoginRequestDto } from '@/types/auth.types'
 import { LOGIN_FORM_DEFAULT_DATA } from '@/constants/auth'
 import { testIdContext } from '@/test/utils/testIdContext'
+import { loginFormTestIds } from '@/utils/formTestIds'
+
 
 const LoginForm: React.FC = () => {
   const { loginRequest, login, loading, loginChangeHandlers, error } = useAuth()
@@ -19,11 +21,12 @@ const LoginForm: React.FC = () => {
       email: 'email',
       password: 'password'
     })
+   
     setChangeHandlers(loginChangeHandlers)
   }, [setFieldConfigInput, setChangeHandlers])
+  console.log('testIds',loginFormTestIds)
+ testIdContext.setContext(loginFormTestIds)
 
-  const TEST_ID_BASE = 'login-form'
-  testIdContext.setContext(LOGIN_FORM_DEFAULT_DATA, TEST_ID_BASE)
 
   return (
     <CustomForm

@@ -6,11 +6,15 @@ import { useRoutes } from '@/hooks/useRoutes'
 import { useFieldConfigContext } from '@/context/FieldConfigContext'
 import { ResetPasswordRequestDto } from '@/types/auth.types'
 import { RESET_PASSWORD_DEFAULT_DATA } from '@/constants/auth'
-import { testIdContext } from '@/test/utils/testIdContext'
+import { useSearchParams } from 'next/navigation'
+// import { testIdContext } from '@/test/utils/testIdContext'
 
 const ResetPasswordForm: React.FC = () => {
-  const { resetPasswordRequest, resetPassword, loading, error } = useAuth()
-
+  const { resetPasswordRequest, resetPassword, loading, error, resetPasswordChangeHandlers } = useAuth()
+    const searchParams = useSearchParams()
+   const resetPasswordToken = searchParams.get('token')
+   
+   if(!resetPasswordToken)return null
   const { navigateToLogin } = useRoutes()
   const { setFieldConfigInput, setChangeHandlers } =
     useFieldConfigContext<Partial<ResetPasswordRequestDto>>()
@@ -20,10 +24,11 @@ const ResetPasswordForm: React.FC = () => {
       password: 'password',
       confirmPassword: 'password'
     })
+    setChangeHandlers(resetPasswordChangeHandlers)
   }, [setFieldConfigInput, setChangeHandlers])
 
-  const TEST_ID_BASE = 'reset-password-form'
-  testIdContext.setContext(RESET_PASSWORD_DEFAULT_DATA, TEST_ID_BASE)
+  // const TEST_ID_BASE = 'reset-password-form'
+  // testIdContext.setContext(RESET_PASSWORD_DEFAULT_DATA, TEST_ID_BASE)
 
   return (
     <div className="max-w-md mx-auto">
@@ -34,7 +39,7 @@ const ResetPasswordForm: React.FC = () => {
 
       <CustomForm
         data={resetPasswordRequest}
-        submitHandler={resetPassword}
+        submitHandler={(e)=>resetPassword(e,resetPasswordToken)}
         formLabel={'Reset Password'}
         onCancel={navigateToLogin}
         submiting={loading}

@@ -7,9 +7,10 @@ interface TodoAlertProps {
   message: string;
   link: string;
   heading: string;
+  testId:string
 }
 
-export default function TodoAlert({ message, link, heading }: TodoAlertProps) {
+export default function TodoAlert({ message, link, heading, testId }: TodoAlertProps) {
   const router = useRouter();
   return (
     <div
@@ -33,6 +34,7 @@ export default function TodoAlert({ message, link, heading }: TodoAlertProps) {
         {/* Centered Link Button */}
         <a
           href={link}
+          data-testid={testId}
           className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-900 rounded-md hover:bg-blue-200 transition-colors self-center"
         >
           <span>Take Action</span>

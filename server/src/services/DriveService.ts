@@ -43,45 +43,74 @@ class GoogleDriveApplicationService {
     this.drive = google.drive({ version: 'v3', auth })
    
   }
-
-  /**
-   * Create or get folder by name in parent folder
-   */
-  private async createOrGetFolder(name: string, parentId?: string): Promise<string> {
-    try {
-      // First, try to find existing folder
-      const searchQuery = parentId 
-        ? `name='${name}' and parents in '${parentId}' and mimeType='application/vnd.google-apps.folder'`
-        : `name='${name}' and mimeType='application/vnd.google-apps.folder'`
-
-      const existingFolders = await this.drive.files.list({
-        q: searchQuery,
-        fields: 'files(id, name)',
-      })
-
-      if (existingFolders.data.files && existingFolders.data.files.length > 0) {
-        return existingFolders.data.files[0].id
-      }
-
-      // Create new folder if not found
-      const folderMetadata = {
-        name,
-        mimeType: 'application/vnd.google-apps.folder',
-        ...(parentId && { parents: [parentId] }),
-      }
-
-      const folder = await this.drive.files.create({
-        requestBody: folderMetadata,
-        fields: 'id',
-      })
-
-      logger.info(`Created Google Drive folder: ${name}`, { folderId: folder.data.id })
-      return folder.data.id
-    } catch (error) {
-      logger.error(`Error creating/getting folder ${name}:`, error)
-      throw error
+  public async uploadFile(fileData: DriveFileUpload): Promise<string> {
+  try {
+    const fileMetadata = {
+      name: fileData.name,
+      parents: [fileData.parentFolderId],
     }
+
+    const media = {
+      mimeType: fileData.mimeType,
+      body: Readable.from(fileData.buffer),
+    }
+
+    const file = await this.drive.files.create({
+      requestBody: fileMetadata,
+      media: media,
+      fields: 'id, name, webViewLink',
+    })
+
+    logger.info(`Uploaded file to Google Drive: ${fileData.name}`, { 
+      fileId: file.data.id,
+      webViewLink: file.data.webViewLink 
+    })
+
+    return file.data.id
+  } catch (error) {
+    logger.error(`Error uploading file ${fileData.name}:`, error)
+    throw error
   }
+}
+
+/**
+ * Create or get folder by name (make public for receipt folder creation)
+ */
+public async createOrGetFolder(name: string, parentId?: string): Promise<string> {
+  try {
+    // First, try to find existing folder
+    const searchQuery = parentId 
+      ? `name='${name}' and parents in '${parentId}' and mimeType='application/vnd.google-apps.folder'`
+      : `name='${name}' and mimeType='application/vnd.google-apps.folder'`
+
+    const existingFolders = await this.drive.files.list({
+      q: searchQuery,
+      fields: 'files(id, name)',
+    })
+
+    if (existingFolders.data.files && existingFolders.data.files.length > 0) {
+      return existingFolders.data.files[0].id
+    }
+
+    // Create new folder if not found
+    const folderMetadata = {
+      name,
+      mimeType: 'application/vnd.google-apps.folder',
+      ...(parentId && { parents: [parentId] }),
+    }
+
+    const folder = await this.drive.files.create({
+      requestBody: folderMetadata,
+      fields: 'id',
+    })
+
+    logger.info(`Created Google Drive folder: ${name}`, { folderId: folder.data.id })
+    return folder.data.id
+  } catch (error) {
+    logger.error(`Error creating/getting folder ${name}:`, error)
+    throw error
+  }
+}
 
   /**
    * Create complete folder structure for an application
@@ -146,38 +175,7 @@ class GoogleDriveApplicationService {
     }
   }
 
-  /**
-   * Upload file to Google Drive
-   */
-  private async uploadFile(fileData: DriveFileUpload): Promise<string> {
-    try {
-      const fileMetadata = {
-        name: fileData.name,
-        parents: [fileData.parentFolderId],
-      }
 
-      const media = {
-        mimeType: fileData.mimeType,
-        body: Readable.from(fileData.buffer),
-      }
-
-      const file = await this.drive.files.create({
-        requestBody: fileMetadata,
-        media: media,
-        fields: 'id, name, webViewLink',
-      })
-
-      logger.info(`Uploaded file to Google Drive: ${fileData.name}`, { 
-        fileId: file.data.id,
-        webViewLink: file.data.webViewLink 
-      })
-
-      return file.data.id
-    } catch (error) {
-      logger.error(`Error uploading file ${fileData.name}:`, error)
-      throw error
-    }
-  }
 
   /**
    * Generate and upload biodata document

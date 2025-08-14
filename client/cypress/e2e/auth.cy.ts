@@ -12,14 +12,14 @@ describe('Signup Flow', () => {
 
   const testUser = {
     username: 'UdorAkpuEnyi',
-    email: 'nnamdisolomon1@.com',
-    password: 'SecurePassword123!',
-    confirmPassword: 'SecurePassword123!'
+    email: 'nnamdisolomon1@gmail.com',
+    password: '97Chocho@',
+    confirmPassword: '97Chocho@'
   }
 
   // Add a test block
   it('should fill and submit the signup form', () => {
-    cy.visit('/auth/applicant-signup') // Add visit command
+    cy.visit('/auth/signup/applicant') // Add visit command
 
     Object.keys(SIGNUP_FORM_DEFAULT_DATA).forEach((key) => {
       const typedKey = key as keyof typeof SIGNUP_FORM_DEFAULT_DATA

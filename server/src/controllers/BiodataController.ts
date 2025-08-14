@@ -1,8 +1,9 @@
 
 
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import BiodataService, { UpdateBiodataInput } from '../services/BiodataService'
 import { validationResult } from 'express-validator'
+import { BadRequestError, NotFoundError } from '../utils/errors'
 
 class BiodataController {
   /**
@@ -93,28 +94,15 @@ class BiodataController {
    * Update biodata by application ID
    * PUT /api/biodata/application/:applicationId
    */
-  async updateBiodataByApplicationId(req: Request, res: Response): Promise<void> {
+  async updateBiodataByApplicationId(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
-      // Check for validation errors
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        res.status(400).json({
-          success: false,
-          message: 'Validation errors',
-          errors: errors.array()
-        })
-        return
-      }
+ 
 
       const { applicationId } = req.params
       const parsedApplicationId = parseInt(applicationId, 10)
 
       if (isNaN(parsedApplicationId)) {
-        res.status(400).json({
-          success: false,
-          message: 'Invalid application ID'
-        })
-        return
+         throw new BadRequestError('no application id')
       }
 
       // Extract update data from request body
@@ -162,26 +150,16 @@ class BiodataController {
         updateData
       )
 
-      if (!updatedBiodata) {
-        res.status(404).json({
-          success: false,
-          message: 'Biodata not found for this application'
-        })
-        return
-      }
+      if (!updatedBiodata) throw new NotFoundError('biodata to be updated not found')
 
       res.status(200).json({
         success: true,
         message: 'Biodata updated successfully',
-        data: updatedBiodata
+        data: updatedBiodata 
       })
     } catch (error) {
       console.error('Error updating biodata:', error)
-      res.status(500).json({
-        success: false,
-        message: 'Internal server error',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      })
+      next(error)
     }
   }
 

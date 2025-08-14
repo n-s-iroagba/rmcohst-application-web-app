@@ -110,20 +110,20 @@ export function FieldRenderer<T extends Record<string, any>>({
               />
             )
 
-          case 'double-select':
-            if (!config.fieldGroup) {
-              console.error('no field group')
-              return null
-            }
-            return (
-              <MultiGroupSelectField
-                key={key}
-                groupData={data[key]}
-                fieldGroup={config.fieldGroup}
-                onChange={config.fieldGroup.onChangeHandler}
-                testId={testId}
-              />
-            )
+          // case 'double-select':
+          //   if (!config.fieldGroup) {
+          //     console.error('no field group')
+          //     return null
+          //   }
+          //   return (
+          //     <MultiGroupSelectField
+          //       key={key}
+          //       groupData={data[key]}
+          //       fieldGroup={config.fieldGroup}
+          //       onChange={config.fieldGroup.onChangeHandler}
+          //       testId={testId}
+          //     />
+          //   )
 
           case 'checkbox':
             return (

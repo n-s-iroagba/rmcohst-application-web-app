@@ -1,4 +1,10 @@
 #!/usr/bin/env sh
+echo "===================="
+echo "PRE-COMMIT HOOK IS RUNNING"
+echo "Current directory: $(pwd)"
+echo "===================="
 . "$(dirname -- "$0")/_/husky.sh"
 
+echo "About to run lint-staged..."
 npx lint-staged
+echo "lint-staged completed with exit code: $?"

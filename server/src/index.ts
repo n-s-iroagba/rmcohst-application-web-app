@@ -139,3 +139,4 @@ process.on('uncaughtException', err => {
 
 console.log('🟢 Calling startServer...')
 startServer()
+// test comment for pre-commit hook

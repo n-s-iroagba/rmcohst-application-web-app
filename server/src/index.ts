@@ -16,7 +16,6 @@ import { ApplicantProgramSpecificQualification } from './models'
 import applicantProgramSpecificQualificationRoutes from './routes/applicantProgramSpecificQualificationRoutes'
 import academicSessionRoutes from './routes/academicSessionRoutes'
 
-
 const app = express()
 
 console.log('✅ Express app created')
@@ -25,16 +24,15 @@ console.log('✅ Express app created')
 app.use(helmet())
 console.log('✅ Helmet middleware applied')
 
-
 // Determine allowed origin
-const allowedOrigin = appConfig.clientUrl|| 'http://localhost:3000';
+const allowedOrigin = appConfig.clientUrl || 'http://localhost:3000'
 
 app.use(
   cors({
     origin: allowedOrigin,
     credentials: true,
   })
-);
+)
 
 console.log('✅ CORS middleware applied')
 
@@ -54,15 +52,15 @@ app.use(requestLogger)
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() })
 })
-app.use('/auth',authRoutes)
+app.use('/auth', authRoutes)
 app.use('/applications', applicationRoutes)
-app.use('/programs',programRoutes)
-app.use('/payments',paymentRoutes)
-app.use('/biodata',biodataRoutes)
+app.use('/programs', programRoutes)
+app.use('/payments', paymentRoutes)
+app.use('/biodata', biodataRoutes)
 app.use('/subjects', subjectRoutes)
-app.use('/sessions',academicSessionRoutes)
-app.use ('/ssc-qualifications',applicantProgramSpecificQualificationRoutes)
-app.use ('/program-qualifications',applicantProgramSpecificQualificationRoutes)
+app.use('/sessions', academicSessionRoutes)
+app.use('/ssc-qualifications', applicantProgramSpecificQualificationRoutes)
+app.use('/program-qualifications', applicantProgramSpecificQualificationRoutes)
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' })
@@ -74,16 +72,15 @@ const startServer = async () => {
   try {
     console.log('🔧 Starting server initialization...')
 
-
-    console.log('🧪 Testing DB connection...');
+    console.log('🧪 Testing DB connection...')
     await sequelize.authenticate()
-    console.log('✅ DB connected');
+    console.log('✅ DB connected')
 
     // console.log('📦 Syncing DB...');
     // await sequelize.sync(
-    //   { 
+    //   {
     //     force:true,
-    //    logging: console.log 
+    //    logging: console.log
     //   }
     // )
     // console.log('✅ DB synced');
@@ -106,7 +103,7 @@ const startServer = async () => {
       })
     })
 
-    process.on('SIGINT', () => { 
+    process.on('SIGINT', () => {
       console.warn('🛑 SIGINT received, shutting down gracefully')
       server.close(() => {
         console.log('✅ Server closed')

@@ -36,7 +36,7 @@ interface PasswordResetTokenPayload {
   iat?: number
   exp?: number
 }
-const verificationService = new TokenService( process.env.JWT_SECRET || 'udorakpuenyi')
+const verificationService = new TokenService(process.env.JWT_SECRET || 'udorakpuenyi')
 // Main authentication middleware for login tokens
 export const authMiddleware = async (
   req: AuthenticatedRequest,
@@ -51,9 +51,9 @@ export const authMiddleware = async (
     }
 
     const token = authHeader.split(' ')[1]
-    console.log('access token',token)
-    const {decoded} = verificationService.verifyToken(token,'access')
-    console.log('DECODED',decoded)
+    console.log('access token', token)
+    const { decoded } = verificationService.verifyToken(token, 'access')
+    console.log('DECODED', decoded)
 
     const user = await User.findByPk(decoded.id, {
       attributes: { exclude: ['password'] },
@@ -202,7 +202,9 @@ export const verifyPasswordResetTokenMiddleware = async (
 }
 
 // Type guard helper for authenticated routes
-export const assertUser = (req: AuthenticatedRequest): asserts req is AuthenticatedRequest & { user: User } => {
+export const assertUser = (
+  req: AuthenticatedRequest
+): asserts req is AuthenticatedRequest & { user: User } => {
   if (!req.user) {
     throw new UnauthorizedError('User not authenticated')
   }
@@ -214,7 +216,7 @@ export const assertUser = (req: AuthenticatedRequest): asserts req is Authentica
 //     try {
 //       // Use type guard to ensure user exists
 //       assertUser(req)
-      
+
 //       if (!roles.includes(req.user.role)) {
 //         logger.warn(
 //           `Forbidden: User ${req.user.email} (Role: ${req.user.role}) tried to access resource requiring roles: ${roles.join(', ')}`
@@ -248,21 +250,19 @@ export class TokenMiddleware {
   verifyAccessToken() {
     return (req: any, res: any, next: any) => {
       const authHeader = req.headers.authorization
-      try{
-      const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
+      try {
+        const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
 
-      if (!token) {
+        if (!token) {
           throw new BadRequestError('No access Token provided')
+        }
+
+        const result = this.tokenService.verifyToken(token)
+        req.user = result.decoded
+        next()
+      } catch (error) {
+        next(error)
       }
-
-      const result = this.tokenService.verifyToken(token)
-      req.user = result.decoded
-      next()
-    }catch(error){
-     next(error)
-    }
-
-     
     }
   }
 }

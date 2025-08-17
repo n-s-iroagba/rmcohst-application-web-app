@@ -1,46 +1,42 @@
-import { 
-  Model, 
-  DataTypes, 
-  Association,
-} from 'sequelize'
+import { Model, DataTypes, Association } from 'sequelize'
 import sequelize from '../config/database'
 
 // Types and Enums
 export enum Grade {
   A1 = 'A1',
-  B2 = 'B2', 
+  B2 = 'B2',
   B3 = 'B3',
   C4 = 'C4',
   C5 = 'C5',
   C6 = 'C6',
   D7 = 'D7',
   E8 = 'E8',
-  F9 = 'F9'
+  F9 = 'F9',
 }
 
 export enum CertificateType {
   WAEC = 'WAEC',
   NECO = 'NECO',
   NABTEB = 'NABTEB',
-  GCE = 'GCE'
+  GCE = 'GCE',
 }
 
 export interface ApplicantSSCQualification {
   id?: number
-  applicationId?: number|null
-  numberOfSittings?: number|null
-  certificateTypes?: string[]|[]
+  applicationId?: number | null
+  numberOfSittings?: number | null
+  certificateTypes?: string[] | []
   certificates?: File[] | Blob[] | []
-  firstSubjectId?: number|null
-  firstSubjectGrade?: Grade|null
-  secondSubjectId?: number|null
-  secondSubjectGrade?: Grade|null
-  thirdSubjectId?: number|null
-  thirdSubjectGrade?: Grade|null
-  fourthSubjectId?: number|null
-  fourthSubjectGrade?: Grade|null
-  fifthSubjectId?: number|null
-  fifthSubjectGrade?: Grade|null
+  firstSubjectId?: number | null
+  firstSubjectGrade?: Grade | null
+  secondSubjectId?: number | null
+  secondSubjectGrade?: Grade | null
+  thirdSubjectId?: number | null
+  thirdSubjectGrade?: Grade | null
+  fourthSubjectId?: number | null
+  fourthSubjectGrade?: Grade | null
+  fifthSubjectId?: number | null
+  fifthSubjectGrade?: Grade | null
 }
 
 export interface SSCQualificationFormData extends Omit<ApplicantSSCQualification, 'id'> {}
@@ -71,7 +67,10 @@ export interface CertificateFile {
   uploadedAt: Date
 }
 
-class SSCQualification extends Model<ApplicantSSCQualification> implements ApplicantSSCQualification {
+class SSCQualification
+  extends Model<ApplicantSSCQualification>
+  implements ApplicantSSCQualification
+{
   public id?: number
   public applicationId?: number | null
   public numberOfSittings?: number | null
@@ -98,25 +97,31 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
   //   application: Association<SSCQualification, any>
   // }
 
-
-
   /**
    * Checks completion status of the qualification
    */
   public getCompletionStatus(): CompletionStatus {
     const allFields = [
-      'applicationId', 'numberOfSittings', 'certificateTypes',
-      'firstSubjectId', 'firstSubjectGrade',
-      'secondSubjectId', 'secondSubjectGrade', 
-      'thirdSubjectId', 'thirdSubjectGrade',
-      'fourthSubjectId', 'fourthSubjectGrade',
-      'fifthSubjectId', 'fifthSubjectGrade'
+      'applicationId',
+      'numberOfSittings',
+      'certificateTypes',
+      'firstSubjectId',
+      'firstSubjectGrade',
+      'secondSubjectId',
+      'secondSubjectGrade',
+      'thirdSubjectId',
+      'thirdSubjectGrade',
+      'fourthSubjectId',
+      'fourthSubjectGrade',
+      'fifthSubjectId',
+      'fifthSubjectGrade',
     ]
 
     const completedFields = allFields.filter(field => {
       const value = this[field as keyof this]
-      return value !== null && value !== undefined && 
-             (Array.isArray(value) ? value.length > 0 : true)
+      return (
+        value !== null && value !== undefined && (Array.isArray(value) ? value.length > 0 : true)
+      )
     })
 
     const missingFields = allFields.filter(field => !completedFields.includes(field))
@@ -125,7 +130,7 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
       isComplete: missingFields.length === 0,
       completedFields,
       missingFields,
-      completionPercentage: Math.round((completedFields.length / allFields.length) * 100)
+      completionPercentage: Math.round((completedFields.length / allFields.length) * 100),
     }
   }
 
@@ -134,10 +139,9 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
    */
   // public async validateCertificateFiles(certificateFiles:CertficateFile[]): Promise<ValidationResult> {
   //   const errors: string[] = []
-    
+
   //   try {
-     
-      
+
   //     if (this.numberOfSittings && certificateFiles.length !== this.numberOfSittings) {
   //       errors.push(
   //         `Number of certificate files (${certificateFiles.length}) must match number of sittings (${this.numberOfSittings})`
@@ -147,10 +151,10 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
   //     // Validate each certificate type has corresponding file
   //     if (this.certificateTypes) {
   //       const fileTypes = certificateFiles.map(file => file.certificateType)
-  //       const missingTypes = this.certificateTypes.filter(type => 
+  //       const missingTypes = this.certificateTypes.filter(type =>
   //         !fileTypes.includes(type as CertificateType)
   //       )
-        
+
   //       if (missingTypes.length > 0) {
   //         errors.push(`Missing certificate files for: ${missingTypes.join(', ')}`)
   //       }
@@ -185,7 +189,6 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
   //   }
   // }
 
-
   public validateCompletion(): ValidationResult {
     const errors: string[] = []
     const warnings: string[] = []
@@ -196,7 +199,7 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
       return {
         isValid: false,
         errors,
-        warnings
+        warnings,
       }
     }
 
@@ -206,14 +209,14 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
       'certificateTypes',
       'firstSubjectId',
       'firstSubjectGrade',
-      'secondSubjectId', 
+      'secondSubjectId',
       'secondSubjectGrade',
       'thirdSubjectId',
       'thirdSubjectGrade',
       'fourthSubjectId',
       'fourthSubjectGrade',
       'fifthSubjectId',
-      'fifthSubjectGrade'
+      'fifthSubjectGrade',
     ]
 
     requiredFields.forEach(field => {
@@ -230,15 +233,20 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
 
     // Validate certificate types match number of sittings
     if (this.certificateTypes && this.certificateTypes.length !== this.numberOfSittings) {
-      errors.push(`Certificate types count (${this.certificateTypes.length}) must match number of sittings (${this.numberOfSittings})`)
+      errors.push(
+        `Certificate types count (${this.certificateTypes.length}) must match number of sittings (${this.numberOfSittings})`
+      )
     }
 
     // Grade validation
     const gradeFields = [
-      'firstSubjectGrade', 'secondSubjectGrade', 'thirdSubjectGrade', 
-      'fourthSubjectGrade', 'fifthSubjectGrade'
+      'firstSubjectGrade',
+      'secondSubjectGrade',
+      'thirdSubjectGrade',
+      'fourthSubjectGrade',
+      'fifthSubjectGrade',
     ]
-    
+
     gradeFields.forEach(field => {
       const grade = this[field as keyof this] as Grade
       if (grade && !Object.values(Grade).includes(grade)) {
@@ -248,8 +256,8 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
 
     // Certificate types validation
     if (this.certificateTypes) {
-      const invalidTypes = this.certificateTypes.filter(type => 
-        !Object.values(CertificateType).includes(type as CertificateType)
+      const invalidTypes = this.certificateTypes.filter(
+        type => !Object.values(CertificateType).includes(type as CertificateType)
       )
       if (invalidTypes.length > 0) {
         errors.push(`Invalid certificate types: ${invalidTypes.join(', ')}`)
@@ -258,14 +266,15 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
 
     // Subject duplication check
     const subjectIds = [
-      this.firstSubjectId, this.secondSubjectId, this.thirdSubjectId,
-      this.fourthSubjectId, this.fifthSubjectId
+      this.firstSubjectId,
+      this.secondSubjectId,
+      this.thirdSubjectId,
+      this.fourthSubjectId,
+      this.fifthSubjectId,
     ].filter(id => id !== null)
 
-    const duplicateSubjects = subjectIds.filter((id, index) => 
-      subjectIds.indexOf(id) !== index
-    )
-    
+    const duplicateSubjects = subjectIds.filter((id, index) => subjectIds.indexOf(id) !== index)
+
     if (duplicateSubjects.length > 0) {
       errors.push('Duplicate subjects are not allowed')
     }
@@ -282,10 +291,9 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     }
   }
-
 
   /**
    * Gets minimum required subjects count (usually 5 for SSC)
@@ -314,14 +322,14 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
   public meetsMinimumRequirements(): boolean {
     const validation = this.validateCompletion()
     const completion = this.getCompletionStatus()
-    
-    return ((validation?.isValid||false) && completion.isComplete) as boolean
+
+    return ((validation?.isValid || false) && completion.isComplete) as boolean
   }
 
   /**
    * Get subjects with passing grades (C6 and above)
    */
-  public getPassingSubjects(): Array<{subjectId: number, grade: Grade}> {
+  public getPassingSubjects(): Array<{ subjectId: number; grade: Grade }> {
     const passingGrades = [Grade.A1, Grade.B2, Grade.B3, Grade.C4, Grade.C5, Grade.C6]
     const subjects = []
 
@@ -330,7 +338,7 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
       { id: this.secondSubjectId, grade: this.secondSubjectGrade },
       { id: this.thirdSubjectId, grade: this.thirdSubjectGrade },
       { id: this.fourthSubjectId, grade: this.fourthSubjectGrade },
-      { id: this.fifthSubjectId, grade: this.fifthSubjectGrade }
+      { id: this.fifthSubjectId, grade: this.fifthSubjectGrade },
     ]
 
     for (const pair of subjectGradePairs) {
@@ -355,7 +363,7 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
       [Grade.C6]: 4,
       [Grade.D7]: 3,
       [Grade.E8]: 2,
-      [Grade.F9]: 1
+      [Grade.F9]: 1,
     }
 
     const grades = [
@@ -363,7 +371,7 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
       this.secondSubjectGrade,
       this.thirdSubjectGrade,
       this.fourthSubjectGrade,
-      this.fifthSubjectGrade
+      this.fifthSubjectGrade,
     ].filter(grade => grade !== null) as Grade[]
 
     if (grades.length === 0) return 0
@@ -372,118 +380,116 @@ class SSCQualification extends Model<ApplicantSSCQualification> implements Appli
     return Math.round((totalPoints / grades.length) * 100) / 100
   }
 }
-  SSCQualification.init(
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-        allowNull: false
-      },
-      applicationId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-          model: 'Applications',
-          key: 'id'
-        }
-      },
-      numberOfSittings: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        validate: {
-          min: 1,
-          max: 3
-        }
-      },
-      certificates: {
-        type: DataTypes.JSON,
-        allowNull: true,
-        defaultValue: []
-      },
-      certificateTypes: {
-        type: DataTypes.JSON,
-        allowNull: true,
-        defaultValue: []
-      },
-      firstSubjectId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-          model: 'Subjects',
-          key: 'id'
-        }
-      },
-      firstSubjectGrade: {
-        type: DataTypes.ENUM(...Object.values(Grade)),
-        allowNull: true
-      },
-      secondSubjectId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-          model: 'Subjects', 
-          key: 'id'
-        }
-      },
-      secondSubjectGrade: {
-        type: DataTypes.ENUM(...Object.values(Grade)),
-        allowNull: true
-      },
-      thirdSubjectId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-          model: 'Subjects',
-          key: 'id'
-        }
-      },
-      thirdSubjectGrade: {
-        type: DataTypes.ENUM(...Object.values(Grade)),
-        allowNull: true
-      },
-      fourthSubjectId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,  
-        references: {
-          model: 'Subjects',
-          key: 'id'
-        }
-      },
-      fourthSubjectGrade: {
-        type: DataTypes.ENUM(...Object.values(Grade)),
-        allowNull: true
-      },
-      fifthSubjectId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-          model: 'Subjects',
-          key: 'id'
-        }
-      },
-      fifthSubjectGrade: {
-        type: DataTypes.ENUM(...Object.values(Grade)),
-        allowNull: true
-      }
+SSCQualification.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false,
     },
-    {
-      sequelize,
-      modelName: 'SSCQualification',
-      tableName: 'ssc_qualifications',
-      timestamps: true,
-      indexes: [
-        {
-          fields: ['applicationId']
-        },
-        {
-          fields: ['numberOfSittings']
-        }
-      ]
-    }
-  )
-
-
+    applicationId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Applications',
+        key: 'id',
+      },
+    },
+    numberOfSittings: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      validate: {
+        min: 1,
+        max: 3,
+      },
+    },
+    certificates: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: [],
+    },
+    certificateTypes: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: [],
+    },
+    firstSubjectId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Subjects',
+        key: 'id',
+      },
+    },
+    firstSubjectGrade: {
+      type: DataTypes.ENUM(...Object.values(Grade)),
+      allowNull: true,
+    },
+    secondSubjectId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Subjects',
+        key: 'id',
+      },
+    },
+    secondSubjectGrade: {
+      type: DataTypes.ENUM(...Object.values(Grade)),
+      allowNull: true,
+    },
+    thirdSubjectId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Subjects',
+        key: 'id',
+      },
+    },
+    thirdSubjectGrade: {
+      type: DataTypes.ENUM(...Object.values(Grade)),
+      allowNull: true,
+    },
+    fourthSubjectId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Subjects',
+        key: 'id',
+      },
+    },
+    fourthSubjectGrade: {
+      type: DataTypes.ENUM(...Object.values(Grade)),
+      allowNull: true,
+    },
+    fifthSubjectId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Subjects',
+        key: 'id',
+      },
+    },
+    fifthSubjectGrade: {
+      type: DataTypes.ENUM(...Object.values(Grade)),
+      allowNull: true,
+    },
+  },
+  {
+    sequelize,
+    modelName: 'SSCQualification',
+    tableName: 'ssc_qualifications',
+    timestamps: true,
+    indexes: [
+      {
+        fields: ['applicationId'],
+      },
+      {
+        fields: ['numberOfSittings'],
+      },
+    ],
+  }
+)
 
 export { SSCQualification }
 export default SSCQualification

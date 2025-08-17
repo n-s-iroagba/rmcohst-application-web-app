@@ -1,11 +1,10 @@
 // seed.ts
 
-import sequelize from "../config/database";
-import { Department, Program, ProgramSSCRequirement } from "../models";
-import Faculty from "../models/Faculty";
-import { QualificationType, Grade } from "../models/ProgramSSCRequirement";
-import Subject from "../models/Subject";
-
+import sequelize from '../config/database'
+import { Department, Program, ProgramSSCRequirement } from '../models'
+import Faculty from '../models/Faculty'
+import { QualificationType, Grade } from '../models/ProgramSSCRequirement'
+import Subject from '../models/Subject'
 
 async function seedDatabase() {
   try {
@@ -28,7 +27,7 @@ async function seedDatabase() {
       { name: 'Commerce', code: 'COMM' },
       { name: 'Accounting', code: 'ACCT' },
       { name: 'Technical Drawing', code: 'TECH_DRAW' },
-    ]);
+    ])
 
     // Create Faculties
     const faculties = await Faculty.bulkCreate([
@@ -36,21 +35,21 @@ async function seedDatabase() {
         name: 'Faculty of Science',
         code: 'FOS',
         description: 'Science and Technology Faculty',
-        nameOfDean: 'Dr. Jane Smith'
+        nameOfDean: 'Dr. Jane Smith',
       },
       {
         name: 'Faculty of Engineering',
         code: 'FOE',
         description: 'Engineering and Technology Faculty',
-        nameOfDean: 'Prof. John Doe'
+        nameOfDean: 'Prof. John Doe',
       },
       {
         name: 'Faculty of Arts',
         code: 'FOA',
         description: 'Arts and Humanities Faculty',
-        isActive: false
-      }
-    ]);
+        isActive: false,
+      },
+    ])
 
     // Create Departments
     const departments = await Department.bulkCreate([
@@ -58,8 +57,8 @@ async function seedDatabase() {
       { facultyId: faculties[0].id, name: 'Mathematics', code: 'MTH' },
       { facultyId: faculties[1].id, name: 'Electrical Engineering', code: 'EEE' },
       { facultyId: faculties[1].id, name: 'Mechanical Engineering', code: 'MEE' },
-      { facultyId: faculties[2].id, name: 'English Literature', code: 'ENG', isActive: false }
-    ]);
+      { facultyId: faculties[2].id, name: 'English Literature', code: 'ENG', isActive: false },
+    ])
 
     // Create Programs
     const programs = await Program.bulkCreate([
@@ -71,7 +70,7 @@ async function seedDatabase() {
         durationType: 'YEAR',
         duration: 2,
         applicationFeeInNaira: 10000,
-        acceptanceFeeInNaira: 50000
+        acceptanceFeeInNaira: 50000,
       },
       {
         departmentId: departments[0].id,
@@ -82,7 +81,7 @@ async function seedDatabase() {
         duration: 2,
         applicationFeeInNaira: 8000,
         acceptanceFeeInNaira: 45000,
-        description: 'Focus on software development practices'
+        description: 'Focus on software development practices',
       },
       {
         departmentId: departments[2].id,
@@ -92,7 +91,7 @@ async function seedDatabase() {
         durationType: 'YEAR',
         duration: 2,
         applicationFeeInNaira: 12000,
-        acceptanceFeeInNaira: 55000
+        acceptanceFeeInNaira: 55000,
       },
       {
         departmentId: departments[3].id,
@@ -103,9 +102,9 @@ async function seedDatabase() {
         duration: 18,
         applicationFeeInNaira: 7000,
         acceptanceFeeInNaira: 35000,
-        isActive: false
-      }
-    ]);
+        isActive: false,
+      },
+    ])
 
     // Create SSC Requirements - now using actual subject IDs
     await ProgramSSCRequirement.bulkCreate([
@@ -119,8 +118,8 @@ async function seedDatabase() {
           { subjectId: subjects[1].id, grade: Grade.B3 }, // English
           { subjectId: subjects[2].id, grade: Grade.C4 }, // Physics
           { subjectId: subjects[3].id, grade: Grade.C6 }, // Chemistry
-          { subjectId: subjects[5].id, grade: Grade.C6, alternateSubjectId: subjects[4].id } // Further Math or Biology
-        ]
+          { subjectId: subjects[5].id, grade: Grade.C6, alternateSubjectId: subjects[4].id }, // Further Math or Biology
+        ],
       },
       {
         programId: programs[0].id,
@@ -132,8 +131,8 @@ async function seedDatabase() {
           { subjectId: subjects[1].id, grade: Grade.B3 }, // English
           { subjectId: subjects[2].id, grade: Grade.C4 }, // Physics
           { subjectId: subjects[3].id, grade: Grade.C5 }, // Chemistry
-          { subjectId: subjects[4].id, grade: Grade.C6 }  // Biology
-        ]
+          { subjectId: subjects[4].id, grade: Grade.C6 }, // Biology
+        ],
       },
       {
         programId: programs[2].id,
@@ -145,17 +144,17 @@ async function seedDatabase() {
           { subjectId: subjects[1].id, grade: Grade.C5 }, // English
           { subjectId: subjects[2].id, grade: Grade.B3 }, // Physics
           { subjectId: subjects[13].id, grade: Grade.C4 }, // Technical Drawing
-          { subjectId: subjects[3].id, grade: Grade.C5 }  // Chemistry
-        ]
-      }
-    ]);
+          { subjectId: subjects[3].id, grade: Grade.C5 }, // Chemistry
+        ],
+      },
+    ])
 
-    console.log('Database seeded successfully!');
+    console.log('Database seeded successfully!')
   } catch (error) {
-    console.error('Error seeding database:', error);
+    console.error('Error seeding database:', error)
   } finally {
-    await sequelize.close();
+    await sequelize.close()
   }
 }
 
-seedDatabase();
+seedDatabase()

@@ -5,29 +5,29 @@ import sequelize from '../config/database'
 export interface BiodataAttributes {
   id: number
   applicationId: number
-  firstName?: string 
-  surname?: string 
-  otherNames?: string  // Changed from middleName
-  email?: string  // Changed from emailAddress
-  phoneNumber?: string 
-  dateOfBirth?: Date 
-  gender?: string 
-  maritalStatus?: string 
-  nationality?: string 
-  stateOfOrigin?: string 
-  localGovernmentArea?: string  // Changed from lga
-  contactAddress?: string  // Changed from homeAddress
-  permanentHomeAddress?: string  // New field
-  passportPhotograph?: Buffer 
-  nextOfKinName?: string  // Changed from nextOfKinFullName
-  nextOfKinPhoneNumber?: string 
-  nextOfKinAddress?: string 
-  nextOfKinRelationship?: string  // Changed from relationshipWithNextOfKin
+  firstName?: string
+  surname?: string
+  otherNames?: string // Changed from middleName
+  email?: string // Changed from emailAddress
+  phoneNumber?: string
+  dateOfBirth?: Date
+  gender?: string
+  maritalStatus?: string
+  nationality?: string
+  stateOfOrigin?: string
+  localGovernmentArea?: string // Changed from lga
+  contactAddress?: string // Changed from homeAddress
+  permanentHomeAddress?: string // New field
+  passportPhotograph?: Buffer
+  nextOfKinName?: string // Changed from nextOfKinFullName
+  nextOfKinPhoneNumber?: string
+  nextOfKinAddress?: string
+  nextOfKinRelationship?: string // Changed from relationshipWithNextOfKin
   completed?: boolean
-  homeTown?: string  // Kept for backward compatibility if needed
+  homeTown?: string // Kept for backward compatibility if needed
 }
 
-interface BiodataCreationAttributes {
+export interface BiodataCreationAttributes {
   applicationId: number
 }
 
@@ -37,24 +37,24 @@ class Biodata
 {
   public id!: number
   public applicationId!: number
-  public firstName?: string 
-  public surname?: string 
-  public otherNames?: string 
-  public email?: string 
-  public phoneNumber?: string 
-  public dateOfBirth?: Date 
-  public gender?: string 
-  public maritalStatus?: string 
-  public nationality?: string 
-  public stateOfOrigin?: string 
-  public localGovernmentArea?: string 
-  public contactAddress?: string 
-  public permanentHomeAddress?: string 
-  public passportPhotograph?: Buffer 
-  public nextOfKinName?: string 
-  public nextOfKinPhoneNumber?: string 
-  public nextOfKinAddress?: string 
-  public nextOfKinRelationship?: string 
+  public firstName?: string
+  public surname?: string
+  public otherNames?: string
+  public email?: string
+  public phoneNumber?: string
+  public dateOfBirth?: Date
+  public gender?: string
+  public maritalStatus?: string
+  public nationality?: string
+  public stateOfOrigin?: string
+  public localGovernmentArea?: string
+  public contactAddress?: string
+  public permanentHomeAddress?: string
+  public passportPhotograph?: Buffer
+  public nextOfKinName?: string
+  public nextOfKinPhoneNumber?: string
+  public nextOfKinAddress?: string
+  public nextOfKinRelationship?: string
   public completed?: boolean
   public homeTown?: string
 
@@ -127,7 +127,7 @@ class Biodata
       isComplete: missingFields.length === 0,
       completedFields: completedFields.map(field => String(field)),
       missingFields: missingFields.map(field => String(field)),
-      completionPercentage: Math.round((completedFields.length / requiredFields.length) * 100)
+      completionPercentage: Math.round((completedFields.length / requiredFields.length) * 100),
     }
   }
 
@@ -153,7 +153,7 @@ class Biodata
     const birthDate = new Date(this.dateOfBirth)
     const age = today.getFullYear() - birthDate.getFullYear()
     const monthDiff = today.getMonth() - birthDate.getMonth()
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       return age - 1 >= 16
     }
@@ -196,14 +196,17 @@ class Biodata
     }
 
     // Validate marital status
-    if (this.maritalStatus && !['Single', 'Married', 'Divorced', 'Widowed'].includes(this.maritalStatus)) {
+    if (
+      this.maritalStatus &&
+      !['Single', 'Married', 'Divorced', 'Widowed'].includes(this.maritalStatus)
+    ) {
       warnings.push('Marital status should be Single, Married, Divorced, or Widowed')
     }
 
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     }
   }
 }
@@ -234,18 +237,17 @@ Biodata.init(
       allowNull: true,
       defaultValue: '',
     },
-    otherNames: {  // Changed from middleName
+    otherNames: {
+      // Changed from middleName
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: '',
     },
-    email: {  // Changed from emailAddress
+    email: {
+      // Changed from emailAddress
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: '',
-      validate: {
-        isEmail: true,
-      },
     },
     phoneNumber: {
       type: DataTypes.STRING,
@@ -262,16 +264,16 @@ Biodata.init(
       allowNull: true,
       defaultValue: '',
       validate: {
-        isIn: [['Male', 'Female', 'M', 'F', '']]
-      }
+        isIn: [['Male', 'Female', 'M', 'F', '']],
+      },
     },
     maritalStatus: {
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: '',
       validate: {
-        isIn: [['Single', 'Married', 'Divorced', 'Widowed', '']]
-      }
+        isIn: [['Single', 'Married', 'Divorced', 'Widowed', '']],
+      },
     },
     nationality: {
       type: DataTypes.STRING,
@@ -283,17 +285,20 @@ Biodata.init(
       allowNull: true,
       defaultValue: '',
     },
-    localGovernmentArea: {  // Changed from lga
+    localGovernmentArea: {
+      // Changed from lga
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: '',
     },
-    contactAddress: {  // Changed from homeAddress
-      type: DataTypes.TEXT,  // Changed to TEXT for longer addresses
+    contactAddress: {
+      // Changed from homeAddress
+      type: DataTypes.TEXT, // Changed to TEXT for longer addresses
       allowNull: true,
       defaultValue: '',
     },
-    permanentHomeAddress: {  // New field
+    permanentHomeAddress: {
+      // New field
       type: DataTypes.TEXT,
       allowNull: true,
       defaultValue: '',
@@ -303,7 +308,8 @@ Biodata.init(
       allowNull: true,
       defaultValue: null,
     },
-    nextOfKinName: {  // Changed from nextOfKinFullName
+    nextOfKinName: {
+      // Changed from nextOfKinFullName
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: '',
@@ -314,11 +320,12 @@ Biodata.init(
       defaultValue: '',
     },
     nextOfKinAddress: {
-      type: DataTypes.TEXT,  // Changed to TEXT for longer addresses
+      type: DataTypes.TEXT, // Changed to TEXT for longer addresses
       allowNull: true,
       defaultValue: '',
     },
-    nextOfKinRelationship: {  // Changed from relationshipWithNextOfKin
+    nextOfKinRelationship: {
+      // Changed from relationshipWithNextOfKin
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: '',
@@ -327,7 +334,8 @@ Biodata.init(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    homeTown: {  // Kept for backward compatibility
+    homeTown: {
+      // Kept for backward compatibility
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: '',
@@ -341,8 +349,8 @@ Biodata.init(
       beforeSave: (biodata: Biodata) => {
         // Auto-update completed status based on isComplete check
         biodata.completed = biodata.isComplete()
-      }
-    }
+      },
+    },
   }
 )
 

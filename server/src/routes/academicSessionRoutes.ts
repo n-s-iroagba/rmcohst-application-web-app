@@ -5,7 +5,7 @@ import {
   academicSessionCreationSchema,
   academicSessionUpdateSchema,
 } from '../validation/academicSession.validationSchemas'
-import AdmissionSessionController from '../controllers/AcademicSessionController'
+import AdmissionSessionController from '../controllers/AdmissionSessionController'
 
 const router = express.Router()
 const academicSessionController = new AdmissionSessionController()

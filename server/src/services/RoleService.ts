@@ -26,7 +26,6 @@ class RoleService {
     }
   }
 
-
   /**
    * Get a role by its name.
    * @param roleName - The name of the role.
@@ -44,7 +43,9 @@ class RoleService {
       return role
     } catch (error) {
       logger.error('Failed to get role by name', { roleName, error })
-      throw new Error(`Failed to get role by name: ${error instanceof Error ? error.message : error}`)
+      throw new Error(
+        `Failed to get role by name: ${error instanceof Error ? error.message : error}`
+      )
     }
   }
 
@@ -72,7 +73,9 @@ class RoleService {
       return userRole
     } catch (error) {
       logger.error('Failed to assign role by name to user', { userId, roleName, error })
-      throw new Error(`Failed to assign role by name to user: ${error instanceof Error ? error.message : error}`)
+      throw new Error(
+        `Failed to assign role by name to user: ${error instanceof Error ? error.message : error}`
+      )
     }
   }
 
@@ -90,7 +93,9 @@ class RoleService {
       return deletedCount > 0
     } catch (error) {
       logger.error('Failed to remove role from user', { userId, roleId, error })
-      throw new Error(`Failed to remove role from user: ${error instanceof Error ? error.message : error}`)
+      throw new Error(
+        `Failed to remove role from user: ${error instanceof Error ? error.message : error}`
+      )
     }
   }
 
@@ -117,7 +122,7 @@ class RoleService {
       }
 
       logger.info(`Retrieved roles for userId ${userId}, count: ${user.roles?.length}`)
-      return user.roles ||[]
+      return user.roles || []
     } catch (error) {
       logger.error('Failed to get user roles', { userId, error })
       throw new Error(`Failed to get user roles: ${error instanceof Error ? error.message : error}`)
@@ -145,7 +150,9 @@ class RoleService {
       return users
     } catch (error) {
       logger.error('Failed to get users with role', { roleId, error })
-      throw new Error(`Failed to get users with role: ${error instanceof Error ? error.message : error}`)
+      throw new Error(
+        `Failed to get users with role: ${error instanceof Error ? error.message : error}`
+      )
     }
   }
 
@@ -172,7 +179,9 @@ class RoleService {
       return hasRole
     } catch (error) {
       logger.error('Failed to check user role', { userId, roleName, error })
-      throw new Error(`Failed to check user role: ${error instanceof Error ? error.message : error}`)
+      throw new Error(
+        `Failed to check user role: ${error instanceof Error ? error.message : error}`
+      )
     }
   }
 

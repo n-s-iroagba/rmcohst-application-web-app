@@ -45,12 +45,10 @@ class ApplicantSSCQualificationService {
 
       // Handle certificate files if provided
       let certificates: any[] = existingQualification.certificates || []
-      
+
       if (files && files.length > 0) {
         if (numberOfSittings && files.length !== Number(numberOfSittings)) {
-          logger.error(
-            `File count mismatch: expected ${numberOfSittings}, got ${files.length}`
-          )
+          logger.error(`File count mismatch: expected ${numberOfSittings}, got ${files.length}`)
           throw new Error('Number of files must match number of sittings.')
         }
 
@@ -97,7 +95,7 @@ class ApplicantSSCQualificationService {
 
       // Fetch and return the updated qualification
       const updatedQualification = await ApplicantSSCQualification.findByPk(id)
-      
+
       logger.info(`SSC Qualification updated for ID ${id}`)
       return updatedQualification!
     } catch (error: any) {
@@ -116,14 +114,18 @@ class ApplicantSSCQualificationService {
     }
   }
 
-  public static async findByApplicationId(applicationId: number): Promise<ApplicantSSCQualification | null> {
+  public static async findByApplicationId(
+    applicationId: number
+  ): Promise<ApplicantSSCQualification | null> {
     try {
       const qualification = await ApplicantSSCQualification.findOne({
-        where: { applicationId }
+        where: { applicationId },
       })
       return qualification
     } catch (error: any) {
-      logger.error(`Failed to find SSC Qualification for application ${applicationId}: ${error.message}`)
+      logger.error(
+        `Failed to find SSC Qualification for application ${applicationId}: ${error.message}`
+      )
       throw error
     }
   }

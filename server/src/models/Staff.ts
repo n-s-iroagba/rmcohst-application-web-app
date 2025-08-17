@@ -1,9 +1,4 @@
-import {
-  Model,
-  DataTypes,
-  type Optional,
-
-} from 'sequelize'
+import { Model, DataTypes, type Optional } from 'sequelize'
 
 import sequelize from '../config/database'
 export type StaffRole = 'ADMIN' | 'HEAD_OF_ADMISSIONS'
@@ -14,7 +9,7 @@ interface StaffAttributes {
   firstname: string
   lastname: string
   middlename?: string
-  userId:number
+  userId: number
   createdAt?: Date
   updatedAt?: Date
 }
@@ -35,35 +30,30 @@ export class Staff // Named export
 
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
-
- 
-  
 }
 
-  Staff.init(
-    {
-      id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-      phoneNumber: { type: DataTypes.STRING, allowNull: false },
-      userId: {
-        type: DataTypes.INTEGER, // Match User ID type
-        allowNull: false,
-        unique: true,
-        references: { model: 'users', key: 'id' }, // Table name
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
-      firstname: {
-        type: DataTypes.STRING,
-      },
-      lastname: {
-        type: DataTypes.STRING,
-      },
-      middlename: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
+Staff.init(
+  {
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    phoneNumber: { type: DataTypes.STRING, allowNull: false },
+    userId: {
+      type: DataTypes.INTEGER, // Match User ID type
+      allowNull: false,
+      unique: true,
+      references: { model: 'users', key: 'id' }, // Table name
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
-    { sequelize, tableName: 'Staff', modelName: 'Staff', timestamps: true }
-  )
-
-
+    firstname: {
+      type: DataTypes.STRING,
+    },
+    lastname: {
+      type: DataTypes.STRING,
+    },
+    middlename: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+  },
+  { sequelize, tableName: 'Staff', modelName: 'Staff', timestamps: true }
+)

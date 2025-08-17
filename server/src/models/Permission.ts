@@ -79,7 +79,6 @@ Permission.init(
         unique: true,
         fields: ['name'],
       },
-      
     ],
     hooks: {
       beforeValidate: (permission: Permission) => {

@@ -1,25 +1,29 @@
 // models/Subject.ts
-import { Model, DataTypes, Optional } from 'sequelize';
-import sequelize from '../config/database';
+import { Model, DataTypes, Optional } from 'sequelize'
+import sequelize from '../config/database'
 
 interface SubjectAttributes {
-  id: number;
-  name: string;
-  code: string;
-  description?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  id: number
+  name: string
+  code: string
+  description?: string
+  createdAt?: Date
+  updatedAt?: Date
 }
 
-interface SubjectCreationAttributes extends Optional<SubjectAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
+interface SubjectCreationAttributes
+  extends Optional<SubjectAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
 
-class Subject extends Model<SubjectAttributes, SubjectCreationAttributes> implements SubjectAttributes {
-  public id!: number;
-  public name!: string;
-  public code!: string;
-  public description?: string;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+class Subject
+  extends Model<SubjectAttributes, SubjectCreationAttributes>
+  implements SubjectAttributes
+{
+  public id!: number
+  public name!: string
+  public code!: string
+  public description?: string
+  public readonly createdAt!: Date
+  public readonly updatedAt!: Date
 }
 
 Subject.init(
@@ -54,6 +58,6 @@ Subject.init(
       { fields: ['code'], unique: true },
     ],
   }
-);
+)
 
-export default Subject;
+export default Subject

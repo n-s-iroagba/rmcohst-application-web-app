@@ -1,5 +1,3 @@
-
-
 import { NextFunction, Request, Response } from 'express'
 import BiodataService, { UpdateBiodataInput } from '../services/BiodataService'
 import { validationResult } from 'express-validator'
@@ -18,7 +16,7 @@ class BiodataController {
       if (isNaN(parsedApplicationId)) {
         res.status(400).json({
           success: false,
-          message: 'Invalid application ID'
+          message: 'Invalid application ID',
         })
         return
       }
@@ -28,7 +26,7 @@ class BiodataController {
       if (!biodata) {
         res.status(404).json({
           success: false,
-          message: 'Biodata not found for this application'
+          message: 'Biodata not found for this application',
         })
         return
       }
@@ -36,14 +34,14 @@ class BiodataController {
       res.status(200).json({
         success: true,
         message: 'Biodata retrieved successfully',
-        data: biodata
+        data: biodata,
       })
     } catch (error) {
       console.error('Error fetching biodata:', error)
       res.status(500).json({
         success: false,
         message: 'Internal server error',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       })
     }
   }
@@ -60,7 +58,7 @@ class BiodataController {
       if (isNaN(parsedId)) {
         res.status(400).json({
           success: false,
-          message: 'Invalid biodata ID'
+          message: 'Invalid biodata ID',
         })
         return
       }
@@ -70,7 +68,7 @@ class BiodataController {
       if (!biodata) {
         res.status(404).json({
           success: false,
-          message: 'Biodata not found'
+          message: 'Biodata not found',
         })
         return
       }
@@ -78,14 +76,14 @@ class BiodataController {
       res.status(200).json({
         success: true,
         message: 'Biodata retrieved successfully',
-        data: biodata
+        data: biodata,
       })
     } catch (error) {
       console.error('Error fetching biodata:', error)
       res.status(500).json({
         success: false,
         message: 'Internal server error',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       })
     }
   }
@@ -94,15 +92,17 @@ class BiodataController {
    * Update biodata by application ID
    * PUT /api/biodata/application/:applicationId
    */
-  async updateBiodataByApplicationId(req: Request, res: Response,next:NextFunction): Promise<void> {
+  async updateBiodataByApplicationId(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
- 
-
       const { applicationId } = req.params
       const parsedApplicationId = parseInt(applicationId, 10)
 
       if (isNaN(parsedApplicationId)) {
-         throw new BadRequestError('no application id')
+        throw new BadRequestError('no application id')
       }
 
       // Extract update data from request body
@@ -126,7 +126,7 @@ class BiodataController {
         'nextOfKinFullName',
         'nextOfKinPhoneNumber',
         'nextOfKinAddress',
-        'relationshipWithNextOfKin'
+        'relationshipWithNextOfKin',
       ]
 
       // Only include fields that are present in the request body
@@ -136,8 +136,8 @@ class BiodataController {
         }
       })
 
-      if(req.file){
-        updateData['passportPhotograph']=req.file.buffer
+      if (req.file) {
+        updateData['passportPhotograph'] = req.file.buffer
       }
 
       // Handle date conversion if dateOfBirth is provided
@@ -155,7 +155,7 @@ class BiodataController {
       res.status(200).json({
         success: true,
         message: 'Biodata updated successfully',
-        data: updatedBiodata 
+        data: updatedBiodata,
       })
     } catch (error) {
       console.error('Error updating biodata:', error)
@@ -175,18 +175,20 @@ class BiodataController {
         res.status(400).json({
           success: false,
           message: 'Validation errors',
-          errors: errors.array()
+          errors: errors.array(),
         })
         return
       }
 
       const { id } = req.params
       const parsedId = parseInt(id, 10)
-
+      if (req.file) {
+        console.log('HHHHHHHHHHHHHHHHHHHHHH')
+      }
       if (isNaN(parsedId)) {
         res.status(400).json({
           success: false,
-          message: 'Invalid biodata ID'
+          message: 'Invalid biodata ID',
         })
         return
       }
@@ -211,7 +213,7 @@ class BiodataController {
         'nextOfKinFullName',
         'nextOfKinPhoneNumber',
         'nextOfKinAddress',
-        'relationshipWithNextOfKin'
+        'relationshipWithNextOfKin',
       ]
 
       // Only include fields that are present in the request body
@@ -220,8 +222,8 @@ class BiodataController {
           updateData[field as keyof UpdateBiodataInput] = req.body[field]
         }
       })
-       if(req.file){
-        updateData['passportPhotograph']=req.file.buffer
+      if (req.file) {
+        updateData['passportPhotograph'] = req.file.buffer
       }
 
       // Handle date conversion if dateOfBirth is provided
@@ -229,15 +231,12 @@ class BiodataController {
         updateData.dateOfBirth = new Date(updateData.dateOfBirth)
       }
 
-      const updatedBiodata = await BiodataService.updateBiodataById(
-        parsedId,
-        updateData
-      )
+      const updatedBiodata = await BiodataService.updateBiodataById(parsedId, updateData)
 
       if (!updatedBiodata) {
         res.status(404).json({
           success: false,
-          message: 'Biodata not found'
+          message: 'Biodata not found',
         })
         return
       }
@@ -245,21 +244,17 @@ class BiodataController {
       res.status(200).json({
         success: true,
         message: 'Biodata updated successfully',
-        data: updatedBiodata
+        data: updatedBiodata,
       })
     } catch (error) {
       console.error('Error updating biodata:', error)
       res.status(500).json({
         success: false,
         message: 'Internal server error',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       })
     }
   }
-
-
-
-
 
   /**
    * Get all biodata with pagination
@@ -282,16 +277,16 @@ class BiodataController {
             currentPage: page,
             totalPages: Math.ceil(total / limit),
             totalRecords: total,
-            limit
-          }
-        }
+            limit,
+          },
+        },
       })
     } catch (error) {
       console.error('Error fetching biodata records:', error)
       res.status(500).json({
         success: false,
         message: 'Internal server error',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       })
     }
   }

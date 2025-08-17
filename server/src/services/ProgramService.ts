@@ -1,89 +1,78 @@
 // src/services/ProgramService.ts
-import Program from '../models/Program'
-import { Department, ProgramSpecificRequirement, ProgramSSCRequirement } from '../models'
-import Faculty from '../models/Faculty';
-import { NotFoundError } from '../utils/errors';
-export interface FullProgram extends Program {
-   sscRequirement: ProgramSSCRequirement
-  specificRequirements: ProgramSpecificRequirement
-  department:DepartmentWithFaculty
-}
-interface DepartmentWithFaculty extends Department {
-  faculty: Faculty
-}
+
+import { NotFoundError } from '../utils/errors'
+import ProgramRepository from '../repositories/ProgramRepository'
+import { FullProgram } from '../types/join-model.types'
+
 export default class ProgramService {
   static async createBulk(programs: any[]) {
-    return await Program.bulkCreate(programs, { validate: true })
+    try {
+      return await ProgramRepository.bulkCreate(programs, { validate: true })
+    } catch (error) {
+      throw error
+    }
   }
 
   static async getAll(page: number, limit: number) {
-    return await Program.findAll({
-      where: { isActive: true },
-      limit,
-      offset: (page - 1) * limit,
-      order: [['createdAt', 'DESC']],
-    })
+    try {
+      const offset = (page - 1) * limit
+      return await ProgramRepository.findAll({ offset, limit })
+    } catch (error) {
+      throw error
+    }
   }
-static async getOne(id: string):Promise<FullProgram> {
-  try{
-  const program = await Program.findByPk(id, {
-    include: [
-      {
-        model: Department,
-        as: 'department',
-        include:[{
-          model: Faculty,
-          as:'faculty'
-        }
-      ]
-      },
-      {
-        model: ProgramSSCRequirement,
-        as:'sscRequirements'
-      },
-       {
-        model: ProgramSpecificRequirement,
-        as:'specificRequirements'
 
+  static async getOne(id: string): Promise<FullProgram> {
+    try {
+      const program = await ProgramRepository.findByIdWithRelations(id)
+
+      if (!program) {
+        throw new NotFoundError('Program not found')
       }
-    ]
-  })as FullProgram
-
-  if(!program) throw new NotFoundError('program not found')
-    return program
-}catch(error){
-  throw error
-}
-}
+      
+      return program
+    } catch (error) {
+      throw error
+    }
+  }
 
   static async getByFaculty(facultyId: number) {
-    return await Program.findAll({
-      include: {
-        model: Department,
-        where: { facultyId },
-      },
-    })
+    try {
+      return await ProgramRepository.findByFaculty(facultyId)
+    } catch (error) {
+      throw error
+    }
   }
 
   static async getByDepartment(departmentId: number) {
-    return await Program.findAll({
-      where: { departmentId },
-    })
+    try {
+      return await ProgramRepository.findByDepartment(departmentId)
+    } catch (error) {
+      throw error
+    }
   }
 
   static async update(id: number, payload: any) {
-    const program = await Program.findByPk(id)
-    if (!program) throw new Error('Program not found')
-    return await program.update(payload)
+    try {
+      return await ProgramRepository.updateById(id, payload)
+    } catch (error) {
+      throw error
+    }
   }
 
   static async makeInactive(id: number) {
-    const program = await Program.findByPk(id)
-    if (!program) throw new Error('Program not found')
-    await program.update({ isActive: false })
+    try {
+      await ProgramRepository.updateById(id, { isActive: false })
+    } catch (error) {
+      throw error
+    }
   }
 
   static async delete(id: number) {
-    await Program.destroy({ where: { id } })
+    try {
+      await ProgramRepository.deleteById(id)
+    } catch (error) {
+      throw error
+    }
   }
 }

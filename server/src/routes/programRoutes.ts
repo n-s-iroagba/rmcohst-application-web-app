@@ -3,7 +3,6 @@ import ProgramController from '../controllers/ProgramController'
 import { bulkProgramSchema, updateProgramSchema } from '../validation/programSchema'
 import { validateBody } from '../middleware/validation'
 
-
 const router = Router()
 
 router.post('/bulk', validateBody(bulkProgramSchema), ProgramController.createBulk)

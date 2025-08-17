@@ -4,14 +4,12 @@ import { authMiddleware } from '../middleware/auth'
 
 const router = express.Router()
 
+router.get('/:id', authMiddleware, ApplicationController.getApplicationDetails)
 
-
-router.get('/:id',authMiddleware, ApplicationController.getApplicationDetails)
-
-router.get('/applicant/:applicantUserId',ApplicationController.getApplicationByUserId)
+router.get('/applicant/:applicantUserId', ApplicationController.getApplicationByUserId)
 
 router.get('/', ApplicationController.getAllApplications)
-router.get('/payment-status/:applicantUserId',ApplicationController.getApplicationPaymentStatus)
+router.get('/payment-status/:applicantUserId', ApplicationController.getApplicationPaymentStatus)
 
 router.post('/:applicationId/submit', ApplicationController.submitApplication)
 

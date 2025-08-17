@@ -35,19 +35,19 @@ export {
   Permission,
   Department,
   AdmissionSession,
-  
+
   // Program-related models
   Program,
   ProgramSession,
   ProgramSpecificRequirement,
   ProgramSSCRequirement,
-  
+
   // Application-related models
   Application,
   Biodata,
   ApplicantSSCQualification,
   ApplicantProgramSpecificQualification,
-  
+
   // Junction tables
   RolePermission,
   UserRole,

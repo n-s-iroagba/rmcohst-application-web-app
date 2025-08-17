@@ -74,7 +74,7 @@ class BiodataService {
   async getBiodataByApplicationId(applicationId: number): Promise<Biodata | null> {
     try {
       const biodata = await Biodata.findOne({
-        where: { applicationId }
+        where: { applicationId },
       })
       return biodata
     } catch (error) {
@@ -116,7 +116,7 @@ class BiodataService {
   ): Promise<Biodata | null> {
     try {
       const biodata = await Biodata.findOne({
-        where: { applicationId }
+        where: { applicationId },
       })
 
       if (!biodata) {
@@ -125,7 +125,7 @@ class BiodataService {
 
       await biodata.update(updateData, { transaction })
       await biodata.reload({ transaction })
-      
+
       return biodata
     } catch (error) {
       if (error instanceof Error) {
@@ -156,7 +156,7 @@ class BiodataService {
 
       await biodata.update(updateData, { transaction })
       await biodata.reload({ transaction })
-      
+
       return biodata
     } catch (error) {
       if (error instanceof Error) {
@@ -166,7 +166,6 @@ class BiodataService {
     }
   }
 
-
   /**
    * Check if biodata exists for an application
    * @param applicationId - The application ID
@@ -175,7 +174,7 @@ class BiodataService {
   async biodataExists(applicationId: number): Promise<boolean> {
     try {
       const count = await Biodata.count({
-        where: { applicationId }
+        where: { applicationId },
       })
       return count > 0
     } catch (error) {
@@ -195,17 +194,17 @@ class BiodataService {
   async getAllBiodata(
     limit: number = 10,
     offset: number = 0
-  ): Promise<{ biodata: Biodata[], total: number }> {
+  ): Promise<{ biodata: Biodata[]; total: number }> {
     try {
       const { rows, count } = await Biodata.findAndCountAll({
         limit,
         offset,
-        order: [['createdAt', 'DESC']]
+        order: [['createdAt', 'DESC']],
       })
 
       return {
         biodata: rows,
-        total: count
+        total: count,
       }
     } catch (error) {
       if (error instanceof Error) {

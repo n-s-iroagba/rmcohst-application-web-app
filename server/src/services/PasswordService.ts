@@ -30,7 +30,7 @@ export class PasswordService {
 
     try {
       const isMatch = await bcrypt.compare(plainPassword, hashedPassword)
-      console.log('UUUUUUUUUUUUU',isMatch)
+      console.log('UUUUUUUUUUUUU', isMatch)
       logger.info('Password comparison completed', { isMatch })
       return isMatch
     } catch (error) {

@@ -1,9 +1,7 @@
-
-
 // EmailService.ts - Unified Email Service with best practices
 import nodemailer, { Transporter } from 'nodemailer'
 import { User } from '../models'
-import  Payment  from '../models/Payment'
+import Payment from '../models/Payment'
 import logger from '../utils/logger'
 
 interface EmailConfig {
@@ -68,12 +66,12 @@ export class EmailService {
   private getEmailConfig(): EmailConfig {
     const requiredEnvVars = ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS']
     const missingVars = requiredEnvVars.filter(varName => !process.env[varName])
-    
+
     // if (missingVars.length > 0) {
     //   throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`)
     // }
 
- return {
+    return {
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: 465,
       // parseInt(process.env.SMTP_PORT || '587'),
@@ -93,10 +91,10 @@ export class EmailService {
     // Verify connection configuration on startup
     transporter.verify((error: any) => {
       if (error) {
-        logger.error('SMTP connection failed', { 
+        logger.error('SMTP connection failed', {
           error: error.message,
           host: this.config.host,
-          port: this.config.port
+          port: this.config.port,
         })
       } else {
         logger.info('SMTP server is ready to send emails')
@@ -117,19 +115,19 @@ export class EmailService {
       }
 
       const info = await this.transporter.sendMail(mailOptions)
-      
+
       logger.info('Email sent successfully', {
         messageId: info.messageId,
         to: options.to,
         subject: options.subject,
-        response: info.response
+        response: info.response,
       })
     } catch (error: any) {
       logger.error('Failed to send email', {
         to: options.to,
         subject: options.subject,
         error: error.message,
-        stack: error.stack
+        stack: error.stack,
       })
       throw new Error(`Failed to send email to ${options.to}: ${error.message}`)
     }
@@ -369,7 +367,7 @@ export class EmailService {
     applicantName,
     payment,
     receiptData,
-    receiptLink
+    receiptLink,
   }: ReceiptEmailData): Promise<void> {
     try {
       const html = `
@@ -409,13 +407,16 @@ export class EmailService {
                     </tr>
                     <tr style="border-bottom: 1px solid #eee;">
                       <td style="padding: 8px 0; font-weight: 600;">Payment Date:</td>
-                      <td style="padding: 8px 0;">${new Date(payment.paidAt).toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}</td>
+                      <td style="padding: 8px 0;">${new Date(payment.paidAt).toLocaleDateString(
+                        'en-US',
+                        {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        }
+                      )}</td>
                     </tr>
                     <tr>
                       <td style="padding: 8px 0; font-weight: 600;">Status:</td>
@@ -456,18 +457,17 @@ export class EmailService {
         subject: `Payment Receipt - ${receiptData.receiptNumber}`,
         html,
       })
-      
+
       logger.info('Receipt email sent successfully', {
         to,
         receiptNumber: receiptData.receiptNumber,
-        paymentReference: payment.reference
+        paymentReference: payment.reference,
       })
-
     } catch (error: any) {
       logger.error('Error sending receipt email:', {
         to,
         paymentReference: payment.reference,
-        error: error.message
+        error: error.message,
       })
       throw error
     }
@@ -478,7 +478,7 @@ export class EmailService {
     to,
     applicantName,
     payment,
-    failureReason
+    failureReason,
   }: FailedPaymentEmailData): Promise<void> {
     try {
       const html = `
@@ -510,7 +510,7 @@ export class EmailService {
                     </tr>
                     <tr style="border-bottom: 1px solid #f5c6cb;">
                       <td style="padding: 8px 0; font-weight: 600;">Amount:</td>
-                      <td style="padding: 8px 0;">${ 'NGN'} ${payment.amount.toLocaleString()}</td>
+                      <td style="padding: 8px 0;">${'NGN'} ${payment.amount.toLocaleString()}</td>
                     </tr>
                     <tr>
                       <td style="padding: 8px 0; font-weight: 600;">Failure Reason:</td>
@@ -547,18 +547,17 @@ export class EmailService {
         subject: `Payment Failed - Reference: ${payment.reference}`,
         html,
       })
-      
+
       logger.info('Failed payment email sent successfully', {
         to,
         paymentReference: payment.reference,
-        failureReason
+        failureReason,
       })
-
     } catch (error: any) {
       logger.error('Error sending failed payment email:', {
         to,
         paymentReference: payment.reference,
-        error: error.message
+        error: error.message,
       })
       throw error
     }
@@ -566,9 +565,9 @@ export class EmailService {
 
   // Generic method for custom emails
   async sendCustomEmail(
-    to: string, 
-    subject: string, 
-    html: string, 
+    to: string,
+    subject: string,
+    html: string,
     text?: string,
     attachments?: Array<{ filename: string; content: Buffer; contentType: string }>
   ): Promise<void> {
@@ -592,7 +591,7 @@ export class EmailService {
   }> {
     const results = {
       successful: 0,
-      failed: [] as Array<{ email: string; error: string }>
+      failed: [] as Array<{ email: string; error: string }>,
     }
 
     for (const emailOptions of emails) {
@@ -602,7 +601,7 @@ export class EmailService {
       } catch (error: any) {
         results.failed.push({
           email: emailOptions.to,
-          error: error.message
+          error: error.message,
         })
       }
     }
@@ -610,7 +609,7 @@ export class EmailService {
     logger.info('Bulk email operation completed', {
       total: emails.length,
       successful: results.successful,
-      failed: results.failed.length
+      failed: results.failed.length,
     })
 
     return results
@@ -623,13 +622,13 @@ export class EmailService {
       logger.info('Email service connection test passed')
       return true
     } catch (error: any) {
-      logger.error('Email service connection test failed', { 
+      logger.error('Email service connection test failed', {
         error: error.message,
         config: {
           host: this.config.host,
           port: this.config.port,
-          user: this.config.auth.user
-        }
+          user: this.config.auth.user,
+        },
       })
       return false
     }
@@ -646,20 +645,17 @@ export class EmailService {
       return {
         status: isConnected ? 'healthy' : 'unhealthy',
         message: isConnected ? 'Email service is operational' : 'Email service connection failed',
-        timestamp: new Date()
+        timestamp: new Date(),
       }
     } catch (error: any) {
       return {
         status: 'unhealthy',
         message: `Email service error: ${error.message}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       }
     }
   }
 }
-
-
-
 
 // Update your Payment model to include these new fields:
 export interface PaymentAttributes {
@@ -672,9 +668,9 @@ export interface PaymentAttributes {
   programId: string
   applicantUserId: string
   paidAt?: Date
-  receiptFileId?: string      // New field
-  receiptLink?: string        // New field
-  receiptGeneratedAt?: Date   // New field
+  receiptFileId?: string // New field
+  receiptLink?: string // New field
+  receiptGeneratedAt?: Date // New field
   createdAt: Date
   updatedAt: Date
 }

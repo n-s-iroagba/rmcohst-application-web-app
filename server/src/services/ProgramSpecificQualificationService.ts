@@ -1,7 +1,8 @@
-// import ProgramSpecificRequirement from '../models/ProgramSpecificRequirement'
-// import Program from '../models/Program'
-// import { AppError } from '../utils/error/AppError'
-// import logger from '../utils/logger/logger'
+// // src/services/ProgramSpecificRequirementService.ts
+
+
+// import { ProgramSpecificRequirement } from '../models'
+// import ProgramSpecificRequirementsRepository from '../repositories/ProgramSpecificRequirementsRepository'
 
 // class ProgramSpecificRequirementService {
 //   /**
@@ -12,16 +13,20 @@
 //     qualificationType: string
 //     minimumGradeId: number
 //   }): Promise<ProgramSpecificRequirement> {
-//     const program = await Program.findByPk(data.programId)
-//     if (!program) {
-//       throw new AppError(`Program with ID ${data.programId} not found`, 404)
-//     }
-
 //     try {
-//       const qualification = await ProgramSpecificRequirement.create(data)
+//       // Validate program exists
+//       const programExists = await ProgramSpecificRequirementsRepository.programExists(data.programId)
+//       if (!programExists) {
+//         throw new AppError(`Program with ID ${data.programId} not found`, 404)
+//       }
+
+//       const qualification = await ProgramSpecificRequirementsRepository.createRequirement(data)
 //       logger.info(`ProgramSpecificRequirement created with ID ${qualification.id}`)
 //       return qualification
 //     } catch (error: any) {
+//       if (error instanceof AppError) {
+//         throw error
+//       }
 //       logger.error(`Failed to create ProgramSpecificRequirement: ${error.message}`)
 //       throw new AppError('Failed to create ProgramSpecificRequirement', 500)
 //     }
@@ -31,20 +36,31 @@
 //    * Get a single ProgramSpecificRequirement by ID
 //    */
 //   public async getById(id: number): Promise<ProgramSpecificRequirement> {
-//     const qualification = await ProgramSpecificRequirement.findByPk(id, {
-//       include: [{ model: Program, as: 'program' }],
-//     })
-//     if (!qualification) {
-//       throw new AppError(`ProgramSpecificRequirement with ID ${id} not found`, 404)
+//     try {
+//       const qualification = await ProgramSpecificRequirementsRepository.findRequirementById(id)
+//       if (!qualification) {
+//         throw new AppError(`ProgramSpecificRequirement with ID ${id} not found`, 404)
+//       }
+//       return qualification
+//     } catch (error: any) {
+//       if (error instanceof AppError) {
+//         throw error
+//       }
+//       logger.error(`Failed to get ProgramSpecificRequirement by ID ${id}: ${error.message}`)
+//       throw new AppError('Failed to get ProgramSpecificRequirement', 500)
 //     }
-//     return qualification
 //   }
 
 //   /**
 //    * Get all ProgramSpecificRequirements
 //    */
 //   public async getAll(): Promise<ProgramSpecificRequirement[]> {
-//     return ProgramSpecificRequirement.findAll({ include: [{ model: Program, as: 'program' }] })
+//     try {
+//       return await ProgramSpecificRequirementsRepository.findAllRequirements()
+//     } catch (error: any) {
+//       logger.error(`Failed to get all ProgramSpecificRequirements: ${error.message}`)
+//       throw new AppError('Failed to get ProgramSpecificRequirements', 500)
+//     }
 //   }
 
 //   /**
@@ -58,34 +74,60 @@
 //       minimumGrade: string
 //     }>
 //   ): Promise<ProgramSpecificRequirement> {
-//     const qualification = await ProgramSpecificRequirement.findByPk(id)
-//     if (!qualification) {
-//       throw new AppError(`ProgramSpecificRequirement with ID ${id} not found`, 404)
-//     }
-
-//     if (updates.programId) {
-//       const program = await Program.findByPk(updates.programId)
-//       if (!program) {
-//         throw new AppError(`Program with ID ${updates.programId} not found`, 404)
+//     try {
+//       // Check if requirement exists
+//       const requirementExists = await ProgramSpecificRequirementsRepository.requirementExists(id)
+//       if (!requirementExists) {
+//         throw new AppError(`ProgramSpecificRequirement with ID ${id} not found`, 404)
 //       }
-//     }
 
-//     await qualification.update(updates)
-//     logger.info(`ProgramSpecificRequirement with ID ${id} updated`)
-//     return qualification
+//       // Validate program exists if programId is being updated
+//       if (updates.programId) {
+//         const programExists = await ProgramSpecificRequirementsRepository.programExists(updates.programId)
+//         if (!programExists) {
+//           throw new AppError(`Program with ID ${updates.programId} not found`, 404)
+//         }
+//       }
+
+//       const qualification = await ProgramSpecificRequirementRepository.updateRequirement(id, updates)
+//       if (!qualification) {
+//         throw new AppError(`Failed to update ProgramSpecificRequirement with ID ${id}`, 500)
+//       }
+
+//       logger.info(`ProgramSpecificRequirement with ID ${id} updated`)
+//       return qualification
+//     } catch (error: any) {
+//       if (error instanceof AppError) {
+//         throw error
+//       }
+//       logger.error(`Failed to update ProgramSpecificRequirement with ID ${id}: ${error.message}`)
+//       throw new AppError('Failed to update ProgramSpecificRequirement', 500)
+//     }
 //   }
 
 //   /**
 //    * Delete a ProgramSpecificRequirement by ID
 //    */
 //   public async delete(id: number): Promise<void> {
-//     const qualification = await ProgramSpecificRequirement.findByPk(id)
-//     if (!qualification) {
-//       throw new AppError(`ProgramSpecificRequirement with ID ${id} not found`, 404)
-//     }
+//     try {
+//       const requirementExists = await ProgramSpecificRequirementRepository.requirementExists(id)
+//       if (!requirementExists) {
+//         throw new AppError(`ProgramSpecificRequirement with ID ${id} not found`, 404)
+//       }
 
-//     await qualification.destroy()
-//     logger.info(`ProgramSpecificRequirement with ID ${id} deleted`)
+//       const deleted = await ProgramSpecificRequirementRepository.deleteRequirement(id)
+//       if (!deleted) {
+//         throw new AppError(`Failed to delete ProgramSpecificRequirement with ID ${id}`, 500)
+//       }
+
+//       logger.info(`ProgramSpecificRequirement with ID ${id} deleted`)
+//     } catch (error: any) {
+//       if (error instanceof AppError) {
+//         throw error
+//       }
+//       logger.error(`Failed to delete ProgramSpecificRequirement with ID ${id}: ${error.message}`)
+//       throw new AppError('Failed to delete ProgramSpecificRequirement', 500)
+//     }
 //   }
 // }
 

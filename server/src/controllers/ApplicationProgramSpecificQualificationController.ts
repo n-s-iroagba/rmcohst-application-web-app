@@ -5,13 +5,16 @@ import logger from '../utils/logger'
 
 // Validation schema for update request
 const updateProgramSpecificQualificationSchema = z.object({
-  applicationId: z.string().optional().transform(val => val ? Number(val) : undefined),
+  applicationId: z
+    .string()
+    .optional()
+    .transform(val => (val ? Number(val) : undefined)),
   qualificationType: z.string().optional(),
   grade: z.string().optional(),
 })
 
 const idParamSchema = z.object({
-  id: z.string().transform(val => Number(val))
+  id: z.string().transform(val => Number(val)),
 })
 
 class ApplicantProgramSpecificQualificationController {
@@ -23,7 +26,7 @@ class ApplicantProgramSpecificQualificationController {
     try {
       // Validate params
       const { id } = idParamSchema.parse(req.params)
-      
+
       // Validate body
       const validatedData = updateProgramSpecificQualificationSchema.parse(req.body)
 
@@ -38,8 +41,10 @@ class ApplicantProgramSpecificQualificationController {
       )
 
       // Get validation and completion status
-      const validationResult = ApplicantProgramSpecificQualificationService.validateQualification(updatedQualification)
-      const completionStatus = ApplicantProgramSpecificQualificationService.getCompletionStatus(updatedQualification)
+      const validationResult =
+        ApplicantProgramSpecificQualificationService.validateQualification(updatedQualification)
+      const completionStatus =
+        ApplicantProgramSpecificQualificationService.getCompletionStatus(updatedQualification)
 
       logger.info(`Program Specific Qualification updated successfully for ID ${id}`)
 
@@ -50,8 +55,8 @@ class ApplicantProgramSpecificQualificationController {
           qualification: updatedQualification,
           validation: validationResult,
           completion: completionStatus,
-          isComplete: updatedQualification.isComplete()
-        }
+          isComplete: updatedQualification.isComplete(),
+        },
       })
     } catch (error: any) {
       logger.error('Error updating Program Specific Qualification:', error)
@@ -63,8 +68,8 @@ class ApplicantProgramSpecificQualificationController {
           message: 'Validation error',
           errors: error.errors.map(err => ({
             field: err.path.join('.'),
-            message: err.message
-          }))
+            message: err.message,
+          })),
         })
         return
       }
@@ -73,7 +78,7 @@ class ApplicantProgramSpecificQualificationController {
       if (error.message.includes('not found')) {
         res.status(404).json({
           success: false,
-          message: error.message
+          message: error.message,
         })
         return
       }
@@ -82,7 +87,7 @@ class ApplicantProgramSpecificQualificationController {
       if (error.message.includes('file') || error.message.includes('File')) {
         res.status(400).json({
           success: false,
-          message: error.message
+          message: error.message,
         })
         return
       }
@@ -91,7 +96,7 @@ class ApplicantProgramSpecificQualificationController {
       res.status(500).json({
         success: false,
         message: 'Internal server error',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -103,19 +108,21 @@ class ApplicantProgramSpecificQualificationController {
   public static async getById(req: Request, res: Response): Promise<void> {
     try {
       const { id } = idParamSchema.parse(req.params)
-      
+
       const qualification = await ApplicantProgramSpecificQualificationService.findById(id)
-      
+
       if (!qualification) {
         res.status(404).json({
           success: false,
-          message: 'Program Specific Qualification not found'
+          message: 'Program Specific Qualification not found',
         })
         return
       }
 
-      const validationResult = ApplicantProgramSpecificQualificationService.validateQualification(qualification)
-      const completionStatus = ApplicantProgramSpecificQualificationService.getCompletionStatus(qualification)
+      const validationResult =
+        ApplicantProgramSpecificQualificationService.validateQualification(qualification)
+      const completionStatus =
+        ApplicantProgramSpecificQualificationService.getCompletionStatus(qualification)
 
       res.status(200).json({
         success: true,
@@ -123,17 +130,17 @@ class ApplicantProgramSpecificQualificationController {
           qualification,
           validation: validationResult,
           completion: completionStatus,
-          isComplete: qualification.isComplete()
-        }
+          isComplete: qualification.isComplete(),
+        },
       })
     } catch (error: any) {
       logger.error('Error fetching Program Specific Qualification:', error)
-      
+
       if (error instanceof z.ZodError) {
         res.status(400).json({
           success: false,
           message: 'Invalid ID parameter',
-          errors: error.errors
+          errors: error.errors,
         })
         return
       }
@@ -141,7 +148,7 @@ class ApplicantProgramSpecificQualificationController {
       res.status(500).json({
         success: false,
         message: 'Internal server error',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -152,27 +159,31 @@ class ApplicantProgramSpecificQualificationController {
    */
   public static async create(req: Request, res: Response): Promise<void> {
     try {
-      const { applicationId } = z.object({
-        applicationId: z.number()
-      }).parse(req.body)
+      const { applicationId } = z
+        .object({
+          applicationId: z.number(),
+        })
+        .parse(req.body)
 
       const qualification = await ApplicantProgramSpecificQualificationService.create(applicationId)
 
-      logger.info(`Program Specific Qualification created successfully for application ${applicationId}`)
+      logger.info(
+        `Program Specific Qualification created successfully for application ${applicationId}`
+      )
 
       res.status(201).json({
         success: true,
         message: 'Program Specific Qualification created successfully',
-        data: { qualification }
+        data: { qualification },
       })
     } catch (error: any) {
       logger.error('Error creating Program Specific Qualification:', error)
-      
+
       if (error instanceof z.ZodError) {
         res.status(400).json({
           success: false,
           message: 'Validation error',
-          errors: error.errors
+          errors: error.errors,
         })
         return
       }
@@ -180,7 +191,7 @@ class ApplicantProgramSpecificQualificationController {
       res.status(500).json({
         success: false,
         message: 'Internal server error',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -192,23 +203,23 @@ class ApplicantProgramSpecificQualificationController {
   public static async delete(req: Request, res: Response): Promise<void> {
     try {
       const { id } = idParamSchema.parse(req.params)
-      
+
       await ApplicantProgramSpecificQualificationService.delete(id)
 
       logger.info(`Program Specific Qualification deleted successfully for ID ${id}`)
 
       res.status(200).json({
         success: true,
-        message: 'Program Specific Qualification deleted successfully'
+        message: 'Program Specific Qualification deleted successfully',
       })
     } catch (error: any) {
       logger.error('Error deleting Program Specific Qualification:', error)
-      
+
       if (error instanceof z.ZodError) {
         res.status(400).json({
           success: false,
           message: 'Invalid ID parameter',
-          errors: error.errors
+          errors: error.errors,
         })
         return
       }
@@ -216,7 +227,7 @@ class ApplicantProgramSpecificQualificationController {
       if (error.message.includes('not found')) {
         res.status(404).json({
           success: false,
-          message: error.message
+          message: error.message,
         })
         return
       }
@@ -224,7 +235,7 @@ class ApplicantProgramSpecificQualificationController {
       res.status(500).json({
         success: false,
         message: 'Internal server error',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -235,22 +246,27 @@ class ApplicantProgramSpecificQualificationController {
    */
   public static async getByApplicationId(req: Request, res: Response): Promise<void> {
     try {
-      const { applicationId } = z.object({
-        applicationId: z.string().transform(val => Number(val))
-      }).parse(req.params)
-      
-      const qualification = await ApplicantProgramSpecificQualificationService.findByApplicationId(applicationId)
-      
+      const { applicationId } = z
+        .object({
+          applicationId: z.string().transform(val => Number(val)),
+        })
+        .parse(req.params)
+
+      const qualification =
+        await ApplicantProgramSpecificQualificationService.findByApplicationId(applicationId)
+
       if (!qualification) {
         res.status(404).json({
           success: false,
-          message: 'Program Specific Qualification not found for this application'
+          message: 'Program Specific Qualification not found for this application',
         })
         return
       }
 
-      const validationResult = ApplicantProgramSpecificQualificationService.validateQualification(qualification)
-      const completionStatus = ApplicantProgramSpecificQualificationService.getCompletionStatus(qualification)
+      const validationResult =
+        ApplicantProgramSpecificQualificationService.validateQualification(qualification)
+      const completionStatus =
+        ApplicantProgramSpecificQualificationService.getCompletionStatus(qualification)
 
       res.status(200).json({
         success: true,
@@ -258,17 +274,17 @@ class ApplicantProgramSpecificQualificationController {
           qualification,
           validation: validationResult,
           completion: completionStatus,
-          isComplete: qualification.isComplete()
-        }
+          isComplete: qualification.isComplete(),
+        },
       })
     } catch (error: any) {
       logger.error('Error fetching Program Specific Qualification by application ID:', error)
-      
+
       if (error instanceof z.ZodError) {
         res.status(400).json({
           success: false,
           message: 'Invalid application ID parameter',
-          errors: error.errors
+          errors: error.errors,
         })
         return
       }
@@ -276,7 +292,7 @@ class ApplicantProgramSpecificQualificationController {
       res.status(500).json({
         success: false,
         message: 'Internal server error',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }

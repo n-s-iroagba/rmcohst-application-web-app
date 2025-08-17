@@ -12,4 +12,13 @@ const logger = winston.createLogger({
   ),
   transports: [new winston.transports.Console()],
 })
+
+export const logError = (message: string, error: any, context?: Record<string, any>): void => {
+  logger.error(message, {
+    message: error.message,
+    stack: error.stack,
+    response: error.response?.data,
+    ...context,
+  })
+}
 export default logger

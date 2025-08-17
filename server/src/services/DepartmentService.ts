@@ -1,6 +1,8 @@
-import { Department } from '../models/Department'
+// src/services/DepartmentService.ts
+
 import { NotFoundError } from '../utils/errors'
 import logger from '../utils/logger'
+import DepartmentRepository from '../repositories/DepartmentRepository'
 
 class DepartmentService {
   // CREATE
@@ -12,9 +14,9 @@ class DepartmentService {
     }[]
   ) {
     try {
-      const department = await Department.bulkCreate(data)
+      const departments = await DepartmentRepository.createDepartments(data)
       logger.info('Created departments')
-      return department
+      return departments
     } catch (error) {
       logger.error('Failed to create department', { error })
       throw error
@@ -24,9 +26,7 @@ class DepartmentService {
   // READ ALL
   static async getAllDepartments() {
     try {
-      const departments = await Department.findAll({
-        include: [{ association: 'faculty' }],
-      })
+      const departments = await DepartmentRepository.findAllDepartments()
       logger.info('Fetched all departments')
       return departments
     } catch (error) {
@@ -38,9 +38,7 @@ class DepartmentService {
   // READ ONE
   static async getDepartmentById(id: number) {
     try {
-      const department = await Department.findByPk(id, {
-        include: [{ association: 'faculty' }],
-      })
+      const department = await DepartmentRepository.findDepartmentById(id)
       if (!department) {
         throw new NotFoundError('Department not found')
       }
@@ -61,11 +59,13 @@ class DepartmentService {
     }>
   ) {
     try {
-      const department = await Department.findByPk(id)
-      if (!department) {
+      // Check if department exists
+      const departmentExists = await DepartmentRepository.departmentExists(id)
+      if (!departmentExists) {
         throw new NotFoundError('Department not found')
       }
-      await department.update(updates)
+
+      const department = await DepartmentRepository.updateDepartment(id, updates)
       logger.info('Updated department', { id })
       return department
     } catch (error) {

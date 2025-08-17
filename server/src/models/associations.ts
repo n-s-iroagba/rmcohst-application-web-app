@@ -1,24 +1,22 @@
 // models/associations.ts
 
-import AdmissionSession from "./AdmissionSession"
-import ApplicantProgramSpecificQualification from "./ApplicantProgramSpecificQualification"
-import ApplicantSSCQualification, { SSCQualification } from "./ApplicantSSCQualification"
-import { Application } from "./Application"
-import Biodata from "./Biodata"
-import { Department } from "./Department"
-import Permission from "./Permission"
-import Program from "./Program"
-import ProgramSession from "./ProgramSession"
-import ProgramSpecificRequirement from "./ProgramSpecificRequirement"
-import { ProgramSSCRequirement } from "./ProgramSSCRequirement"
-import Role from "./Role"
-import RolePermission from "./RolePermission"
-import Subject from "./Subject"
-import User from "./User"
-
+import AdmissionSession from './AdmissionSession'
+import ApplicantProgramSpecificQualification from './ApplicantProgramSpecificQualification'
+import ApplicantSSCQualification, { SSCQualification } from './ApplicantSSCQualification'
+import { Application } from './Application'
+import Biodata from './Biodata'
+import { Department } from './Department'
+import Permission from './Permission'
+import Program from './Program'
+import ProgramSession from './ProgramSession'
+import ProgramSpecificRequirement from './ProgramSpecificRequirement'
+import { ProgramSSCRequirement } from './ProgramSSCRequirement'
+import Role from './Role'
+import RolePermission from './RolePermission'
+import Subject from './Subject'
+import User from './User'
 
 export default function setupAssociations() {
-
   // User-Role associations
   User.hasOne(Role, {
     as: 'role',
@@ -45,13 +43,13 @@ export default function setupAssociations() {
   })
 
   // Department-Program associations
-  Department.hasMany(Program, { 
+  Department.hasMany(Program, {
     foreignKey: 'departmentId',
     as: 'programs',
     onDelete: 'RESTRICT',
     onUpdate: 'CASCADE',
   })
-  
+
   Program.belongsTo(Department, {
     foreignKey: 'departmentId',
     as: 'department',
@@ -75,22 +73,22 @@ export default function setupAssociations() {
   })
 
   // Direct associations with junction table
-  Program.hasMany(ProgramSession, { 
+  Program.hasMany(ProgramSession, {
     foreignKey: 'programId',
     as: 'programSessions',
   })
-  
-  ProgramSession.belongsTo(Program, { 
+
+  ProgramSession.belongsTo(Program, {
     foreignKey: 'programId',
     as: 'program',
   })
 
-  AdmissionSession.hasMany(ProgramSession, { 
+  AdmissionSession.hasMany(ProgramSession, {
     foreignKey: 'sessionId',
     as: 'programSessions',
   })
-  
-  ProgramSession.belongsTo(AdmissionSession, { 
+
+  ProgramSession.belongsTo(AdmissionSession, {
     foreignKey: 'sessionId',
     as: 'session',
   })
@@ -174,8 +172,6 @@ export default function setupAssociations() {
     onDelete: 'CASCADE',
   })
 
-
-
   ApplicantSSCQualification.belongsTo(Application, {
     foreignKey: 'applicationId',
     as: 'application',
@@ -195,45 +191,40 @@ export default function setupAssociations() {
     onDelete: 'CASCADE',
   })
 
-
- 
-
-      SSCQualification.hasMany(Subject, {
+  SSCQualification.hasMany(Subject, {
     foreignKey: 'firstSubjectId',
-    as: 'firstSubject'
+    as: 'firstSubject',
   })
-      SSCQualification.hasMany(Subject, {
+  SSCQualification.hasMany(Subject, {
     foreignKey: 'secondSubjectId',
-    as: 'secondSubject'
+    as: 'secondSubject',
   })
-      SSCQualification.hasMany(Subject, {
+  SSCQualification.hasMany(Subject, {
     foreignKey: 'thirdSubjectId',
-    as: 'thirdSubject'
+    as: 'thirdSubject',
   })
-      SSCQualification.hasMany(Subject, {
+  SSCQualification.hasMany(Subject, {
     foreignKey: 'alternateThirdSubjectId',
-    as: 'alternateThirdSubject'
+    as: 'alternateThirdSubject',
   })
-      SSCQualification.hasMany(Subject, {
+  SSCQualification.hasMany(Subject, {
     foreignKey: 'fourthSubjectId',
-    as: 'fourthSubject'
+    as: 'fourthSubject',
   })
 
-      SSCQualification.hasMany(Subject, {
+  SSCQualification.hasMany(Subject, {
     foreignKey: 'alternateFourthSubjectId',
-    as: 'alternateFourthSubject'
+    as: 'alternateFourthSubject',
   })
-      SSCQualification.hasMany(Subject, {
+  SSCQualification.hasMany(Subject, {
     foreignKey: 'fifthSubjectId',
-    as: 'fifthSubject'
+    as: 'fifthSubject',
   })
 
-
-
-//   CertificateFile.belongsTo(SSCQualification, {
-//     foreignKey: 'sscQualificationId',
-//     as: 'sscQualification'
-//   })
+  //   CertificateFile.belongsTo(SSCQualification, {
+  //     foreignKey: 'sscQualificationId',
+  //     as: 'sscQualification'
+  //   })
 
   // Reverse associations
   User.hasMany(Application, {

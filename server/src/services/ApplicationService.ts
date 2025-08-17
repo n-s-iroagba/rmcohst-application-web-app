@@ -1,105 +1,103 @@
-import { fn, col } from 'sequelize'
-import AdmissionSession from '../models/AdmissionSession'
+// src/services/ApplicationService.ts
 
-import {
-  ApplicantSSCQualification,
-  Application,
-  Biodata,
-  ApplicantProgramSpecificQualification,
-} from '../models'
-import { Department } from '../models/Department'
-import { Faculty } from '../models/Faculty'
-import Program from '../models/Program'
-import ProgramSpecificRequirement from '../models/ProgramSpecificRequirement'
-import { Staff } from '../models/Staff'
-import User from '../models/User'
 import { BadRequestError, ForbiddenError, NotFoundError } from '../utils/errors'
 import logger from '../utils/logger'
-import { ApplicationCreationAttributes, ApplicationStatus } from '../models/Application'
-import Payment from '../models/Payment'
-import { FullApplication } from '../types/models'
+import { ApplicationStatus } from '../models/Application'
 import GoogleDriveApplicationService from './DriveService'
+import ApplicationRepository from '../repositories/ApplicationRepository'
+import ProgramRepository from '../repositories/ProgramRepository'
+import BiodataRepository from '../repositories/BiodataRepository'
+import ApplicantSSCQualificationRepository from '../repositories/ApplicantSSCQualificationRepository'
+import ApplicantProgramSpecificQualificationRepository from '../repositories/ApplicantProgramSpecificQualificationRepository'
+import ProgramSpecificRequirementRepository from '../repositories/ProgramSpecificRequirementsRepository'
+import AdmissionSessionRepository from '../repositories/AdmissionSessionRepository'
+import PaymentRepository from '../repositories/PaymentRepository'
+import UserRepository from '../repositories/UserRepository'
+
 
 interface ApplicationFilters {
   status?: string
-  academicSessionId?: string // Assuming UUID
-  StaffId?: string // Assuming UUID
+  academicSessionId?: string
+  StaffId?: string
   unassigned?: boolean
   page?: number
   limit?: number
 }
+
 export type ApplicationPaymentStatus = {
-  status:'PENDING'|'PAID'|'FAILED'|'NO-PAYMENT'
-  payment:Payment[]
+  status: 'PENDING' | 'PAID' | 'FAILED' | 'NO-PAYMENT'
+  payment: any[]
 }
 
-  const googleDriveService = new GoogleDriveApplicationService()
+const googleDriveService = new GoogleDriveApplicationService()
 
 class ApplicationService {
-
-
-// Add this to your constructor
-
-
-  public async getApplcationPaymentStatus(userId:string):Promise<ApplicationPaymentStatus>{
-    const currentSession = await AdmissionSession.findOne({where:{
-      isCurrent:true
-    }})
-  if(!currentSession) throw new NotFoundError('Session not found ')
-  const payments = await Payment.findAll({where:{
-    applicantUserId:userId,
-    sessionId:currentSession.id
-  },
-  order: [['paidAt', 'DESC']],
-  })
-const completePayment = payments.filter((p)=>p.status ==='PAID')
-if(completePayment) return {status:'PAID',payment:completePayment}
-const pendingPayment = payments.filter((p)=>p.status ==='PENDING')
-if(pendingPayment) return {status:'PENDING',payment:pendingPayment}
-const failedPayment = payments.filter((p)=>p.status ==='FAILED')
-if(failedPayment) return {status:'FAILED',payment:failedPayment}
-return {status:'NO-PAYMENT',payment:[]}
-
-  }
-  public async createInitialApplication(
-    
-    data: {
-      applicantUserId: number,
-      sessionId: number
-      programId?: number  
-    }
-  ): Promise<Application> {
+  public async getApplcationPaymentStatus(userId: string): Promise<ApplicationPaymentStatus> {
     try {
-      const {applicantUserId} = data
-      const existingApplication = await Application.findOne({
-        where: {
-          applicantUserId,
-          sessionId: data.sessionId,
-        },
-      })
- 
+      const currentSession = await AdmissionSessionRepository.findCurrentSession()
+      if (!currentSession) throw new NotFoundError('Session not found')
+
+      const payments = await PaymentRepository.findPaymentsByUserAndSession(userId, currentSession.id)
+      
+      const completePayment = payments.filter(p => p.status === 'PAID')
+      if (completePayment.length > 0) return { status: 'PAID', payment: completePayment }
+      
+      const pendingPayment = payments.filter(p => p.status === 'PENDING')
+      if (pendingPayment.length > 0) return { status: 'PENDING', payment: pendingPayment }
+      
+      const failedPayment = payments.filter(p => p.status === 'FAILED')
+      if (failedPayment.length > 0) return { status: 'FAILED', payment: failedPayment }
+      
+      return { status: 'NO-PAYMENT', payment: [] }
+    } catch (error) {
+      logger.error('Error getting application payment status', { userId, error })
+      throw error
+    }
+  }
+
+  public async createInitialApplication(data: {
+    applicantUserId: number
+    sessionId: number
+    programId: number
+  }) {
+    try {
+      const { applicantUserId } = data
+      
+      // Check for existing application
+      const existingApplication = await ApplicationRepository.findApplicationByUserAndSession(
+        applicantUserId,
+        data.sessionId
+      )
+
       if (existingApplication) return existingApplication
-  
-      const program = await Program.findByPk(data.programId)
 
-      if (!program) throw new BadRequestError('The Program you wish to apply for in not available')
+      // Validate program exists
+      const program = await ProgramRepository.findById(data.programId)
+      if (!program) {
+        throw new BadRequestError('The Program you wish to apply for is not available')
+      }
 
-      const application = await Application.create({
+      // Create application
+      const application = await ApplicationRepository.createApplication({
         ...data,
         applicantUserId,
         status: ApplicationStatus.DRAFT,
-      } as unknown as ApplicationCreationAttributes)
-      const applicationId = application.id
-      await Biodata.create({ applicationId })
-      await ApplicantSSCQualification.create({ applicationId })
-      const programSpecificQualification = await ProgramSpecificRequirement.findOne({
-        where: { programId: program.id },
       })
-      if (programSpecificQualification)
-        await ApplicantProgramSpecificQualification.create({
+
+      const applicationId = application.id
+
+      // Create related records
+      await BiodataRepository.createBiodata({applicationId})
+      await ApplicantSSCQualificationRepository.createApplicantSSCQualification({applicationId})
+
+      // Create program-specific qualification if required
+      const programSpecificRequirement = await ProgramSpecificRequirementRepository.findProgramById(program.id)
+      if (programSpecificRequirement) {
+        await ApplicantProgramSpecificQualificationRepository. createApplicantProgramSpecificQualification({
           applicationId,
-          qualificationType: programSpecificQualification.qualificationType,
+          qualificationType: programSpecificRequirement.qualificationType,
         })
+      }
 
       logger.info('Application created successfully', { applicationId: application.id })
       console.log('created application is,', application)
@@ -110,23 +108,12 @@ return {status:'NO-PAYMENT',payment:[]}
     }
   }
 
-  // Get application by ID with all related data
-  public async getApplicationById(id: number|string,shouldThrowErrorIfNotFound:boolean = false) {
+  public async getApplicationById(
+    id: number | string,
+    shouldThrowErrorIfNotFound: boolean = false
+  ) {
     try {
-      const application = await Application.findByPk(id, {
-        include: [
-          { model: User, as: 'user'},
-          { model: Program, as: 'program' },
-          { model: AdmissionSession, as: 'academicSession' },
-          { model: Biodata, as: 'biodata' },
-          {
-            model: ApplicantProgramSpecificQualification,
-              as: 'programSpecificQualifications'},
-          { model: ApplicantSSCQualification, as: 'sscQualification'},
-          
-          // { model: Staff, as: 'Staff' },
-        ],
-      }) as FullApplication
+      const application = await ApplicationRepository.findApplicationById(id)
 
       if (!application && shouldThrowErrorIfNotFound) {
         throw new NotFoundError('Application not found')
@@ -138,82 +125,32 @@ return {status:'NO-PAYMENT',payment:[]}
       throw error
     }
   }
-public async getApplicationByUserId(id: string, shouldThrowErrorIfNotFound:boolean=false) {
-  try {
-    const application = await Application.findOne({
-      where: { applicantUserId: id },
-      include: [
-          { model: User, as: 'user'},
-          { model: Program, as: 'program' },
-          { model: AdmissionSession, as: 'academicSession' },
-          { model: Biodata, as: 'biodata' },
-          {
-            model: ApplicantProgramSpecificQualification,
-              as: 'programSpecificQualifications'},
-          { model: ApplicantSSCQualification, as: 'sscQualification'},
-          
-          // { model: Staff, as: 'Staff' },
-        ],
-      }) as FullApplication
+
+  public async getApplicationByUserId(id: string, shouldThrowErrorIfNotFound: boolean = false) {
+    try {
+      const application = await ApplicationRepository.findApplicationByUserId(id)
       console.log(application)
+      
       if (!application && shouldThrowErrorIfNotFound) {
         throw new NotFoundError('Application not found')
       }
 
       return application
-  } catch (error) {
-    logger.error('Error fetching application', { error, id });
-    throw error;
+    } catch (error) {
+      logger.error('Error fetching application', { error, id })
+      throw error
+    }
   }
-}
 
-
-  // Get all applications with filters and pagination (for Admin/HOA)
   public async getAllApplicationsFiltered(filters: ApplicationFilters) {
     try {
-      const { status, academicSessionId, StaffId, unassigned, page, limit } = filters
-      // const offset = (page - 1) * limit
-
-      const whereClause: any = {}
-      if (status) whereClause.status = status
-      if (academicSessionId) whereClause.academicSessionId = academicSessionId
-
-      if (unassigned) {
-        whereClause.assignedOfficerId = null // Corrected field name
-      } else if (StaffId) {
-        whereClause.assignedOfficerId = StaffId // Corrected field name
-      }
-
-      const { count, rows } = await Application.findAndCountAll({
-        where: whereClause,
-        include: [
-          { model: User, as: 'applicant', attributes: ['id', 'email', 'firstName', 'lastName'] },
-          { model: Program, as: 'program', include: [{ model: Department, as: 'department' }] },
-          { model: Biodata, as: 'biodata', attributes: ['firstName', 'lastName'] }, // Select only needed fields
-          { model: AdmissionSession, as: 'academicSession' },
-          {
-            model: Staff,
-            as: 'assignedOfficer',
-            include: [
-              {
-                model: Staff,
-                as: 'staff',
-                include: [{ model: User, as: 'user', attributes: ['firstName', 'lastName'] }],
-              },
-            ],
-          },
-        ],
-        // limit,
-        // offset,
-        order: [['updatedAt', 'DESC']],
-      })
+      const { page, limit } = filters
+      const result = await ApplicationRepository.findAllApplicationsFiltered(filters)
 
       return {
-        applications: rows,
-        total: count,
+        ...result,
         page,
         limit,
-        // totalPages: Math.ceil(count / limit),
       }
     } catch (error) {
       logger.error('Error fetching all applications (filtered)', { error })
@@ -221,39 +158,13 @@ public async getApplicationByUserId(id: string, shouldThrowErrorIfNotFound:boole
     }
   }
 
-  // Assign application to admission officer (for HOA)
-  public async assignToOfficer(applicationId: string, officerId: string): Promise<Application> {
-    try {
-      const application = await this.getApplicationById(applicationId)
-      if (!application) throw new NotFoundError('Application not found')
 
-      const officer = await Staff.findByPk(officerId)
-      if (!officer) throw new NotFoundError('Admission officer not found')
 
-      application.assignedOfficerId = officer.id
-      // Optionally, update status if it was e.g. SUBMITTED and now assigned
-      if (application.status === ApplicationStatus.SUBMITTED) {
-        application.status = ApplicationStatus.UNDER_REVIEW
-      }
-      await application.save()
-
-      logger.info('Application assigned to officer', { applicationId, officerId })
-      return application
-    } catch (error) {
-      logger.error('Error assigning application', { error })
-      throw error
-    }
-  }
-
-  // Final submission by applicant
-  public async finalizeApplicantSubmission(
-    applicationId: string,
-    applicantUserId: number
-  ): Promise<any> {
+  public async finalizeApplicantSubmission(applicationId: string, applicantUserId: number) {
     try {
       // Get the application first
       const application = await this.getApplicationById(applicationId)
-      if (!application||application.applicantUserId !==applicantUserId) {
+      if (!application || application.applicantUserId !== applicantUserId) {
         throw new NotFoundError('Application not found or you do not have permission.')
       }
 
@@ -263,75 +174,43 @@ public async getApplicationByUserId(id: string, shouldThrowErrorIfNotFound:boole
         )
       }
 
-      // Fetch related models in parallel for better performance
-      const relatedDataPromises = {
-        user: User.findByPk(applicantUserId),
-        biodata: Biodata.findOne({ where: { applicationId: application.id } }),
-        program: application.programId
-          ? Program.findByPk(application.programId)
-          : Promise.resolve(null),
-        sscQualification: ApplicantSSCQualification.findOne({
-          where: { applicationId: application.id },
-        }),
-        programSpecificQualifications: ApplicantProgramSpecificQualification.findAll({
-          where: { applicationId: application.id },
-        }),
-        academicSession: AdmissionSession.findByPk(application.sessionId),
-      }
-
-      // Wait for all queries to complete
-      const relatedData = await Promise.allSettled([
-        relatedDataPromises.user,
-        relatedDataPromises.biodata,
-        relatedDataPromises.program,
-        relatedDataPromises.sscQualification,
-        relatedDataPromises.programSpecificQualifications,
-        relatedDataPromises.academicSession,
-      ])
+      // Fetch related data for validation
+      const [user, biodata, program, sscQualification, programSpecificQualifications, academicSession] = 
+        await Promise.allSettled([
+          UserRepository.findUserById(applicantUserId),
+          BiodataRepository.findBiodataByApplication(application.id),
+          ProgramRepository.findById(application.programId),
+          ApplicantSSCQualificationRepository.findSSCQualificationByApplication(application.id),
+          ApplicantProgramSpecificQualificationRepository.findProgramSpecificQualificationsByApplication(application.id),
+          AdmissionSessionRepository.findCurrentSession(),
+        ])
 
       // Extract results with error handling
-      const [
-        userResult,
-        biodataResult,
-        programResult,
-        sscResult,
-        programSpecificResult,
-        sessionResult,
-      ] = relatedData
-
-      const user = userResult.status === 'fulfilled' ? userResult.value : null
-      const biodata = biodataResult.status === 'fulfilled' ? biodataResult.value : null
-      const program = programResult.status === 'fulfilled' ? programResult.value : null
-      const sscQualification = sscResult.status === 'fulfilled' ? sscResult.value : null
-      const programSpecificQualifications =
-        programSpecificResult.status === 'fulfilled' ? programSpecificResult.value : []
-      const academicSession = sessionResult.status === 'fulfilled' ? sessionResult.value : null
+      const extractedUser = user.status === 'fulfilled' ? user.value : null
+      const extractedBiodata = biodata.status === 'fulfilled' ? biodata.value : null
+      const extractedProgram = program.status === 'fulfilled' ? program.value : null
+      const extractedSSC = sscQualification.status === 'fulfilled' ? sscQualification.value : null
+      const extractedProgramSpecific = programSpecificQualifications.status === 'fulfilled' ? programSpecificQualifications.value : []
+      const extractedSession = academicSession.status === 'fulfilled' ? academicSession.value : null
 
       // Log any failed promises
-      relatedData.forEach((result, index) => {
+      const queryNames = ['user', 'biodata', 'program', 'sscQualification', 'programSpecificQualifications', 'academicSession']
+      ;[user, biodata, program, sscQualification, programSpecificQualifications, academicSession].forEach((result, index) => {
         if (result.status === 'rejected') {
-          const queryNames = [
-            'user',
-            'biodata',
-            'program',
-            'sscQualification',
-            'programSpecificQualifications',
-            'academicSession',
-          ]
           logger.warn(`Failed to fetch ${queryNames[index]}:`, result.reason)
         }
       })
 
-      if (!user) {
+      if (!extractedUser) {
         throw new NotFoundError('User not found')
       }
 
       // Validate the application data
       const validationErrors = this.validateApplicationData({
-        biodata,
-        program,
-        sscQualification,
-        programSpecificQualifications,
+        biodata: extractedBiodata,
+        program: extractedProgram,
+        sscQualification: extractedSSC,
+        programSpecificQualifications: extractedProgramSpecific,
       })
 
       if (validationErrors.length > 0) {
@@ -341,31 +220,30 @@ public async getApplicationByUserId(id: string, shouldThrowErrorIfNotFound:boole
       }
 
       // All validations passed, update application status
-      application.status = ApplicationStatus.SUBMITTED
-      
-      application.submittedAt = new Date()
-      await application.save()
-      await googleDriveService.processApplicationSubmission(application)
+      const updatedApplication = await ApplicationRepository.updateApplicationById(applicationId, {
+        status: ApplicationStatus.SUBMITTED,
+        submittedAt: new Date(),
+      })
+
+      await googleDriveService.processApplicationSubmission(updatedApplication!)
 
       logger.info('Applicant finalized submission', {
         applicationId,
         applicantUserId,
-        username: `${user.username}`,
-        programName: program?.name,
-        sessionName: academicSession?.name,
+        username: extractedUser.username,
+        programName: extractedProgram?.name,
+        sessionName: extractedSession?.name,
       })
-
-      // TODO: Trigger notifications (email to applicant, alert to admins)
 
       // Return the complete application data
       return {
-        application,
-        user,
-        biodata,
-        program,
-        sscQualification,
-        programSpecificQualifications,
-        academicSession,
+        application: updatedApplication,
+        user: extractedUser,
+        biodata: extractedBiodata,
+        program: extractedProgram,
+        sscQualification: extractedSSC,
+        programSpecificQualifications: extractedProgramSpecific,
+        academicSession: extractedSession,
       }
     } catch (error) {
       logger.error('Error finalizing application submission:', {
@@ -377,7 +255,6 @@ public async getApplicationByUserId(id: string, shouldThrowErrorIfNotFound:boole
     }
   }
 
-  // Helper method to validate application data
   private validateApplicationData(data: {
     biodata: any
     program: any
@@ -428,22 +305,10 @@ public async getApplicationByUserId(id: string, shouldThrowErrorIfNotFound:boole
 
     return validationErrors
   }
-  // Get application counts by status (for Admin/HOA dashboards)
-  public async getApplicationCountsByStatus(
-    academicSessionId?: string
-  ): Promise<{ status: ApplicationStatus; count: number }[]> {
-    try {
-      const whereClause: any = {}
-      if (academicSessionId) {
-        whereClause.academicSessionId = academicSessionId
-      }
 
-      const counts = (await Application.findAll({
-        attributes: ['status', [fn('COUNT', col('id')), 'count']],
-        where: whereClause,
-        group: ['status'],
-        raw: true,
-      })) as unknown as Array<{ status: ApplicationStatus; count: string }> // count is string from raw query
+  public async getApplicationCountsByStatus(academicSessionId?: string) {
+    try {
+      const counts = await ApplicationRepository.getApplicationCountsByStatus(academicSessionId)
 
       return counts.map(item => ({
         status: item.status,
@@ -455,26 +320,26 @@ public async getApplicationByUserId(id: string, shouldThrowErrorIfNotFound:boole
     }
   }
 
-
-
-  // Update application status
   public async updateApplicationStatus(id: string, status: ApplicationStatus, comments?: string) {
     try {
-      const application = await Application.findByPk(id)
+      const application = await ApplicationRepository.findApplicationById(id)
       if (!application) {
         throw new NotFoundError('Application not found')
       }
 
-      await application.update({ status, adminComments: comments }) // Assuming adminComments field exists
+      const updatedApplication = await ApplicationRepository.updateApplicationById(id, {
+        status,
+        adminComments: comments,
+      })
 
       logger.info('Application status updated', {
         applicationId: id,
-        oldStatus: application.status, // This will be the new status due to update order
+        oldStatus: application.status,
         newStatus: status,
         comments,
       })
 
-      return application
+      return updatedApplication
     } catch (error) {
       logger.error('Error updating application status', { error })
       throw error

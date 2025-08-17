@@ -1,26 +1,19 @@
 import { Model, DataTypes } from 'sequelize'
 import sequelize from '../config/database'
 
-
 // ===== FIXED PROGRAM SPECIFIC QUALIFICATION MODEL =====
 interface ApplicantProgramSpecificQualificationAttributes {
   id: number
   applicationId: number
   qualificationType?: string | null
   grade?: string | null
-  certificate?:Buffer
+  certificate?: Buffer
   createdAt?: Date
   updatedAt?: Date
 }
 
-interface ApplicantProgramSpecificQualificationCreationAttributes {
 
-  applicationId: number
-}
-
-
-
-interface ApplicantProgramSpecificQualificationCreationAttributes {
+export interface ApplicantProgramSpecificQualificationCreationAttributes {
   applicationId: number
   qualificationType?: string
 }
@@ -68,7 +61,6 @@ ApplicantProgramSpecificQualification.init(
     certificate: {
       type: DataTypes.BLOB('long'),
       allowNull: true,
-    
     },
     grade: {
       type: DataTypes.STRING,

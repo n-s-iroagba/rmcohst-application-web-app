@@ -22,9 +22,9 @@ export interface ApplicationAttributes {
   status: ApplicationStatus
   adminComments?: string
   hoaComments?: string
-  driveApplicationFolderId?: string,
-        driveUploadComplete?: boolean,
-        driveUploadedAt?: Date
+  driveApplicationFolderId?: string
+  driveUploadComplete?: boolean
+  driveUploadedAt?: Date
   submittedAt?: Date
   createdAt?: Date
   updatedAt?: Date
@@ -50,9 +50,9 @@ export class Application
   public adminComments?: string
   public hoaComments?: string
   public submittedAt?: Date
-   public driveApplicationFolderId?: string
-   public     driveUploadComplete?: boolean
-   public     driveUploadedAt?: Date
+  public driveApplicationFolderId?: string
+  public driveUploadComplete?: boolean
+  public driveUploadedAt?: Date
   public biodata?: BiodataAttributes
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
@@ -98,18 +98,18 @@ Application.init(
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    driveApplicationFolderId:{
- type: DataTypes.INTEGER,
+    driveApplicationFolderId: {
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
-  driveUploadComplete:{
-    type: DataTypes.BOOLEAN,
+    driveUploadComplete: {
+      type: DataTypes.BOOLEAN,
       allowNull: true,
-  },
-  driveUploadedAt: {
-    type: DataTypes.DATE,
+    },
+    driveUploadedAt: {
+      type: DataTypes.DATE,
       allowNull: true,
-  },
+    },
     submittedAt: {
       type: DataTypes.DATE,
       allowNull: true,

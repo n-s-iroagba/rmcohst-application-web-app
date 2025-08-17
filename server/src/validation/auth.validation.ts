@@ -31,7 +31,7 @@ export const verifyEmailCodeSchema = z.object({
     .string()
     .length(6, 'Verification code must be 6 digits')
     .regex(/^\d{6}$/, 'Verification code must contain only numbers'),
-  verificationToken:z.string()
+  verificationToken: z.string(),
 })
 
 export const resetPasswordSchema = z
@@ -45,7 +45,5 @@ export const resetPasswordSchema = z
   })
 
 export const resendCodeSchema = z.object({
-  token: z
-    .string()
-  
+  token: z.string(),
 })

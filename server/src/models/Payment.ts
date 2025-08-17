@@ -2,52 +2,70 @@
 import { DataTypes, Model, Optional } from 'sequelize'
 import sequelize from '../config/database'
 import { Application } from './Application'
-
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED',
+}
+export enum PaymentType {
+  APPLICATION_FEE = 'application-fee',
+  ACCEPTANCE_FEE = 'acceptance-fee',
+}
 interface PaymentAttributes {
   id: number
-  sessionId:number
+  sessionId: number
   applicantUserId: number
-  programId:number
+  programId: number
   amount: number
-  applicationId:number
-  status:'PAID'|'FAILED'|'PENDING'
-  webhookEvent:string
-  paidAt?:Date
-  receiptFileId?:string
-   receiptLink?:string
-     receiptGeneratedAt?: Date
-  reference:string
+  applicationId: number | null
+  status: PaymentStatus
+  paymentType: PaymentType
+  paidAt?: Date
+  cancelledAt?: Date
+  receiptFileId?: string
+  receiptLink?: string
+  receiptGeneratedAt?: Date
+  reference: string
   createdAt: Date
   updatedAt: Date
 }
 
-interface PaymentCreationAttributes
-  extends Optional<PaymentAttributes, 'id'  | 'createdAt' | 'updatedAt'|'webhookEvent'|'applicationId'|"paidAt"|'receiptFileId'|'receiptGeneratedAt'|'receiptLink'> {}
+export interface PaymentCreationAttributes
+  extends Optional<
+    PaymentAttributes,
+    | 'id'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'applicationId'
+    | 'paidAt'
+    | 'receiptFileId'
+    | 'receiptGeneratedAt'
+    | 'receiptLink'
+    | 'cancelledAt'
+  > {}
 
 class Payment
   extends Model<PaymentAttributes, PaymentCreationAttributes>
   implements PaymentAttributes
 {
   public id!: number
-  applicantUserId!:number
-  sessionId!:number
-  programId!:number
-  applicationId!: number
+  applicantUserId!: number
+  sessionId!: number
+  programId!: number
+  applicationId!: number | null
   reference!: string
   paidAt!: Date
+  cancelledAt?: Date
   amount!: number
-  receiptFileId?:string
-  receiptLink?:string
+  receiptFileId?: string
+  receiptLink?: string
   receiptGeneratedAt?: Date
-  status!:'PAID'|'FAILED'|'PENDING'
-  webhookEvent!:string
+  status!: PaymentStatus
+  paymentType!: PaymentType
 
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
-
-  // Association methods
-  public getApplication!: () => Promise<any>
-  public setApplication!: (application: any) => Promise<void>
 }
 
 Payment.init(
@@ -59,15 +77,15 @@ Payment.init(
     },
     receiptFileId: {
       type: DataTypes.STRING,
-      allowNull:true
+      allowNull: true,
     },
-   receiptLink: {
+    receiptLink: {
       type: DataTypes.STRING,
-      allowNull:true
+      allowNull: true,
     },
-     receiptGeneratedAt: {
+    receiptGeneratedAt: {
       type: DataTypes.DATE,
-      allowNull:true
+      allowNull: true,
     },
     amount: {
       type: DataTypes.DECIMAL(10, 2),
@@ -76,7 +94,6 @@ Payment.init(
         min: 0.01,
       },
     },
-
 
     createdAt: {
       type: DataTypes.DATE,
@@ -115,7 +132,7 @@ Payment.init(
     },
     applicationId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'Applications',
         key: 'id',
@@ -126,18 +143,17 @@ Payment.init(
       allowNull: false,
     },
     status: {
-      type: DataTypes.ENUM('FAILED','PAID','PENDING'),
+      type: DataTypes.ENUM('FAILED', 'PAID', 'PENDING', 'CANCELLED'),
       allowNull: false,
     },
-    webhookEvent: {
-      type: DataTypes.STRING,
+    paymentType: {
+      type: DataTypes.ENUM('application-fee', 'acceptance-fee'),
       allowNull: true,
     },
     paidAt: {
       type: DataTypes.DATE,
       allowNull: true,
-
-    }
+    },
   },
   {
     sequelize,

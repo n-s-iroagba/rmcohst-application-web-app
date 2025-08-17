@@ -6,7 +6,9 @@ class SubjectService {
   /**
    * Bulk create new Subjects
    */
-  public static async bulkCreate(data: Array<{ name: string; code: string; description?: string }>): Promise<Subject[]> {
+  public static async bulkCreate(
+    data: Array<{ name: string; code: string; description?: string }>
+  ): Promise<Subject[]> {
     try {
       const subjects = await Subject.bulkCreate(data)
       logger.info(`Bulk created ${subjects.length} subjects`)
@@ -38,7 +40,10 @@ class SubjectService {
   /**
    * Update Subject by ID
    */
-  public static async update(id: number, updates: Partial<{ name: string; code: string; description?: string }>): Promise<Subject> {
+  public static async update(
+    id: number,
+    updates: Partial<{ name: string; code: string; description?: string }>
+  ): Promise<Subject> {
     const subject = await Subject.findByPk(id)
     if (!subject) {
       throw new NotFoundError(`Subject with ID ${id} not found`)

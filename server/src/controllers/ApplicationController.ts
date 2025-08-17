@@ -1,18 +1,18 @@
-
 import { Request, Response, NextFunction } from 'express'
 import ApplicationService from '../services/ApplicationService'
 const applicationService = new ApplicationService()
 export class ApplicationController {
- static async getApplicationPaymentStatus(req:Request, res:Response,next:NextFunction){
-  try{
-    const {applicantUserId} = req.params
-    const statusAndMostRecentPayment =await applicationService.getApplcationPaymentStatus(applicantUserId)
-    console.log(statusAndMostRecentPayment)
-    res.status(200).json(statusAndMostRecentPayment)
-  }catch(error){
-    next(error)
+  static async getApplicationPaymentStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { applicantUserId } = req.params
+      const statusAndMostRecentPayment =
+        await applicationService.getApplcationPaymentStatus(applicantUserId)
+      console.log(statusAndMostRecentPayment)
+      res.status(200).json(statusAndMostRecentPayment)
+    } catch (error) {
+      next(error)
+    }
   }
- }
 
   static async getApplicationDetails(req: Request, res: Response, next: NextFunction) {
     try {
@@ -28,11 +28,10 @@ export class ApplicationController {
     try {
       const { applicantUserId } = req.params
       const application = await applicationService.getApplicationByUserId(applicantUserId)
-      if(application){
-          res.json(application)
-    
+      if (application) {
+        res.json(application)
       }
-        res.end()
+      res.end()
     } catch (error) {
       next(error)
     }
@@ -40,7 +39,7 @@ export class ApplicationController {
   static async getAllApplications(req: Request, res: Response, next: NextFunction) {
     try {
       const filters = req.query
-      const result = await  applicationService.getAllApplicationsFiltered(filters)
+      const result = await applicationService.getAllApplicationsFiltered(filters)
       res.json(result)
     } catch (error) {
       next(error)

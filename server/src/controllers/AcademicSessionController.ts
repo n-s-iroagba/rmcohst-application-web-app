@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import logger from '../utils/logger'
 import { ApiResponseUtil } from '../utils/response'
-import AdmissionSessionService from '../services/AcademicSessionService'
+import AdmissionSessionService from '../services/AdmissionSessionService'
 
 class AdmissionSessionController {
   // GET ALL ACADEMIC SESSIONS WITH PAGINATION
@@ -73,21 +73,15 @@ class AdmissionSessionController {
     }
   }
 
-
   // SET AS CURRENT SESSION
-getCurrent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getCurrent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-   
-
       const session = await AdmissionSessionService.getCurrentSession()
 
-      res
-        .status(200)
-        .json(session)
+      res.status(200).json(session)
     } catch (error) {
       logger.error('Error fetching current academic session', {
         error,
-      
       })
       next(error)
     }
@@ -104,9 +98,7 @@ getCurrent = async (req: Request, res: Response, next: NextFunction): Promise<vo
 
       const session = await AdmissionSessionService.setCurrentSession(Number(id))
 
-      res
-        .status(200)
-        .json(session)
+      res.status(200).json(session)
     } catch (error) {
       logger.error('Error setting current academic session', {
         error,

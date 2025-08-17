@@ -24,8 +24,6 @@ class SuperAdmin extends Model<SuperAdminAttributes, SuperAdminCreationAttribute
 
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
-
-
 }
 
 SuperAdmin.init(

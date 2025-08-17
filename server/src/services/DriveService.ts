@@ -7,7 +7,6 @@ import { ApplicantProgramSpecificQualification, Application, Biodata } from '../
 import { ApplicantSSCQualification } from '../models/ApplicantSSCQualification'
 import { FullApplication } from '../types/models'
 
-
 interface DriveFileUpload {
   name: string
   buffer: Buffer
@@ -32,7 +31,6 @@ interface ApplicationFolderStructure {
 class GoogleDriveApplicationService {
   private drive: any
 
-
   constructor() {
     // Initialize Google Drive API
     const auth = new google.auth.GoogleAuth({
@@ -41,84 +39,83 @@ class GoogleDriveApplicationService {
     })
 
     this.drive = google.drive({ version: 'v3', auth })
-   
   }
   public async uploadFile(fileData: DriveFileUpload): Promise<string> {
-  try {
-    const fileMetadata = {
-      name: fileData.name,
-      parents: [fileData.parentFolderId],
+    try {
+      const fileMetadata = {
+        name: fileData.name,
+        parents: [fileData.parentFolderId],
+      }
+
+      const media = {
+        mimeType: fileData.mimeType,
+        body: Readable.from(fileData.buffer),
+      }
+
+      const file = await this.drive.files.create({
+        requestBody: fileMetadata,
+        media: media,
+        fields: 'id, name, webViewLink',
+      })
+
+      logger.info(`Uploaded file to Google Drive: ${fileData.name}`, {
+        fileId: file.data.id,
+        webViewLink: file.data.webViewLink,
+      })
+
+      return file.data.id
+    } catch (error) {
+      logger.error(`Error uploading file ${fileData.name}:`, error)
+      throw error
     }
-
-    const media = {
-      mimeType: fileData.mimeType,
-      body: Readable.from(fileData.buffer),
-    }
-
-    const file = await this.drive.files.create({
-      requestBody: fileMetadata,
-      media: media,
-      fields: 'id, name, webViewLink',
-    })
-
-    logger.info(`Uploaded file to Google Drive: ${fileData.name}`, { 
-      fileId: file.data.id,
-      webViewLink: file.data.webViewLink 
-    })
-
-    return file.data.id
-  } catch (error) {
-    logger.error(`Error uploading file ${fileData.name}:`, error)
-    throw error
   }
-}
 
-/**
- * Create or get folder by name (make public for receipt folder creation)
- */
-public async createOrGetFolder(name: string, parentId?: string): Promise<string> {
-  try {
-    // First, try to find existing folder
-    const searchQuery = parentId 
-      ? `name='${name}' and parents in '${parentId}' and mimeType='application/vnd.google-apps.folder'`
-      : `name='${name}' and mimeType='application/vnd.google-apps.folder'`
+  /**
+   * Create or get folder by name (make public for receipt folder creation)
+   */
+  public async createOrGetFolder(name: string, parentId?: string): Promise<string> {
+    try {
+      // First, try to find existing folder
+      const searchQuery = parentId
+        ? `name='${name}' and parents in '${parentId}' and mimeType='application/vnd.google-apps.folder'`
+        : `name='${name}' and mimeType='application/vnd.google-apps.folder'`
 
-    const existingFolders = await this.drive.files.list({
-      q: searchQuery,
-      fields: 'files(id, name)',
-    })
+      const existingFolders = await this.drive.files.list({
+        q: searchQuery,
+        fields: 'files(id, name)',
+      })
 
-    if (existingFolders.data.files && existingFolders.data.files.length > 0) {
-      return existingFolders.data.files[0].id
+      if (existingFolders.data.files && existingFolders.data.files.length > 0) {
+        return existingFolders.data.files[0].id
+      }
+
+      // Create new folder if not found
+      const folderMetadata = {
+        name,
+        mimeType: 'application/vnd.google-apps.folder',
+        ...(parentId && { parents: [parentId] }),
+      }
+
+      const folder = await this.drive.files.create({
+        requestBody: folderMetadata,
+        fields: 'id',
+      })
+
+      logger.info(`Created Google Drive folder: ${name}`, { folderId: folder.data.id })
+      return folder.data.id
+    } catch (error) {
+      logger.error(`Error creating/getting folder ${name}:`, error)
+      throw error
     }
-
-    // Create new folder if not found
-    const folderMetadata = {
-      name,
-      mimeType: 'application/vnd.google-apps.folder',
-      ...(parentId && { parents: [parentId] }),
-    }
-
-    const folder = await this.drive.files.create({
-      requestBody: folderMetadata,
-      fields: 'id',
-    })
-
-    logger.info(`Created Google Drive folder: ${name}`, { folderId: folder.data.id })
-    return folder.data.id
-  } catch (error) {
-    logger.error(`Error creating/getting folder ${name}:`, error)
-    throw error
   }
-}
 
   /**
    * Create complete folder structure for an application
    */
-  public async createApplicationFolderStructure(application:FullApplication): Promise<ApplicationFolderStructure> {
+  public async createApplicationFolderStructure(
+    application: FullApplication
+  ): Promise<ApplicationFolderStructure> {
     try {
-   
-
       const biodata = application.biodata
       if (!biodata) {
         throw new Error('Biodata not found for application')
@@ -129,7 +126,7 @@ public async createOrGetFolder(name: string, parentId?: string): Promise<string>
       const facultyName = application.program?.department?.faculty?.name || 'Unknown Faculty'
       const departmentName = application.program?.department?.name || 'Unknown Department'
       const programName = application.program?.name || 'Unknown Program'
-      
+
       // Create application folder name using biodata
       const applicationFolderName = `${biodata.firstName || 'Unknown'}_${biodata.surname || 'Unknown'}_${application.id}`
 
@@ -138,15 +135,33 @@ public async createOrGetFolder(name: string, parentId?: string): Promise<string>
       const facultyFolderId = await this.createOrGetFolder(facultyName, sessionFolderId)
       const departmentFolderId = await this.createOrGetFolder(departmentName, facultyFolderId)
       const programFolderId = await this.createOrGetFolder(programName, departmentFolderId)
-      const applicationFolderId = await this.createOrGetFolder(applicationFolderName, programFolderId)
+      const applicationFolderId = await this.createOrGetFolder(
+        applicationFolderName,
+        programFolderId
+      )
 
       // Create subfolders within application folder
       const biodataFolderId = await this.createOrGetFolder('biodata', applicationFolderId)
-      const sscQualificationFolderId = await this.createOrGetFolder('ssc_qualification', applicationFolderId)
-      const programSpecificQualificationFolderId = await this.createOrGetFolder('program_specific_qualification', applicationFolderId)
-      const sscCertificatesFolderId = await this.createOrGetFolder('ssc_certificates', applicationFolderId)
-      const programSpecificCertificatesFolderId = await this.createOrGetFolder('program_specific_certificates', applicationFolderId)
-      const passportPhotographFolderId = await this.createOrGetFolder('passport_photograph', applicationFolderId)
+      const sscQualificationFolderId = await this.createOrGetFolder(
+        'ssc_qualification',
+        applicationFolderId
+      )
+      const programSpecificQualificationFolderId = await this.createOrGetFolder(
+        'program_specific_qualification',
+        applicationFolderId
+      )
+      const sscCertificatesFolderId = await this.createOrGetFolder(
+        'ssc_certificates',
+        applicationFolderId
+      )
+      const programSpecificCertificatesFolderId = await this.createOrGetFolder(
+        'program_specific_certificates',
+        applicationFolderId
+      )
+      const passportPhotographFolderId = await this.createOrGetFolder(
+        'passport_photograph',
+        applicationFolderId
+      )
 
       const folderStructure: ApplicationFolderStructure = {
         sessionFolderId,
@@ -162,10 +177,10 @@ public async createOrGetFolder(name: string, parentId?: string): Promise<string>
         passportPhotographFolderId,
       }
 
-      logger.info('Created application folder structure', { 
-        applicationId:application.id, 
+      logger.info('Created application folder structure', {
+        applicationId: application.id,
         applicationFolderName,
-        folderStructure 
+        folderStructure,
       })
 
       return folderStructure
@@ -175,15 +190,10 @@ public async createOrGetFolder(name: string, parentId?: string): Promise<string>
     }
   }
 
-
-
   /**
    * Generate and upload biodata document
    */
-  public async uploadBiodataDocument(
-    biodata: Biodata, 
-    parentFolderId: string
-  ): Promise<string> {
+  public async uploadBiodataDocument(biodata: Biodata, parentFolderId: string): Promise<string> {
     try {
       // Generate biodata as JSON or formatted text
       const biodataContent = {
@@ -209,7 +219,7 @@ public async createOrGetFolder(name: string, parentId?: string): Promise<string>
           nextOfKinPhoneNumber: biodata.nextOfKinPhoneNumber,
           nextOfKinAddress: biodata.nextOfKinAddress,
           nextOfKinRelationship: biodata.nextOfKinRelationship,
-        }
+        },
       }
 
       const biodataJson = JSON.stringify(biodataContent, null, 2)
@@ -242,11 +252,17 @@ public async createOrGetFolder(name: string, parentId?: string): Promise<string>
         certificateTypes: sscQualification.certificateTypes,
         subjects: [
           { subjectId: sscQualification.firstSubjectId, grade: sscQualification.firstSubjectGrade },
-          { subjectId: sscQualification.secondSubjectId, grade: sscQualification.secondSubjectGrade },
+          {
+            subjectId: sscQualification.secondSubjectId,
+            grade: sscQualification.secondSubjectGrade,
+          },
           { subjectId: sscQualification.thirdSubjectId, grade: sscQualification.thirdSubjectGrade },
-          { subjectId: sscQualification.fourthSubjectId, grade: sscQualification.fourthSubjectGrade },
+          {
+            subjectId: sscQualification.fourthSubjectId,
+            grade: sscQualification.fourthSubjectGrade,
+          },
           { subjectId: sscQualification.fifthSubjectId, grade: sscQualification.fifthSubjectGrade },
-        ]
+        ],
       }
 
       const sscJson = JSON.stringify(sscContent, null, 2)
@@ -383,8 +399,6 @@ public async createOrGetFolder(name: string, parentId?: string): Promise<string>
       // Create folder structure
       const folderStructure = await this.createApplicationFolderStructure(application)
 
-  
-
       const uploadedFiles: any = {}
 
       // Upload biodata
@@ -403,7 +417,10 @@ public async createOrGetFolder(name: string, parentId?: string): Promise<string>
         )
 
         // Upload SSC certificates
-        if (application.sscQualification.certificates && application.sscQualification.certificates.length > 0) {
+        if (
+          application.sscQualification.certificates &&
+          application.sscQualification.certificates.length > 0
+        ) {
           uploadedFiles.sscCertificateFileIds = await this.uploadCertificateFiles(
             application.sscQualification.certificates,
             folderStructure.sscCertificatesFolderId,
@@ -413,13 +430,17 @@ public async createOrGetFolder(name: string, parentId?: string): Promise<string>
       }
 
       // Upload program specific qualifications
-      if (application.programSpecificQualifications && application.programSpecificQualifications.length > 0) {
+      if (
+        application.programSpecificQualifications &&
+        application.programSpecificQualifications.length > 0
+      ) {
         const programSpecificQual = application.programSpecificQualifications[0] // Assuming single qualification
-        
-        uploadedFiles.programSpecificQualificationFileId = await this.uploadProgramSpecificQualificationDocument(
-          programSpecificQual,
-          folderStructure.programSpecificQualificationFolderId
-        )
+
+        uploadedFiles.programSpecificQualificationFileId =
+          await this.uploadProgramSpecificQualificationDocument(
+            programSpecificQual,
+            folderStructure.programSpecificQualificationFolderId
+          )
 
         // Upload program specific certificate
         if (programSpecificQual.certificate) {
@@ -442,16 +463,15 @@ public async createOrGetFolder(name: string, parentId?: string): Promise<string>
       }
 
       logger.info('Successfully uploaded complete application to Google Drive', {
-        applicationId:application.id,
+        applicationId: application.id,
         folderStructure,
-        uploadedFiles
+        uploadedFiles,
       })
 
       return {
         folderStructure,
-        uploadedFiles
+        uploadedFiles,
       }
-
     } catch (error) {
       logger.error('Error uploading complete application to Google Drive:', error)
       throw error
@@ -490,22 +510,22 @@ public async createOrGetFolder(name: string, parentId?: string): Promise<string>
    */
   public async processApplicationSubmission(application: FullApplication): Promise<void> {
     try {
-      logger.info('Processing application submission for Google Drive upload', { applicationId:application.id })
+      logger.info('Processing application submission for Google Drive upload', {
+        applicationId: application.id,
+      })
 
       const result = await this.uploadCompleteApplication(application)
-      
 
       await application.update({
         driveApplicationFolderId: result.folderStructure.applicationFolderId,
         driveUploadComplete: true,
-        driveUploadedAt: new Date()
+        driveUploadedAt: new Date(),
       })
 
       logger.info('Application successfully uploaded to Google Drive', {
-        applicationId:application.id,
-        applicationFolderId: result.folderStructure.applicationFolderId
+        applicationId: application.id,
+        applicationFolderId: result.folderStructure.applicationFolderId,
       })
-
     } catch (error) {
       logger.error('Error processing application submission for Google Drive:', error)
       throw error
@@ -514,4 +534,3 @@ public async createOrGetFolder(name: string, parentId?: string): Promise<string>
 }
 
 export default GoogleDriveApplicationService
-

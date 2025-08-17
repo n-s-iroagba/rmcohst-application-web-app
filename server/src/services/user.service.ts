@@ -1,25 +1,21 @@
-// services/user.service.ts
-import { Op } from 'sequelize'
+// src/services/UserService.ts
 
 import logger from '../utils/logger'
 import { CryptoUtil } from '../utils/crpto.util'
-import User from '../models/User'
 import { BadRequestError, NotFoundError, UnauthorizedError } from '../utils/errors'
 import { SignUpRequestDto } from '../types/auth.types'
 import { UserWithRole } from './RbacService'
-import { Role } from '../models'
+import UserRepository from '../repositories/UserRepository'
+import User from '../models/User'
 
 export class UserService {
-  async findUserByEmail(email: string, shouldThrowError:boolean=false): Promise<UserWithRole|null> {
+  async findUserByEmail(
+    email: string,
+    shouldThrowError: boolean = false
+  ): Promise<UserWithRole | null> {
     try {
-      const user = await User.findOne({ where: { email },
-        include:[{
-          model:Role,
-          as:'role'
-        }]
-      },
-      )as UserWithRole
-      
+      const user = await UserRepository.findUserByEmail(email)
+
       if (!user && shouldThrowError) {
         logger.warn('User not found by email', { email })
         throw new BadRequestError('INVALID_CREDENTIALS')
@@ -36,14 +32,9 @@ export class UserService {
     }
   }
 
-  async findUserById(id: string|number): Promise<UserWithRole> {
+  async findUserById(id: string | number): Promise<UserWithRole> {
     try {
-      const user = await User.findByPk(id,{
-           include:[{
-          model:Role,
-          as:'role'
-        }]
-    })as UserWithRole
+      const user = await UserRepository.findUserById(id)
 
       if (!user) {
         logger.warn('User not found by ID', { userId: id })
@@ -61,18 +52,10 @@ export class UserService {
   async findUserByResetToken(token: string): Promise<UserWithRole> {
     try {
       const hashedToken = CryptoUtil.hashString(token)
-      const user = await User.findOne({
-        where: {
-        passwordResetToken: hashedToken,
-        },
-         include:[{
-          model:Role,
-          as:'role'
-        }]
-      }) as UserWithRole
+      const user = await UserRepository.findUserByResetToken(hashedToken)
 
       if (!user) {
-        const users = await User.findAll({})
+        const users = await UserRepository.getAllUsers()
         console.log(users)
         console.log(hashedToken)
         logger.warn('User not found by reset token or token expired')
@@ -89,9 +72,7 @@ export class UserService {
 
   async findUserByVerificationToken(token: string): Promise<User> {
     try {
-      const user = await User.findOne({
-        where: { verificationToken: token },
-      })
+      const user = await UserRepository.findUserByVerificationToken(token)
 
       if (!user) {
         logger.warn('User not found by verification token')
@@ -106,7 +87,7 @@ export class UserService {
     }
   }
 
-  async createUser(userData: SignUpRequestDto ): Promise<User> {
+  async createUser(userData: SignUpRequestDto): Promise<User> {
     try {
       const existingUser = await this.findUserByEmail(userData.email)
 
@@ -115,7 +96,7 @@ export class UserService {
         throw new UnauthorizedError('User already exists', 'USER_EXISTS')
       }
 
-      const user = await User.create(userData)
+      const user = await UserRepository.createUser(userData)
 
       logger.info('User created successfully', { userId: user.id, email: userData.email })
       return user
@@ -123,21 +104,29 @@ export class UserService {
       logger.error('Error creating user', { email: userData.email, error })
       throw error
     }
-  } 
+  }
 
-  async updateUserVerification(   
+  async updateUserVerification(
     user: User,
     verificationCode: string,
     verificationToken: string
   ): Promise<User> {
     try {
-      user.verificationCode = verificationCode
-      console.log('CODE IS',user.verificationCode)
-      user.verificationToken = verificationToken
-      await user.save()
+      const updates = {
+        verificationCode,
+        verificationToken
+      }
+
+      console.log('CODE IS', verificationCode)
+      
+      const updatedUser = await UserRepository.updateUserById(user.id, updates)
+
+      if (!updatedUser) {
+        throw new NotFoundError('User not found for verification update')
+      }
 
       logger.info('User verification details updated', { userId: user.id })
-      return user
+      return updatedUser
     } catch (error) {
       logger.error('Error updating user verification', { userId: user.id, error })
       throw error
@@ -146,13 +135,20 @@ export class UserService {
 
   async markUserAsVerified(user: User): Promise<User> {
     try {
-      user.isEmailVerified = true
-      user.verificationCode = null
-      user.verificationToken = null
-      await user.save()
+      const updates = {
+        isEmailVerified: true,
+        verificationCode: null,
+        verificationToken: null
+      }
+
+      const updatedUser = await UserRepository.updateUserById(user.id, updates)
+
+      if (!updatedUser) {
+        throw new NotFoundError('User not found for verification')
+      }
 
       logger.info('User marked as verified', { userId: user.id })
-      return user
+      return updatedUser
     } catch (error) {
       logger.error('Error marking user as verified', { userId: user.id, error })
       throw error
@@ -161,12 +157,21 @@ export class UserService {
 
   async setPasswordResetDetails(user: User, hashedToken: string): Promise<User> {
     try {
-      user.passwordResetToken = hashedToken
-      console.log('token',hashedToken)
-      await user.save()
-      console.log(user)
+      const updates = {
+        passwordResetToken: hashedToken
+      }
+
+      console.log('token', hashedToken)
+      
+      const updatedUser = await UserRepository.updateUserById(user.id, updates)
+
+      if (!updatedUser) {
+        throw new NotFoundError('User not found for password reset')
+      }
+
+      console.log(updatedUser)
       logger.info('Password reset details set', { userId: user.id })
-      return user
+      return updatedUser
     } catch (error) {
       logger.error('Error setting password reset details', { userId: user.id, error })
       throw error
@@ -175,13 +180,19 @@ export class UserService {
 
   async updateUserPassword(user: User, hashedPassword: string): Promise<User> {
     try {
-      user.password = hashedPassword
-      user.passwordResetToken = null
+      const updates = {
+        password: hashedPassword,
+        passwordResetToken: null
+      }
 
-      await user.save()
+      const updatedUser = await UserRepository.updateUserById(user.id, updates)
+
+      if (!updatedUser) {
+        throw new NotFoundError('User not found for password update')
+      }
 
       logger.info('User password updated successfully', { userId: user.id })
-      return user
+      return updatedUser
     } catch (error) {
       logger.error('Error updating user password', { userId: user.id, error })
       throw error

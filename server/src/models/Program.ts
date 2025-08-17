@@ -1,9 +1,5 @@
 // Program.ts
-import {
-  Optional,
-  Model,
-  DataTypes,
-} from 'sequelize'
+import { Optional, Model, DataTypes } from 'sequelize'
 
 import sequelize from '../config/database'
 
@@ -26,7 +22,7 @@ interface ProgramAttributes {
   updatedAt: Date
 }
 
-interface ProgramCreationAttributes
+export interface ProgramCreationAttributes
   extends Optional<
     ProgramAttributes,
     'id' | 'description' | 'isActive' | 'createdAt' | 'updatedAt'

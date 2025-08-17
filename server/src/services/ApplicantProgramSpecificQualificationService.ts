@@ -15,7 +15,9 @@ interface CompletionStatus {
 }
 
 class ApplicantProgramSpecificQualificationService {
-  public static async create(applicationId: number): Promise<ApplicantProgramSpecificQualification> {
+  public static async create(
+    applicationId: number
+  ): Promise<ApplicantProgramSpecificQualification> {
     try {
       const qualification = await ApplicantProgramSpecificQualification.create({ applicationId })
       logger.info(`Program Specific Qualification created with ID ${qualification.id}`)
@@ -38,16 +40,11 @@ class ApplicantProgramSpecificQualificationService {
         throw new Error(`Program Specific Qualification with ID ${id} not found`)
       }
 
-      const {
-        applicationId,
-        qualificationType,
-        grade,
-        ...otherFields
-      } = updateData
+      const { applicationId, qualificationType, grade, ...otherFields } = updateData
 
       // Handle certificate file if provided
       let certificate: Buffer | undefined
-      
+
       if (files && files.length > 0) {
         if (files.length > 1) {
           logger.error(`Too many files provided: expected 1, got ${files.length}`)
@@ -55,7 +52,7 @@ class ApplicantProgramSpecificQualificationService {
         }
 
         const certificateFile = files[0]
-        
+
         // Validate file type (optional - you can customize this)
         const allowedMimeTypes = [
           'application/pdf',
@@ -63,9 +60,9 @@ class ApplicantProgramSpecificQualificationService {
           'image/jpg',
           'image/png',
           'application/msword',
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         ]
-        
+
         if (!allowedMimeTypes.includes(certificateFile.mimetype)) {
           throw new Error(`Invalid file type. Allowed types: ${allowedMimeTypes.join(', ')}`)
         }
@@ -77,7 +74,9 @@ class ApplicantProgramSpecificQualificationService {
         }
 
         certificate = certificateFile.buffer
-        logger.info(`Certificate file processed: ${certificateFile.originalname} (${certificateFile.size} bytes)`)
+        logger.info(
+          `Certificate file processed: ${certificateFile.originalname} (${certificateFile.size} bytes)`
+        )
       }
 
       // Prepare update data
@@ -94,7 +93,7 @@ class ApplicantProgramSpecificQualificationService {
 
       // Fetch and return the updated qualification
       const updatedQualification = await ApplicantProgramSpecificQualification.findByPk(id)
-      
+
       logger.info(`Program Specific Qualification updated for ID ${id}`)
       return updatedQualification!
     } catch (error: any) {
@@ -113,14 +112,18 @@ class ApplicantProgramSpecificQualificationService {
     }
   }
 
-  public static async findByApplicationId(applicationId: number): Promise<ApplicantProgramSpecificQualification | null> {
+  public static async findByApplicationId(
+    applicationId: number
+  ): Promise<ApplicantProgramSpecificQualification | null> {
     try {
       const qualification = await ApplicantProgramSpecificQualification.findOne({
-        where: { applicationId }
+        where: { applicationId },
       })
       return qualification
     } catch (error: any) {
-      logger.error(`Failed to find Program Specific Qualification for application ${applicationId}: ${error.message}`)
+      logger.error(
+        `Failed to find Program Specific Qualification for application ${applicationId}: ${error.message}`
+      )
       throw error
     }
   }
@@ -136,13 +139,17 @@ class ApplicantProgramSpecificQualificationService {
       logger.info(`Program Specific Qualification deleted with ID ${id}`)
       return true
     } catch (error: any) {
-      logger.error(`Failed to delete Program Specific Qualification with ID ${id}: ${error.message}`)
+      logger.error(
+        `Failed to delete Program Specific Qualification with ID ${id}: ${error.message}`
+      )
       throw error
     }
   }
 
   // Additional helper methods
-  public static validateQualification(qualification: ApplicantProgramSpecificQualification): ValidationResult {
+  public static validateQualification(
+    qualification: ApplicantProgramSpecificQualification
+  ): ValidationResult {
     const errors: string[] = []
     const warnings: string[] = []
 
@@ -166,10 +173,8 @@ class ApplicantProgramSpecificQualificationService {
     // Business logic validations
     if (qualification.qualificationType) {
       // Add your specific qualification type validations here
-      const validQualificationTypes = [
-        'A_LEVEL', 'DIPLOMA', 'DEGREE', 'PROFESSIONAL_CERT', 'OTHER'
-      ]
-      
+      const validQualificationTypes = ['A_LEVEL', 'DIPLOMA', 'DEGREE', 'PROFESSIONAL_CERT', 'OTHER']
+
       if (!validQualificationTypes.includes(qualification.qualificationType.toUpperCase())) {
         warnings.push('Qualification type may not be recognized')
       }
@@ -186,13 +191,15 @@ class ApplicantProgramSpecificQualificationService {
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     }
   }
 
-  public static getCompletionStatus(qualification: ApplicantProgramSpecificQualification): CompletionStatus {
+  public static getCompletionStatus(
+    qualification: ApplicantProgramSpecificQualification
+  ): CompletionStatus {
     const allFields = ['applicationId', 'qualificationType', 'grade', 'certificate']
-    
+
     const completedFields = allFields.filter(field => {
       const value = qualification[field as keyof ApplicantProgramSpecificQualification]
       return value !== null && value !== undefined
@@ -204,7 +211,7 @@ class ApplicantProgramSpecificQualificationService {
       isComplete: missingFields.length === 0,
       completedFields,
       missingFields,
-      completionPercentage: Math.round((completedFields.length / allFields.length) * 100)
+      completionPercentage: Math.round((completedFields.length / allFields.length) * 100),
     }
   }
 }

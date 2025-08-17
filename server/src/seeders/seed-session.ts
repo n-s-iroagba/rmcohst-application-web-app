@@ -28,7 +28,7 @@ async function seedAdmissionSessions() {
         isCurrent: true,
         createdAt: new Date(),
         updatedAt: new Date(),
-      }
+      },
     ]
 
     // Insert data

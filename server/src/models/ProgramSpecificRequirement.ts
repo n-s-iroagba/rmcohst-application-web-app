@@ -1,7 +1,6 @@
 import { Model, DataTypes, Optional, Association, BelongsToGetAssociationMixin } from 'sequelize'
 import sequelize from '../config/database'
 
-
 // Define all attributes
 interface ProgramSpecificRequirementAttributes {
   id: number
@@ -13,7 +12,7 @@ interface ProgramSpecificRequirementAttributes {
 }
 
 // Define creation attributes
-interface ProgramSpecificRequirementCreationAttributes
+export interface ProgramSpecificRequirementCreationAttributes
   extends Optional<ProgramSpecificRequirementAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
 
 class ProgramSpecificRequirement extends Model<
@@ -27,7 +26,6 @@ class ProgramSpecificRequirement extends Model<
 
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
-
 }
 
 ProgramSpecificRequirement.init(
@@ -61,6 +59,5 @@ ProgramSpecificRequirement.init(
     timestamps: true,
   }
 )
-
 
 export default ProgramSpecificRequirement

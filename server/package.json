@@ -4,6 +4,7 @@
   "description": "This server application is built with typescript and ExpressJs for Remington College Of Health Science And Technology to handle application for admission in to the college.",
   "main": "index.js",
   "scripts": {
+    "prepare": "husky",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
     "start": "NODE_ENV=production node dist/index.js",
@@ -13,7 +14,10 @@
     "format:check": "prettier --check \"src/**/*.{ts,js,json,md}\"",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist",
-   "seed:roles": "ts-node src/seeders/seed-roles.ts"
+    "seed:roles": "ts-node src/seeders/seed-roles.ts",
+    "test:unit:watch": "nodemon --watch 'src/**/*{helper,util}*' --ext js,ts --exec 'npm run test:unit'",
+    "test:integration:watch": "chokidar 'src/**/*controller*' -c 'npm run test:integration'",
+    "dev:test": "concurrently \"npm run test:unit:watch\" \"npm run test:integration:watch\""
   },
   "repository": {
     "type": "git",
@@ -71,8 +75,11 @@
     "@types/pdfkit": "^0.13.9",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
+    "chokidar-cli": "^3.0.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.5",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"

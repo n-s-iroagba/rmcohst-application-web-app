@@ -1,7 +1,6 @@
 import { JwtPayload as JwtPayloadBase } from 'jsonwebtoken'
 import { AuthUser } from '../models/User'
 
-
 export interface AuthConfig {
   jwtSecret: string
   clientUrl: string
@@ -12,15 +11,15 @@ export interface AuthConfig {
   }
 }
 
-export type SignUpRequestDto= {
+export type SignUpRequestDto = {
   email: string
   password: string
-  username:string
+  username: string
   confirmPassword: string
 }
 export type SignUpResponseDto = {
   verificationToken: string
-  id:number
+  id: number
 }
 export interface VerifyEmailRequestDto {
   verificationCode: string
@@ -54,9 +53,5 @@ export interface ResetPasswordRequestDto {
   password: string
   confirmPassword: string
 }
-export interface ResendVerificationRequestDto extends SignUpResponseDto{}
-export interface ResendVerificationRespnseDto extends SignUpResponseDto{}
-
-
-
-
+export interface ResendVerificationRequestDto extends SignUpResponseDto {}
+export interface ResendVerificationRespnseDto extends SignUpResponseDto {}

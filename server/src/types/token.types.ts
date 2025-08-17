@@ -1,13 +1,6 @@
-import { 
- 
-  JwtPayload as BaseJwtPayload, 
- 
-  JwtHeader
-} from 'jsonwebtoken'
+import { JwtPayload as BaseJwtPayload, JwtHeader } from 'jsonwebtoken'
 import { StringValue } from 'ms'
 import { UserWithRole } from '../services/RbacService'
-
-
 
 export interface JwtPayload extends BaseJwtPayload {
   id?: number
@@ -15,14 +8,12 @@ export interface JwtPayload extends BaseJwtPayload {
   role?: string
   permissions?: string[]
   sessionId?: string
-  tokenType: 'access' | 'refresh'|'email_verification'|'reset_password'
+  tokenType: 'access' | 'refresh' | 'email_verification' | 'reset_password'
 }
-
 
 export interface TokenVerificationResult {
-  decoded:JwtPayload
+  decoded: JwtPayload
 }
-
 
 export interface TokenGenerationOptions {
   expiresIn: number | StringValue
@@ -31,7 +22,16 @@ export interface TokenGenerationOptions {
   subject?: string
   notBefore?: number | StringValue
   jwtid?: string
-  algorithm?: 'HS256' | 'HS384' | 'HS512' | 'RS256' | 'RS384' | 'RS512' | 'ES256' | 'ES384' | 'ES512'
+  algorithm?:
+    | 'HS256'
+    | 'HS384'
+    | 'HS512'
+    | 'RS256'
+    | 'RS384'
+    | 'RS512'
+    | 'ES256'
+    | 'ES384'
+    | 'ES512'
   keyid?: string
   header?: JwtHeader
   encoding?: string
@@ -40,7 +40,7 @@ export interface TokenGenerationOptions {
 }
 
 export interface AccessTokenPayload extends Omit<JwtPayload, 'tokenType'> {
-   user:UserWithRole
+  user: UserWithRole
 }
 
 export interface ResetPasswordTokenPayload extends Omit<JwtPayload, 'tokenType'> {

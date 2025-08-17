@@ -23,9 +23,7 @@ export class AuthController {
    */
   signUpApplicant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-
-      const {result,user} = await this.authService.signUp(req.body)
-
+      const { result, user } = await this.authService.signUp(req.body)
 
       const userId = user?.id
       if (!userId) {
@@ -39,20 +37,20 @@ export class AuthController {
         throw new NotFoundError(`Role 'APPLICANT' not found`)
       }
 
-  
-       user.roleId = role.id
-       await user.save()
+      user.roleId = role.id
+      await user.save()
       logger.info(`Assigned 'APPLICANT' role to userId ${userId}`)
 
-      const response:SignUpResponseDto = {verificationToken:result.verificationToken,id:user.id} 
+      const response: SignUpResponseDto = {
+        verificationToken: result.verificationToken,
+        id: user.id,
+      }
       res.status(201).json(response)
       return
     } catch (error) {
       next(error)
     }
   }
-
-
 
   /**
    * Handles staff sign-up.
@@ -69,9 +67,6 @@ export class AuthController {
     }
   }
 
-
-
-
   /**
    * Resends email verification code.
    * @param req Express request object
@@ -80,9 +75,9 @@ export class AuthController {
    */
   resendCode = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { token,id } = req.body
-      const newToken = await this.authService.generateNewCode(token,id)
-      res.json({ verificationToken:newToken,id }as  ResendVerificationRespnseDto)
+      const { token, id } = req.body
+      const newToken = await this.authService.generateNewCode(token, id)
+      res.json({ verificationToken: newToken, id } as ResendVerificationRespnseDto)
     } catch (error) {
       next(error)
     }
@@ -109,8 +104,6 @@ export class AuthController {
     }
   }
 
-
-
   /**
    * Returns currently authenticated user details.
    * @param req Express request object
@@ -127,16 +120,14 @@ export class AuthController {
       }
 
       const user = await this.authService.getMe(userId)
-      console.log('AUTH USER',user)
+      console.log('AUTH USER', user)
       res.status(200).json(user as AuthUser)
     } catch (error) {
       next(error)
     }
   }
 
-
-
-   login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { email, password } = req.body
 
@@ -146,19 +137,19 @@ export class AuthController {
       }
 
       const result = await this.authService.login({ email, password })
-      
+
       // Check if result has refreshToken property (verified user)
       if ('refreshToken' in result && 'accessToken' in result) {
         // User is verified
         const verified = result as AuthServiceLoginResponse
-        
+
         const cookieOptions = getCookieOptions()
         console.log('Setting refresh token cookie with options:', cookieOptions)
-        
+
         res.cookie('refreshToken', verified.refreshToken, cookieOptions)
-        res.status(200).json({ 
-          user: verified.user, 
-          accessToken: verified.accessToken 
+        res.status(200).json({
+          user: verified.user,
+          accessToken: verified.accessToken,
         })
       } else {
         // User not verified
@@ -176,84 +167,84 @@ export class AuthController {
   verifyEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const result = await this.authService.verifyEmail(req.body)
-      
+
       const cookieOptions = getCookieOptions()
       console.log('Setting refresh token cookie after verification:', cookieOptions)
-      
+
       res.cookie('refreshToken', result.refreshToken, cookieOptions)
-      
+
       const authUser = result.user
       console.log('auth user', authUser)
-      
+
       res.status(200).json({
         user: authUser,
-        accessToken: result.accessToken
+        accessToken: result.accessToken,
       })
     } catch (error) {
       next(error)
     }
   }
 
-resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    const result = await this.authService.resetPassword(req.body)
-    
-    const cookieOptions = getCookieOptions()
-    console.log('Setting refresh token cookie after password reset:', cookieOptions)
-    
-    res.cookie('refreshToken', result.refreshToken, cookieOptions)
-    
-    // Extract only the properties you need from the user object
-    const userResponse = {
-      id: result.user.id,
-      email: result.user.email,
-      username:result.user.username,
-      // Add other properties you need
-    }
-    
-    res.status(200).json({ 
-      user: userResponse, 
-      accessToken: result.accessToken 
-    })
-  } catch (error) {
-    next(error)
-  }
-}
+  resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.authService.resetPassword(req.body)
 
-refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    console.log('All cookies received:', req.cookies)
-    console.log('Headers:', req.headers.cookie)
-    
-    const cookieHeader = req.headers.cookie
-    console.log('Raw cookie header:', cookieHeader)
-    
-    if (!cookieHeader) {
-      res.status(401).json({ message: 'No cookies provided' })
-      return
+      const cookieOptions = getCookieOptions()
+      console.log('Setting refresh token cookie after password reset:', cookieOptions)
+
+      res.cookie('refreshToken', result.refreshToken, cookieOptions)
+
+      // Extract only the properties you need from the user object
+      const userResponse = {
+        id: result.user.id,
+        email: result.user.email,
+        username: result.user.username,
+        // Add other properties you need
+      }
+
+      res.status(200).json({
+        user: userResponse,
+        accessToken: result.accessToken,
+      })
+    } catch (error) {
+      next(error)
     }
-    
-    // Extract the refreshToken value from the cookie string
-    const refreshToken = cookieHeader
-      .split(';')
-      .find(cookie => cookie.trim().startsWith('refreshToken='))
-      ?.split('=')[1]
-    
-    console.log('Extracted refresh token:', refreshToken ? 'Present' : 'Missing')
-    console.log('Token preview:', refreshToken ? `${refreshToken.substring(0, 20)}...` : 'None')
-    
-    if (!refreshToken) {
-      res.status(401).json({ message: 'No refresh token found in cookies' })
-      return
-    }
-    
-    // Now pass just the token value (not the whole cookie header)
-    const accessToken = await this.authService.refreshToken(refreshToken)
-    res.status(200).json(accessToken )
-  } catch (error) {
-    next(error)
   }
-}
+
+  refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      console.log('All cookies received:', req.cookies)
+      console.log('Headers:', req.headers.cookie)
+
+      const cookieHeader = req.headers.cookie
+      console.log('Raw cookie header:', cookieHeader)
+
+      if (!cookieHeader) {
+        res.status(401).json({ message: 'No cookies provided' })
+        return
+      }
+
+      // Extract the refreshToken value from the cookie string
+      const refreshToken = cookieHeader
+        .split(';')
+        .find(cookie => cookie.trim().startsWith('refreshToken='))
+        ?.split('=')[1]
+
+      console.log('Extracted refresh token:', refreshToken ? 'Present' : 'Missing')
+      console.log('Token preview:', refreshToken ? `${refreshToken.substring(0, 20)}...` : 'None')
+
+      if (!refreshToken) {
+        res.status(401).json({ message: 'No refresh token found in cookies' })
+        return
+      }
+
+      // Now pass just the token value (not the whole cookie header)
+      const accessToken = await this.authService.refreshToken(refreshToken)
+      res.status(200).json(accessToken)
+    } catch (error) {
+      next(error)
+    }
+  }
 
   /**
    * Logout with improved cookie clearing
@@ -261,7 +252,7 @@ refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<
   logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const isProduction = process.env.NODE_ENV === 'production'
-      
+
       const clearOptions = {
         httpOnly: true,
         secure: isProduction,

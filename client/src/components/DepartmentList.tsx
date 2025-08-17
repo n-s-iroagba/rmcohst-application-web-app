@@ -4,7 +4,7 @@ import { useGet } from '@/hooks/useApiQuery'
 import { apiRoutes } from '@/constants/apiRoutes'
 import { useRoutes } from '@/hooks/useRoutes'
 import { GenericSearchBar } from './SearchBar'
-import { useMemo, useState } from 'react'
+import {  useState } from 'react'
 import { Faculty } from '@/types/faculty'
 import { title } from 'process'
 import { FilterDropdown } from './FilterDropdown'
@@ -56,10 +56,8 @@ const DepartmentList = () => {
   const loading = deptLoading || facLoading
   const departments = resourceData || []
 
-  const filteredDepartments = useMemo(() => {
-    if (!selectedFacultyId) return departments
-    return departments.filter((dept) => dept.facultyId === selectedFacultyId)
-  }, [selectedFacultyId])
+  const filteredDepartments = departments.filter((dept) => dept.facultyId === selectedFacultyId)
+
   if (loading) return <Spinner className="w-10 h-10 text-slate-600" />
 
   if (error) return <ErrorAlert message={error || 'Failed to load'} />
@@ -72,15 +70,15 @@ const DepartmentList = () => {
         onFilterChange={setSelectedFacultyId}
         displayKey="name"
         label="Select Faculty"
-        placeholder="Choose a faculty..."
-      />
+        placeholder="Choose a faculty..." dropDownTestId={''} optionsTestId={function (): string {
+          throw new Error('Function not implemented.')
+        } }      />
       <GenericSearchBar<Department>
         data={filteredDepartments}
         searchKeys={['name']}
         onResults={setSearchResults}
         placeholder="Search departements by name ..."
-        className="mb-4"
-      />
+        className="mb-4" testId={''}      />
 
       <div className="flex flex-col gap-4">
         {searchResults?.length ? (

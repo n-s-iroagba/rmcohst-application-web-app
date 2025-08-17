@@ -1,7 +1,7 @@
 // ---------- Default objects for each DTO ----------
 
 import {
-  User,
+  
   LoginRequestDto,
   SignUpRequestDto,
   ForgotPasswordRequestDto,

@@ -1,4 +1,8 @@
-import axios, { AxiosResponse, type AxiosInstance, type AxiosRequestConfig } from 'axios'
+import axios, {
+  AxiosResponse,
+  AxiosInstance,
+  AxiosRequestConfig
+} from 'axios'
 
 const baseURL =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
@@ -6,35 +10,45 @@ const baseURL =
     ? 'https://rmcohst.onrender.com/api'
     : 'http://localhost:3000/api')
 
-// Create Axios instance
 const apiClient: AxiosInstance = axios.create({
   baseURL,
   withCredentials: true,
   headers: {
     Accept: 'application/json'
-    // Don't set Content-Type here. Let Axios detect it.
   }
 })
 
-// Generic response wrapper
 type ApiResponse<T> = Promise<T>
 
 /**
- * Generic GET request
+ * Generic GET
  */
 export async function get<T>(path: string, config?: AxiosRequestConfig): ApiResponse<T> {
   try {
     const response: AxiosResponse<T> = await apiClient.get(path, config)
-    console.log('response is', response)
     return response.data
   } catch (error) {
-    console.log('error is in service', error)
+    console.error('GET error:', error)
     throw error
   }
 }
 
 /**
- * Generic POST request (FormData supported)
+ * Helper to prepare headers for FormData
+ */
+function prepareHeaders(
+  config: AxiosRequestConfig,
+  isFormData: boolean
+): AxiosRequestConfig['headers'] {
+  return {
+    Accept: 'application/json',
+    ...(config.headers || {}),
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' })
+  }
+}
+
+/**
+ * Generic POST (supports FormData)
  */
 export async function post<Req, Res>(
   path: string,
@@ -45,21 +59,17 @@ export async function post<Req, Res>(
   try {
     const response: AxiosResponse<Res> = await apiClient.post(path, data, {
       ...config,
-      headers: {
-        ...(config.headers || {}),
-        ...(isFormData ? {} : { 'Content-Type': 'application/json' })
-      }
+      headers: prepareHeaders(config, isFormData)
     })
-    console.log('response is', response)
     return response.data
   } catch (error) {
-    console.log('error is in service', error)
+    console.error('POST error:', error)
     throw error
   }
 }
 
 /**
- * Generic PATCH request (FormData supported)
+ * Generic PATCH (supports FormData)
  */
 export async function patch<Req, Res>(
   path: string,
@@ -67,24 +77,32 @@ export async function patch<Req, Res>(
   config: AxiosRequestConfig = {}
 ): ApiResponse<Res> {
   const isFormData = typeof FormData !== 'undefined' && data instanceof FormData
-
-  const response: AxiosResponse<Res> = await apiClient.patch(path, data, {
-    ...config,
-    headers: {
-      ...(config.headers || {}),
-      ...(isFormData ? {} : { 'Content-Type': 'application/json' })
-    }
-  })
-
-  return response.data
+  try {
+    const response: AxiosResponse<Res> = await apiClient.patch(path, data, {
+      ...config,
+      headers: prepareHeaders(config, isFormData)
+    })
+    return response.data
+  } catch (error) {
+    console.error('PATCH error:', error)
+    throw error
+  }
 }
 
 /**
- * Generic DELETE request
+ * Generic DELETE
  */
-export async function remove<Res>(path: string, config?: AxiosRequestConfig): ApiResponse<Res> {
-  const response: AxiosResponse<Res> = await apiClient.delete(path, config)
-  return response.data
+export async function remove<Res>(
+  path: string,
+  config?: AxiosRequestConfig
+): ApiResponse<Res> {
+  try {
+    const response: AxiosResponse<Res> = await apiClient.delete(path, config)
+    return response.data
+  } catch (error) {
+    console.error('DELETE error:', error)
+    throw error
+  }
 }
 
 export default apiClient

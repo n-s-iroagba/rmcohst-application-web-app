@@ -75,7 +75,7 @@ const SubjectList = () => {
           <div className="flex justify-center mb-4">
             <Star className="text-slate-400" size={48} />
           </div>
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">No O'Level Subjects Yet</h3>
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">No O&apos;Level Subjects Yet</h3>
           <p className="text-slate-700">Start by adding a new subject.</p>
         </div>
       )}

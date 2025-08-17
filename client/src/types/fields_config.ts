@@ -1,3 +1,5 @@
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SelectOption } from '@/components/FormFields'
 import { FileChangeEvent } from '@/hooks/useApiQuery'
 import { ChangeEvent } from 'react'
@@ -60,3 +62,9 @@ export type ChangeHandler = Partial<{
     | ((e: React.ChangeEvent<HTMLTextAreaElement>) => void)
     | ((e: React.ChangeEvent<HTMLSelectElement>) => void)
 }>
+
+export type FieldConfigInput<T>={
+  [k in keyof T]:{
+    type:FieldType
+  }
+}

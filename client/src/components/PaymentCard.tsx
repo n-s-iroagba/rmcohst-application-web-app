@@ -6,3 +6,5 @@ const PaymentCard:React.FC<{payment:Payment}> = ({payment})=>{
         <div>Payment Status:{payment.status}</div>
     </div>
 }
+
+export default PaymentCard

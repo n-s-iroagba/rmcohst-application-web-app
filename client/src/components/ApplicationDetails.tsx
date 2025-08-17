@@ -51,7 +51,7 @@ const ApplicationDetail: React.FC<{
   }
   const handleAddComment = async (type: Comment['type']) => {
     if (newComment.trim()) {
-      const comment = await post<any, Comment>(
+      const comment = await post<{content:string,type:string}, Comment>(
         apiRoutes.application.addComment(application.id.toString()),
         { content: newComment, type }
       )
@@ -82,7 +82,7 @@ const ApplicationDetail: React.FC<{
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-gray-900">
-              {application.biodata.lastName} {application.biodata.middleName}{' '}
+              {application.biodata.firstName} {application.biodata.otherNames}{' '}
               {application.biodata.surname}
             </h1>
             <p className="text-gray-500 mt-1">Application ID: {application.id}</p>
@@ -118,7 +118,7 @@ const ApplicationDetail: React.FC<{
                 <div>
                   <label className="block text-sm font-medium text-gray-500 mb-1">Full Name</label>
                   <p className="text-gray-900">
-                    {application.biodata.lastName} {application.biodata.middleName}{' '}
+                    {application.biodata.surname} {application.biodata.otherNames}{' '}
                     {application.biodata.surname}
                   </p>
                 </div>
@@ -161,7 +161,7 @@ const ApplicationDetail: React.FC<{
                   </label>
                   <p className="text-gray-900 flex items-center">
                     <Mail className="w-4 h-4 mr-1" />
-                    {application.biodata.emailAddress}
+                    {application.biodata.email}
                   </p>
                 </div>
 
@@ -171,7 +171,7 @@ const ApplicationDetail: React.FC<{
                   </label>
                   <p className="text-gray-900 flex items-start">
                     <MapPin className="w-4 h-4 mr-1 mt-0.5" />
-                    {application.biodata.homeAddress}
+                    {application.biodata.contactAddress}
                   </p>
                 </div>
 
@@ -191,7 +191,7 @@ const ApplicationDetail: React.FC<{
 
                 <div>
                   <label className="block text-sm font-medium text-gray-500 mb-1">LGA</label>
-                  <p className="text-gray-900">{application.biodata.lga}</p>
+                  <p className="text-gray-900">{application.biodata.localGovernmentArea}</p>
                 </div>
 
                 <div>
@@ -211,7 +211,7 @@ const ApplicationDetail: React.FC<{
                     <label className="block text-sm font-medium text-gray-500 mb-1">
                       Full Name
                     </label>
-                    <p className="text-gray-900">{application.biodata.nextOfKinFullName}</p>
+                    <p className="text-gray-900">{application.biodata.nextOfKinName}</p>
                   </div>
 
                   <div>
@@ -228,7 +228,7 @@ const ApplicationDetail: React.FC<{
                     <label className="block text-sm font-medium text-gray-500 mb-1">
                       Relationship
                     </label>
-                    <p className="text-gray-900">{application.biodata.relationshipWithNextOfKin}</p>
+                    <p className="text-gray-900">{application.biodata.nextOfKinRelationship}</p>
                   </div>
 
                   <div>
@@ -263,21 +263,21 @@ const ApplicationDetail: React.FC<{
 
           {expandedSections.qualifications && (
             <div className="px-4 pb-4 border-t border-gray-100">
-              {application.sscQualifications.map((qualification, index) => (
-                <div key={qualification.id} className="mt-4">
+             
+                <div className="mt-4">
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-md font-medium text-gray-900">Qualification {index + 1}</h4>
+                    <h4 className="text-md font-medium text-gray-900">SSC Qualification</h4>
                     <span className="text-sm text-gray-500">
-                      {qualification.numberOfSittings} sitting(s)
+                      {application.sscQualification.numberOfSittings} sitting(s)
                     </span>
                   </div>
 
                   <FileViewer
-                    files={qualification.certificates || []}
-                    types={qualification.certificateTypes || []}
+                    files={application.sscQualification.certificates as string[] || []}
+                    types={application.sscQualification.certificateTypes || []}
                   />
                 </div>
-              ))}
+              
             </div>
           )}
         </div>

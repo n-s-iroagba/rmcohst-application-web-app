@@ -5,8 +5,7 @@ import { apiRoutes } from '@/constants/apiRoutes'
 import { useGet } from '@/hooks/useApiQuery'
 import { useRoutes } from '@/hooks/useRoutes'
 import { Faculty } from '@/types/faculty'
-import { title } from 'process'
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { FilterDropdown } from './FilterDropdown'
 import { GenericSearchBar } from './SearchBar'
 
@@ -59,14 +58,11 @@ const ProgramList = () => {
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<number | null>(null)
   const departments = depts || []
   const programs = progs || []
-  const filteredDepartments = useMemo(() => {
-    if (!selectedFacultyId) return departments
-    return departments.filter((dept) => dept.facultyId === selectedFacultyId)
-  }, [selectedFacultyId])
-  const filteredPrograms = useMemo(() => {
-    if (!selectedDepartmentId) return programs
-    return programs.filter((prog) => prog.departmentId === selectedDepartmentId)
-  }, [selectedDepartmentId])
+const filteredDepartments =  departments.filter((dept) => dept.facultyId === selectedFacultyId);
+
+
+  const filteredPrograms = programs.filter((prog) => prog.departmentId === selectedDepartmentId)
+
   return (
     <>
       <FilterDropdown
@@ -76,8 +72,9 @@ const ProgramList = () => {
         onFilterChange={setSelectedFacultyId}
         displayKey="name"
         label="Select Faculty"
-        placeholder="Choose a faculty..."
-      />
+        placeholder="Choose a faculty..." dropDownTestId={''} optionsTestId={function (): string {
+          throw new Error('Function not implemented.')
+        } }      />
       <FilterDropdown
         data={filteredDepartments}
         filterKey="id"
@@ -85,15 +82,15 @@ const ProgramList = () => {
         onFilterChange={setSelectedDepartmentId}
         displayKey="name"
         label="Select Faculty"
-        placeholder="Choose a department..."
-      />
+        placeholder="Choose a department..." dropDownTestId={''} optionsTestId={function (): string {
+          throw new Error('Function not implemented.')
+        } }      />
       <GenericSearchBar<Program>
         data={filteredPrograms || []}
         searchKeys={['name']}
         onResults={setSearchResults}
         placeholder="Search departements by name ..."
-        className="mb-4"
-      />
+        className="mb-4" testId={''}      />
 
       <div className="flex flex-col gap-4">
         {searchResults?.length ? (

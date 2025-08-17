@@ -15,9 +15,9 @@ export const ApplicationList: React.FC<{
 
   const filteredApplications = applications.filter((app) => {
     const matchesSearch =
-      app.biodata.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.biodata.surname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.biodata.emailAddress.toLowerCase().includes(searchTerm.toLowerCase())
+      app.biodata.surname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.biodata.email.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = statusFilter === 'ALL' || app.status === statusFilter
     return matchesSearch && matchesStatus
   })
@@ -68,9 +68,9 @@ export const ApplicationList: React.FC<{
             <div className="flex items-start justify-between mb-2">
               <div>
                 <h3 className="font-medium text-gray-900">
-                  {application.biodata.lastName} {application.biodata.surname}
+                  {application.biodata.surname} {application.biodata.surname}
                 </h3>
-                <p className="text-sm text-gray-500">{application.biodata.emailAddress}</p>
+                <p className="text-sm text-gray-500">{application.biodata.email}</p>
               </div>
               <StatusBadge status={application.status} />
             </div>

@@ -5,6 +5,9 @@ import { CustomForm } from '@/components/CustomForm'
 import { useRoutes } from '@/hooks/useRoutes'
 import { useFieldConfigContext } from '@/context/FieldConfigContext'
 import { ForgotPasswordRequestDto } from '@/types/auth.types'
+import { testIdContext } from '@/test/utils/testIdContext'
+import { forgotPasswordFormConfig } from '@/utils/loginFormConfig'
+import { forgotPasswordTestIds } from '@/utils/formTestIds'
 
 
 
@@ -13,15 +16,14 @@ const ForgotPasswordForm: React.FC = () => {
     useAuth()
 
   const { navigateToLogin } = useRoutes()
-  const { setFieldConfigInput, setChangeHandlers } =
-    useFieldConfigContext<ForgotPasswordRequestDto>()
+  const { createFieldsConfig  } = useFieldConfigContext<ForgotPasswordRequestDto>()
 
   useEffect(() => {
-    setFieldConfigInput({
-      email: 'email'
-    })
-    setChangeHandlers(forgotPasswordChangeHandler)
-  }, [setFieldConfigInput, setChangeHandlers, forgotPasswordChangeHandler])
+    createFieldsConfig(forgotPasswordFormConfig,forgotPasswordChangeHandler)
+  }, [createFieldsConfig,forgotPasswordChangeHandler])
+
+
+  testIdContext.setContext(forgotPasswordTestIds)
 
 
 

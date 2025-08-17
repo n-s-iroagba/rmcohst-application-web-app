@@ -1,6 +1,7 @@
-import { FieldConfig, FieldGroupConfig, FieldsConfig } from "@/types/fields_config"
+import { FieldConfig, FieldsConfig } from "@/types/fields_config"
 
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * HTML element types for test ID generation
  */
@@ -253,7 +254,7 @@ export const generateIndexedTestId = (
 /**
  * Generate test IDs for radio button groups
  */
- const generateRadioGroupTestIds = (
+export  const generateRadioGroupTestIds = (
   radioName: string,
   options: Array<{ value: string | number; label: string }>,
   testIdBase: string
@@ -325,7 +326,7 @@ const generateFormContainerTestId = (testIdBase: string): string => {
 /**
  * Generate test ID for fieldset
  */
-const generateFieldsetTestId = (testIdBase: string, fieldsetName: string): string => {
+export const generateFieldsetTestId = (testIdBase: string, fieldsetName: string): string => {
   return generateTestId('fieldset', `${testIdBase}-${fieldsetName}`)
 }
 
@@ -461,11 +462,11 @@ const generateFormWarningTestId = (testIdBase: string): string => {
 
   return result
 }
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Generate test IDs for a multi-step form
  */
- const generateMultiStepFormTestIds = <T,U,V>(
+export  const generateMultiStepFormTestIds = <T,U,V>(
   steps: Array<{ name: string; schema: FieldsConfig<T|U|V> }>,
   testIdBase: string
 ) => {
@@ -496,7 +497,7 @@ const generateFormWarningTestId = (testIdBase: string): string => {
 /**
  * Utility function to create multiple test ID selectors
  */
- const createTestIdSelectors = (testIds: string[]): string => {
+ export const createTestIdSelectors = (testIds: string[]): string => {
   return testIds.map(createTestIdSelector).join(', ')
 }
 

@@ -1,7 +1,6 @@
 // src/lib/apiutils.ts
 import { API_ROUTES } from '@/config/routes'
 import axios, {
-  AxiosRequestConfig,
   AxiosResponse,
   AxiosError,
   InternalAxiosRequestConfig
@@ -28,6 +27,7 @@ const refreshApi = axios.create({
 
 // Token management with reactive updates
 let accessToken: string | null = null
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let previousToken: string | null = null
 
 // Callback registry for token updates
@@ -71,6 +71,10 @@ const notifyTokenUpdate = async (newToken: string | null, oldToken: string | nul
   await Promise.allSettled(promises)
 }
 
+export const clearToken =()=>{
+  accessToken = null
+}
+
 export const setAccessToken = async (token: string) => {
   const oldToken = accessToken
 
@@ -99,7 +103,7 @@ export const clearTokens = async (): Promise<void> => {
     await notifyTokenUpdate(null, oldToken)
   }
 }
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Helper function to determine if data is FormData or contains files
 const isFormData = (data: any): boolean => {
   return data instanceof FormData

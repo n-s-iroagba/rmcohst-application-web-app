@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useMutation, UseMutationResult, useQuery } from '@tanstack/react-query'
 import { handleError } from '@/utils/api'
 import api from '@/lib/apiUtils'
@@ -8,7 +8,7 @@ type InputChangeEvent = React.ChangeEvent<HTMLInputElement>
 type TextAreaChangeEvent = React.ChangeEvent<HTMLTextAreaElement>
 type SelectChangeEvent = React.ChangeEvent<HTMLSelectElement>
 export type FileChangeEvent = React.ChangeEvent<HTMLInputElement>
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Define the change handler types
 export type ChangeHandler = {
   [K in FieldType]?: K extends 'textarea'
@@ -222,7 +222,19 @@ export const usePost = <T, U>(
 export const useGet = <T>(resourceUrl: string | null) => {
   const [apiError, setApiError] = useState('')
 
-  if (!resourceUrl) {
+ 
+
+  const {
+    data: resourceData,
+    isLoading,
+    isError,
+    
+    refetch
+  } = useQuery<T, unknown>({
+    queryKey: [resourceUrl],
+    queryFn: async () => {
+      try {
+         if (!resourceUrl) {
     return {
       resourceData: undefined,
       loading: false,
@@ -230,17 +242,6 @@ export const useGet = <T>(resourceUrl: string | null) => {
       refetch: async () => ({ data: undefined }) as any // noop
     }
   }
-
-  const {
-    data: resourceData,
-    isLoading,
-    isError,
-    error,
-    refetch
-  } = useQuery<T, unknown>({
-    queryKey: [resourceUrl],
-    queryFn: async () => {
-      try {
         const response = await api.get(resourceUrl)
         return response.data
       } catch (error) {
@@ -265,11 +266,6 @@ export const useGet = <T>(resourceUrl: string | null) => {
     staleTime: 0
   })
 
-  useEffect(() => {
-    if (isError && error) {
-      handleError(error, setApiError)
-    }
-  }, [isError, error])
 
   return {
     resourceData,
@@ -281,6 +277,7 @@ export const useGet = <T>(resourceUrl: string | null) => {
 
 interface UsePutReturn<T, U> {
   putResource: T
+  putResponse:U|null
   updating: boolean
   apiError: string
   changeHandlers: ChangeHandler
@@ -371,59 +368,9 @@ export const usePut = <T, U = any>(
     })
   }
 
-  // Alternative: More type-safe version with constraint
-  const handleArrayFileChangeAppendSafe = (e: FileChangeEvent) => {
-    const { name, files } = e.target
-    const file = files?.[0] || null
 
-    if (!file) return
 
-    const transformedValue = transformField ? transformField(name, file) : file
 
-    setPutResource((prev) => {
-      // Ensure T extends Record<string, any> for safe property access
-      if (typeof prev === 'object' && prev !== null) {
-        const prevObj = prev as T & Record<string, any>
-        const existingArray = Array.isArray(prevObj[name]) ? prevObj[name] : []
-        return {
-          ...prev,
-          [name]: [...existingArray, transformedValue]
-        } as T
-      }
-      
-      // Fallback if prev is not an object
-      return {
-        ...prev,
-        [name]: [transformedValue]
-      } as T
-    })
-  }
-
-  // Handle file input with base64 conversion (alternative implementation)
-  const handleFileChangeAsBase64 = (e: FileChangeEvent) => {
-    const { name, files } = e.target
-    const file = files?.[0]
-
-    if (!file) {
-      setPutResource((prev) => ({
-        ...prev,
-        [name]: null
-      } as T))
-      return
-    }
-
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      const base64 = event.target?.result as string
-      const transformedValue = transformField ? transformField(name, base64) : base64
-
-      setPutResource((prev) => ({
-        ...prev,
-        [name]: transformedValue
-      } as T))
-    }
-    reader.readAsDataURL(file)
-  }
 
   const handlePut = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -452,6 +399,7 @@ export const usePut = <T, U = any>(
 
   return {
     putResource,
+    putResponse,
     updating: mutation.isPending,
     apiError,
     changeHandlers,

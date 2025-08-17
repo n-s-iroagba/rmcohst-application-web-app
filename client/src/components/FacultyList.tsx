@@ -1,4 +1,4 @@
-import { GraduationCap, Edit, Trash2, CheckCircle, EyeIcon } from 'lucide-react'
+import { GraduationCap, CheckCircle, EyeIcon } from 'lucide-react'
 import { Faculty } from '@/types/faculty'
 import { apiRoutes } from '@/constants/apiRoutes'
 import { useGet } from '@/hooks/useApiQuery'
@@ -53,8 +53,7 @@ const FacultyList = () => {
         searchKeys={['name']}
         onResults={setSearchResults}
         placeholder="Search departements by name ..."
-        className="mb-4"
-      />
+        className="mb-4" testId={''}      />
 
       <div className="flex flex-col gap-4">
         {searchResults?.length ? (

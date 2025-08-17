@@ -15,6 +15,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useResizeWindow } from '@/hooks/useResizeWindow'
 import { AuthProvider } from '@/context/AuthContext'
 
+
 interface AApplicantOffcanvasProps {
   children: React.ReactNode
 }
@@ -22,6 +23,7 @@ interface AApplicantOffcanvasProps {
 function ApplicantOffcanvas({ children }: AApplicantOffcanvasProps) {
   const { isDesktop, isOpen, handleNavClick } = useResizeWindow()
   const { logout } = useAuth()
+
 
   return (
     <div className="flex min-h-screen bg-gray-50">

@@ -8,6 +8,7 @@ export interface Biodata {
   dateOfBirth: Date 
    gender: string
   maritalStatus: string
+  phoneNumber:string
   nationality: string
   stateOfOrigin: string
   localGovernmentArea: string

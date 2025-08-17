@@ -3,10 +3,11 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { FilterDropdown } from '@/components/FilterDropdown'
-import { usePrograms } from '@/context/ProgramContext'
+
 import { GenericSearchBar } from '@/components/SearchBar'
 import { Program } from '@/types/program'
 import { ApplicationTestIds } from '@/test/testIds'
+import { usePrograms } from '@/hooks/useProgram'
 
 export default function SelectProgramPage() {
   const { programs, filteredPrograms, selectedLevel, setSelectedLevel } = usePrograms()
@@ -36,6 +37,7 @@ export default function SelectProgramPage() {
       <GenericSearchBar<Program>
         data={filteredPrograms || []}
         searchKeys={['name']}
+        testId={ApplicationTestIds.searchProgram}
         onResults={setSearchResults}
         placeholder="Search Programs by name ..."
         className="mb-4"

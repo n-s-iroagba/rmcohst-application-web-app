@@ -1,34 +1,31 @@
-'use client'
-import React, { useEffect } from 'react'
-import { useAuth } from '@/hooks/useAuth'
-import { CustomForm } from '@/components/CustomForm'
-import { useRoutes } from '@/hooks/useRoutes'
-import { useFieldConfigContext } from '@/context/FieldConfigContext'
-import { ResetPasswordRequestDto } from '@/types/auth.types'
-import { RESET_PASSWORD_DEFAULT_DATA } from '@/constants/auth'
-import { useSearchParams } from 'next/navigation'
-// import { testIdContext } from '@/test/utils/testIdContext'
+'use client';
 
-const ResetPasswordForm: React.FC = () => {
-  const { resetPasswordRequest, resetPassword, loading, error, resetPasswordChangeHandlers } = useAuth()
-    const searchParams = useSearchParams()
-   const resetPasswordToken = searchParams.get('token')
-   
-   if(!resetPasswordToken)return null
-  const { navigateToLogin } = useRoutes()
-  const { setFieldConfigInput, setChangeHandlers } =
-    useFieldConfigContext<Partial<ResetPasswordRequestDto>>()
+import React, { useEffect, Suspense } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { CustomForm } from '@/components/CustomForm';
+import { useFieldConfigContext } from '@/context/FieldConfigContext';
+import { ResetPasswordRequestDto } from '@/types/auth.types';
+import { useSearchParams } from 'next/navigation';
+import { resetPasswordFormConfig } from '@/utils/loginFormConfig';
+import { testIdContext } from '@/test/utils/testIdContext';
+import { resetPasswordTestIds } from '@/utils/formTestIds';
+import { useRoutes } from '@/hooks/useRoutes';
+
+function ResetPasswordInner() {
+  const { resetPasswordRequest, resetPassword, loading, error, resetPasswordChangeHandlers } = useAuth();
+  const { navigateToLogin } = useRoutes();
+  const searchParams = useSearchParams();
+  const resetPasswordToken = searchParams.get('token');
+
+  const { createFieldsConfig } = useFieldConfigContext<Partial<ResetPasswordRequestDto>>();
 
   useEffect(() => {
-    setFieldConfigInput({
-      password: 'password',
-      confirmPassword: 'password'
-    })
-    setChangeHandlers(resetPasswordChangeHandlers)
-  }, [setFieldConfigInput, setChangeHandlers])
+    createFieldsConfig(resetPasswordFormConfig, resetPasswordChangeHandlers);
+  }, [createFieldsConfig, resetPasswordChangeHandlers]);
 
-  // const TEST_ID_BASE = 'reset-password-form'
-  // testIdContext.setContext(RESET_PASSWORD_DEFAULT_DATA, TEST_ID_BASE)
+  testIdContext.setContext(resetPasswordTestIds);
+
+  if (!resetPasswordToken) return null;
 
   return (
     <div className="max-w-md mx-auto">
@@ -39,14 +36,20 @@ const ResetPasswordForm: React.FC = () => {
 
       <CustomForm
         data={resetPasswordRequest}
-        submitHandler={(e)=>resetPassword(e,resetPasswordToken)}
-        formLabel={'Reset Password'}
+        submitHandler={(e) => resetPassword(e, resetPasswordToken)}
+        formLabel="Reset Password"
         onCancel={navigateToLogin}
         submiting={loading}
         error={error}
       />
     </div>
-  )
+  );
 }
 
-export default ResetPasswordForm
+export default function ResetPasswordForm() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordInner />
+    </Suspense>
+  );
+}

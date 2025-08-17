@@ -279,7 +279,7 @@ const Page = () => {
 
               <div className="flex align-center">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl">
-                  {facilities.map((facility, index) => {
+                  {facilities.map((facility) => {
                     const Icon = facility.icon
                     return (
                       <div

@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback } from 'react'
 import { Search, X } from 'lucide-react'
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Generic search bar props
 interface SearchBarProps<T> {
   data: T[]

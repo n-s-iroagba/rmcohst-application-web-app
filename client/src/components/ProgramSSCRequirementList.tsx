@@ -1,4 +1,4 @@
-import { BookOpen, Edit, Trash2, CheckCircle, EyeIcon, Users, Clock } from 'lucide-react'
+import { BookOpen, CheckCircle, EyeIcon, Users, Clock } from 'lucide-react'
 
 import { apiRoutes } from '@/constants/apiRoutes'
 import { useGet } from '@/hooks/useApiQuery'
@@ -6,7 +6,6 @@ import { useRoutes } from '@/hooks/useRoutes'
 import { useState } from 'react'
 import { GenericSearchBar } from './SearchBar'
 import { ProgramSSCRequirement } from '@/types/program_ssc_requirement'
-import { error } from 'console'
 import ErrorAlert from './ErrorAlert'
 import { Spinner } from './Spinner'
 
@@ -89,8 +88,7 @@ const ProgramSSCRequirementList = () => {
         searchKeys={['tag']}
         onResults={setSearchResults}
         placeholder="Search SSC requirements by tag..."
-        className="mb-4"
-      />
+        className="mb-4" testId={''}      />
 
       <div className="flex flex-col gap-4">
         {searchResults?.length ? (

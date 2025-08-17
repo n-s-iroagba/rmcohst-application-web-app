@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 export type UserRole = 'admin' | 'applicant' | 'head-of-admissions' | 'admission-officer'
 
 export interface User {

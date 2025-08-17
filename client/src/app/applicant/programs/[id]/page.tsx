@@ -3,13 +3,13 @@
 import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
-
 import { Spinner } from '@/components/Spinner'
 import { useGet } from '@/hooks/useApiQuery'
-import { FullProgram, Program } from '@/types/program'
+import { FullProgram,} from '@/types/program'
 import { API_ROUTES } from '@/config/routes'
 import { Grade } from '@/types/program_ssc_requirement'
 import { useAuthContext } from '@/context/AuthContext'
+import { PaymentType } from '../../../../components/PaystackButton'
 
 
 
@@ -26,7 +26,7 @@ export interface PaystackInitTransactionResponse {
 // Dynamic import for the payment button component
 const PaymentButton = dynamic(() => import('../../../../components/PaystackButton'), {
   ssr: false,
-  loading: () => <button disabled>Loading Payment...</button>
+  loading: () => <Spinner/>
 })
 
 export default function ProgramDetailsPage() {
@@ -55,7 +55,7 @@ export default function ProgramDetailsPage() {
 
       <div className="shadow-sm mb-4">
         <div>
-          <h2>{program.name}</h2>
+          <h2>Program: {program.name}</h2>
           <p className="text-muted">
             Department: {program.department.name} &middot; Faculty: {program.department.faculty?.name}
           </p>
@@ -79,7 +79,7 @@ export default function ProgramDetailsPage() {
         </div>
       </div>
 
-      {/* <div className="shadow-sm mb-4">
+      <div className="shadow-sm mb-4">
         <div>
           <strong>SSC Requirements</strong>
         </div>
@@ -103,12 +103,11 @@ export default function ProgramDetailsPage() {
             </li>
           </ul>
         </div>
-      </div> */}
+      </div>
 
       <div className="d-flex justify-content-end">
         <PaymentButton
-          email={'nnamdisolomon1@gmail.com'}
-          amount={program.applicationFeeInNaira}
+          paymentType={PaymentType.APPLICATION_FEE}
           programId={program.id}
           applicantUserId={Number(user.id)}
         />

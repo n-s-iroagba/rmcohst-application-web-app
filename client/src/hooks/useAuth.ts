@@ -12,7 +12,7 @@ import {
   ResendVerificationRequestDto,
   ForgotPasswordRequestDto,
   ResetPasswordRequestDto,
-  User,
+
   LoginResponseDto,
   SignUpResponseDto,
   ForgotPasswordResponseDto
@@ -180,8 +180,8 @@ export const useAuth = () => {
   // RESET password
   const resetPassword = async (e: React.FormEvent<HTMLFormElement>,resetPasswordToken:string) => {
     setResetPasswordPayload({...resetPasswordRequest,resetPasswordToken})
-    e.preventDefault
-    const resetPasswordResponse = (await handleResetPassword(e)) as any
+    e.preventDefault()
+    const resetPasswordResponse = (await handleResetPassword(e)) 
     if (resetPasswordResponse) {
       navigateToLogin()
     }
@@ -193,7 +193,8 @@ export const useAuth = () => {
     verifyEmailLoading ||
     resendVerificationLoading ||
     forgotPasswordLoading ||
-    resetPasswordLoading
+    resetPasswordLoading||
+    superAdminSignUpLoading
 
   return {
     loading: isAuthLoading,

@@ -2,18 +2,16 @@
 
 import React, { useEffect } from 'react'
 import { CustomForm } from '@/components/CustomForm'
-import { useRoutes } from '@/hooks/useRoutes'
 import { useFieldConfigContext } from '@/context/FieldConfigContext'
-import { SIGNUP_FORM_DEFAULT_DATA } from '@/constants/auth'
-
 import { Application } from '@/types/application'
 import { API_ROUTES } from '@/config/routes'
 import { FileChangeEvent, useGet, usePut } from '@/hooks/useApiQuery'
-import { SSCQualificationFormData } from '@/types/applicant_ssc_qualification'
+import { ApplicantSSCQualification, SSCQualificationFormData } from '@/types/applicant_ssc_qualification'
 import { SSCSubject } from '@/types/ssc_subject'
 import { Grade } from '@/types/program_ssc_requirement'
-import { Certificate } from 'crypto'
-import { ChangeHandler, FieldType } from '@/types/fields_config'
+import {  FieldsConfig } from '@/types/fields_config'
+import { testIdContext } from '@/test/utils/testIdContext'
+import { generateComponentFormTestIds } from '@/utils/testIdGenerator'
 export enum QualificationType {
   WAEC = 'WAEC',
   NECO = 'NECO',
@@ -23,17 +21,18 @@ export enum QualificationType {
 
 interface Props {
   application?: Application
+  handleForward:()=>void
+  handleBackward:()=>void
 }
 
-const SSCQualificationForm: React.FC<Props> = ({ application }) => {
-  const { navigateToHome } = useRoutes()
+const SSCQualificationForm: React.FC<Props> = ({ application,handleForward,handleBackward }) => {
+ 
 
   const { resourceData: subjects } = useGet<SSCSubject[]>(API_ROUTES.SUBJECT.LIST)
 
   const {
     putResource: sscQualification,
     changeHandlers,
-    handlePut,
     updating,
     apiError
   } = usePut<SSCQualificationFormData>(
@@ -47,10 +46,63 @@ const SSCQualificationForm: React.FC<Props> = ({ application }) => {
   const grades = Object.values(Grade)
   const certificates = Object.values(QualificationType)
 
+    const config:FieldsConfig<Partial<ApplicantSSCQualification>> =     { numberOfSittings: {
+        type: 'text',
+    
+      },
+      certificateTypes: {
+        type: 'checkbox',
+       
+      },
+      certificates: {
+        type: 'fileArray',
+      
+      },
+      firstSubjectId: {
+        type: 'select',
+   
+      },
+      firstSubjectGrade: {
+        type: 'select',
+   
+      },
+      secondSubjectId: {
+        type: 'select',
+   
+      },
+      secondSubjectGrade: {
+        type: 'select',
+    
+      },
+      thirdSubjectId: {
+        type: 'select',
+   
+      },
+      thirdSubjectGrade: {
+        type: 'select',
+    
+      },
+      fourthSubjectId: {
+        type: 'select',
+        
+      },
+      fourthSubjectGrade: {
+        type: 'select',
+      
+      },
+      fifthSubjectId: {
+        type: 'select',
+     
+      },
+      fifthSubjectGrade: {
+        type: 'select',
+        
+      }
+    }
   useEffect(() => {
-    if (!subjects) return
-
-    const subjectOptions = subjects.map((subject) => ({
+    
+  if (!subjects) return
+      const subjectOptions = subjects.map((subject) => ({
       id: subject.id,
       label: subject.name
     }))
@@ -68,10 +120,10 @@ const SSCQualificationForm: React.FC<Props> = ({ application }) => {
       name: `certificateFile${sittingNumber}`,
       label: `Certificate File - Sitting ${sittingNumber}`,
     }})
-    
 
-    setFieldsConfig({
-      numberOfSittings: {
+
+
+    setFieldsConfig( { numberOfSittings: {
         type: 'text',
         onChangeHandler: changeHandlers['text']
       },
@@ -138,16 +190,39 @@ const SSCQualificationForm: React.FC<Props> = ({ application }) => {
         onChangeHandler: changeHandlers['select']
       }
     })
-  }, [subjects, changeHandlers, setFieldsConfig])
+   
+  }, [subjects, changeHandlers, certificates, grades, sscQualification, setFieldsConfig])
 
-
+ testIdContext.setContext(generateComponentFormTestIds(config,'ssc-form'))
+ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) =>{
+  const formdata = new FormData()
+  
+  // Get form data from the form event
+  const form = e.target as HTMLFormElement
+  const formDataObj = new FormData(form)
+  
+  // Append all form fields to formdata
+  for (const [key, value] of formDataObj.entries()) {
+    formdata.append(key, value)
+  }
+  
+  // Specifically append certificate files if they exist
+  const numberOfSittings = sscQualification?.numberOfSittings || 1
+  for (let i = 1; i <= numberOfSittings; i++) {
+    const fileInput = form.querySelector(`input[name="certificateFile${i}"]`) as HTMLInputElement
+    if (fileInput && fileInput.files && fileInput.files.length > 0) {
+      formdata.append(`certificateFile${i}`, fileInput.files[0])
+    }
+  }
+  handleForward()
+ }
   return (
     sscQualification && (
       <CustomForm
         data={sscQualification}
-        submitHandler={handlePut}
+        submitHandler={handleSubmit}
         formLabel="Fill in O'level Qualification"
-        onCancel={navigateToHome}
+        onCancel={handleBackward}
         submiting={updating}
         error={apiError}
       />

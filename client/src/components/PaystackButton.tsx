@@ -6,17 +6,27 @@ import { usePost } from '@/hooks/useApiQuery'
 import { API_ROUTES } from '@/config/routes'
 import { useRouter } from 'next/navigation'
 import { ApplicationTestIds } from '@/test/testIds'
-
-interface PaymentButtonProps {
-  email: string
-  amount: number
-  programId: number
-  applicantUserId: number
+export enum PaymentType{
+  APPLICATION_FEE ='application-fee',
+  ACCEPTANCE_FEE ='acceptance-fee'
+}
+export type PaymentButtonProps={
+        paymentType:PaymentType
+     
+        applicantUserId:number
+        programId:number
 }
 
+export interface InitializePaymentResponse{
+  access_code:string
+  reference:string
+  authorizationUrl:string
+}
+
+
 export default function PaymentButton({
-  email,
-  amount,
+ 
+  paymentType,
   programId,
   applicantUserId
 }: PaymentButtonProps) {
@@ -24,11 +34,11 @@ export default function PaymentButton({
   const { handlePost, posting } = usePost<
     PaymentButtonProps,
     { status: boolean; message: string ;access_code: string; reference: string  }
-  >(API_ROUTES.PAYMENT.INITIALIZE_GATEWAY, { email, amount, programId, applicantUserId })
+  >(API_ROUTES.PAYMENT.INITIALIZE_GATEWAY, { paymentType, programId, applicantUserId })
 
 
-  const initiateTransaction = async (e: any) => {
-    e.preventDefault()
+  const initiateTransaction = async (e: React.MouseEvent<HTMLButtonElement> ) => {
+   
 
     try {
       const response = await handlePost(e)

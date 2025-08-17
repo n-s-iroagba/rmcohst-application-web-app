@@ -59,6 +59,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const response = await api.get<User>(API_ROUTES.AUTH.ME)
       console.log('User data fetched successfully:', response.data)
       setUser(response.data)
+      /* eslint-disable @typescript-eslint/no-explicit-any */
     } catch (error: any) {
       console.error('Failed to fetch user:', error)
       setManualError(error?.response?.data?.message || 'Failed to fetch user')

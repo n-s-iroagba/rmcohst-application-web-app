@@ -82,8 +82,7 @@ const ProgramSpecificRequirementList = () => {
         searchKeys={['tag', 'minimumGrade']}
         onResults={setSearchResults}
         placeholder="Search specific requirements by tag or grade..."
-        className="mb-4"
-      />
+        className="mb-4" testId={''}      />
 
       <div className="flex flex-col gap-4">
         {searchResults?.length ? (

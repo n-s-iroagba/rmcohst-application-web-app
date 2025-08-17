@@ -84,7 +84,7 @@ export const API_ROUTES = {
   },
   PAYMENT: {
     LIST: '/payments',
-
+    GET_ACCEPTANCE_FEE_PAYMENTS:(id:number|string)=>`payments/acceptance-fees/${id}`,
     GET_CURRENT_SESSION_APPLICATION_PAYMENTS:(applicantUserId: number | string) => `/payments/${applicantUserId}/current-session-payments`,
     INITIALIZE_GATEWAY: '/payments/initialize',
     VERIFY: (reference: string) => `/payments/verify/${reference}`
@@ -132,7 +132,7 @@ export type RouteParams = {
   viewer: {
     article: { id: string }
   }
-  editor: {}
+  // editor: {}
   adPlacer: {
     campaign: { id: string }
     analytics: { id: string }

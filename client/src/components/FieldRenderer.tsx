@@ -1,5 +1,6 @@
 'use client'
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { formatCamelCase } from '@/utils/formatCamelCase'
 import {
   TextField,
@@ -7,7 +8,6 @@ import {
   SelectField,
   CheckboxField,
   FileField,
-  MultiGroupSelectField,
   RadioField,
   PasswordField
 } from './FormFields'
@@ -66,7 +66,7 @@ export function FieldRenderer<T extends Record<string, any>>({
       {Object.entries(fieldsConfig).map(([key, config]) => {
         if (!(key in data) || !config) return null
 
-        const value = data[key as keyof T]
+        const value = data[key as keyof T].type
         const error = getFieldError(key)
         const testId = FIELD_TEST_IDS[key as string]
 

@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
-import { Calendar, Edit, Trash2, CheckCircle, EyeIcon } from 'lucide-react'
-import { apiRoutes } from '@/constants/apiRoutes'
+import { Calendar, CheckCircle, EyeIcon } from 'lucide-react'
 import { GenericSearchBar } from './SearchBar'
 import { useGet } from '@/hooks/useApiQuery'
 import { useRoutes } from '@/hooks/useRoutes'
 import { title } from 'process'
+import { API_ROUTES } from '@/config/routes'
+import { Spinner } from './Spinner'
+import ErrorAlert from './ErrorAlert'
 
 export interface AdmissionSession {
   id: number
@@ -67,19 +69,20 @@ const AdmissionSessionListItem: React.FC<AdmissionSessionListItemProps> = ({
 }
 
 const AdmissionSessionList = () => {
-  const { resourceData } = useGet<AdmissionSession[]>(apiRoutes.admissionSession.all)
+
+    const { resourceData: sessions, loading, error } = useGet<AdmissionSession[]>(API_ROUTES.SESSION.LIST)
   const { navigateToAdmissionSessionDetails } = useRoutes()
   const [searchResults, setSearchResults] = useState<AdmissionSession[]>([])
-
+  if (loading) return <Spinner/>
+  if (error) return <ErrorAlert message={error||'Session failed to load'}/>
   return (
     <>
       <GenericSearchBar<AdmissionSession>
-        data={resourceData || []}
+        data={sessions || []}
         searchKeys={['name']}
         onResults={setSearchResults}
         placeholder="Search departements by name ..."
-        className="mb-4"
-      />
+        className="mb-4" testId={''}      />
 
       <div className="flex flex-col gap-4">
         {searchResults?.length ? (

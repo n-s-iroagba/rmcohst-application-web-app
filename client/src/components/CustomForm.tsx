@@ -3,7 +3,7 @@ import { FieldRenderer } from './FieldRenderer'
 import { FieldsConfig } from '@/types/fields_config'
 import ErrorAlert from './ErrorAlert'
 import { testIdContext } from '@/test/utils/testIdContext'
-// import { testIdContext } from '@/test/utils/testIdContext'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 // Define the type for additional actions
 interface AdditionalAction {
@@ -107,7 +107,7 @@ export function CustomForm<T extends Record<string, any>>({
 export function CustomArrayForm<T extends Record<string, any>>({
   arrayData = [],
   errors = {},
-  fieldsConfig,
+
   onSubmit,
   icon,
   submitButtonLabel = 'Submit',
@@ -115,7 +115,7 @@ export function CustomArrayForm<T extends Record<string, any>>({
   addOrRemovelabel,
   submiting,
   onCancel,
-  apiError,
+ 
   addFn,
   removeFn
 }: {

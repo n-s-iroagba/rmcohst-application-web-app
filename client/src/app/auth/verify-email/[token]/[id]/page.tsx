@@ -14,7 +14,6 @@ const VerifyEmail = () => {
     canResend,
     error,
     submitting,
-    resending,
     handleChangeEmailVerificationCodeData,
     verifyCode,
     handleResendEmailVerificationFormCode,

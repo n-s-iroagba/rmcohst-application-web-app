@@ -3,10 +3,8 @@
 import React, { useState, useCallback, useMemo } from 'react'
 import { useGet } from '@/hooks/useApiQuery'
 import { API_ROUTES } from '@/config/routes'
-import { Payment } from '@/types/payment'
 import { Application, ApplicationStatus } from '@/types/application'
 import {
-  CreditCard,
   User,
   GraduationCap,
   FileText,
@@ -18,22 +16,15 @@ import {
   XCircle,
   LucideIcon
 } from 'lucide-react'
-
-import { useAuthContext } from '@/context/AuthContext'
-import { useRoutes } from '@/hooks/useRoutes'
 import { Spinner } from '@/components/Spinner'
 import BiodataForm from '@/components/BiodataForm'
 import SSCQualificationForm from '@/components/SSCQualificationForm'
 import ProgramSpecificQualificationForm from '@/components/ProgramSpecificQualificationForm'
-import { getPreviouslyCachedImageOrNull } from 'next/dist/server/image-optimizer'
+import { useParams } from 'next/navigation'
 
 // Strict type definitions
 type ApplicationStep = 'biodata' | 'ssc' | 'program-specific' | 'review' | 'submitted'
 
-export interface ApplicationPaymentStatus {
-  status: 'PENDING' | 'PAID' | 'FAILED' | 'NO-PAYMENT'
-  payment: Payment[]
-}
 
 interface StepConfig {
   id: ApplicationStep
@@ -58,9 +49,8 @@ const ApplicationPage: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<ApplicationStep>('biodata')
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
-  const { user } = useAuthContext()
-  const { navigateToSelectProgram } = useRoutes()
-
+ const applicationId = useParams().id as string
+ 
   // Memoized status configurations
   const statusConfigs = useMemo(
     (): Record<ApplicationStatus, StatusConfig> => ({
@@ -98,8 +88,6 @@ const ApplicationPage: React.FC = () => {
 
 
 
-  // TODO: Fix hardcoded applicationId - should come from payment data or context
-  const applicationId = '1'
   //
   const {
     resourceData: application,
@@ -109,7 +97,7 @@ const ApplicationPage: React.FC = () => {
 
 API_ROUTES.APPLICATION.GET_BY_ID(applicationId))
 
-
+console.log('application',application)
 
   
   // Event handlers
@@ -169,26 +157,7 @@ API_ROUTES.APPLICATION.GET_BY_ID(applicationId))
     </div>
   )
 
-  const renderPaymentStatusScreen = (
-    title: string,
-    showButton: boolean = false,
-    buttonText?: string
-  ) => (
-    <div className="max-w-2xl mx-auto">
-      <div className="text-center mb-8">
-        <CreditCard className="h-16 w-16 text-slate-600 mx-auto mb-4" />
-        <h1 className="text-3xl font-bold text-slate-800 mb-2">{title}</h1>
-        {showButton && buttonText && (
-          <button
-            className="bg-teal-900 hover:bg-teal-800 text-white px-6 py-2 rounded transition-colors"
-            onClick={navigateToSelectProgram}
-          >
-            {buttonText}
-          </button>
-        )}
-      </div>
-    </div>
-  )
+
 
   const renderStepNavigation = (application: Application) => (
     <div className="flex justify-center mb-8">
@@ -240,11 +209,15 @@ API_ROUTES.APPLICATION.GET_BY_ID(applicationId))
 
     switch (currentStep) {
       case 'biodata':
-        return <BiodataForm application={application} />
+        return <BiodataForm application={application} handleForward={()=>handleStepChange('ssc')}  />
       case 'ssc':
-        return <SSCQualificationForm application={application} />
+        return <SSCQualificationForm application={application} handleBackward={handlePreviousStep} handleForward={
+          application.programSpecificQualifications?()=>handleStepChange('program-specific'):()=>handleStepChange('review')}  />
       case 'program-specific':
-        return <ProgramSpecificQualificationForm application={application} />
+        return <ProgramSpecificQualificationForm
+        handleBackward={handlePreviousStep}
+        application={application} 
+        handleForward={()=>handleStepChange('review')}  />
       case 'review':
         return renderReviewStep()
       default:
@@ -355,13 +328,9 @@ API_ROUTES.APPLICATION.GET_BY_ID(applicationId))
   // Main render logic
   if (isApplicationLoading) return renderLoadingState()
   if (applicationError) return renderErrorState()
+  if (application) return renderDraftApplication()
 
-  // Default fallback
-  return renderPaymentStatusScreen(
-    'Begin your journey to healthcare professionalism',
-    true,
-    'Click Here To Start Your Application'
-  )
+
 }
 
 export default ApplicationPage

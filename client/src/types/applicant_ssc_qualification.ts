@@ -1,4 +1,5 @@
 import { Grade } from './program_ssc_requirement'
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 export interface ApplicantSSCQualification {
   id: number
   applicationId: number

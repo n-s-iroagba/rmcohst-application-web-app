@@ -2,10 +2,11 @@
 import { google } from 'googleapis'
 import { Readable } from 'stream'
 import logger from '../utils/logger'
-import ApplicationService from './ApplicationService'
-import { ApplicantProgramSpecificQualification, Application, Biodata } from '../models'
+
+import { ApplicantProgramSpecificQualification, Biodata } from '../models'
 import { ApplicantSSCQualification } from '../models/ApplicantSSCQualification'
-import { FullApplication } from '../types/models'
+import { FullApplication } from '../types/join-model.types'
+
 
 interface DriveFileUpload {
   name: string

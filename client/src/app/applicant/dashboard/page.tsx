@@ -1,40 +1,31 @@
 'use client'
 
-import { ReactNode, useEffect, useState } from 'react'
+import ErrorAlert from '@/components/ErrorAlert'
+import { AdmissionSession } from '@/components/SessionList'
 import { Spinner } from '@/components/Spinner'
-import dynamic from 'next/dynamic'
-import { AlertTriangle, CheckCircle, Clock, FileText, CreditCard } from 'lucide-react'
-
+import TodoAlert from '@/components/TodoAlert'
 import { useAuthContext } from '@/context/AuthContext'
 import { useGet } from '@/hooks/useApiQuery'
 import { Application, ApplicationStatus } from '@/types/application'
-import TodoAlert from '@/components/TodoAlert'
-import ErrorAlert from '@/components/ErrorAlert'
 import { Payment } from '@/types/payment'
-import { API_ROUTES } from '@/config/routes'
-import { ApplicationTestIds } from '@/test/testIds'
-
-import { AdmissionSession } from '@/components/SessionList'
 import { motion } from 'framer-motion'
+import {
+  AlertTriangle,
+  CheckCircle,
+  DollarSign,
+  FileText,
+  GraduationCap
+} from 'lucide-react'
+import { ReactNode } from 'react'
+import { getPaymentStatusInfo, PaymentStatusCard } from '../../../components/PaymentStatusCard'
+import { API_ROUTES } from '../../../constants/apiRoutes'
+import { getStatusDisplay } from '../../../helpers/getStatusDisplay'
+import { ApplicationTestIds } from '../../../test/testIds/applicationTestIds'
 
-// Dynamic imports for components that might have SSR issues
 
 
-
-
-// Dynamic import for react-icons to avoid SSR issues
-const FiXCircle = dynamic(() => import('react-icons/fi').then(mod => ({ default: mod.FiXCircle })), {
-  ssr: false,
-})
-
-const Todo = () => {
-  const [mounted, setMounted] = useState(false)
+const Dashboard = () => {
   const { user, loading: authLoading, error: authError } = useAuthContext()
-  
-  // Ensure component is mounted before accessing browser APIs
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   const {
     error: sessionError,
@@ -52,18 +43,15 @@ const Todo = () => {
     resourceData: application,
     error: applicationError,
     loading: applicationLoading
-  } = useGet<Application>(user ? API_ROUTES.APPLICATION.GET_BY_APPLICANT_ID(user.id) : null)
+  } = useGet<Application>(user ? API_ROUTES.APPLICATION.GET_BY_APPLICANT_ID : null)
 
-  // Get acceptance fee payments specifically
   const {
     resourceData: acceptanceFeePayments,
     error: acceptanceFeeError,
     loading: acceptanceFeeLoading
   } = useGet<Payment[]>(user ? API_ROUTES.PAYMENT.GET_ACCEPTANCE_FEE_PAYMENTS(user.id) : null)
 
-  const todos: ReactNode[] = []
-  
-  // Animation variants - only use if framer-motion is available
+  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -85,105 +73,95 @@ const Todo = () => {
     }
   }
 
-  // Helper function to get status color and icon
-  const getStatusDisplay = (status: ApplicationStatus) => {
-    switch (status) {
-      case ApplicationStatus.DRAFT:
-        return { color: 'text-gray-600', bgColor: 'bg-gray-100', icon: FileText, text: 'Draft' }
-      case ApplicationStatus.SUBMITTED:
-        return { color: 'text-blue-600', bgColor: 'bg-blue-100', icon: Clock, text: 'Submitted' }
-      case ApplicationStatus.UNDER_REVIEW:
-        return { color: 'text-orange-600', bgColor: 'bg-orange-100', icon: Clock, text: 'Under Review' }
-      case ApplicationStatus.PENDING_APPROVAL:
-        return { color: 'text-yellow-600', bgColor: 'bg-yellow-100', icon: Clock, text: 'Pending Approval' }
-      case ApplicationStatus.APPROVED:
-        return { color: 'text-green-600', bgColor: 'bg-green-100', icon: CheckCircle, text: 'Approved' }
-      case ApplicationStatus.REJECTED:
-        return { color: 'text-red-600', bgColor: 'bg-red-100', icon: FiXCircle, text: 'Rejected' }
-      case ApplicationStatus.ADMITTED:
-        return { color: 'text-emerald-600', bgColor: 'bg-emerald-100', icon: CheckCircle, text: 'Admitted' }
-      default:
-        return { color: 'text-gray-600', bgColor: 'bg-gray-100', icon: FileText, text: 'Unknown' }
-    }
-  }
+  // Get payment status info
+  const applicationPaymentInfo = getPaymentStatusInfo(payments)
+  const acceptanceFeePaymentInfo = getPaymentStatusInfo(acceptanceFeePayments)
 
-  // Check payment statuses
-  if (payments) {
-    const hasPaid = payments.some((p) => p.status === 'PAID')
-    const hasPending = payments.some((p) => p.status === 'PENDING')
-    const hasFailed = payments.some((p) => p.status === 'FAILED')
+  // Generate todos based on current state
+  const todos: ReactNode[] = []
 
-    if (!hasPaid) {
-      if (hasPending) {
-        todos.push(
-          <TodoAlert
-            testId={ApplicationTestIds.navigateToPayments}
-            key="pending-payment"
-            message="You have pending payments awaiting confirmation"
-            link="/applicant/payments"
-            heading="Pending Payment"
-          />
-        )
-      } else if (hasFailed && !hasPending) {
-        todos.push(
-          <TodoAlert
-            testId={ApplicationTestIds.navigateToPayments}
-            key="failed-payment"
-            message="Your recent payment attempt failed. Please retry."
-            link="/applicant/payments"
-            heading="Failed Payment"
-          />
-        )
-      }
-    }
-  } else if (!payments || !application) {
+  if (!application && !applicationPaymentInfo.hasPaid) {
     todos.push(
       <TodoAlert
         testId={ApplicationTestIds.startApplication}
         key="no-application"
-        message="You do not have any applications. Select Program, Make payment and complete application."
+        message="Start your admission journey by selecting a program and making the application payment."
         link="/applicant/programs"
-        heading="Start Application Process"
+        heading="Begin Application"
       />
     )
   }
 
-  // Check application status
-  if (application && application.status === ApplicationStatus.DRAFT) {
+  if (application?.status === ApplicationStatus.DRAFT && applicationPaymentInfo.hasPaid) {
     todos.push(
       <TodoAlert
         testId={ApplicationTestIds.navigateToCompleteApplication}
         key="incomplete-application"
-        message="You have an incomplete application, click to continue application."
+        message="Your application payment is confirmed. Complete your application form to proceed."
         link="/applicant/application"
-        heading="Continue Application Process"
+        heading="Complete Application"
       />
     )
   }
 
-  // Check acceptance fee payment for approved/admitted applications
-  if (application && (application.status === ApplicationStatus.APPROVED || application.status === ApplicationStatus.ADMITTED)) {
-    const hasAcceptanceFeePaid = acceptanceFeePayments?.some((p) => p.status === 'PAID')
-    const hasPendingAcceptanceFee = acceptanceFeePayments?.some((p) => p.status === 'PENDING')
-    const hasFailedAcceptanceFee = acceptanceFeePayments?.some((p) => p.status === 'FAILED')
+  if (applicationPaymentInfo.hasFailedWithoutRetry) {
+    todos.push(
+      <TodoAlert
+        testId={ApplicationTestIds.navigateToPayments}
+        key="failed-payment"
+        message="Your application payment failed. Please retry to continue your application."
+        link="/applicant/programs"
+        heading="Retry Application Payment"
+      />
+    )
+  }
+  if (applicationPaymentInfo.hasPending) {
+    todos.push(
+      <TodoAlert
+        testId={ApplicationTestIds.navigateToPayments}
+        key="pending-payment"
+        message="Your application payment is pending. Please click to verify payment."
+        link="/applicant/payments"
+        heading="Pending Application Payment"
+      />
+    )
+  }
 
-    if (!hasAcceptanceFeePaid) {
-      if (hasPendingAcceptanceFee) {
-        todos.push(
-          <TodoAlert
-            testId="pending-acceptance-fee"
-            key="pending-acceptance-fee"
-            message="Your acceptance fee payment is being processed"
-            link="/applicant/acceptance-fee"
-            heading="Pending Acceptance Fee"
-          />
-        )
-      } else if (hasFailedAcceptanceFee || !acceptanceFeePayments?.length) {
-        todos.push(
-          // <PaymentButton paymentType={PaymentType.ACCEPTANCE_FEE} applicantUserId={Number(user.id)} programId={application.programId}/>
-        )
-      }
-    }
+  if (application?.status === ApplicationStatus.ADMITTED && acceptanceFeePaymentInfo.hasFailedWithoutRetry) {
+    todos.push(
+      <TodoAlert
+        testId="retry-acceptance-fee"
+        key="failed-acceptance-fee"
+        message="Your acceptance fee payment failed. Please retry to secure your admission."
+        link={`/applicant/pay-acceptance-fee/${application.programId}`}
+        heading="Retry Acceptance Fee"
+      />
+    )
+  }
+
+
+  if (application?.status === ApplicationStatus.ADMITTED && acceptanceFeePaymentInfo.hasPending) {
+    todos.push(
+      <TodoAlert
+        testId="pending-acceptance-fee"
+        key="pending-acceptance-fee"
+        message="Your acceptance fee payment is pending. Please verify to secure your admission."
+        link="/applicant/payments"
+        heading="Verify Acceptance Fee"
+      />
+    )
+  }
+
+  if (application?.status === ApplicationStatus.ADMITTED && !acceptanceFeePaymentInfo.hasPaid && !acceptanceFeePaymentInfo.hasPending) {
+    todos.push(
+      <TodoAlert
+        testId="pay-acceptance-fee"
+        key="unpaid-acceptance-fee"
+        message="Congratulations on your admission! Pay your acceptance fee to confirm your enrollment."
+        link={`/applicant/pay-acceptance-fee/${application.programId}`}
+        heading="Pay Acceptance Fee"
+      />
+    )
   }
 
   if (authLoading || paymentLoading || sessionLoading || applicationLoading || acceptanceFeeLoading) {
@@ -198,102 +176,80 @@ const Todo = () => {
     return <ErrorAlert message={applicationError || paymentError || acceptanceFeeError || authError || sessionError} />
   }
 
-  // Don't render animations until component is mounted
-  if (!mounted) {
-    return (
-      <div className="w-full">
-        {/* Header */}
-        <div className="mb-4 sm:mb-6">
-          <h2 className="text-xl sm:text-2xl font-bold text-blue-900 mb-2 flex items-center gap-2 flex-wrap">
-            <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 flex-shrink-0" />
-            <span className="break-words">Welcome back, {user?.username}!</span>
-          </h2>
-          <h3 className="text-base sm:text-lg font-semibold text-blue-700">Applicant Dashboard</h3>
-        </div>
-        <div>Current Admission Session: {session?.name}</div>
+  return (
+    <div className="w-full max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-2xl sm:text-3xl font-bold text-blue-900 mb-2 flex items-center gap-3">
+          <GraduationCap className="w-8 h-8 text-blue-600" />
+          <span>Welcome back, {user?.username}!</span>
+        </h2>
+        <p className="text-lg text-blue-700">Student Dashboard</p>
+        {session && (
+          <p className="text-sm text-gray-600 mt-1">
+            Current Admission Session: <span className="font-medium">{session.name}</span>
+          </p>
+        )}
+      </div>
 
-        {/* Application Status Card */}
-        {application && (
-          <div className="mb-6">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-              <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <FileText className="w-5 h-5" />
-                Application Status
-              </h4>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Application Status */}
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-full ${getStatusDisplay(application.status).bgColor}`}>
-                    {(() => {
-                      const StatusIcon = getStatusDisplay(application.status).icon
-                      return <StatusIcon className={`w-4 h-4 ${getStatusDisplay(application.status).color}`} />
-                    })()}
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Application Status</p>
-                    <p className={`font-semibold ${getStatusDisplay(application.status).color}`}>
-                      {getStatusDisplay(application.status).text}
-                    </p>
-                  </div>
+      {/* Application Status Overview */}
+      {application && (
+        <motion.div
+          variants={itemVariants}
+          initial="hidden"
+          animate="visible"
+          className="mb-8"
+        >
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-200">
+            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <FileText className="w-6 h-6" />
+              Application Overview
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Application Status */}
+              <div className="text-center">
+                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-3 ${getStatusDisplay(application.status).bgColor}`}>
+                  {(() => {
+                    const StatusIcon = getStatusDisplay(application.status).icon
+                    return <StatusIcon className={`w-8 h-8 ${getStatusDisplay(application.status).color}`} />
+                  })()}
                 </div>
-
-                {/* Acceptance Fee Status */}
-                {( application.status === ApplicationStatus.ADMITTED) && (
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-full ${
-                      acceptanceFeePayments?.some(p => p.status === 'PAID') 
-                        ? 'bg-green-100' 
-                        : acceptanceFeePayments?.some(p => p.status === 'PENDING')
-                        ? 'bg-yellow-100'
-                        : 'bg-red-100'
-                    }`}>
-                      <CreditCard className={`w-4 h-4 ${
-                        acceptanceFeePayments?.some(p => p.status === 'PAID')
-                          ? 'text-green-600'
-                          : acceptanceFeePayments?.some(p => p.status === 'PENDING')
-                          ? 'text-yellow-600'
-                          : 'text-red-600'
-                      }`} />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Acceptance Fee</p>
-                      <p className={`font-semibold ${
-                        acceptanceFeePayments?.some(p => p.status === 'PAID')
-                          ? 'text-green-600'
-                          : acceptanceFeePayments?.some(p => p.status === 'PENDING')
-                          ? 'text-yellow-600'
-                          : 'text-red-600'
-                      }`}>
-                        {acceptanceFeePayments?.some(p => p.status === 'PAID')
-                          ? 'Paid'
-                          : acceptanceFeePayments?.some(p => p.status === 'PENDING')
-                          ? 'Pending'
-                          : 'Not Paid'
-                        }
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Submitted Date */}
+                <p className="text-sm text-gray-600 mb-1">Application Status</p>
+                <p className={`font-bold text-lg ${getStatusDisplay(application.status).color}`}>
+                  {getStatusDisplay(application.status).text}
+                </p>
                 {application.submittedAt && (
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-blue-100">
-                      <Clock className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Submitted</p>
-                      <p className="font-semibold text-gray-800">
-                        {new Date(application.submittedAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Submitted: {new Date(application.submittedAt).toLocaleDateString()}
+                  </p>
                 )}
+              </div>
+
+              {/* Progress Steps */}
+              <div className="md:col-span-2">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-600">Application Progress</span>
+                  <span className="text-sm text-gray-500">
+                    {application.status === ApplicationStatus.ADMITTED ? '100%' :
+                      application.status === ApplicationStatus.SUBMITTED ? '75%' :
+                        application.status === ApplicationStatus.DRAFT ? '25%' : '0%'}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className={`h-2 rounded-full transition-all duration-500 ${application.status === ApplicationStatus.ADMITTED ? 'bg-green-500 w-full' :
+                      application.status === ApplicationStatus.APPROVED ? 'bg-blue-500 w-3/4' :
+                        application.status === ApplicationStatus.SUBMITTED ? 'bg-yellow-500 w-1/2' :
+                          application.status === ApplicationStatus.DRAFT ? 'bg-orange-500 w-1/4' :
+                            'bg-gray-300 w-0'
+                      }`}
+                  />
+                </div>
 
                 {/* Rejection Reason */}
                 {application.status === ApplicationStatus.REJECTED && application.rejectionReason && (
-                  <div className="md:col-span-2 p-4 bg-red-50 rounded-lg border border-red-200">
+                  <div className="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
                     <p className="text-sm text-red-600 font-medium mb-1">Rejection Reason:</p>
                     <p className="text-sm text-red-800">{application.rejectionReason}</p>
                   </div>
@@ -301,168 +257,87 @@ const Todo = () => {
               </div>
             </div>
           </div>
-        )}
+        </motion.div>
+      )}
 
-        {/* Todo Items - Without Animation */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-          {todos.length > 0 ? (
-            todos.map((todo, index) => (
-              <div
-                key={index}
-                className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border-l-4 border-indigo-500"
-              >
-                {todo}
-              </div>
-            ))
-          ) : (
-            <div className="col-span-full p-4 sm:p-6 bg-blue-50 rounded-lg sm:rounded-xl border border-blue-200 text-center">
-              <p className="text-blue-700 font-medium text-sm sm:text-base">
-                🎉 All caught up! No pending tasks
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-    )
-  }
+      {/* Payment Status Cards */}
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"
+      >
+        {/* Application Fee Status */}
+        <motion.div variants={itemVariants}>
+          <PaymentStatusCard
+            title="Application Fee"
+            icon={DollarSign}
+            paymentInfo={applicationPaymentInfo}
+            linkPath="/applicant/payments"
+            testId={ApplicationTestIds.navigateToPayments}
+          />
+        </motion.div>
 
-  return (
-    <>
-      <div className="w-full">
-        {/* Header */}
-        <div className="mb-4 sm:mb-6">
-          <h2 className="text-xl sm:text-2xl font-bold text-blue-900 mb-2 flex items-center gap-2 flex-wrap">
-            <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 flex-shrink-0" />
-            <span className="break-words">Welcome back, {user?.username}!</span>
-          </h2>
-          <h3 className="text-base sm:text-lg font-semibold text-blue-700">Applicant Dashboard</h3>
-        </div>
-        <div>Current Admission Session: {session?.name}</div>
-
-        {/* Application Status Card */}
-        {application && (
-          <motion.div
-            variants={itemVariants}
-            initial="hidden"
-            animate="visible"
-            className="mb-6"
-          >
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-              <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <FileText className="w-5 h-5" />
-                Application Status
-              </h4>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Application Status */}
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-full ${getStatusDisplay(application.status).bgColor}`}>
-                    {(() => {
-                      const StatusIcon = getStatusDisplay(application.status).icon
-                      return <StatusIcon className={`w-4 h-4 ${getStatusDisplay(application.status).color}`} />
-                    })()}
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Application Status</p>
-                    <p className={`font-semibold ${getStatusDisplay(application.status).color}`}>
-                      {getStatusDisplay(application.status).text}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Acceptance Fee Status */}
-                {( application.status === ApplicationStatus.ADMITTED) && (
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-full ${
-                      acceptanceFeePayments?.some(p => p.status === 'PAID') 
-                        ? 'bg-green-100' 
-                        : acceptanceFeePayments?.some(p => p.status === 'PENDING')
-                        ? 'bg-yellow-100'
-                        : 'bg-red-100'
-                    }`}>
-                      <CreditCard className={`w-4 h-4 ${
-                        acceptanceFeePayments?.some(p => p.status === 'PAID')
-                          ? 'text-green-600'
-                          : acceptanceFeePayments?.some(p => p.status === 'PENDING')
-                          ? 'text-yellow-600'
-                          : 'text-red-600'
-                      }`} />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Acceptance Fee</p>
-                      <p className={`font-semibold ${
-                        acceptanceFeePayments?.some(p => p.status === 'PAID')
-                          ? 'text-green-600'
-                          : acceptanceFeePayments?.some(p => p.status === 'PENDING')
-                          ? 'text-yellow-600'
-                          : 'text-red-600'
-                      }`}>
-                        {acceptanceFeePayments?.some(p => p.status === 'PAID')
-                          ? 'Paid'
-                          : acceptanceFeePayments?.some(p => p.status === 'PENDING')
-                          ? 'Pending'
-                          : 'Not Paid'
-                        }
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Submitted Date */}
-                {application.submittedAt && (
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-blue-100">
-                      <Clock className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Submitted</p>
-                      <p className="font-semibold text-gray-800">
-                        {new Date(application.submittedAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Rejection Reason */}
-                {application.status === ApplicationStatus.REJECTED && application.rejectionReason && (
-                  <div className="md:col-span-2 p-4 bg-red-50 rounded-lg border border-red-200">
-                    <p className="text-sm text-red-600 font-medium mb-1">Rejection Reason:</p>
-                    <p className="text-sm text-red-800">{application.rejectionReason}</p>
-                  </div>
-                )}
-              </div>
-            </div>
+        {/* Acceptance Fee Status - Only show if admitted or if there are acceptance fee payments */}
+        {(application?.status === ApplicationStatus.ADMITTED || acceptanceFeePayments?.length) && (
+          <motion.div variants={itemVariants}>
+            <PaymentStatusCard
+              title="Acceptance Fee"
+              icon={GraduationCap}
+              paymentInfo={acceptanceFeePaymentInfo}
+              linkPath="/applicant/payments"
+              testId="navigate-to-acceptance-fee"
+            />
           </motion.div>
         )}
+      </motion.div>
 
-        {/* Todo Items */}
+      {/* Action Items / Todos */}
+      {todos.length > 0 && (
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10"
+          className="mb-8"
         >
-          {todos.length > 0 ? (
-            todos.map((todo, index) => (
+          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <AlertTriangle className="w-6 h-6 text-amber-600" />
+            Action Required
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {todos.map((todo, index) => (
               <motion.div
                 key={index}
                 variants={itemVariants}
-                className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border-l-4 border-indigo-500"
+                className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border-l-4 border-amber-500"
               >
                 {todo}
               </motion.div>
-            ))
-          ) : (
-            <div className="col-span-full p-4 sm:p-6 bg-blue-50 rounded-lg sm:rounded-xl border border-blue-200 text-center">
-              <p className="text-blue-700 font-medium text-sm sm:text-base">
-                🎉 All caught up! No pending tasks
-              </p>
-            </div>
-          )}
+            ))}
+          </div>
         </motion.div>
-      </div>
-    </>
+      )}
+
+      {/* Success Message when all is complete */}
+      {todos.length === 0 && application && (
+        <motion.div
+          variants={itemVariants}
+          initial="hidden"
+          animate="visible"
+          className="bg-gradient-to-r from-green-50 to-emerald-50 p-8 rounded-2xl border border-green-200 text-center"
+        >
+          <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-green-800 mb-2">All Set!</h3>
+          <p className="text-green-700">
+            {application.status === ApplicationStatus.ADMITTED && acceptanceFeePaymentInfo.hasPaid
+              ? "Congratulations! Your admission is confirmed and all fees are paid."
+              : "You're all caught up with no pending actions required."
+            }
+          </p>
+        </motion.div>
+      )}
+    </div>
   )
 }
 
-export default Todo
+export default Dashboard

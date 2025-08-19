@@ -1,13 +1,11 @@
-import type { Request, Response, NextFunction } from 'express'
-import jwt from 'jsonwebtoken'
-import appConfig from '../config' // Default import
-import User from '../models/User' // Assuming User model and UserRole enum
+import type { NextFunction, Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+import User from '../models/User'; // Assuming User model and UserRole enum
 
 // Import your custom error classes
-import { UnauthorizedError, ForbiddenError, NotFoundError, BadRequestError } from '../utils/errors' // Adjust path as needed
-import logger from '../utils/logger'
-import { UserRole } from '../models'
-import { TokenService } from '../services/TokenService'
+import { TokenService } from '../services/TokenService';
+import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from '../utils/errors'; // Adjust path as needed
+import logger from '../utils/logger';
 
 // Fix: Make user optional to match Express Request interface
 export interface AuthenticatedRequest extends Request {
@@ -24,7 +22,7 @@ interface LoginTokenPayload {
 interface EmailVerificationTokenPayload {
   userId: string
   verificationCode: string
-  type: 'email_verification'
+  type: 'email_verification' 
   iat?: number
   exp?: number
 }
@@ -242,7 +240,7 @@ declare global {
 }
 
 export class TokenMiddleware {
-  constructor(private tokenService: TokenService) {}
+  constructor(private tokenService: TokenService) { }
 
   /**
    * Express middleware for token verification

@@ -1,13 +1,12 @@
 'use client'
 
-import { API_ROUTES } from '@/config/routes'
 import { useGet } from '@/hooks/useApiQuery'
 import { Program, ProgramLevel } from '@/types/program'
-import  { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { API_ROUTES } from '../constants/apiRoutes'
 
 export const usePrograms = () => {
   const { resourceData: programs, loading, error } = useGet<Program[]>(API_ROUTES.PROGRAM.LIST)
-  console.log('progs', programs)
   const [selectedLevel, setSelectedLevel] = useState<ProgramLevel | null>(null)
   const [filteredPrograms, setFilteredPrograms] = useState<Program[]>([])
 
@@ -21,8 +20,8 @@ export const usePrograms = () => {
 
   return {
     programs,
-   loading,
-   error,
+    loading,
+    error,
     selectedLevel,
     setSelectedLevel,
     filteredPrograms

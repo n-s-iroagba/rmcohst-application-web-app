@@ -1,13 +1,14 @@
 'use client'
 
-import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { FilterDropdown } from '@/components/FilterDropdown'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 import { GenericSearchBar } from '@/components/SearchBar'
-import { Program } from '@/types/program'
-import { ApplicationTestIds } from '@/test/testIds'
 import { usePrograms } from '@/hooks/useProgram'
+
+import { Program } from '@/types/program'
+import { ApplicationTestIds } from '../../../test/testIds/applicationTestIds'
 
 export default function SelectProgramPage() {
   const { programs, filteredPrograms, selectedLevel, setSelectedLevel } = usePrograms()
@@ -44,7 +45,7 @@ export default function SelectProgramPage() {
       />
 
       <div className="grid gap-4">
-        {searchResults.map((program,index) => (
+        {searchResults.map((program, index) => (
           <div
             key={program.id}
             className="p-4 cursor-pointer hover:shadow-md transition border"

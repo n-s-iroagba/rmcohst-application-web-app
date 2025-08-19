@@ -1,10 +1,5 @@
 import axios from 'axios'
-export interface GoogleProfile {
-  id: string
-  email: string
-  name: string
-  picture?: string
-}
+
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!

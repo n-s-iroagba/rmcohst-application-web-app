@@ -1,14 +1,9 @@
 // services/rbacService.ts
 
 import { Permission, Role, User } from '../models'
+import { UserWithRole } from '../types/join-model.types'
 
-export interface UserWithRole extends User {
-  role: RoleWithPermissions[]
-}
 
-export interface RoleWithPermissions extends Role {
-  permissions?: Permission[]
-}
 
 class RbacService {
   // Fetch all role with their permissions

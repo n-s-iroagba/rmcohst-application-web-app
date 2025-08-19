@@ -1,18 +1,18 @@
 import axios, { AxiosResponse } from 'axios'
+import PaymentGatewayHelpers from '../helpers/PaymentGatewayHelpers'
+import { PaymentStatus } from '../models/Payment'
+import admissionSessonRepository from '../repositories/AdmissionSessionRepository'
+import PaymentRepository from '../repositories/PaymentRepository'
+import ProgramRepository from '../repositories/ProgramRepository'
+import userRepository from '../repositories/UserRepository'
 import {
   ClientPaymentInitializationPayload,
   PaystackVerificationResponse,
   PaystackWebhookEvent,
 } from '../types/paymentGateway.types'
-import admissionSessonRepository from '../repositories/AdmissionSessonRepository'
 import { NotFoundError, PaymentError } from '../utils/errors'
-import userRepository from '../repositories/UserRepository'
-import ProgramRepository from '../repositories/ProgramRepository'
-import PaymentGatewayHelpers from '../helpers/PaymentGatewayHelpers'
 import { logError } from '../utils/logger'
 import { PaymentService } from './PaymentService'
-import PaymentRepository from '../repositories/PaymentRepository'
-import { PaymentStatus } from '../models/Payment'
 const PAYSTACK_BASE_URL = 'https://api.paystack.co'
 const PAYSTACK_KEY =
   process.env.PAYSTACK_SECRET_KEY || 'sk_test_afebde26ed66d974615c5b212af460dbdde8507d'

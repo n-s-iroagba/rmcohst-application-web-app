@@ -1,15 +1,14 @@
 // src/services/PaymentService.ts
 
-import { PaymentStatus } from '../models/Payment'
-import ApplicationService from './ApplicationService'
-import logger, { logError } from '../utils/logger'
+import Payment, { PaymentStatus } from '../models/Payment'
+import PaymentRepository from '../repositories/PaymentRepository'
+import UserRepository from '../repositories/UserRepository'
 import { NotFoundError, PaymentError } from '../utils/errors'
+import logger, { logError } from '../utils/logger'
+import ApplicationService from './ApplicationService'
 import GoogleDriveApplicationService from './DriveService'
 import { EmailService } from './EmailService'
 import { ReceiptService } from './ReceiptService'
-import PaymentRepository from '../repositories/PaymentRepository'
-import UserRepository from '../repositories/UserRepository'
-import Payment from '../models/Payment'
 
 export class PaymentService {
   private static googleDriveService = new GoogleDriveApplicationService()
@@ -91,6 +90,8 @@ export class PaymentService {
       // Update payment with receipt information
       await PaymentRepository.updatePaymentById(payment.id, {
         receiptGeneratedAt: new Date(),
+        receiptFileId,
+        receiptLink,
       })
 
       // Send receipt email

@@ -6,6 +6,7 @@ import ApplicantSSCQualification, { SSCQualification } from './ApplicantSSCQuali
 import { Application } from './Application'
 import Biodata from './Biodata'
 import { Department } from './Department'
+import Payment from './Payment'
 import Permission from './Permission'
 import Program from './Program'
 import ProgramSession from './ProgramSession'
@@ -245,5 +246,19 @@ export default function setupAssociations() {
   AdmissionSession.hasMany(Application, {
     foreignKey: 'sessionId',
     as: 'applications',
+  })
+
+
+
+  Application.hasMany(Payment, {
+    foreignKey: 'applicationId',
+    as: 'payments',
+    onDelete: 'CASCADE',
+  })
+
+  Payment.belongsTo(Application, {
+    foreignKey: 'applicationId',
+    as: 'application',
+    onDelete: 'CASCADE',
   })
 }

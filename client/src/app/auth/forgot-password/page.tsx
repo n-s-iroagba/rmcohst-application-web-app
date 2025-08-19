@@ -1,13 +1,13 @@
 'use client'
-import React, { useEffect } from 'react'
-import { useAuth } from '@/hooks/useAuth'
 import { CustomForm } from '@/components/CustomForm'
-import { useRoutes } from '@/hooks/useRoutes'
 import { useFieldConfigContext } from '@/context/FieldConfigContext'
+import { testIdContext } from '@/context/testIdContext'
+import { useAuth } from '@/hooks/useAuth'
+import { useRoutes } from '@/hooks/useRoutes'
+import { forgotPasswordFormConfig } from '@/test/config/loginFormConfig'
+import { forgotPasswordTestIds } from '@/test/testIds/formTestIds'
 import { ForgotPasswordRequestDto } from '@/types/auth.types'
-import { testIdContext } from '@/test/utils/testIdContext'
-import { forgotPasswordFormConfig } from '@/utils/loginFormConfig'
-import { forgotPasswordTestIds } from '@/utils/formTestIds'
+import React, { useEffect } from 'react'
 
 
 
@@ -16,11 +16,11 @@ const ForgotPasswordForm: React.FC = () => {
     useAuth()
 
   const { navigateToLogin } = useRoutes()
-  const { createFieldsConfig  } = useFieldConfigContext<ForgotPasswordRequestDto>()
+  const { createFieldsConfig } = useFieldConfigContext<ForgotPasswordRequestDto>()
 
   useEffect(() => {
-    createFieldsConfig(forgotPasswordFormConfig,forgotPasswordChangeHandler)
-  }, [createFieldsConfig,forgotPasswordChangeHandler])
+    createFieldsConfig(forgotPasswordFormConfig, forgotPasswordChangeHandler)
+  }, [createFieldsConfig, forgotPasswordChangeHandler])
 
 
   testIdContext.setContext(forgotPasswordTestIds)
@@ -29,7 +29,7 @@ const ForgotPasswordForm: React.FC = () => {
 
   return (
     <div className="max-w-md mx-auto">
-     
+
 
       <CustomForm
         data={forgotPasswordRequest}

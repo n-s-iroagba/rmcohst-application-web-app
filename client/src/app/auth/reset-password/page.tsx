@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useEffect, Suspense } from 'react';
-import { useAuth } from '@/hooks/useAuth';
 import { CustomForm } from '@/components/CustomForm';
 import { useFieldConfigContext } from '@/context/FieldConfigContext';
+import { testIdContext } from '@/context/testIdContext';
+import { useAuth } from '@/hooks/useAuth';
+import { useRoutes } from '@/hooks/useRoutes';
+import { resetPasswordFormConfig } from '@/test/config/loginFormConfig';
+import { resetPasswordTestIds } from '@/test/testIds/formTestIds';
 import { ResetPasswordRequestDto } from '@/types/auth.types';
 import { useSearchParams } from 'next/navigation';
-import { resetPasswordFormConfig } from '@/utils/loginFormConfig';
-import { testIdContext } from '@/test/utils/testIdContext';
-import { resetPasswordTestIds } from '@/utils/formTestIds';
-import { useRoutes } from '@/hooks/useRoutes';
+import { Suspense, useEffect } from 'react';
 
 function ResetPasswordInner() {
   const { resetPasswordRequest, resetPassword, loading, error, resetPasswordChangeHandlers } = useAuth();

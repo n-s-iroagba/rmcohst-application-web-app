@@ -1,35 +1,30 @@
 'use client'
 
-import { useState } from 'react'
 import { useAuthContext } from '@/context/AuthContext'
-import { clearToken, setAccessToken } from '@/lib/apiUtils'
+import { clearToken, setAccessToken } from '@/lib/api'
+import { useState } from 'react'
 
-import { API_ROUTES } from '@/config/routes'
 import {
-  LoginRequestDto,
-  SignUpRequestDto,
-  VerifyEmailRequestDto,
-  ResendVerificationRequestDto,
   ForgotPasswordRequestDto,
-  ResetPasswordRequestDto,
-
+  ForgotPasswordResponseDto,
+  LoginRequestDto,
   LoginResponseDto,
+  ResetPasswordRequestDto,
+  SignUpRequestDto,
   SignUpResponseDto,
-  ForgotPasswordResponseDto
 } from '@/types/auth.types'
 
 import {
   FORGOT_PASSWORD_DEFAULT_DATA,
   LOGIN_FORM_DEFAULT_DATA,
-  RESEND_VERIFICATION_DEFAULT_DATA,
   RESET_PASSWORD_DEFAULT_DATA,
-  SIGNUP_FORM_DEFAULT_DATA,
-  VERIFY_EMAIL_DEFAULT_DATA
+  SIGNUP_FORM_DEFAULT_DATA
 } from '@/constants/auth'
 
+import { useRouter } from 'next/navigation'
+import { API_ROUTES } from '../constants/apiRoutes'
 import { usePost } from './useApiQuery'
 import { useRoutes } from './useRoutes'
-import { useRouter } from 'next/navigation'
 
 export const useAuth = () => {
   const { setUser } = useAuthContext()
@@ -71,27 +66,9 @@ export const useAuth = () => {
     LOGIN_FORM_DEFAULT_DATA
   )
 
-  // VERIFY EMAIL
-  const {
-    postResource: verifyEmailRequest,
 
-    handlePost: handleVerifyEmail,
-    posting: verifyEmailLoading
-  } = usePost<VerifyEmailRequestDto, LoginResponseDto>(
-    API_ROUTES.AUTH.VERIFY_EMAIL,
-    VERIFY_EMAIL_DEFAULT_DATA
-  )
 
-  // RESEND VERIFICATION
-  const {
-    postResource: resendVerificationRequest,
 
-    handlePost: handleResendVerification,
-    posting: resendVerificationLoading
-  } = usePost<ResendVerificationRequestDto, SignUpResponseDto>(
-    API_ROUTES.AUTH.RESEND_VERIFICATION_CODE,
-    RESEND_VERIFICATION_DEFAULT_DATA
-  )
 
   // FORGOT PASSWORD
   const {
@@ -107,10 +84,10 @@ export const useAuth = () => {
   // RESET PASSWORD
   const {
     postResource: resetPasswordRequest,
-    changeHandlers:resetPasswordChangeHandlers,
+    changeHandlers: resetPasswordChangeHandlers,
     handlePost: handleResetPassword,
     posting: resetPasswordLoading,
-      setPostResource:setResetPasswordPayload
+    setPostResource: setResetPasswordPayload
   } = usePost<ResetPasswordRequestDto, LoginResponseDto>(
     API_ROUTES.AUTH.RESET_PASSWORD,
     RESET_PASSWORD_DEFAULT_DATA
@@ -150,27 +127,13 @@ export const useAuth = () => {
     if ('accessToken' in loginResponse && 'user' in loginResponse) {
       setAccessToken(loginResponse.accessToken)
       setUser(loginResponse.user)
-      console.log('USERS',loginResponse.user)
+      console.log('USERS', loginResponse.user)
       navigateToDashboard(loginResponse.user.role)
     } else if ('verificationToken' in loginResponse && 'in' in loginResponse) {
       navigateToVerifyEmail(loginResponse.verificationToken, loginResponse.id)
     }
   }
 
-  // VERIFY EMAIL action
-  const verifyEmail = async (e: React.FormEvent<HTMLFormElement>) => {
-    const verifyEmailResponse = (await handleVerifyEmail(e)) as unknown as LoginResponseDto
-    if (verifyEmailResponse?.accessToken) {
-      setAccessToken(verifyEmailResponse.accessToken)
-      setUser(verifyEmailResponse.user)
-      navigateToDashboard(verifyEmailResponse.user.role)
-    }
-  }
-
-  // RESEND verification
-  const resendVerificationCode = async (e: React.FormEvent<HTMLFormElement>) => {
-    await handleResendVerification(e)
-  }
 
   // FORGOT password
   const forgotPassword = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -178,10 +141,10 @@ export const useAuth = () => {
   }
 
   // RESET password
-  const resetPassword = async (e: React.FormEvent<HTMLFormElement>,resetPasswordToken:string) => {
-    setResetPasswordPayload({...resetPasswordRequest,resetPasswordToken})
+  const resetPassword = async (e: React.FormEvent<HTMLFormElement>, resetPasswordToken: string) => {
+    setResetPasswordPayload({ ...resetPasswordRequest, resetPasswordToken })
     e.preventDefault()
-    const resetPasswordResponse = (await handleResetPassword(e)) 
+    const resetPasswordResponse = (await handleResetPassword(e))
     if (resetPasswordResponse) {
       navigateToLogin()
     }
@@ -190,26 +153,17 @@ export const useAuth = () => {
   const isAuthLoading =
     loginLoading ||
     signUpLoading ||
-    verifyEmailLoading ||
-    resendVerificationLoading ||
     forgotPasswordLoading ||
-    resetPasswordLoading||
+    resetPasswordLoading ||
     superAdminSignUpLoading
 
   return {
     loading: isAuthLoading,
     error: authError,
 
-    // loginResponse,
-    // verifyEmailResponse,
-    // resendVerificationResponse,
-    // forgotPasswordResponse,
-    // resetPasswordResponse,
-   
     signUpRequest,
     loginRequest,
-    verifyEmailRequest,
-    resendVerificationRequest,
+
     forgotPasswordRequest,
     resetPasswordRequest,
     superAdminSignUpRequest,
@@ -217,12 +171,11 @@ export const useAuth = () => {
     signupChangeHandlers,
     loginChangeHandlers,
     resetPasswordChangeHandlers,
-     forgotPasswordChangeHandler,
+    forgotPasswordChangeHandler,
     login,
     signUp,
     signUpSuperAdmin,
-    verifyEmail,
-    resendVerificationCode,
+
     forgotPassword,
     resetPassword,
     logout,

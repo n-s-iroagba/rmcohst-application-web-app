@@ -1,8 +1,9 @@
-import { useState } from 'react'
-import { useMutation, UseMutationResult, useQuery } from '@tanstack/react-query'
-import { handleError } from '@/utils/api'
-import api from '@/lib/apiUtils'
+import api from '@/lib/api'
 import { FieldType } from '@/types/fields_config'
+
+import { useMutation, UseMutationResult, useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { handleError } from '../helpers/handleError'
 // Define input types for different handlers
 type InputChangeEvent = React.ChangeEvent<HTMLInputElement>
 type TextAreaChangeEvent = React.ChangeEvent<HTMLTextAreaElement>
@@ -12,12 +13,12 @@ export type FileChangeEvent = React.ChangeEvent<HTMLInputElement>
 // Define the change handler types
 export type ChangeHandler = {
   [K in FieldType]?: K extends 'textarea'
-    ? (e: TextAreaChangeEvent) => void
-    : K extends 'select' | 'double-select'
-    ? (e: SelectChangeEvent) => void
-    : K extends 'file' | 'fileArray'
-    ? (e: FileChangeEvent) => void
-    : (e: InputChangeEvent) => void
+  ? (e: TextAreaChangeEvent) => void
+  : K extends 'select' | 'double-select'
+  ? (e: SelectChangeEvent) => void
+  : K extends 'file' | 'fileArray'
+  ? (e: FileChangeEvent) => void
+  : (e: InputChangeEvent) => void
 }
 type TransformFn = (name: string, value: string) => any
 
@@ -111,7 +112,7 @@ export const usePost = <T, U>(
       try {
         console.log('payload is', payload)
         const response = await api.post(postResourceUrl, payload)
-      
+
         console.log('response is ', response.data)
 
         return response.data
@@ -202,7 +203,7 @@ export const usePost = <T, U>(
     radio: handleTextChange,
     date: handleTextChange,
     file: handleFileChange,
-  
+
   }
 
   return {
@@ -222,26 +223,26 @@ export const usePost = <T, U>(
 export const useGet = <T>(resourceUrl: string | null) => {
   const [apiError, setApiError] = useState('')
 
- 
+
 
   const {
     data: resourceData,
     isLoading,
     isError,
-    
+
     refetch
   } = useQuery<T, unknown>({
     queryKey: [resourceUrl],
     queryFn: async () => {
       try {
-         if (!resourceUrl) {
-    return {
-      resourceData: undefined,
-      loading: false,
-      error: '',
-      refetch: async () => ({ data: undefined }) as any // noop
-    }
-  }
+        if (!resourceUrl) {
+          return {
+            resourceData: undefined,
+            loading: false,
+            error: '',
+            refetch: async () => ({ data: undefined }) as any // noop
+          }
+        }
         const response = await api.get(resourceUrl)
         return response.data
       } catch (error) {
@@ -277,7 +278,7 @@ export const useGet = <T>(resourceUrl: string | null) => {
 
 interface UsePutReturn<T, U> {
   putResource: T
-  putResponse:U|null
+  putResponse: U | null
   updating: boolean
   apiError: string
   changeHandlers: ChangeHandler
@@ -404,7 +405,7 @@ export const usePut = <T, U = any>(
     apiError,
     changeHandlers,
     handlePut,
- 
+
   }
 }
 

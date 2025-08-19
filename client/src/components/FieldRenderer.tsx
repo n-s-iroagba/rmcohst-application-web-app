@@ -1,19 +1,19 @@
 'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { useFieldConfigContext } from '@/context/FieldConfigContext'
+import { testIdContext } from '@/context/testIdContext'
 import { formatCamelCase } from '@/utils/formatCamelCase'
+import { ChangeEvent, useMemo } from 'react'
 import {
-  TextField,
-  TextareaField,
-  SelectField,
   CheckboxField,
   FileField,
+  PasswordField,
   RadioField,
-  PasswordField
+  SelectField,
+  TextField,
+  TextareaField
 } from './FormFields'
-import { ChangeEvent, useMemo } from 'react'
-import { useFieldConfigContext } from '@/context/FieldConfigContext'
-import { testIdContext } from '@/test/utils/testIdContext'
 
 type FieldRendererProps<T> = {
   data: T
@@ -76,7 +76,7 @@ export function FieldRenderer<T extends Record<string, any>>({
         }
 
         const onChange =
-          (config?.onChangeHandler as (e: any, index?: number) => void) || ((e: any) => {})
+          (config?.onChangeHandler as (e: any, index?: number) => void) || ((e: any) => { })
 
         switch (config.type) {
           case 'textarea':

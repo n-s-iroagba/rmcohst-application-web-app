@@ -1,24 +1,24 @@
 'use client'
 
-import React, { useEffect } from 'react'
-import { useAuth } from '@/hooks/useAuth'
 import { CustomForm } from '@/components/CustomForm'
-import { useRoutes } from '@/hooks/useRoutes'
 import { useFieldConfigContext } from '@/context/FieldConfigContext'
+import { testIdContext } from '@/context/testIdContext'
+import { useAuth } from '@/hooks/useAuth'
+import { useRoutes } from '@/hooks/useRoutes'
+import { signUpFormConfig } from '@/test/config/loginFormConfig'
+import { signUpFormTestIds } from '@/test/testIds/formTestIds'
 import { SignUpRequestDto } from '@/types/auth.types'
-import { testIdContext } from '@/test/utils/testIdContext'
-import { signUpFormConfig } from '@/utils/loginFormConfig'
-import { signUpFormTestIds } from '@/utils/formTestIds'
+import React, { useEffect } from 'react'
 
 const SignupForm: React.FC = () => {
   const { signUpRequest, signUp, loading, signupChangeHandlers, error } = useAuth()
 
   const { navigateToHome } = useRoutes()
-  const { createFieldsConfig  } = useFieldConfigContext<SignUpRequestDto>()
+  const { createFieldsConfig } = useFieldConfigContext<SignUpRequestDto>()
 
   useEffect(() => {
-    createFieldsConfig(signUpFormConfig,signupChangeHandlers)
-  }, [createFieldsConfig,signupChangeHandlers])
+    createFieldsConfig(signUpFormConfig, signupChangeHandlers)
+  }, [createFieldsConfig, signupChangeHandlers])
 
 
   testIdContext.setContext(signUpFormTestIds)

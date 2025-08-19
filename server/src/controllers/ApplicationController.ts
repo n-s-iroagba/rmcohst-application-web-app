@@ -1,5 +1,7 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
+import { AuthenticatedRequest } from '../middleware/auth'
 import ApplicationService from '../services/ApplicationService'
+import { UnauthorizedError } from '../utils/errors'
 const applicationService = new ApplicationService()
 export class ApplicationController {
   static async getApplicationPaymentStatus(req: Request, res: Response, next: NextFunction) {
@@ -24,9 +26,10 @@ export class ApplicationController {
     }
   }
 
-  static async getApplicationByUserId(req: Request, res: Response, next: NextFunction) {
+  static async getApplicationByUserId(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
-      const { applicantUserId } = req.params
+      if (!req.user) throw new UnauthorizedError('No user in request')
+      const applicantUserId = req?.user.id
       const application = await applicationService.getApplicationByUserId(applicantUserId)
       if (application) {
         res.json(application)
@@ -62,15 +65,15 @@ export class ApplicationController {
     }
   }
 
-  static async assignApplication(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { applicationId, officerId } = req.body
-      const result = await applicationService.assignToOfficer(applicationId, officerId)
-      res.json(result)
-    } catch (error) {
-      next(error)
-    }
-  }
+  // static async assignApplication(req: Request, res: Response, next: NextFunction) {
+  //   try {
+  //     const { applicationId, officerId } = req.body
+  //     const result = await applicationService.assignToOfficer(applicationId, officerId)
+  //     res.json(result)
+  //   } catch (error) {
+  //     next(error)
+  //   }
+  // }
 
   static async getStatusCounts(req: Request, res: Response, next: NextFunction) {
     try {

@@ -2,19 +2,19 @@
 
 import React, {
   createContext,
-  useState,
-  useEffect,
-  useContext,
   Dispatch,
   SetStateAction,
   useCallback,
-  useRef
+  useContext,
+  useEffect,
+  useRef,
+  useState
 } from 'react'
 
-import { API_ROUTES } from '@/config/routes'
-import { User } from '@/types/auth.types'
-import { getAccessToken, api, registerTokenUpdateCallback } from '@/lib/apiUtils'
+import { API_ROUTES } from '@/constants/apiRoutes'
 import { useGet } from '@/hooks/useApiQuery'
+import { api, getAccessToken, registerTokenUpdateCallback } from '@/lib/api'
+import { User } from '@/types/auth.types'
 
 const AuthContext = createContext<{
   user: User

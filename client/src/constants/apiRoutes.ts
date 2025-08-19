@@ -1,79 +1,62 @@
-export const apiRoutes = {
-  auth: {
-    login: `/auth/login`,
-    logout: `/auth/logout`,
-    superAdminSignup: '/auth/super-admin/signup',
-    applicantSignup: '/auth/applicant/signup',
-    forgotPassword: `/auth/forgot-password`,
-    resetPassword: `/auth/reset-password`,
-    verifyEmailCode: `/auth/verify-email-code`,
-    resendVerificationEmail: `/auth/resend-verification-token`,
-    me: `/auth/me`
+export const API_ROUTES = {
+  AUTH: {
+    LOGIN: '/auth/login',
+    APPLICANT_SIGNUP: '/auth/applicant/signup',
+    SIGNUP_SUPER_ADMIN: '/auth/signup/super-admin',
+    VERIFY_EMAIL: '/auth/verify-email',
+    RESEND_VERIFICATION_CODE: '/auth/resend-verification-code',
+    LOGOUT: '/auth/logout',
+    ME: '/auth/me',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    RESET_PASSWORD: '/auth/reset-password',
+    REFRESH_ACCESS_TOKEN: '/auth/refresh-token'
   },
-  subject: {
-    all: `/subjects`,
-    create: `/subjects`,
-    update: (id: number): string => `/subjects/${id}`,
-    delete: (id: number): string => `/subjects/${id}`
+  ADMIN: {
+    USERS: {
+      INVITE: `/admin/users/invite`,
+      STATUS: (id: string) => `/admin/users/${id}/status`,
+      ROLE: (id: string) => `/admin/users/${id}/role`,
+      LOGS: (id: string) => `/admin/users/${id}/logs`
+    }
   },
-  grade: {
-    all: `/grades`,
-    create: `/grades`,
-    update: (id: number): string => `/grades/${id}`,
-    delete: (id: number): string => `/grades/${id}`
+  APPLICATION: {
+    GET_BY_ID: (id: string) => `/applications/${id}`,
+    GET_BY_APPLICANT_ID: `/applications/applicant/`,
+
   },
-  biodata: {
-    update: (id: number): string => `/biodata/${id}`
+  PAYMENT: {
+    LIST: '/payments',
+    GET_ACCEPTANCE_FEE_PAYMENTS: (id: number | string) => `payments/acceptance-fees/${id}`,
+    GET_CURRENT_SESSION_APPLICATION_PAYMENTS: (applicantUserId: number | string) => `/payments/${applicantUserId}/current-session-payments`,
+    INITIALIZE_GATEWAY: '/payments/initialize',
+    VERIFY: (reference: string) => `/payments/verify/${reference}`,
+    APPLICANT_PAYMENTS: (applicantId: number): string => `/payments/applicant/${applicantId}`
   },
-  application: {
-    myCurrentApplication: '/application/my-current-application',
-    addComment: (id: string): string => `/applications/${id}/comments`,
-    review: (id: string): string => `applications/review/${id}`
+  SSC_QUALIFICATION: {
+    UPDATE: (id: string | number) => `/ssc-qualifications/${id}`
   },
-  admissionSession: {
-    all: `/admission-sessions`,
-    create: `/admission-sessions`,
-    update: (id: number): string => `/admission-sessions/${id}`,
-    delete: (id: number): string => `/admission-sessions/${id}`,
-    getById: (id: number): string => `/admission-sessions/${id}`
+  PROGRAM_QUALIFICATION: {
+    UPDATE: (id: string | number) => `/program-qualifications/${id}`
   },
-  faculty: {
-    all: `/faculties`,
-    create: `/faculties`,
-    update: (id: number): string => `/faculties/${id}`,
-    delete: (id: number): string => `/faculties/${id}`,
-    getById: (id: number): string => `/faculties/${id}`
+  PROGRAM: {
+    LIST: '/programs',
+    GET_BY_ID: (id: string) => `/programs/${id}`
   },
-  department: {
-    all: `/departments`,
-    create: `/departments`,
-    update: (id: number): string => `/departments/${id}`,
-    delete: (id: number): string => `/departments/${id}`,
-    getById: (id: number): string => `/departments/${id}`,
-    getByFaculty: (facultyId: number): string => `/departments/faculty/${facultyId}`
+  SESSION: {
+    LIST: '/sessions',
+    BY_ID: (id: string) => `/sessions/${id}`,
+    CREATE: (sessionID: string) => `/sessions/${sessionID}/create`,
+    CURRENT: '/sessions/current'
   },
-  program: {
-    all: `/programs`,
-    create: `/programs`,
-    update: (id: number): string => `/programs/${id}`,
-    delete: (id: number): string => `/programs/${id}`,
-    getById: (id: number): string => `/programs/${id}`,
-    getByDepartment: (departmentId: number): string => `/programs/department/${departmentId}`
+  BIODATA: {
+    UPDATE: (id: number) => `/biodata/${id}`
   },
-  programSSCRequirement: {
-    all: `/ssc-requirements`,
-    create: `/ssc-requirements`,
-    update: (id: number): string => `/ssc-requirements/${id}`,
-    delete: (id: number): string => `/ssc-requirements/${id}`,
-    getById: (id: number): string => `/ssc-requirements/${id}`
+  SSC_REQUIREMENT: {
+    LIST: '/ssc-requirement',
+    BY_ID: (id: string) => `/ssc-requirement/${id}`,
+    CREATE: (requirementId: string) => `/ssc-requirement/${requirementId}/create`
   },
-  programSpecificRequirement: {
-    all: `/program-specific-requirements`,
-    create: `/program-specific-requirements`,
-    update: (id: number): string => `/program-specific-requirements/${id}`,
-    delete: (id: number): string => `/program-specific-requirements/${id}`,
-    getById: (id: number): string => `/program-specific-requirements/${id}`,
-    getByProgram: (programId: number): string =>
-      `/program-specific-requirements/program/${programId}`
+  SUBJECT: {
+    LIST: '/subjects'
   }
 }

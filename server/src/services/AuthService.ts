@@ -1,7 +1,5 @@
-import { PasswordService } from './PasswordService'
-import { TokenService } from './TokenService'
-import { UserService } from './user.service'
-import { VerificationService } from './VerificationService'
+import { Role } from '../models'
+import User, { AuthUser, UserCreationAttributes } from '../models/User'
 import {
   AuthConfig,
   AuthServiceLoginResponse,
@@ -11,12 +9,20 @@ import {
   SignUpResponseDto,
   VerifyEmailRequestDto,
 } from '../types/auth.types'
-import logger from '../utils/logger'
 import { BadRequestError, NotFoundError } from '../utils/errors'
-import User, { AuthUser } from '../models/User'
-import { Role } from '../models'
-import { UserWithRole } from './RbacService'
+import logger from '../utils/logger'
+import { PasswordService } from './PasswordService'
+import { TokenService } from './TokenService'
+import { UserService } from './user.service'
+import { VerificationService } from './VerificationService'
+
 import { EmailService } from './EmailService'
+
+
+import UserRepository from '../repositories/UserRepository'
+import { GoogleProfile } from '../types/google'
+import { UserWithRole } from '../types/join-model.types'
+import { getGoogleTokens, getGoogleUser } from '../utils/googleAuth'
 
 export class AuthService {
   private tokenService: TokenService
@@ -24,6 +30,7 @@ export class AuthService {
   private userService: UserService
   private emailService: EmailService
   private verificationService: VerificationService
+  roleService: any
 
   constructor(private readonly config: AuthConfig) {
     this.tokenService = new TokenService(config.jwtSecret)
@@ -64,6 +71,90 @@ export class AuthService {
       return this.handleAuthError('Sign up', { email: data.email }, error)
     }
   }
+  async googleAuth(code: string): Promise<AuthServiceLoginResponse | void> {
+    const { access_token } = await getGoogleTokens(code)
+    const googleUser: GoogleProfile = await getGoogleUser(access_token)
+    return this.handleGoogleAuth(googleUser)
+
+
+
+
+  }
+  public async handleGoogleAuth(profile: GoogleProfile): Promise<AuthServiceLoginResponse | void> {
+    try {
+
+
+      let user = await UserRepository.findUserByGoogleId(profile.id)
+
+      if (user) {
+        const role = user.role
+        const { accessToken, refreshToken } = this.generateTokenPair(user)
+        logger.info('Login successful', { userId: user?.id })
+        const returnUser = { ...user.get({ plain: true }), role: role.name }
+        user.refreshToken = refreshToken
+        await user.save()
+        return { user: returnUser, accessToken, refreshToken }
+      }
+
+      const email = profile.email
+
+      // Check if user exists with same email
+      user = await UserRepository.findUserByEmail(email)
+
+      if (user) {
+        // Link Google account to existing user
+        await UserRepository.updateById(user.id, {
+          googleId: profile.id,
+
+          isEmailVerified: true,
+
+        })
+        const role = user.role
+        const { accessToken, refreshToken } = this.generateTokenPair(user)
+        logger.info('Login successful', { userId: user?.id })
+        const returnUser = { ...user.get({ plain: true }), role: role.name }
+        user.refreshToken = refreshToken
+        await user.save()
+        return { user: returnUser, accessToken, refreshToken }
+      }
+
+      // Create new user
+      const newUserData: UserCreationAttributes = {
+        googleId: profile.id,
+        email: email,
+        username: profile.name,
+
+
+        isEmailVerified: true,
+
+      }
+      user = await this.userService.createUser({
+        ...newUserData,
+        password: '',
+      }) as UserWithRole
+
+      if (user) {
+        const role = await this.roleService.getRoleByName('applicant')
+        if (!role) {
+          logger.error(`Role 'APPLICANT' not found during signup for userId ${user.id}`)
+          throw new NotFoundError(`Role 'APPLICANT' not found`)
+        }
+        user.roleId = role.id
+        await user.save()
+        logger.info(`Assigned 'APPLICANT' role to userId ${user.id}`)
+        const { accessToken, refreshToken } = this.generateTokenPair(user)
+        logger.info('Login successful', { userId: user?.id })
+        const returnUser = { ...user.get({ plain: true }), role: role.name }
+        user.refreshToken = refreshToken
+        await user.save()
+        return { user: returnUser, accessToken, refreshToken }
+      }
+
+    } catch (error) {
+      throw new BadRequestError(`Google authentication failed: ${error}`)
+    }
+  }
+
 
   /**
    * Logs a user in by validating credentials and returning tokens.

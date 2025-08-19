@@ -1,26 +1,40 @@
-import { PaymentType } from "@/components/PaystackButton"
+
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED',
+}
+export enum PaymentType {
+  APPLICATION_FEE = 'application-fee',
+  ACCEPTANCE_FEE = 'acceptance-fee',
+}
 export interface Payment {
   id: number
   sessionId: number
   applicantUserId: number
   programId: number
   amount: number
-  applicationId: number
-  status: 'PAID' | 'FAILED' | 'PENDING'
-  webhookEvent: string
-  paidAt: Date
+  applicationId: number | null
+  status: PaymentStatus
+  paymentType: PaymentType
+  paidAt?: Date
+  cancelledAt?: Date
+  receiptFileId?: string
+  receiptLink?: string
+  receiptGeneratedAt?: Date
   reference: string
   createdAt: Date
   updatedAt: Date
 }
-export type PaymentMetadata={
-        paymentType:PaymentType
-        sessionId:number
-        applicantUserId:number
-        programId:number
-  
+export type PaymentMetadata = {
+  paymentType: PaymentType
+  sessionId: number
+  applicantUserId: number
+  programId: number
+
 }
 export interface PaystackVerificationResponse {
   status: boolean;
@@ -39,7 +53,7 @@ export interface PaystackVerificationResponse {
     channel: string;
     currency: string;
     ip_address: string;
-    metadata:  PaymentMetadata
+    metadata: PaymentMetadata
     log: {
       start_time: number;
       time_spent: number;

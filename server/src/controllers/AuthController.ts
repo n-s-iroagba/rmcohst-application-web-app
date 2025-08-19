@@ -1,16 +1,17 @@
 import { NextFunction, Request, Response } from 'express'
+import { getCookieOptions } from '../config/cookieOptions'
+import { AuthenticatedRequest } from '../middleware/auth'
+import { AuthUser } from '../models/User'
+import { createAuthService } from '../services/AuthService'
+import RoleService from '../services/RoleService'
 import {
   AuthServiceLoginResponse,
-  LoginResponseDto,
   ResendVerificationRespnseDto,
   SignUpResponseDto,
 } from '../types/auth.types'
-import { createAuthService } from '../services/AuthService'
-import { getCookieOptions } from '../config/cookieOptions'
 import { BadRequestError, NotFoundError } from '../utils/errors'
-import RoleService from '../services/RoleService'
+import { getGoogleAuthURL } from '../utils/googleAuth'
 import logger from '../utils/logger'
-import { AuthUser } from '../models/User'
 
 export class AuthController {
   private authService = createAuthService()
@@ -48,6 +49,46 @@ export class AuthController {
       res.status(201).json(response)
       return
     } catch (error) {
+      next(error)
+    }
+  }
+  async googleLogin(req: Request, res: Response, next: NextFunction) {
+    try {
+      const state = Math.random().toString(36).substring(2, 15);
+      const authUrl = getGoogleAuthURL(state);
+
+      res.json(authUrl);
+    } catch (error) {
+      next(error)
+
+    }
+  }
+
+  async googleCallback(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { code, error, error_description } = req.query;
+
+      if (error) {
+        throw new BadRequestError(error_description?.toString() || 'Google authentication failed')
+      }
+
+      if (!code) {
+        throw new BadRequestError('Authorization code not provided')
+      }
+
+      const result = await this.authService.googleAuth(code as string);
+
+      const verified = result as AuthServiceLoginResponse
+
+      const cookieOptions = getCookieOptions()
+      console.log('Setting refresh token cookie with options:', cookieOptions)
+
+      res.cookie('refreshToken', verified.refreshToken, cookieOptions)
+      res.status(200).json({
+        user: verified.user,
+        accessToken: verified.accessToken,
+      })
+    } catch (error: any) {
       next(error)
     }
   }
@@ -110,7 +151,7 @@ export class AuthController {
    * @param res Express response object
    * @param next Express next middleware function
    */
-  getMe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getMe = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = req.user?.id
 

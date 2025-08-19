@@ -1,7 +1,7 @@
 'use client'
 
 import ApplicationDetail from '@/components/ApplicationDetails'
-import { API_ROUTES } from '@/config/routes'
+import { API_ROUTES } from '@/constants/apiRoutes'
 import { useGet } from '@/hooks/useApiQuery'
 import { Application } from '@/types/application'
 

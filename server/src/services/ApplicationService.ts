@@ -1,18 +1,20 @@
 // src/services/ApplicationService.ts
 
+import { AdmissionSession, ApplicantProgramSpecificQualification, ApplicantSSCQualification, Biodata } from '../models'
+import { ApplicationStatus } from '../models/Application'
+import AdmissionSessionRepository from '../repositories/AdmissionSessionRepository'
+import ApplicantProgramSpecificQualificationRepository from '../repositories/ApplicantProgramSpecificQualificationRepository'
+import ApplicantSSCQualificationRepository from '../repositories/ApplicantSSCQualificationRepository'
+import ApplicationRepository from '../repositories/ApplicationRepository'
+import BiodataRepository from '../repositories/BiodataRepository'
+import PaymentRepository from '../repositories/PaymentRepository'
+import ProgramRepository from '../repositories/ProgramRepository'
+import ProgramSpecificRequirementRepository from '../repositories/ProgramSpecificRequirementsRepository'
+import UserRepository from '../repositories/UserRepository'
+import { FullApplication } from '../types/join-model.types'
 import { BadRequestError, ForbiddenError, NotFoundError } from '../utils/errors'
 import logger from '../utils/logger'
-import { ApplicationStatus } from '../models/Application'
 import GoogleDriveApplicationService from './DriveService'
-import ApplicationRepository from '../repositories/ApplicationRepository'
-import ProgramRepository from '../repositories/ProgramRepository'
-import BiodataRepository from '../repositories/BiodataRepository'
-import ApplicantSSCQualificationRepository from '../repositories/ApplicantSSCQualificationRepository'
-import ApplicantProgramSpecificQualificationRepository from '../repositories/ApplicantProgramSpecificQualificationRepository'
-import ProgramSpecificRequirementRepository from '../repositories/ProgramSpecificRequirementsRepository'
-import AdmissionSessionRepository from '../repositories/AdmissionSessionRepository'
-import PaymentRepository from '../repositories/PaymentRepository'
-import UserRepository from '../repositories/UserRepository'
 
 
 interface ApplicationFilters {
@@ -38,16 +40,16 @@ class ApplicationService {
       if (!currentSession) throw new NotFoundError('Session not found')
 
       const payments = await PaymentRepository.findPaymentsByUserAndSession(userId, currentSession.id)
-      
+
       const completePayment = payments.filter(p => p.status === 'PAID')
       if (completePayment.length > 0) return { status: 'PAID', payment: completePayment }
-      
+
       const pendingPayment = payments.filter(p => p.status === 'PENDING')
       if (pendingPayment.length > 0) return { status: 'PENDING', payment: pendingPayment }
-      
+
       const failedPayment = payments.filter(p => p.status === 'FAILED')
       if (failedPayment.length > 0) return { status: 'FAILED', payment: failedPayment }
-      
+
       return { status: 'NO-PAYMENT', payment: [] }
     } catch (error) {
       logger.error('Error getting application payment status', { userId, error })
@@ -62,7 +64,7 @@ class ApplicationService {
   }) {
     try {
       const { applicantUserId } = data
-      
+
       // Check for existing application
       const existingApplication = await ApplicationRepository.findApplicationByUserAndSession(
         applicantUserId,
@@ -87,13 +89,13 @@ class ApplicationService {
       const applicationId = application.id
 
       // Create related records
-      await BiodataRepository.createBiodata({applicationId})
-      await ApplicantSSCQualificationRepository.createApplicantSSCQualification({applicationId})
+      await BiodataRepository.createBiodata({ applicationId })
+      await ApplicantSSCQualificationRepository.createApplicantSSCQualification({ applicationId })
 
       // Create program-specific qualification if required
       const programSpecificRequirement = await ProgramSpecificRequirementRepository.findProgramById(program.id)
       if (programSpecificRequirement) {
-        await ApplicantProgramSpecificQualificationRepository. createApplicantProgramSpecificQualification({
+        await ApplicantProgramSpecificQualificationRepository.createApplicantProgramSpecificQualification({
           applicationId,
           qualificationType: programSpecificRequirement.qualificationType,
         })
@@ -126,11 +128,11 @@ class ApplicationService {
     }
   }
 
-  public async getApplicationByUserId(id: string, shouldThrowErrorIfNotFound: boolean = false) {
+  public async getApplicationByUserId(id: number | string, shouldThrowErrorIfNotFound: boolean = false,) {
     try {
-      const application = await ApplicationRepository.findApplicationByUserId(id)
+      const application = await ApplicationRepository.findApplicationByUserId(id as string)
       console.log(application)
-      
+
       if (!application && shouldThrowErrorIfNotFound) {
         throw new NotFoundError('Application not found')
       }
@@ -175,7 +177,7 @@ class ApplicationService {
       }
 
       // Fetch related data for validation
-      const [user, biodata, program, sscQualification, programSpecificQualifications, academicSession] = 
+      const [user, biodata, program, sscQualification, programSpecificQualifications, academicSession] =
         await Promise.allSettled([
           UserRepository.findUserById(applicantUserId),
           BiodataRepository.findBiodataByApplication(application.id),
@@ -195,11 +197,11 @@ class ApplicationService {
 
       // Log any failed promises
       const queryNames = ['user', 'biodata', 'program', 'sscQualification', 'programSpecificQualifications', 'academicSession']
-      ;[user, biodata, program, sscQualification, programSpecificQualifications, academicSession].forEach((result, index) => {
-        if (result.status === 'rejected') {
-          logger.warn(`Failed to fetch ${queryNames[index]}:`, result.reason)
-        }
-      })
+        ;[user, biodata, program, sscQualification, programSpecificQualifications, academicSession].forEach((result, index) => {
+          if (result.status === 'rejected') {
+            logger.warn(`Failed to fetch ${queryNames[index]}:`, result.reason)
+          }
+        })
 
       if (!extractedUser) {
         throw new NotFoundError('User not found')
@@ -220,10 +222,18 @@ class ApplicationService {
       }
 
       // All validations passed, update application status
-      const updatedApplication = await ApplicationRepository.updateApplicationById(applicationId, {
+      await ApplicationRepository.updateApplicationById(applicationId, {
         status: ApplicationStatus.SUBMITTED,
         submittedAt: new Date(),
       })
+
+      const include = [
+        { model: Biodata, as: 'biodata' },
+        { model: AdmissionSession, as: 'academicSession' },
+        { model: ApplicantSSCQualification, as: 'sscQualification' },
+        { model: ApplicantProgramSpecificQualification, as: 'programSpecificQualifications' }
+      ]
+      const updatedApplication = await ApplicationRepository.findById(applicationId, { include }) as FullApplication
 
       await googleDriveService.processApplicationSubmission(updatedApplication!)
 

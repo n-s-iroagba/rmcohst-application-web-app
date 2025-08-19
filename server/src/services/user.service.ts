@@ -1,12 +1,13 @@
 // src/services/UserService.ts
 
-import logger from '../utils/logger'
+import { SignUpRequestDto } from '../types/auth.types'
 import { CryptoUtil } from '../utils/crpto.util'
 import { BadRequestError, NotFoundError, UnauthorizedError } from '../utils/errors'
-import { SignUpRequestDto } from '../types/auth.types'
-import { UserWithRole } from './RbacService'
-import UserRepository from '../repositories/UserRepository'
+import logger from '../utils/logger'
+
 import User from '../models/User'
+import UserRepository from '../repositories/UserRepository'
+import { UserWithRole } from '../types/join-model.types'
 
 export class UserService {
   async findUserByEmail(
@@ -118,7 +119,7 @@ export class UserService {
       }
 
       console.log('CODE IS', verificationCode)
-      
+
       const updatedUser = await UserRepository.updateUserById(user.id, updates)
 
       if (!updatedUser) {
@@ -162,7 +163,7 @@ export class UserService {
       }
 
       console.log('token', hashedToken)
-      
+
       const updatedUser = await UserRepository.updateUserById(user.id, updates)
 
       if (!updatedUser) {

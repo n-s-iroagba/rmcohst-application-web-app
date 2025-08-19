@@ -1,16 +1,17 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { useMutation } from '@tanstack/react-query'
-import { useParams } from 'next/navigation'
-import api, { setAccessToken } from '@/lib/apiUtils'
-import { API_ROUTES } from '@/config/routes'
+
+import { useAuthContext } from '@/context/AuthContext'
+import api, { setAccessToken } from '@/lib/api'
 import {
   LoginResponseDto,
   ResendVerificationRequestDto,
   VerifyEmailRequestDto
 } from '@/types/auth.types'
-import { useAuthContext } from '@/context/AuthContext'
+import { useMutation } from '@tanstack/react-query'
+import { useParams } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
+import { API_ROUTES } from '../constants/apiRoutes'
 import { useRoutes } from './useRoutes'
 
 // API functions
@@ -74,8 +75,8 @@ export const useVerifyEmail = () => {
       }
     },
     onError: (error) => {
-    
-      setError(error as unknown as string||'Verification failed')
+
+      setError(error as unknown as string || 'Verification failed')
       // Clear the form on error
       setEmailVerificationFormCode(new Array(6).fill(''))
       inputRefs.current[0]?.focus()
@@ -93,8 +94,8 @@ export const useVerifyEmail = () => {
       console.log('Verification code resent successfully')
     },
     onError: (error) => {
-    
-        setError(error as unknown as string||'Verification failed')
+
+      setError(error as unknown as string || 'Verification failed')
     }
   })
 

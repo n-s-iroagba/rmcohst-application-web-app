@@ -1,8 +1,6 @@
-import { Model, DataTypes, type Optional } from 'sequelize'
-import bcrypt from 'bcryptjs'
-import { Staff } from './Staff'
-import { RoleWithPermissions, UserWithRole } from '../services/RbacService'
+import { DataTypes, Model, type Optional } from 'sequelize'
 import sequelize from '../config/database'
+import { Staff } from './Staff'
 
 export interface AuthUser {
   id: number
@@ -22,6 +20,7 @@ interface UserAttributes {
   verificationToken?: string | null
   passwordResetToken?: string | null
   refreshToken?: string | null
+  googleId?: string | null
   createdAt?: Date
   updatedAt?: Date
 }
@@ -35,10 +34,12 @@ export interface UserCreationAttributes
     | 'verificationToken'
     | 'passwordResetToken'
     | 'roleId'
+    | 'googleId'
     | 'createdAt'
     | 'refreshToken'
     | 'updatedAt'
-  > {}
+    | 'password'
+  > { }
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public id!: number
@@ -51,6 +52,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public refreshToken?: string | null
   public verificationCode!: string | null
   public passwordResetToken!: string | null
+  public googleId?: string | null
 
   // timestamps
   public readonly createdAt!: Date
@@ -87,7 +89,10 @@ User.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-
+    googleId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     passwordResetToken: {
       type: DataTypes.STRING(400),
       allowNull: true,

@@ -1,6 +1,6 @@
 'use client'
 
-import { INTERNAL_ROUTES } from '@/config/routes'
+import { INTERNAL_ROUTES } from '@/constants/routes'
 import { UserRole } from '@/types/auth.types'
 import { useRouter } from 'next/navigation'
 

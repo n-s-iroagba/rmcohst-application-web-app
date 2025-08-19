@@ -38,17 +38,12 @@ export interface PaymentCreationAttributes
     | 'createdAt'
     | 'updatedAt'
     | 'applicationId'
-    | 'paidAt'
-    | 'receiptFileId'
-    | 'receiptGeneratedAt'
-    | 'receiptLink'
     | 'cancelledAt'
-  > {}
+  > { }
 
 class Payment
   extends Model<PaymentAttributes, PaymentCreationAttributes>
-  implements PaymentAttributes
-{
+  implements PaymentAttributes {
   public id!: number
   applicantUserId!: number
   sessionId!: number

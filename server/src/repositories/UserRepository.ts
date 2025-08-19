@@ -1,9 +1,9 @@
 // src/repositories/UserRepository.ts
 
-import User, { UserCreationAttributes } from '../models/User'
 import { Role } from '../models'
+import User, { UserCreationAttributes } from '../models/User'
+import { UserWithRole } from '../types/join-model.types'
 import BaseRepository from './BaseRepository'
-import { UserWithRole } from '../services/RbacService'
 
 class UserRepository extends BaseRepository<User> {
   constructor() {
@@ -33,7 +33,15 @@ class UserRepository extends BaseRepository<User> {
     ]
     return await this.findById(id, { include }) as UserWithRole | null
   }
-
+  async findUserByGoogleId(googleId: string | number): Promise<UserWithRole | null> {
+    const include = [
+      {
+        model: Role,
+        as: 'role',
+      },
+    ]
+    return await this.findOne({ googleId }, { include }) as UserWithRole | null
+  }
   async findUserByResetToken(hashedToken: string): Promise<UserWithRole | null> {
     const include = [
       {

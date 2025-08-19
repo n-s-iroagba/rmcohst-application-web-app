@@ -1,15 +1,15 @@
 'use client'
 
-import React from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import dynamic from 'next/dynamic'
 import { Spinner } from '@/components/Spinner'
-import { useGet } from '@/hooks/useApiQuery'
-import { FullProgram,} from '@/types/program'
-import { API_ROUTES } from '@/config/routes'
-import { Grade } from '@/types/program_ssc_requirement'
+import { API_ROUTES } from '@/constants/apiRoutes'
 import { useAuthContext } from '@/context/AuthContext'
-import { PaymentType } from '../../../../components/PaystackButton'
+import { useGet } from '@/hooks/useApiQuery'
+import { FullProgram, } from '@/types/program'
+import { Grade } from '@/types/program_ssc_requirement'
+import dynamic from 'next/dynamic'
+import { useParams, useRouter } from 'next/navigation'
+import { PaymentType } from '../../../../types/payment'
+
 
 
 
@@ -24,9 +24,9 @@ export interface PaystackInitTransactionResponse {
 }
 
 // Dynamic import for the payment button component
-const PaymentButton = dynamic(() => import('../../../../components/PaystackButton'), {
+const PaymentButton = dynamic(() => import('../../../../components/PaymentButton'), {
   ssr: false,
-  loading: () => <Spinner/>
+  loading: () => <Spinner />
 })
 
 export default function ProgramDetailsPage() {
@@ -67,9 +67,6 @@ export default function ProgramDetailsPage() {
           </p>
           <p>
             <strong>Application Fee:</strong> ₦{program.applicationFeeInNaira}
-          </p>
-          <p>
-            <strong>Acceptance Fee:</strong> ₦{program.acceptanceFeeInNaira}
           </p>
           {program.description && (
             <p>

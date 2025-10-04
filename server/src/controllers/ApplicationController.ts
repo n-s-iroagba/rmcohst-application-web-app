@@ -16,9 +16,10 @@ export class ApplicationController {
     }
   }
 
-  static async getApplicationDetails(req: Request, res: Response, next: NextFunction) {
+  static async getApplicationByApplicantUserId(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params
+
       const application = await applicationService.getApplicationById(id)
       res.json(application)
     } catch (error) {
@@ -26,9 +27,10 @@ export class ApplicationController {
     }
   }
 
-  static async getApplicationByUserId(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  static async getApplicationDetails(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       if (!req.user) throw new UnauthorizedError('No user in request')
+
       const applicantUserId = req?.user.id
       const application = await applicationService.getApplicationByUserId(applicantUserId)
       if (application) {

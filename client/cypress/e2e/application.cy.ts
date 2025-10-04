@@ -1,6 +1,5 @@
 
-import { ApplicationTestIds } from '../../src/test/utils/testIds';
-
+import { ApplicationTestIds } from '../../src//test/testIds/applicationTestIds'
 describe('application payment flow', () => {
   before(() => {
     // Login before the tests run

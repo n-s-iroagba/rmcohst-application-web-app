@@ -1,5 +1,8 @@
 // src/services/ApplicationService.ts
 
+import archiver from 'archiver'
+import fs from 'fs'
+import path from 'path'
 import { AdmissionSession, ApplicantProgramSpecificQualification, ApplicantSSCQualification, Biodata } from '../models'
 import { ApplicationStatus } from '../models/Application'
 import AdmissionSessionRepository from '../repositories/AdmissionSessionRepository'
@@ -14,7 +17,11 @@ import UserRepository from '../repositories/UserRepository'
 import { FullApplication } from '../types/join-model.types'
 import { BadRequestError, ForbiddenError, NotFoundError } from '../utils/errors'
 import logger from '../utils/logger'
-import GoogleDriveApplicationService from './DriveService'
+
+import { promisify } from 'util'
+
+const mkdir = promisify(fs.mkdir)
+const writeFile = promisify(fs.writeFile)
 
 
 interface ApplicationFilters {
@@ -31,7 +38,6 @@ export type ApplicationPaymentStatus = {
   payment: any[]
 }
 
-const googleDriveService = new GoogleDriveApplicationService()
 
 class ApplicationService {
   public async getApplcationPaymentStatus(userId: string): Promise<ApplicationPaymentStatus> {
@@ -131,7 +137,7 @@ class ApplicationService {
   public async getApplicationByUserId(id: number | string, shouldThrowErrorIfNotFound: boolean = false,) {
     try {
       const application = await ApplicationRepository.findApplicationByUserId(id as string)
-      console.log(application)
+      console.log('SSSSSSSSSSSSSSSSSSSSSSSSSSSS', application)
 
       if (!application && shouldThrowErrorIfNotFound) {
         throw new NotFoundError('Application not found')
@@ -235,15 +241,20 @@ class ApplicationService {
       ]
       const updatedApplication = await ApplicationRepository.findById(applicationId, { include }) as FullApplication
 
-      await googleDriveService.processApplicationSubmission(updatedApplication!)
+      // const zipPath = await this.createFolderAndZipApplication(
+      //   updatedApplication,
+      //   extractedBiodata,
+      //   extractedSession
+      // )
 
-      logger.info('Applicant finalized submission', {
-        applicationId,
-        applicantUserId,
-        username: extractedUser.username,
-        programName: extractedProgram?.name,
-        sessionName: extractedSession?.name,
-      })
+      // await EmailService.sendApplicationZipMail(extractedUser.email, zipPath)
+      // logger.info('Applicant finalized submission', {
+      //   applicationId,
+      //   applicantUserId,
+      //   username: extractedUser.username,
+      //   programName: extractedProgram?.name,
+      //   sessionName: extractedSession?.name,
+      // })
 
       // Return the complete application data
       return {
@@ -354,6 +365,40 @@ class ApplicationService {
       logger.error('Error updating application status', { error })
       throw error
     }
+  }
+
+  public async createFolderAndZipApplication(
+    application: any,
+    biodata: any,
+    session: any
+  ): Promise<string> {
+    // 1. Create folder name: biodataName-applicationId-session
+    const folderName = `${biodata?.fullName || 'unknown'}_${application.id}_${session?.name || 'session'}`
+    const folderPath = path.join(__dirname, '..', '..', 'temp_uploads', folderName)
+
+    if (!fs.existsSync(folderPath)) {
+      await mkdir(folderPath, { recursive: true })
+    }
+
+    // 2. Save application data as JSON (you could also render PDF if needed)
+    const applicationFile = path.join(folderPath, 'application.json')
+    await writeFile(applicationFile, JSON.stringify(application, null, 2))
+
+    // 3. Create zip file
+    const zipPath = `${folderPath}.zip`
+    await new Promise<void>((resolve, reject) => {
+      const output = fs.createWriteStream(zipPath)
+      const archive = archiver('zip', { zlib: { level: 9 } })
+
+      output.on('close', () => resolve())
+      archive.on('error', (err) => reject(err))
+
+      archive.pipe(output)
+      archive.directory(folderPath, false) // add folder contents
+      archive.finalize()
+    })
+
+    return zipPath
   }
 }
 

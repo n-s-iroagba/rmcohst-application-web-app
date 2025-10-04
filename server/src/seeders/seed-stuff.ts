@@ -3,7 +3,7 @@
 import sequelize from '../config/database'
 import { Department, Program, ProgramSSCRequirement } from '../models'
 import Faculty from '../models/Faculty'
-import { QualificationType, Grade } from '../models/ProgramSSCRequirement'
+import { Grade, QualificationType, } from '../models/ProgramSSCRequirement'
 import Subject from '../models/Subject'
 
 async function seedDatabase() {
@@ -106,48 +106,82 @@ async function seedDatabase() {
       },
     ])
 
-    // Create SSC Requirements - now using actual subject IDs
+    // Create SSC Requirements - using flattened fields instead of JSON array
     await ProgramSSCRequirement.bulkCreate([
       {
-        programId: programs[0].id,
         tag: 'Core Requirements',
-        maximumSittings: 2,
-        qualificationTypes: [QualificationType.WAEC, QualificationType.NECO],
-        subjects: [
-          { subjectId: subjects[0].id, grade: Grade.C5 }, // Mathematics
-          { subjectId: subjects[1].id, grade: Grade.B3 }, // English
-          { subjectId: subjects[2].id, grade: Grade.C4 }, // Physics
-          { subjectId: subjects[3].id, grade: Grade.C6 }, // Chemistry
-          { subjectId: subjects[5].id, grade: Grade.C6, alternateSubjectId: subjects[4].id }, // Further Math or Biology
-        ],
-      },
-      {
+        maximumNumberOfSittings: '2',
         programId: programs[0].id,
-        tag: 'Science Track',
-        maximumSittings: 1,
-        qualificationTypes: [QualificationType.WAEC],
-        subjects: [
-          { subjectId: subjects[0].id, grade: Grade.B2 }, // Mathematics
-          { subjectId: subjects[1].id, grade: Grade.B3 }, // English
-          { subjectId: subjects[2].id, grade: Grade.C4 }, // Physics
-          { subjectId: subjects[3].id, grade: Grade.C5 }, // Chemistry
-          { subjectId: subjects[4].id, grade: Grade.C6 }, // Biology
-        ],
+        qualificationTypes: [QualificationType.WAEC, QualificationType.NECO],
+
+        firstSubject: subjects[0].name, // Mathematics
+        firstSubjectGrade: Grade.C5,
+
+        secondSubject: subjects[1].name, // English
+        secondSubjectGrade: Grade.B3,
+
+        thirdSubject: subjects[2].name, // Physics
+        alternateThirdSubject: '', // no alternate
+        thirdSubjectGrade: Grade.C4,
+
+        fourthSubject: subjects[3].name, // Chemistry
+        alternateFourthSubject: '', // no alternate
+        fourthSubjectGrade: Grade.C6,
+
+        fifthSubject: subjects[5].name, // Further Math
+        alternateFifthSubject: subjects[4].name, // or Biology
+        fifthSubjectGrade: Grade.C6,
       },
       {
-        programId: programs[2].id,
+        tag: 'Science Track',
+        maximumNumberOfSittings: '1',
+        programId: programs[1].id,
+        qualificationTypes: [QualificationType.WAEC],
+
+        firstSubject: subjects[0].name, // Mathematics
+        firstSubjectGrade: Grade.B2,
+
+        secondSubject: subjects[1].name, // English
+        secondSubjectGrade: Grade.B3,
+
+        thirdSubject: subjects[2].name, // Physics
+        alternateThirdSubject: '',
+        thirdSubjectGrade: Grade.C4,
+
+        fourthSubject: subjects[3].name, // Chemistry
+        alternateFourthSubject: '',
+        fourthSubjectGrade: Grade.C5,
+
+        fifthSubject: subjects[4].name, // Biology
+        alternateFifthSubject: '',
+        fifthSubjectGrade: Grade.C6,
+      },
+      {
         tag: 'Engineering Basics',
-        maximumSittings: 2,
+        maximumNumberOfSittings: '2',
+        programId: programs[2].id,
         qualificationTypes: [QualificationType.WAEC, QualificationType.GCE],
-        subjects: [
-          { subjectId: subjects[0].id, grade: Grade.C6 }, // Mathematics
-          { subjectId: subjects[1].id, grade: Grade.C5 }, // English
-          { subjectId: subjects[2].id, grade: Grade.B3 }, // Physics
-          { subjectId: subjects[13].id, grade: Grade.C4 }, // Technical Drawing
-          { subjectId: subjects[3].id, grade: Grade.C5 }, // Chemistry
-        ],
+
+        firstSubject: subjects[0].name, // Mathematics
+        firstSubjectGrade: Grade.C6,
+
+        secondSubject: subjects[1].name, // English
+        secondSubjectGrade: Grade.C5,
+
+        thirdSubject: subjects[2].name, // Physics
+        alternateThirdSubject: '',
+        thirdSubjectGrade: Grade.B3,
+
+        fourthSubject: subjects[13].name, // Technical Drawing
+        alternateFourthSubject: '',
+        fourthSubjectGrade: Grade.C4,
+
+        fifthSubject: subjects[3].name, // Chemistry
+        alternateFifthSubject: '',
+        fifthSubjectGrade: Grade.C5,
       },
     ])
+
 
     console.log('Database seeded successfully!')
   } catch (error) {

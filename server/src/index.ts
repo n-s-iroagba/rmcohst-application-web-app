@@ -1,20 +1,18 @@
-import express from 'express'
 import cors from 'cors'
-import helmet from 'helmet'
+import express from 'express'
 import rateLimit from 'express-rate-limit'
-import { requestLogger } from './middleware/requestLogger'
-import { errorHandler } from './middleware/errorHandler'
+import helmet from 'helmet'
 import appConfig from './config'
-import authRoutes from './routes/authRoutes'
-import sequelize from './config/database'
-import applicationRoutes from './routes/applicationRoutes'
-import programRoutes from './routes/programRoutes'
-import paymentRoutes from './routes/paymentRoutes'
-import biodataRoutes from './routes/biodataRoutes'
-import subjectRoutes from './routes/subjectRoutes'
-import { ApplicantProgramSpecificQualification } from './models'
-import applicantProgramSpecificQualificationRoutes from './routes/applicantProgramSpecificQualificationRoutes'
+import { errorHandler } from './middleware/errorHandler'
+import { requestLogger } from './middleware/requestLogger'
 import academicSessionRoutes from './routes/academicSessionRoutes'
+import applicantProgramSpecificQualificationRoutes from './routes/applicantProgramSpecificQualificationRoutes'
+import applicationRoutes from './routes/applicationRoutes'
+import authRoutes from './routes/authRoutes'
+import biodataRoutes from './routes/biodataRoutes'
+import paymentRoutes from './routes/paymentRoutes'
+import programRoutes from './routes/programRoutes'
+import subjectRoutes from './routes/subjectRoutes'
 
 const app = express()
 
@@ -61,6 +59,7 @@ app.use('/subjects', subjectRoutes)
 app.use('/sessions', academicSessionRoutes)
 app.use('/ssc-qualifications', applicantProgramSpecificQualificationRoutes)
 app.use('/program-qualifications', applicantProgramSpecificQualificationRoutes)
+app.use(errorHandler)
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' })
@@ -72,15 +71,15 @@ const startServer = async () => {
   try {
     console.log('🔧 Starting server initialization...')
 
-    console.log('🧪 Testing DB connection...')
-    await sequelize.authenticate()
-    console.log('✅ DB connected')
+    // console.log('🧪 Testing DB connection...')
+    // await sequelize.authenticate()
+    // console.log('✅ DB connected')
 
     // console.log('📦 Syncing DB...');
     // await sequelize.sync(
     //   {
-    //     force:true,
-    //    logging: console.log
+    //     force: true,
+    //     logging: console.log
     //   }
     // )
     // console.log('✅ DB synced');

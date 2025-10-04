@@ -41,12 +41,12 @@ export default function PaymentButton({
 
     try {
       const response = await handlePost(e)
-      console.log('paystack response', response)
+
       if (response?.access_code) {
         const popup = new PaystackPop()
         popup.resumeTransaction(response.access_code)
-        console.log('PAYSSSSSSSSSTACK', response)
-        router.push(`/applicant/payments/details/?reference=${response.reference}`)
+
+        router.push(`/applicant/payments/${response.reference}`)
       }
     } catch (error) {
       console.error('Transaction initiation failed:', error)
@@ -55,7 +55,7 @@ export default function PaymentButton({
 
   return (
     <button onClick={initiateTransaction}
-      data-testId={ApplicationTestIds.initiatePayment}
+      data-testid={ApplicationTestIds.initiatePayment}
       disabled={posting}>
       {posting ? 'Processing...' : 'Apply'}
     </button>

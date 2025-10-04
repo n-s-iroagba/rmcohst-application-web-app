@@ -20,7 +20,7 @@ export const API_ROUTES = {
     }
   },
   APPLICATION: {
-    GET_BY_ID: (id: string) => `/applications/${id}`,
+    // GET_BY_ID: (id: string) => `/applications/${id}`,
     GET_BY_APPLICANT_ID: `/applications/applicant/`,
 
   },

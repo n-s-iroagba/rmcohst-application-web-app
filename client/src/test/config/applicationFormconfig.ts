@@ -19,11 +19,12 @@ export const biodataFormConfig: FieldsConfig<Partial<Biodata>> = {
   },
   gender: {
     type: 'select',
-   
+
+
   },
   maritalStatus: {
     type: 'select',
-   
+
   },
   nationality: {
     type: 'text'
@@ -49,7 +50,7 @@ export const biodataFormConfig: FieldsConfig<Partial<Biodata>> = {
   },
   nextOfKinPhoneNumber: {
     // type: 'tel'
-     type: 'number'
+    type: 'text'
   },
   nextOfKinAddress: {
     type: 'textarea'

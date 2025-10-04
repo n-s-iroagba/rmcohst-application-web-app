@@ -1,8 +1,8 @@
 // src/repositories/PaymentRepository.ts
 
 import { Op } from 'sequelize'
-import Payment, { PaymentStatus, PaymentCreationAttributes } from '../models/Payment'
 import { User } from '../models'
+import Payment, { PaymentCreationAttributes, PaymentType } from '../models/Payment'
 import BaseRepository from './BaseRepository'
 
 interface PaymentWithApplicant extends Payment {
@@ -20,7 +20,14 @@ class PaymentRepository extends BaseRepository<Payment> {
 
   async findPaymentsByApplicantUserId(applicantUserId: number): Promise<Payment[]> {
     const result = await this.findAll({
-      where: { applicantUserId },
+      where: { applicantUserId, paymentType: PaymentType.APPLICATION_FEE },
+    })
+    return result.data
+  }
+
+  async findAcceptanceFeeByApplicantUserId(applicantUserId: number): Promise<Payment[]> {
+    const result = await this.findAll({
+      where: { applicantUserId, paymentType: PaymentType.ACCEPTANCE_FEE },
     })
     return result.data
   }
@@ -44,8 +51,8 @@ class PaymentRepository extends BaseRepository<Payment> {
     const result = await this.findAll(options)
     return result.data
   }
-  async findPaymentsByUserAndSession(applicantUserId:string, sessionId:number): Promise<Payment[]>{
-    return (await this.findAll({where:{applicantUserId,sessionId}})).data
+  async findPaymentsByUserAndSession(applicantUserId: string, sessionId: number): Promise<Payment[]> {
+    return (await this.findAll({ where: { applicantUserId, sessionId } })).data
   }
   async findPaymentByReference(reference: string): Promise<Payment | null> {
     return await this.findOne({ reference })

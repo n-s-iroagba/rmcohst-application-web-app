@@ -22,7 +22,7 @@ interface LoginTokenPayload {
 interface EmailVerificationTokenPayload {
   userId: string
   verificationCode: string
-  type: 'email_verification' 
+  type: 'email_verification'
   iat?: number
   exp?: number
 }
@@ -255,7 +255,7 @@ export class TokenMiddleware {
           throw new BadRequestError('No access Token provided')
         }
 
-        const result = this.tokenService.verifyToken(token)
+        const result = this.tokenService.verifyToken(token, 'access')
         req.user = result.decoded
         next()
       } catch (error) {

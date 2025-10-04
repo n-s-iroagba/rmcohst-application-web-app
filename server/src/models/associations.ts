@@ -95,7 +95,7 @@ export default function setupAssociations() {
   })
 
   // Program-Specific Requirements associations
-  Program.hasMany(ProgramSpecificRequirement, {
+  Program.hasOne(ProgramSpecificRequirement, {
     foreignKey: 'programId',
     as: 'specificRequirements',
     onDelete: 'CASCADE',
@@ -110,7 +110,7 @@ export default function setupAssociations() {
   })
 
   // Program SSC Requirements associations
-  Program.hasMany(ProgramSSCRequirement, {
+  Program.hasOne(ProgramSSCRequirement, {
     foreignKey: 'programId',
     as: 'sscRequirements',
     onDelete: 'CASCADE',
@@ -180,7 +180,7 @@ export default function setupAssociations() {
   })
 
   // Program Specific Qualifications associations
-  Application.hasMany(ApplicantProgramSpecificQualification, {
+  Application.hasOne(ApplicantProgramSpecificQualification, {
     foreignKey: 'applicationId',
     as: 'programSpecificQualifications',
     onDelete: 'CASCADE',
@@ -256,9 +256,5 @@ export default function setupAssociations() {
     onDelete: 'CASCADE',
   })
 
-  Payment.belongsTo(Application, {
-    foreignKey: 'applicationId',
-    as: 'application',
-    onDelete: 'CASCADE',
-  })
+
 }

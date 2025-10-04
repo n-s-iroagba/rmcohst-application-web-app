@@ -6,18 +6,20 @@ export interface ApplicantSSCQualification {
   numberOfSittings: number
   certificateTypes: string[]
   certificates?: File[] | Blob[] | []
-  firstSubjectId: number
+  firstSubject: number
   firstSubjectGrade: Grade
-  secondSubjectId: number
+  secondSubject: number
   secondSubjectGrade: Grade
-  thirdSubjectId: number
+  thirdSubject: number
   thirdSubjectGrade: Grade
-  fourthSubjectId: number
+  fourthSubject: number
   fourthSubjectGrade: Grade
-  fifthSubjectId: number
+  fifthSubject: number
   fifthSubjectGrade: Grade
   completed: boolean
 }
 
 export interface SSCQualificationFormData
-  extends Omit<ApplicantSSCQualification, 'id' | 'applicationId' | 'completed'> {}
+  extends Omit<ApplicantSSCQualification, 'id' | 'applicationId' | 'completed'> {
+
+}

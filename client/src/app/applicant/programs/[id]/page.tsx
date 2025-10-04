@@ -39,7 +39,7 @@ export default function ProgramDetailsPage() {
     error,
     loading
   } = useGet<FullProgram>(API_ROUTES.PROGRAM.GET_BY_ID(programId))
-
+  console.log('program', program)
   if (loading) return <Spinner />
   if (error) return <p className="text-danger">Failed to load program details.</p>
   if (!program) return null
@@ -50,7 +50,8 @@ export default function ProgramDetailsPage() {
   return (
     <div className="container py-4">
       <button onClick={() => router.back()} className="mb-3">
-        &larr; Back
+        &larr;
+        Back
       </button>
 
       <div className="shadow-sm mb-4">
@@ -82,21 +83,21 @@ export default function ProgramDetailsPage() {
         </div>
         <div>
           <p><strong>Max Sittings:</strong> {ssc.maximumNumberOfSittings}</p>
-          <p><strong>Qualification Types:</strong> {ssc.qualificationTypes.join(', ')}</p>
+          {/* <p><strong>Qualification Types:</strong> {ssc.qualificationTypes.toString()}</p> */}
           <ul>
-            <li>Subject 1 (ID: {ssc.firstSubjectId}) - Grade: {getGradeText(ssc.firstSubjectGrade)}</li>
-            <li>Subject 2 (ID: {ssc.secondSubjectId}) - Grade: {getGradeText(ssc.secondSubjectGrade)}</li>
+            <li>Subject 1 : {ssc.firstSubject} - Grade: {getGradeText(ssc.firstSubjectGrade)}</li>
+            <li>Subject 2 : {ssc.secondSubject} - Grade: {getGradeText(ssc.secondSubjectGrade)}</li>
             <li>
-              Subject 3 (ID: {ssc.thirdSubjectId}) - Grade: {getGradeText(ssc.thirdSubjectGrade)}
-              {ssc.alternateThirdSubjectId && <> or ID: {ssc.alternateThirdSubjectId}</>}
+              Subject 3 :  {ssc.thirdSubject} - Grade: {getGradeText(ssc.thirdSubjectGrade)}
+              {ssc.alternateThirdSubject && <> or ID: {ssc.alternateThirdSubject}</>}
             </li>
             <li>
-              Subject 4 (ID: {ssc.fourthSubjectId}) - Grade: {getGradeText(ssc.fourthSubjectGrade)}
-              {ssc.alternateFourthSubjectId && <> or ID: {ssc.alternateFourthSubjectId}</>}
+              Subject 4 :  {ssc.fourthSubject} - Grade: {getGradeText(ssc.fourthSubjectGrade)}
+              {ssc.alternateFourthSubject && <> or ID: {ssc.alternateFourthSubject}</>}
             </li>
             <li>
-              Subject 5 (ID: {ssc.fifthSubjectId}) - Grade: {getGradeText(ssc.fifthSubjectGrade)}
-              {ssc.alternateFifthSubjectId && <> or ID: {ssc.alternateFifthSubjectId}</>}
+              Subject 5 :  {ssc.fifthSubject} - Grade: {getGradeText(ssc.fifthSubjectGrade)}
+              {ssc.alternateFifthSubject && <> or ID: {ssc.alternateFifthSubject}</>}
             </li>
           </ul>
         </div>

@@ -83,7 +83,7 @@ const Dashboard = () => {
   if (!application && !applicationPaymentInfo.hasPaid) {
     todos.push(
       <TodoAlert
-        testId={ApplicationTestIds.startApplication}
+        testId={ApplicationTestIds.startApplication as string}
         key="no-application"
         message="Start your admission journey by selecting a program and making the application payment."
         link="/applicant/programs"
@@ -95,7 +95,7 @@ const Dashboard = () => {
   if (application?.status === ApplicationStatus.DRAFT && applicationPaymentInfo.hasPaid) {
     todos.push(
       <TodoAlert
-        testId={ApplicationTestIds.navigateToCompleteApplication}
+        testId={ApplicationTestIds.navigateToCompleteApplication as string}
         key="incomplete-application"
         message="Your application payment is confirmed. Complete your application form to proceed."
         link="/applicant/application"
@@ -107,7 +107,7 @@ const Dashboard = () => {
   if (applicationPaymentInfo.hasFailedWithoutRetry) {
     todos.push(
       <TodoAlert
-        testId={ApplicationTestIds.navigateToPayments}
+        testId={ApplicationTestIds.navigateToPayments as string}
         key="failed-payment"
         message="Your application payment failed. Please retry to continue your application."
         link="/applicant/programs"
@@ -118,7 +118,7 @@ const Dashboard = () => {
   if (applicationPaymentInfo.hasPending) {
     todos.push(
       <TodoAlert
-        testId={ApplicationTestIds.navigateToPayments}
+        testId={ApplicationTestIds.navigateToPayments as string}
         key="pending-payment"
         message="Your application payment is pending. Please click to verify payment."
         link="/applicant/payments"
@@ -172,7 +172,10 @@ const Dashboard = () => {
     )
   }
 
-  if (applicationError || sessionError || authError || paymentError || acceptanceFeeError) {
+  if (applicationError || sessionError || authError
+    // || paymentError
+    // || acceptanceFeeError
+  ) {
     return <ErrorAlert message={applicationError || paymentError || acceptanceFeeError || authError || sessionError} />
   }
 
@@ -184,7 +187,7 @@ const Dashboard = () => {
           <GraduationCap className="w-8 h-8 text-blue-600" />
           <span>Welcome back, {user?.username}!</span>
         </h2>
-        <p className="text-lg text-blue-700">Student Dashboard</p>
+        <p className="text-lg text-blue-700">Applicant Dashboard</p>
         {session && (
           <p className="text-sm text-gray-600 mt-1">
             Current Admission Session: <span className="font-medium">{session.name}</span>
@@ -273,8 +276,8 @@ const Dashboard = () => {
             title="Application Fee"
             icon={DollarSign}
             paymentInfo={applicationPaymentInfo}
-            linkPath="/applicant/payments"
-            testId={ApplicationTestIds.navigateToPayments}
+            linkPath={applicationPaymentInfo.noPayment ? '/applicant/programs' : '/applicant/payments'}
+            testId={ApplicationTestIds.navigateToPayments as string}
           />
         </motion.div>
 

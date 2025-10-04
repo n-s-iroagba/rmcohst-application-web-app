@@ -23,9 +23,6 @@ interface PaymentAttributes {
   paymentType: PaymentType
   paidAt?: Date
   cancelledAt?: Date
-  receiptFileId?: string
-  receiptLink?: string
-  receiptGeneratedAt?: Date
   reference: string
   createdAt: Date
   updatedAt: Date
@@ -53,9 +50,6 @@ class Payment
   paidAt!: Date
   cancelledAt?: Date
   amount!: number
-  receiptFileId?: string
-  receiptLink?: string
-  receiptGeneratedAt?: Date
   status!: PaymentStatus
   paymentType!: PaymentType
 
@@ -70,18 +64,7 @@ Payment.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    receiptFileId: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    receiptLink: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    receiptGeneratedAt: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
+
     amount: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,

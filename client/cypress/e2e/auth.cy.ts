@@ -1,34 +1,49 @@
-// import { SIGNUP_FORM_DEFAULT_DATA } from '../../src/constants/auth'
-// import { generateComponentFormTestIds } from '../../src/utils/testIdGenerator'
+import { signUpFormTestIds } from "../../src/test/testIds/formTestIds";
+import { emailVerificationTestIds } from "../../src/test/testIds/verifyemailTestIds";
 
-// describe('Signup Flow', () => {
-//   const TEST_ID_BASE = 'signup-form'
+describe('Signup Flow with Email Verification', () => {
+    const testUser = {
+        username: 'UdorAkpuEnyi',
+        email: 'nnamdisolomon1@gmail.com',
+        password: '97Chocho@',
+        confirmPassword: '97Chocho@'
+    }
 
-//   // Generate all test IDs
-//   const { FIELD_TEST_IDS, SUBMIT_BUTTON_TEST_ID } = generateComponentFormTestIds(
-//     SIGNUP_FORM_DEFAULT_DATA,
-//     TEST_ID_BASE
-//   )
+    const verificationCode = '123456'; // Mock verification code
 
-//   const testUser = {
-//     username: 'UdorAkpuEnyi',
-//     email: 'nnamdisolomon1@gmail.com',
-//     password: '97Chocho@',
-//     confirmPassword: '97Chocho@'
-//   }
+    it('should fill and submit the signup form then verify email', () => {
+        cy.visit('/auth/signup/applicant')
 
-//   // Add a test block
-//   it('should fill and submit the signup form', () => {
-//     cy.visit('/auth/signup/applicant') // Add visit command
+        // Fill signup form
+        Object.keys(testUser).forEach((key) => {
+            const typedKey = key as keyof typeof testUser
+            cy.getByTestId(signUpFormTestIds.FIELD_TEST_IDS[typedKey]).type(testUser[typedKey])
+        })
 
-//     Object.keys(SIGNUP_FORM_DEFAULT_DATA).forEach((key) => {
-//       const typedKey = key as keyof typeof SIGNUP_FORM_DEFAULT_DATA
-//       cy.getByTestId(FIELD_TEST_IDS[typedKey]).type(testUser[typedKey])
-//     })
+        // Submit signup form
+        cy.getByTestId(signUpFormTestIds.SUBMIT_BUTTON_TEST_ID).click()
 
-//     cy.getByTestId(SUBMIT_BUTTON_TEST_ID).click()
+        // Verify navigation to email verification page
+        cy.url().should('include', '/auth/verify-email')
 
-//     // Add assertions to verify successful submission
-//     cy.url().should('include', '/auth/verify-email') // Example assertion
-//   })
-// })
+        // Test email verification form
+        cy.getByTestId(emailVerificationTestIds.emailVerificationContainer as string).should('be.visible')
+
+        // Fill verification code inputs (assuming 6-digit code)
+        verificationCode.split('').forEach((digit, index) => {
+            // Type assertion needed for the iterable test ID function
+            const inputTestId = (emailVerificationTestIds.emailVerificationInput as (index: number) => string)(index);
+            cy.getByTestId(inputTestId).type(digit)
+        })
+
+        // Submit verification form
+        cy.getByTestId(emailVerificationTestIds.emailVerificationSubmit as string).click()
+
+        // Add assertion for successful verification
+        cy.url().should('include', '/dashboard') // Or wherever users go after verification
+    })
+
+    it('should handle forgot password', () => {
+    })
+
+})

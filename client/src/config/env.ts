@@ -1,7 +1,7 @@
 // src/config/env.ts
 const config = {
   apiBase: process.env.NEXT_PUBLIC_API_BASE || '',
-  appName: process.env.NEXT_PUBLIC_APP_NAME || 'plamwebtv',
+  appName: process.env.NEXT_PUBLIC_APP_NAME || 'rmcohst application portal',
   googleClientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
   isDevelopment: process.env.NODE_ENV === 'development',
   isProduction: process.env.NODE_ENV === 'production',

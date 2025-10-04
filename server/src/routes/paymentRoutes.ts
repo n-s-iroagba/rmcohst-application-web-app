@@ -7,6 +7,7 @@ router.get(
   '/:applicantUserId/current-session-payments',
   PaymentController.getPaymentsByApplicantUserId
 )
+router.get('/acceptance-fees/:id', PaymentController.getAcceptanceFeeByApplicantUserId)
 router.get('/by-date', PaymentController.getPaymentsByDate)
 
 router.post('/initialize', PaymentGatewayController.initializePayment)

@@ -28,7 +28,7 @@ export class UserService {
 
       return user
     } catch (error) {
-      logger.error('Error finding user by email', { email, error })
+
       throw error
     }
   }

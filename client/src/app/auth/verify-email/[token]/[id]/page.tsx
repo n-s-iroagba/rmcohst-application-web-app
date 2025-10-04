@@ -1,10 +1,11 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { CheckCircle, Loader2 } from 'lucide-react' // ✅ Lucide icons
+import { motion } from 'framer-motion';
+import { CheckCircle, Loader2 } from 'lucide-react'; // ✅ Lucide icons
 
-import ErrorAlert from '@/components/ErrorAlert'
-import { useVerifyEmail } from '@/hooks/useVerifyEmail'
+import ErrorAlert from '@/components/ErrorAlert';
+import { useVerifyEmail } from '@/hooks/useVerifyEmail';
+import { emailVerificationTestIds } from '../../../../../test/testIds/verifyemailTestIds';
 
 const VerifyEmail = () => {
   const {
@@ -47,6 +48,7 @@ const VerifyEmail = () => {
             verifyCode(e)
           }}
           className="space-y-6"
+          data-testid={emailVerificationTestIds.emailVerificationContainer}
         >
           <div className="flex justify-center gap-3">
             {emailVerificationFormCode.map((digit, index) => (
@@ -55,6 +57,7 @@ const VerifyEmail = () => {
                 ref={(el) => {
                   inputRefs.current[index] = el!
                 }}
+                data-testid={(emailVerificationTestIds.emailVerificationInput as (index: number) => string)(index)}
                 type="text"
                 maxLength={1}
                 value={digit}
@@ -67,6 +70,7 @@ const VerifyEmail = () => {
 
           <button
             type="submit"
+            data-testid={emailVerificationTestIds.emailVerificationSubmit}
             className="w-full py-3 bg-slate-700 text-white rounded-xl hover:bg-slate-800 disabled:bg-slate-400 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
           >
             {submitting ? (
@@ -85,16 +89,16 @@ const VerifyEmail = () => {
             {canResend
               ? "Didn't receive the code?"
               : `Resend available in ${Math.floor(timeLeft / 60)}:${(timeLeft % 60)
-                  .toString()
-                  .padStart(2, '0')}`}
+                .toString()
+                .padStart(2, '0')}`}
           </p>
 
           <button
+            data-testid={emailVerificationTestIds.emailVerificationResend}
             onClick={handleResendEmailVerificationFormCode}
             disabled={!canResend}
-            className={`text-slate-700 hover:text-slate-900 transition-colors ${
-              !canResend ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
+            className={`text-slate-700 hover:text-slate-900 transition-colors ${!canResend ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
           >
             Resend Verification code
           </button>

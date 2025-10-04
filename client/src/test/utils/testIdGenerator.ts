@@ -212,30 +212,31 @@ const generateFormFieldHelpTestIds = <T>(
  * @param config - Object containing element types and optional custom actions
  * @returns Object with test IDs matching the config keys
  */
-export const createTestIdsFromConfig = <T extends Record<string, { element: string; action?: string }>>(
+
+
+export const createTestIdsFromConfig = <T extends Record<string, { element: string; action?: string, iterable?: boolean }>>(
   config: T
 ) => {
   const testIds = {} as { [K in keyof T]: string | ((index: number) => string) };
-  type IsSelectElement<T> = T extends { element: typeof ElementType.SELECT } ? true : false;
 
-  for (const [key, { element, action }] of Object.entries(config)) {
-    // Use custom action or default to key name
+  for (const [key, { element, action, iterable }] of Object.entries(config)) {
     const actionName = action || key;
 
-    // Handle selection actions that need indexing
-    if (key.startsWith('select') || element === ElementType.SELECT) {
+    if (iterable) {
+      // Return a function that generates indexed test IDs
+      testIds[key as keyof T] = (index: number) => generateIndexedTestId(element, actionName, index);
+    } else if (key.startsWith('select') || element === ElementType.SELECT) {
       testIds[key as keyof T] = (index: number) => generateOptionTestId(actionName, index);
     } else {
       testIds[key as keyof T] = generateTestId(element, actionName);
     }
   }
 
-  return testIds as {
-    [K in keyof T]: IsSelectElement<T[K]> extends true
-    ? (index: number) => string
-    : string
-  };
+  return testIds;
 };
+
+
+
 
 /**
  * Utility function to generate option-specific test IDs

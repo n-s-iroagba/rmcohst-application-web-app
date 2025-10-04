@@ -1,7 +1,6 @@
 'use client'
 
 import BiodataForm from '@/components/BiodataForm'
-import ProgramSpecificQualificationForm from '@/components/ProgramSpecificQualificationForm'
 import { Spinner } from '@/components/Spinner'
 import SSCQualificationForm from '@/components/SSCQualificationForm'
 import { API_ROUTES } from '@/constants/apiRoutes'
@@ -20,6 +19,7 @@ import {
   XCircle
 } from 'lucide-react'
 import React, { useCallback, useMemo, useState } from 'react'
+import ProgramSpecificQualificationForm from '../../../components/ProgramSpecificQualificationForm'
 import { useAuthContext } from '../../../context/AuthContext'
 
 // Strict type definitions
@@ -38,10 +38,16 @@ interface StatusConfig {
 }
 
 // Constants
-const STEPS: readonly StepConfig[] = [
+const STEPS1: readonly StepConfig[] = [
   { id: 'biodata', label: 'Biodata', icon: User },
   { id: 'ssc', label: 'SSC Qualifications', icon: FileText },
   { id: 'program-specific', label: 'Program Requirements', icon: GraduationCap },
+  { id: 'review', label: 'Review & Submit', icon: Eye }
+] as const
+const STEPS2: readonly StepConfig[] = [
+  { id: 'biodata', label: 'Biodata', icon: User },
+  { id: 'ssc', label: 'SSC Qualifications', icon: FileText },
+
   { id: 'review', label: 'Review & Submit', icon: Eye }
 ] as const
 
@@ -99,11 +105,26 @@ const ApplicationPage: React.FC = () => {
 
   console.log('application', application)
 
-
+  const STEPS = application?.programSpecificQualifications ? STEPS1 : STEPS2
   // Event handlers
   const handleStepChange = useCallback((step: ApplicationStep) => {
-    setCurrentStep(step)
-  }, [])
+    if (step === 'review') {
+      if (application?.programSpecificQualifications && !application?.programSpecificQualifications?.completed) {
+        setCurrentStep('program-specific')
+      }
+
+
+      if (application?.biodata?.completed) {
+        setCurrentStep('biodata')
+
+      }
+      if (application?.sscQualification?.completed) {
+        setCurrentStep('review')
+      }
+    } else {
+      setCurrentStep(step)
+    }
+  }, [application?.programSpecificQualifications?.completed])
 
   const handleSubmitApplication = useCallback(async () => {
     if (!application?.id) {
@@ -159,7 +180,7 @@ const ApplicationPage: React.FC = () => {
 
 
 
-  const renderStepNavigation = (application: Application) => (
+  const renderStepNavigation = (application: Application, STEPS: readonly StepConfig[]) => (
     <div className="flex justify-center mb-8">
       <div className="flex space-x-4 bg-white rounded-lg shadow-sm border border-slate-200 p-2">
         {STEPS.map((step) => {
@@ -212,16 +233,21 @@ const ApplicationPage: React.FC = () => {
       case 'ssc':
         return <SSCQualificationForm application={application} handleBackward={handlePreviousStep} handleForward={
           application.programSpecificQualifications ? () => handleStepChange('program-specific') : () => handleStepChange('review')} />
+
       case 'program-specific':
         return <ProgramSpecificQualificationForm
           handleBackward={handlePreviousStep}
           application={application}
           handleForward={() => handleStepChange('review')} />
       case 'review':
-        return renderReviewStep()
+        if ((application.programSpecificQualifications && application.programSpecificQualifications.completed) && application.biodata.completed && application.sscQualification.completed) {
+          return renderReviewStep()
+        }
       default:
         return null
     }
+
+
   }
 
   const renderReviewStep = () => (
@@ -260,6 +286,8 @@ const ApplicationPage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {renderNavigationButtons()}
       </div>
     </div>
   )
@@ -312,13 +340,12 @@ const ApplicationPage: React.FC = () => {
             </p>
           </div>
 
-          {renderStepNavigation(application)}
+          {renderStepNavigation(application, STEPS)}
 
           <div className="bg-white rounded-lg shadow-lg border border-slate-200">
             {renderStepContent()}
           </div>
 
-          {renderNavigationButtons()}
         </div>
       </div>
     )

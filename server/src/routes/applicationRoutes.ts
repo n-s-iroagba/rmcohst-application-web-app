@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.get('/:id', authMiddleware, ApplicationController.getApplicationDetails)
 
-router.get('/applicant', authMiddleware, ApplicationController.getApplicationByUserId)
+router.get('/applicant', authMiddleware, ApplicationController.getApplicationByApplicantUserId)
 
 router.get('/', ApplicationController.getAllApplications)
 router.get('/payment-status/:applicantUserId', ApplicationController.getApplicationPaymentStatus)

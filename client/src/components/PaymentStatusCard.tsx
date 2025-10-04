@@ -16,6 +16,7 @@ interface PaymentStatusInfo {
     hasPaid: boolean
     hasPending: boolean
     hasFailed: boolean
+    noPayment: boolean
     hasFailedWithoutRetry: boolean
     latestPayment?: Payment
 }
@@ -26,7 +27,8 @@ export const getPaymentStatusInfo = (payments: Payment[] | undefined): PaymentSt
             hasPaid: false,
             hasPending: false,
             hasFailed: false,
-            hasFailedWithoutRetry: false
+            hasFailedWithoutRetry: false,
+            noPayment: true
         }
     }
 
@@ -47,7 +49,8 @@ export const getPaymentStatusInfo = (payments: Payment[] | undefined): PaymentSt
         hasPending,
         hasFailed,
         hasFailedWithoutRetry,
-        latestPayment
+        latestPayment,
+        noPayment: false
     }
 }
 
@@ -151,8 +154,8 @@ export const PaymentStatusCard = ({
                         href={linkPath}
                         data-testid={testId}
                         className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${paymentInfo.hasFailedWithoutRetry
-                                ? 'bg-red-600 text-white hover:bg-red-700'
-                                : 'bg-blue-600 text-white hover:bg-blue-700'
+                            ? 'bg-red-600 text-white hover:bg-red-700'
+                            : 'bg-blue-600 text-white hover:bg-blue-700'
                             }`}
                     >
                         <CreditCard className="w-4 h-4" />

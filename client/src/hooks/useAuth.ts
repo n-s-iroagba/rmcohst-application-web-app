@@ -23,16 +23,20 @@ import {
 
 import { useRouter } from 'next/navigation'
 import { API_ROUTES } from '../constants/apiRoutes'
+import { ApiError, handleError } from '../helpers/handleError'
 import { usePost } from './useApiQuery'
 import { useRoutes } from './useRoutes'
 
 export const useAuth = () => {
   const { setUser } = useAuthContext()
   const { navigateToDashboard, navigateToLogin, navigateToVerifyEmail } = useRoutes()
+  const [error, setError] = useState<string>('')
   const router = useRouter()
 
   const [authError, setAuthError] = useState<string>('')
-
+  const googleLogin = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`
+  }
   // SIGNUP
   const {
     postResource: signUpRequest,
@@ -60,7 +64,8 @@ export const useAuth = () => {
     postResource: loginRequest,
     changeHandlers: loginChangeHandlers,
     handlePost: handleLogin,
-    posting: loginLoading
+    posting: loginLoading,
+    apiError: loginError
   } = usePost<LoginRequestDto, LoginResponseDto | SignUpResponseDto>(
     API_ROUTES.AUTH.LOGIN,
     LOGIN_FORM_DEFAULT_DATA
@@ -74,7 +79,7 @@ export const useAuth = () => {
   const {
     postResource: forgotPasswordRequest,
     changeHandlers: forgotPasswordChangeHandler,
-    handlePost: handleForgotPassword,
+    handlePost: forgotPassword,
     posting: forgotPasswordLoading
   } = usePost<ForgotPasswordRequestDto, ForgotPasswordResponseDto>(
     API_ROUTES.AUTH.FORGOT_PASSWORD,
@@ -87,7 +92,7 @@ export const useAuth = () => {
     changeHandlers: resetPasswordChangeHandlers,
     handlePost: handleResetPassword,
     posting: resetPasswordLoading,
-    setPostResource: setResetPasswordPayload
+    mutation: resetPasswordMutation
   } = usePost<ResetPasswordRequestDto, LoginResponseDto>(
     API_ROUTES.AUTH.RESET_PASSWORD,
     RESET_PASSWORD_DEFAULT_DATA
@@ -121,34 +126,43 @@ export const useAuth = () => {
   // LOGIN action
   const login = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    try {
+      const loginResponse = (await handleLogin(e)) as unknown as LoginResponseDto | SignUpResponseDto
 
-    const loginResponse = (await handleLogin(e)) as unknown as LoginResponseDto | SignUpResponseDto
-
-    if ('accessToken' in loginResponse && 'user' in loginResponse) {
-      setAccessToken(loginResponse.accessToken)
-      setUser(loginResponse.user)
-      console.log('USERS', loginResponse.user)
-      navigateToDashboard(loginResponse.user.role)
-    } else if ('verificationToken' in loginResponse && 'in' in loginResponse) {
-      navigateToVerifyEmail(loginResponse.verificationToken, loginResponse.id)
+      if ('accessToken' in loginResponse && 'user' in loginResponse) {
+        setAccessToken(loginResponse.accessToken)
+        setUser(loginResponse.user)
+        console.log('USERS', loginResponse.user)
+        navigateToDashboard(loginResponse.user.role)
+      } else {
+        navigateToVerifyEmail(loginResponse.verificationToken, loginResponse.id)
+      }
+    } catch (error) {
+      console.error('Login Failed:', error)
+      handleError(error as ApiError, setError)
     }
+
   }
 
 
-  // FORGOT password
-  const forgotPassword = async (e: React.FormEvent<HTMLFormElement>) => {
-    await handleForgotPassword(e)
-  }
 
   // RESET password
   const resetPassword = async (e: React.FormEvent<HTMLFormElement>, resetPasswordToken: string) => {
-    setResetPasswordPayload({ ...resetPasswordRequest, resetPasswordToken })
-    e.preventDefault()
-    const resetPasswordResponse = (await handleResetPassword(e))
-    if (resetPasswordResponse) {
+    try {
+      console.log('req', resetPasswordRequest)
+      e.preventDefault()
+      await resetPasswordMutation.mutateAsync({ ...resetPasswordRequest, resetPasswordToken })
+
       navigateToLogin()
+
+    } catch (error) {
+
+      console.error('Reset Password Failed failed:', error)
+      handleError(error as ApiError, setError)
+
     }
   }
+
 
   const isAuthLoading =
     loginLoading ||
@@ -159,7 +173,7 @@ export const useAuth = () => {
 
   return {
     loading: isAuthLoading,
-    error: authError,
+    error: loginError || error,
 
     signUpRequest,
     loginRequest,
@@ -173,6 +187,7 @@ export const useAuth = () => {
     resetPasswordChangeHandlers,
     forgotPasswordChangeHandler,
     login,
+    googleLogin,
     signUp,
     signUpSuperAdmin,
 

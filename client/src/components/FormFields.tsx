@@ -1,6 +1,6 @@
 import { FieldConfig } from '@/types/fields_config'
-import React, { useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
+import React, { useState } from 'react'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface BaseFieldProps {
   name: string
@@ -12,7 +12,7 @@ interface BaseFieldProps {
 
 interface TextInputProps extends BaseFieldProps {
   value: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onChange: (e: React.ChangeEvent<HTMLInputElement>, index?: number) => void
   type?: string
   placeholder?: string
 }
@@ -35,7 +35,7 @@ export const TextField: React.FC<TextInputProps> = ({
       id={name}
       name={name}
       data-testid={testId}
-      value={value || ''}
+      value={value}
       onChange={onChange}
       className="w-full border rounded px-3 py-2"
     />
@@ -74,9 +74,8 @@ export const PasswordField: React.FC<TextInputProps> = ({
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-            error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'
-          }`}
+          className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'
+            }`}
         />
         <button
           type="button"
@@ -238,7 +237,7 @@ export const MultiGroupSelectField: React.FC<MultiGroupSelectFieldProps> = ({
             className="border rounded px-2 py-1"
           >
             <option value="">Select {field.label}</option>
-            {field.options &&field.options.map((opt) => (
+            {field.options && field.options.map((opt) => (
               <option key={opt.id} value={opt.id}>
                 {opt.label}
               </option>

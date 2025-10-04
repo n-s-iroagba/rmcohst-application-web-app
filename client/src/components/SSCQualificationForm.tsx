@@ -34,14 +34,14 @@ const SSCQualificationForm: React.FC<Props> = ({ application, handleForward, han
     putResource: sscQualification,
     changeHandlers,
     updating,
-    apiError
+
   } = usePut<SSCQualificationFormData>(
     application?.sscQualification?.id
       ? API_ROUTES.SSC_QUALIFICATION.UPDATE(application.sscQualification.id)
       : null,
     application?.sscQualification as SSCQualificationFormData
   )
-
+  console.log(sscQualification)
   const { setFieldsConfig } = useFieldConfigContext<SSCQualificationFormData>()
   const grades = Object.values(Grade)
   const certificates = Object.values(QualificationType)
@@ -135,7 +135,8 @@ const SSCQualificationForm: React.FC<Props> = ({ application, handleForward, han
         options: certificationOpitons
       },
       certificates: {
-        type: 'fileArray',
+        type: 'file',
+        arrayElementNumber: Number(sscQualification.numberOfSittings),
         fieldGroup: {
           // groupKey: 'certificates',
           fields: certificateFileFields,
@@ -227,7 +228,7 @@ const SSCQualificationForm: React.FC<Props> = ({ application, handleForward, han
         formLabel="Fill in O'level Qualification"
         onCancel={handleBackward}
         submiting={updating}
-        error={apiError}
+        error={''}
       />
     )
   )

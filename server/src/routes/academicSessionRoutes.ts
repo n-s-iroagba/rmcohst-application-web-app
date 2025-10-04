@@ -1,11 +1,12 @@
 import express from 'express'
-import { validateQuery, validateParams, validateBody } from '../middleware/validation'
+import { validateBody } from '../middleware/validation'
 
+import AdmissionSessionController from '../controllers/AcademicSessionController'
 import {
   academicSessionCreationSchema,
   academicSessionUpdateSchema,
 } from '../validation/academicSession.validationSchemas'
-import AdmissionSessionController from '../controllers/AdmissionSessionController'
+
 
 const router = express.Router()
 const academicSessionController = new AdmissionSessionController()

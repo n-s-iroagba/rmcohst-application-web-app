@@ -1,7 +1,7 @@
+import { Providers } from '@/components/Providers'
 import type { Metadata } from 'next'
 import './globals.css'
-import { Providers } from '@/components/Providers'
-import { FieldConfigProvider } from '@/context/FieldConfigContext'
+
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <Providers>
-          <FieldConfigProvider>{children}</FieldConfigProvider>
+          {children}
         </Providers>
       </body>
     </html>

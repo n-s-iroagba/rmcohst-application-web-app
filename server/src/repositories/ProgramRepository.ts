@@ -1,10 +1,9 @@
 // src/repositories/ProgramRepository.ts
 
-import { Program, Department, ProgramSpecificRequirement, ProgramSSCRequirement } from '../models'
+import { Department, Program, ProgramSpecificRequirement, ProgramSSCRequirement } from '../models'
 import Faculty from '../models/Faculty'
 import { ProgramCreationAttributes } from '../models/Program'
 import BaseRepository from './BaseRepository'
-import { FullProgram } from '../types/join-model.types'
 
 class ProgramRepository extends BaseRepository<Program> {
   constructor() {
@@ -15,7 +14,7 @@ class ProgramRepository extends BaseRepository<Program> {
     return await this.create(programData)
   }
 
-  async findByIdWithRelations(id: string): Promise<FullProgram | null> {
+  async findByIdWithRelations(id: string): Promise<any> {
     const include = [
       {
         model: Department,
@@ -36,8 +35,8 @@ class ProgramRepository extends BaseRepository<Program> {
         as: 'specificRequirements',
       },
     ]
-    
-    return await this.findById(id, { include }) as FullProgram | null
+
+    return await this.findById(id, { include })
   }
 
   async findByFaculty(facultyId: number) {

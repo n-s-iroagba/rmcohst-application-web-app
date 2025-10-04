@@ -10,6 +10,7 @@ import { resetPasswordTestIds } from '@/test/testIds/formTestIds';
 import { ResetPasswordRequestDto } from '@/types/auth.types';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
+import { createFieldsConfig } from '../../../helpers/createFieldConfig';
 
 function ResetPasswordInner() {
   const { resetPasswordRequest, resetPassword, loading, error, resetPasswordChangeHandlers } = useAuth();
@@ -17,11 +18,11 @@ function ResetPasswordInner() {
   const searchParams = useSearchParams();
   const resetPasswordToken = searchParams.get('token');
 
-  const { createFieldsConfig } = useFieldConfigContext<Partial<ResetPasswordRequestDto>>();
+  const { setFieldsConfig } = useFieldConfigContext<Partial<ResetPasswordRequestDto>>();
 
   useEffect(() => {
-    createFieldsConfig(resetPasswordFormConfig, resetPasswordChangeHandlers);
-  }, [createFieldsConfig, resetPasswordChangeHandlers]);
+    setFieldsConfig(createFieldsConfig(resetPasswordFormConfig, resetPasswordChangeHandlers));
+  }, []);
 
   testIdContext.setContext(resetPasswordTestIds);
 

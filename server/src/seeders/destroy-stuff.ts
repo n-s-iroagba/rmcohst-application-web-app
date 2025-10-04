@@ -1,19 +1,16 @@
-import { ApplicantSSCQualification, Application, Biodata, Role, User } from '../models'
-import ApplicationService from '../services/ApplicationService'
-import { UserWithRole } from '../services/RbacService'
-import { NotFoundError } from '../utils/errors'
+import { Application } from '../models'
 
 const destroyStuff = async () => {
   try {
     const p = await Application.findOne({ where: { applicantUserId: 1 } })
-    if (p) await p.destroy()
+    if (p) console.log(p)
     //  const a = await new ApplicationService().getApplicationByUserId('1')
-    const a = await new ApplicationService().createInitialApplication({
-      applicantUserId: 1,
-      sessionId: 2,
-      programId: 1,
-    })
-    console.log(a)
+    // const a = await new ApplicationService().createInitialApplication({
+    //   applicantUserId: 2,
+    //   sessionId: 2,
+    //   programId: 1,
+    // })
+    // console.log(a)
     //    const user = await User.findByPk(4,{
     //              include:[{
     //             model:Role,

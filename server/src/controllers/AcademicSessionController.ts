@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
+import AdmissionSessionService from '../services/AcademicSessionService'
 import logger from '../utils/logger'
 import { ApiResponseUtil } from '../utils/response'
-import AdmissionSessionService from '../services/AdmissionSessionService'
 
 class AdmissionSessionController {
   // GET ALL ACADEMIC SESSIONS WITH PAGINATION

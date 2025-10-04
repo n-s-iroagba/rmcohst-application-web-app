@@ -1,5 +1,5 @@
 // ===== UPDATED BIODATA MODEL - SYNCHRONIZED =====
-import { Model, DataTypes } from 'sequelize'
+import { DataTypes, Model } from 'sequelize'
 import sequelize from '../config/database'
 
 export interface BiodataAttributes {
@@ -10,7 +10,7 @@ export interface BiodataAttributes {
   otherNames?: string // Changed from middleName
   email?: string // Changed from emailAddress
   phoneNumber?: string
-  dateOfBirth?: Date
+  dateOfBirth?: Date | null
   gender?: string
   maritalStatus?: string
   nationality?: string
@@ -33,8 +33,7 @@ export interface BiodataCreationAttributes {
 
 class Biodata
   extends Model<BiodataAttributes, BiodataCreationAttributes>
-  implements BiodataAttributes
-{
+  implements BiodataAttributes {
   public id!: number
   public applicationId!: number
   public firstName?: string

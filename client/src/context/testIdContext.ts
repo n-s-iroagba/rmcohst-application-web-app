@@ -8,7 +8,7 @@ interface TestIdContextValue<T> {
 class TestIdContext<T extends Record<string, any>> {
   private context: TestIdContextValue<T> | null = null
 
-  setContext(testIds:any): void {
+  setContext(testIds: any): void {
     this.context = testIds
   }
 
@@ -16,7 +16,7 @@ class TestIdContext<T extends Record<string, any>> {
     if (!this.context) {
       throw new Error('TestIdContext has not been initialized. Call setContext() first.')
     }
-    console.log('context', this.context)
+
     return this.context
   }
 

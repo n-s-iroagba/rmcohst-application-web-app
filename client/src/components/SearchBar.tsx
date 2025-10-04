@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react'
 import { Search, X } from 'lucide-react'
+import React, { useCallback, useState } from 'react'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // Generic search bar props
 interface SearchBarProps<T> {
@@ -12,7 +12,7 @@ interface SearchBarProps<T> {
   showClearButton?: boolean
   caseSensitive?: boolean
   exactMatch?: boolean
-  testId:string
+  testId: string
 }
 
 // Hook for debouncing search queries
@@ -100,7 +100,7 @@ export function GenericSearchBar<T extends Record<string, any>>({
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
         <input
           type="text"
-          data-testId={testId}
+          data-testid={testId}
           value={searchTerm}
           onChange={handleInputChange}
           placeholder={placeholder}
@@ -211,7 +211,7 @@ function SearchBarExample() {
         <h2 className="text-lg font-semibold text-gray-700">Search Products</h2>
         <GenericSearchBar<Product>
           data={products}
-             testId=''
+          testId=''
           searchKeys={['name', 'category', 'description']}
           onResults={setProductResults}
           placeholder="Search products by name, category, or description..."
@@ -244,7 +244,7 @@ function SearchBarExample() {
         </h2>
         <GenericSearchBar<User>
           data={users}
-             testId=''
+          testId=''
           searchKeys={['role']}
           onResults={setUserResults}
           placeholder="Search exact role (try 'admin' vs 'Admin')..."

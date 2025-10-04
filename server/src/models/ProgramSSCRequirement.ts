@@ -1,9 +1,9 @@
 import {
+  CreationOptional,
   DataTypes,
-  Model,
   InferAttributes,
   InferCreationAttributes,
-  CreationOptional,
+  Model,
 } from 'sequelize'
 import sequelize from '../config/database'
 
@@ -27,74 +27,126 @@ export enum QualificationType {
   GCE = 'GCE',
 }
 
-// Subject requirement structure
-export interface SubjectRequirement {
-  subjectId: number
-  grade: Grade
-  alternateSubjectId?: number // Optional alternate subject
-}
+
 
 export class ProgramSSCRequirement extends Model<
   InferAttributes<ProgramSSCRequirement>,
   InferCreationAttributes<ProgramSSCRequirement>
 > {
-  declare id: CreationOptional<number>
-  declare programId: number
+  declare id: CreationOptional<string>
   declare tag: string
-  declare maximumSittings: number
-  declare qualificationTypes: QualificationType[]
-  declare subjects: SubjectRequirement[] // Store all subjects as JSON array
+  declare programId: number
+  declare maximumNumberOfSittings: string
+  declare qualificationTypes: string[]
+
+  declare firstSubject: string
+  declare firstSubjectGrade: Grade
+
+  declare secondSubject: string
+  declare secondSubjectGrade: Grade
+
+  declare thirdSubject: string
+  declare alternateThirdSubject: string
+  declare thirdSubjectGrade: Grade
+
+  declare fourthSubject: string
+  declare alternateFourthSubject: string
+  declare fourthSubjectGrade: Grade
+
+  declare fifthSubject: string | null
+  declare alternateFifthSubject: string
+  declare fifthSubjectGrade: Grade
+
   declare readonly createdAt: CreationOptional<Date>
   declare readonly updatedAt: CreationOptional<Date>
 }
 
-/**
- * Initialize the model
- */
+// Initialize model
 ProgramSSCRequirement.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
-      autoIncrement: true,
     },
     programId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      // Remove references - let associations handle this
     },
     tag: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    maximumSittings: {
+    maximumNumberOfSittings: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 2,
     },
     qualificationTypes: {
       type: DataTypes.JSON,
       allowNull: false,
-      defaultValue: [QualificationType.WAEC],
+      defaultValue: [],
     },
-    subjects: {
-      type: DataTypes.JSON,
+    firstSubject: {
+      type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        hasRequiredSubjects(value: SubjectRequirement[]) {
-          if (!Array.isArray(value) || value.length < 5) {
-            throw new Error('Must have at least 5 subjects')
-          }
-        },
-      },
+    },
+    firstSubjectGrade: {
+      type: DataTypes.ENUM(...Object.values(Grade)),
+      allowNull: false,
+    },
+    secondSubject: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    secondSubjectGrade: {
+      type: DataTypes.ENUM(...Object.values(Grade)),
+      allowNull: false,
+    },
+    thirdSubject: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    alternateThirdSubject: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    thirdSubjectGrade: {
+      type: DataTypes.ENUM(...Object.values(Grade)),
+      allowNull: false,
+    },
+    fourthSubject: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    alternateFourthSubject: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    fourthSubjectGrade: {
+      type: DataTypes.ENUM(...Object.values(Grade)),
+      allowNull: false,
+    },
+    fifthSubject: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    alternateFifthSubject: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    fifthSubjectGrade: {
+      type: DataTypes.ENUM(...Object.values(Grade)),
+      allowNull: false,
     },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
     updatedAt: {
       type: DataTypes.DATE,
       allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
   },
   {
@@ -104,3 +156,4 @@ ProgramSSCRequirement.init(
     timestamps: true,
   }
 )
+

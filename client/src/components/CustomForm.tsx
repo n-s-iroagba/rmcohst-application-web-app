@@ -46,15 +46,17 @@ export function CustomForm<T extends Record<string, any>>({
       onSubmit={submitHandler}
       className="w-full max-w-4xl my-16 mx-auto px-4 py-10 bg-slate-100 shadow-2xl rounded-2xl border border-slate-200"
     >
-      {error && <ErrorAlert message={error} />}
 
       {/* Icon Display */}
-      {icon && <div className="flex justify-center mb-6 text-slate-600">{icon}</div>}
+      {icon && <div className="flex justify-center mb-3 text-slate-600">{icon}</div>}
 
       {/* Title */}
-      <h2 className="text-2xl font-bold mb-8 text-center text-slate-800 uppercase tracking-wide">
+      <h2 className="text-2xl font-bold mb-3 text-center text-slate-800 uppercase tracking-wide">
         {formLabel}
       </h2>
+
+      {error && <ErrorAlert message={error} />}
+
 
       <FieldRenderer data={data} errors={errors} />
 

@@ -12,13 +12,15 @@ import { useMutation } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { API_ROUTES } from '../constants/apiRoutes'
+import { ApiError, handleError } from '../helpers/handleError'
 import { useRoutes } from './useRoutes'
+
 
 // API functions
 const verifyEmailCode = async (data: VerifyEmailRequestDto) => {
   try {
     const response = await api.post(API_ROUTES.AUTH.VERIFY_EMAIL, data)
-    console.log('dddddddddddddd', response.data)
+
     return response.data
   } catch (error) {
     throw error
@@ -42,7 +44,7 @@ export const useVerifyEmail = () => {
   const { navigateToDashboard, navigateToVerifyEmail } = useRoutes()
   const [timeLeft, setTimeLeft] = useState(300) // 5 minutes in seconds
   const [canResend, setCanResend] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string>('')
 
   const inputRefs = useRef<HTMLInputElement[]>([])
 
@@ -68,7 +70,7 @@ export const useVerifyEmail = () => {
       setUser(loginResponse.user)
       navigateToDashboard(loginResponse.user.role)
 
-      setError(null)
+      setError('')
 
       if (typeof window !== 'undefined') {
         localStorage.removeItem('verification_token')
@@ -76,8 +78,7 @@ export const useVerifyEmail = () => {
     },
     onError: (error) => {
 
-      setError(error as unknown as string || 'Verification failed')
-      // Clear the form on error
+      handleError(error as ApiError, setError)
       setEmailVerificationFormCode(new Array(6).fill(''))
       inputRefs.current[0]?.focus()
     }
@@ -89,7 +90,7 @@ export const useVerifyEmail = () => {
     onSuccess: (data) => {
       navigateToVerifyEmail(data.verificationToken, data.id)
 
-      setError(null)
+      setError('')
 
       console.log('Verification code resent successfully')
     },
@@ -113,7 +114,7 @@ export const useVerifyEmail = () => {
     newCode[index] = value
 
     setEmailVerificationFormCode(newCode)
-    setError(null) // Clear error when user starts typing
+    setError('') // Clear error when user starts typing
 
     // Auto-focus next input
     if (value && index < 5) {

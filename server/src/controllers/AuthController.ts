@@ -228,25 +228,9 @@ export class AuthController {
 
   resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const result = await this.authService.resetPassword(req.body)
+      await this.authService.resetPassword(req.body)
 
-      const cookieOptions = getCookieOptions()
-      console.log('Setting refresh token cookie after password reset:', cookieOptions)
-
-      res.cookie('refreshToken', result.refreshToken, cookieOptions)
-
-      // Extract only the properties you need from the user object
-      const userResponse = {
-        id: result.user.id,
-        email: result.user.email,
-        username: result.user.username,
-        // Add other properties you need
-      }
-
-      res.status(200).json({
-        user: userResponse,
-        accessToken: result.accessToken,
-      })
+      res.status(200).end()
     } catch (error) {
       next(error)
     }

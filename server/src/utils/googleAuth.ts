@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { GoogleProfile } from '../types/google'
 
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!

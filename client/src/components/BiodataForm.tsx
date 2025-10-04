@@ -12,6 +12,7 @@ import { biodataFormTestIds } from '@/test/testIds/formTestIds'
 import { Application } from '@/types/application'
 import { Biodata } from '@/types/biodata'
 import React, { useEffect } from 'react'
+import { createFieldsConfig } from '../helpers/createFieldConfig'
 
 const BiodataForm: React.FC<{ application: Application, handleForward: () => void }> = ({ application, handleForward }) => {
   const { navigateToHome, } = useRoutes()
@@ -24,12 +25,12 @@ const BiodataForm: React.FC<{ application: Application, handleForward: () => voi
     application ? API_ROUTES.BIODATA.UPDATE(application?.biodata.id) : null,
     application?.biodata
   )
-  const { createFieldsConfig } = useFieldConfigContext<Partial<Biodata>>()
+  const { setFieldsConfig } = useFieldConfigContext<Partial<Biodata>>()
 
   // Move the context setters inside useEffect to prevent infinite re-renders
   useEffect(() => {
-    createFieldsConfig(biodataFormConfig, changeHandlers)
-  }, [createFieldsConfig, changeHandlers])
+    setFieldsConfig(createFieldsConfig(biodataFormConfig, changeHandlers, { gender: [{ label: 'Male', id: 'Male' }, { label: 'Female', id: 'Female' }] }))
+  }, [])
 
   testIdContext.setContext(biodataFormTestIds)
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

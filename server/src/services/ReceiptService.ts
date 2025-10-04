@@ -1,12 +1,12 @@
 import Payment from '../models/Payment'
 import logger from '../utils/logger'
-import { PaymentWithApplicant } from './PaymentService'
+
 
 export class ReceiptService {
   /**
    * Generate receipt data for a payment
    */
-  async generateReceipt(payment: PaymentWithApplicant): Promise<any> {
+  async generateReceipt(payment: any): Promise<any> {
     try {
       const receiptData = {
         receiptNumber: `RCP-${payment.reference}`,
@@ -43,7 +43,7 @@ export class ReceiptService {
    * Generate PDF receipt (if you want to create PDF receipts)
    */
   async generatePDFReceipt(
-    payment: PaymentWithApplicant
+    payment: Payment
   ): Promise<{ buffer: Buffer; type: string }> {
     try {
       // This would require a PDF generation library like puppeteer or pdfkit

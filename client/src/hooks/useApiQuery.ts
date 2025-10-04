@@ -1,9 +1,11 @@
+'use client'
+
 import api from '@/lib/api'
 import { FieldType } from '@/types/fields_config'
 
 import { useMutation, UseMutationResult, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { handleError } from '../helpers/handleError'
+import { ApiError, handleError } from '../helpers/handleError'
 // Define input types for different handlers
 type InputChangeEvent = React.ChangeEvent<HTMLInputElement>
 type TextAreaChangeEvent = React.ChangeEvent<HTMLTextAreaElement>
@@ -30,7 +32,7 @@ export function usePostBulk<T, U>(
 ) {
   const [postResources, setPostResources] = useState<T[]>([tempItem])
   const [postResponse, setPostResponse] = useState<U | null>(null)
-  const [apiError, setApiError] = useState<string>('')
+
 
   const mutation: UseMutationResult<U, unknown, T[]> = useMutation<U, unknown, T[]>({
     mutationFn: async (payload: T[]) => {
@@ -38,17 +40,15 @@ export function usePostBulk<T, U>(
         const response = await api.post(postResourceUrl, payload)
         return response.data as U
       } catch (error) {
-        handleError(error, setApiError)
-        throw error // Re-throw to trigger onError
+
+        throw error
       }
     },
     onSuccess: (data: U) => {
       setPostResponse(data)
-      setApiError('')
+
     },
-    onError: (err: unknown) => {
-      handleError(err, setApiError)
-    }
+
   })
 
   const addItem = () => {
@@ -88,7 +88,7 @@ export function usePostBulk<T, U>(
     items: postResources,
     postResponse,
     loading: mutation.isPending,
-    error: apiError,
+
     addItem,
     removeItem,
     handleChangeItems,
@@ -104,26 +104,21 @@ export const usePost = <T, U>(
   transformField?: TransformFn
 ) => {
   const [postResource, setPostResource] = useState<T>(initialData)
-
   const [apiError, setApiError] = useState<string>('')
+
+
 
   const mutation = useMutation<U, unknown, T>({
     mutationFn: async (payload: T) => {
       try {
-        console.log('payload is', payload)
         const response = await api.post(postResourceUrl, payload)
-
-        console.log('response is ', response.data)
-
+        console.log('Post successful:', response.data)
         return response.data
       } catch (error) {
-        handleError(error, setApiError)
         throw error
       }
     },
-    onError: (err: unknown) => {
-      handleError(err, setApiError)
-    }
+
   })
 
   // Handler for text inputs, textareas, selects, etc.
@@ -132,11 +127,11 @@ export const usePost = <T, U>(
   ) => {
     const { name, value } = e.target
 
-    const transformedValue = transformField ? transformField(name, value) : value
+    // const transformedValue = transformField ? transformField(name, value) : value
 
     setPostResource((prev) => ({
       ...prev,
-      [name]: transformedValue
+      [name]: value
     }))
   }
 
@@ -188,7 +183,11 @@ export const usePost = <T, U>(
       const data = await mutation.mutateAsync(postResource)
       return data
     } catch (error) {
+
       console.error('Post failed:', error)
+      handleError(error as ApiError, setApiError)
+      throw error
+
     }
   }
 
@@ -208,9 +207,9 @@ export const usePost = <T, U>(
 
   return {
     postResource,
-    setPostResource,
-    posting: mutation.isPending,
+    mutation,
     apiError,
+    posting: mutation.isPending,
     changeHandlers,
     handlePost,
     handleChange,
@@ -219,36 +218,28 @@ export const usePost = <T, U>(
     handleFileChange
   }
 }
-
 export const useGet = <T>(resourceUrl: string | null) => {
-  const [apiError, setApiError] = useState('')
-
-
+  const [apiError, setApiError] = useState<ApiError | null>(null)
 
   const {
     data: resourceData,
     isLoading,
     isError,
-
+    error, // Add this to get the error
     refetch
   } = useQuery<T, unknown>({
     queryKey: [resourceUrl],
     queryFn: async () => {
-      try {
-        if (!resourceUrl) {
-          return {
-            resourceData: undefined,
-            loading: false,
-            error: '',
-            refetch: async () => ({ data: undefined }) as any // noop
-          }
+      if (!resourceUrl) {
+        return {
+          resourceData: undefined,
+          loading: false,
+          error: '',
+          refetch: async () => ({ data: undefined }) as any
         }
-        const response = await api.get(resourceUrl)
-        return response.data
-      } catch (error) {
-        handleError(error, setApiError)
-        throw error
       }
+      const response = await api.get(resourceUrl)
+      return response.data
     },
     retry: (failureCount, error) => {
       if (error && typeof error === 'object' && 'code' in error) {
@@ -268,10 +259,12 @@ export const useGet = <T>(resourceUrl: string | null) => {
   })
 
 
+
   return {
     resourceData,
-    loading: isLoading,
-    error: apiError || (isError ? 'An error occurred while fetching data' : ''),
+    isLoading,
+    isError,
+
     refetch
   }
 }
@@ -280,7 +273,7 @@ interface UsePutReturn<T, U> {
   putResource: T
   putResponse: U | null
   updating: boolean
-  apiError: string
+
   changeHandlers: ChangeHandler
   handlePut: (e: React.FormEvent<HTMLFormElement>) => Promise<void>
 }
@@ -292,7 +285,7 @@ export const usePut = <T, U = any>(
 ): UsePutReturn<T, U> => {
   const [putResource, setPutResource] = useState<T>(initialData)
   const [putResponse, setPutResponse] = useState<U | null>(null)
-  const [apiError, setApiError] = useState('')
+  const [apiError, setApiError] = useState<ApiError | null>(null)
 
   const mutation = useMutation<U, unknown, T>({
     mutationFn: async (payload: T) => {
@@ -301,16 +294,12 @@ export const usePut = <T, U = any>(
         const response = await api.put(putUrl, payload)
         return response.data
       } catch (error) {
-        handleError(error, setApiError)
+
         throw error // Re-throw to trigger onError
       }
     },
     onSuccess: (data: U) => {
       setPutResponse(data)
-      setApiError('')
-    },
-    onError: (err: unknown) => {
-      handleError(err, setApiError)
     }
   })
 
@@ -402,7 +391,7 @@ export const usePut = <T, U = any>(
     putResource,
     putResponse,
     updating: mutation.isPending,
-    apiError,
+
     changeHandlers,
     handlePut,
 
@@ -411,7 +400,7 @@ export const usePut = <T, U = any>(
 
 export const useDelete = <U>(resourceUrl: string) => {
   const [deleteResponse, setDeleteResponse] = useState<U | null>(null)
-  const [apiError, setApiError] = useState('')
+
 
   const mutation = useMutation<U, unknown, void>({
     mutationFn: async () => {
@@ -419,16 +408,12 @@ export const useDelete = <U>(resourceUrl: string) => {
         const response = await api.delete(resourceUrl)
         return response.data
       } catch (error) {
-        handleError(error, setApiError)
+
         throw error // Re-throw to trigger onError
       }
     },
     onSuccess: (data: U) => {
       setDeleteResponse(data)
-      setApiError('')
-    },
-    onError: (err: unknown) => {
-      handleError(err, setApiError)
     }
   })
 
@@ -444,7 +429,7 @@ export const useDelete = <U>(resourceUrl: string) => {
   return {
     deleteResponse,
     deleting: mutation.isPending,
-    apiError,
+
     handleDelete
   }
 }

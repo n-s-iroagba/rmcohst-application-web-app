@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react'
 import { ChevronDown } from 'lucide-react'
+import { useMemo, useState } from 'react'
 
 
 // Generic types for the dropdown
@@ -12,8 +12,8 @@ export interface FilterDropdownProps<T, K extends keyof T> {
   placeholder?: string
   label?: string
   className?: string
-  dropDownTestId:string
-  optionsTestId:(index:number)=>string
+  dropDownTestId: string
+  optionsTestId: (index: number) => string
 }
 
 export function FilterDropdown<T, K extends keyof T>({
@@ -25,7 +25,7 @@ export function FilterDropdown<T, K extends keyof T>({
   placeholder = 'Select an option',
   label,
   dropDownTestId,
-  optionsTestId,  
+  optionsTestId,
   className = ''
 }: FilterDropdownProps<T, K>) {
   const [isOpen, setIsOpen] = useState(false)
@@ -55,15 +55,14 @@ export function FilterDropdown<T, K extends keyof T>({
 
       <button
         type="button"
-        data-testId={dropDownTestId}
+        data-testid={dropDownTestId}
         onClick={() => setIsOpen(!isOpen)}
         className="w-full bg-white border border-gray-300 rounded-md px-4 py-2 text-left shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       >
         <span className="block truncate">{getDisplayValue()}</span>
         <ChevronDown
-          className={`absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 transition-transform ${
-            isOpen ? 'rotate-180' : ''
-          }`}
+          className={`absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''
+            }`}
         />
       </button>
 
@@ -87,11 +86,10 @@ export function FilterDropdown<T, K extends keyof T>({
               <button
                 key={index}
                 type="button"
-                data-testId={optionsTestId(index)}
+                data-testid={optionsTestId(index)}
                 onClick={() => handleSelect(optionValue)}
-                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 focus:bg-gray-100 focus:outline-none ${
-                  filterValue === optionValue ? 'bg-blue-100 text-blue-900' : 'text-gray-900'
-                }`}
+                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 focus:bg-gray-100 focus:outline-none ${filterValue === optionValue ? 'bg-blue-100 text-blue-900' : 'text-gray-900'
+                  }`}
               >
                 {displayText}
               </button>

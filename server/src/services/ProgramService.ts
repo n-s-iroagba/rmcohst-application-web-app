@@ -1,8 +1,8 @@
 // src/services/ProgramService.ts
 
-import { NotFoundError } from '../utils/errors'
 import ProgramRepository from '../repositories/ProgramRepository'
 import { FullProgram } from '../types/join-model.types'
+import { NotFoundError } from '../utils/errors'
 
 export default class ProgramService {
   static async createBulk(programs: any[]) {
@@ -16,7 +16,7 @@ export default class ProgramService {
   static async getAll(page: number, limit: number) {
     try {
       const offset = (page - 1) * limit
-      return await ProgramRepository.findAll({ offset, limit })
+      return (await ProgramRepository.findAll({ offset, limit })).data
     } catch (error) {
       throw error
     }
@@ -29,7 +29,7 @@ export default class ProgramService {
       if (!program) {
         throw new NotFoundError('Program not found')
       }
-      
+
       return program
     } catch (error) {
       throw error

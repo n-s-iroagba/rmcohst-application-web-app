@@ -8,17 +8,18 @@ import { loginFormConfig } from '@/test/config/loginFormConfig'
 import { loginFormTestIds } from '@/test/testIds/formTestIds'
 import { LoginRequestDto } from '@/types/auth.types'
 import React, { useEffect } from 'react'
+import { createFieldsConfig } from '../../../helpers/createFieldConfig'
 
 
 const LoginForm: React.FC = () => {
   const { loginRequest, login, loading, loginChangeHandlers, error } = useAuth()
 
   const { navigateToHome, navigateToSignup } = useRoutes()
-  const { createFieldsConfig } = useFieldConfigContext<LoginRequestDto>()
+  const { setFieldsConfig } = useFieldConfigContext<LoginRequestDto>()
 
   useEffect(() => {
-    createFieldsConfig(loginFormConfig, loginChangeHandlers)
-  }, [createFieldsConfig, loginChangeHandlers])
+    setFieldsConfig(createFieldsConfig(loginFormConfig, loginChangeHandlers))
+  }, [])
 
 
   testIdContext.setContext(loginFormTestIds)

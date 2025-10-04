@@ -25,18 +25,20 @@ export type FieldGroupConfig = {
     label: string
     options?: { id: string | number; label: string }[]
   }[]
+
   addHandler?: () => void
   removeHandler?: (index: number) => void
-  onChangeHandler: ((e: ChangeEvent<HTMLSelectElement>, index: number, field: string) => void)|((e: FileChangeEvent)=>void)
+  onChangeHandler: ((e: ChangeEvent<HTMLSelectElement>, index: number, field: string) => void) | ((e: FileChangeEvent) => void)
 }
 
 export type FieldConfig = {
   type: FieldType
+  arrayElementNumber?: number
   onChangeHandler?:
-    | ((e: any, index?: number) => void)
-    | ((e: any, index: number) => void)
-    | ((e: ChangeEvent<HTMLSelectElement>) => void)
-    | ((e: ChangeEvent<HTMLInputElement>) => void)
+  | ((e: any, index?: number) => void)
+  | ((e: any, index: number) => void)
+  | ((e: ChangeEvent<HTMLSelectElement>) => void)
+  | ((e: ChangeEvent<HTMLInputElement>) => void)
 
   /**
    * Used by:
@@ -58,13 +60,13 @@ export type FieldsConfig<T> = {
 
 export type ChangeHandler = Partial<{
   [type in FieldType]:
-    | ((e: React.ChangeEvent<HTMLInputElement>) => void)
-    | ((e: React.ChangeEvent<HTMLTextAreaElement>) => void)
-    | ((e: React.ChangeEvent<HTMLSelectElement>) => void)
+  | ((e: React.ChangeEvent<HTMLInputElement>) => void)
+  | ((e: React.ChangeEvent<HTMLTextAreaElement>) => void)
+  | ((e: React.ChangeEvent<HTMLSelectElement>) => void)
 }>
 
-export type FieldConfigInput<T>={
-  [k in keyof T]:{
-    type:FieldType
+export type FieldConfigInput<T> = {
+  [k in keyof T]: {
+    type: FieldType
   }
 }

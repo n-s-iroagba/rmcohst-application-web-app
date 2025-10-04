@@ -1,7 +1,7 @@
 import { User } from '../models'
 import Role from '../models/Role'
 import UserRole from '../models/UserRole'
-import { RoleWithPermissions, UserWithRoles } from './RbacService'
+
 import logger from '../utils/logger'
 
 /**
@@ -99,35 +99,35 @@ class RoleService {
     }
   }
 
-  /**
-   * Get all roles assigned to a user.
-   * @param userId - The user ID.
-   * @returns Array of Role instances.
-   * @throws Error if retrieval fails.
-   */
-  async getUserRoles(userId: number): Promise<RoleWithPermissions[]> {
-    try {
-      const user = (await User.findByPk(userId, {
-        include: [
-          {
-            model: Role,
-            through: { attributes: [] }, // omit junction table columns
-          },
-        ],
-      })) as UserWithRoles | null
+  // /**
+  //  * Get all roles assigned to a user.
+  //  * @param userId - The user ID.
+  //  * @returns Array of Role instances.
+  //  * @throws Error if retrieval fails.
+  //  */
+  // async getUserRoles(userId: number): Promise<RoleWithPermissions[]> {
+  //   try {
+  //     const user = (await User.findByPk(userId, {
+  //       include: [
+  //         {
+  //           model: Role,
+  //           through: { attributes: [] }, // omit junction table columns
+  //         },
+  //       ],
+  //     })) as UserWithRole
 
-      if (!user) {
-        logger.warn(`User with id ${userId} not found when fetching roles`)
-        return []
-      }
+  //     if (!user) {
+  //       logger.warn(`User with id ${userId} not found when fetching roles`)
+  //       return []
+  //     }
 
-      logger.info(`Retrieved roles for userId ${userId}, count: ${user.roles?.length}`)
-      return user.roles || []
-    } catch (error) {
-      logger.error('Failed to get user roles', { userId, error })
-      throw new Error(`Failed to get user roles: ${error instanceof Error ? error.message : error}`)
-    }
-  }
+  //     logger.info(`Retrieved roles for userId ${userId}, count: ${user.roles?.length}`)
+  //     return user.role||{}
+  //   } catch (error) {
+  //     logger.error('Failed to get user roles', { userId, error })
+  //     throw new Error(`Failed to get user roles: ${error instanceof Error ? error.message : error}`)
+  //   }
+  // }
 
   /**
    * Get all users who have a specific role.

@@ -1,15 +1,14 @@
-import { NextFunction, Request, Response } from 'express'
-import { AppError, ValidationError } from '../utils/errors'
-import logger from '../utils/logger'
+import { NextFunction, Request, Response } from 'express'; // Add NextFunction
+import logger from '../utils/logger';
 
 export const errorHandler = (
   error: Error,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction  // ADD THIS - Express requires all 4 parameters
 ): void => {
   const statusCode = (error as any).statusCode || 500
-  const isOperational = error instanceof AppError || error instanceof ValidationError
+
 
   logger.error('❌ Error Handler Caught an Error', {
     name: error.name,
@@ -22,6 +21,11 @@ export const errorHandler = (
     ip: req.ip,
   })
 
+  // Don't send response if headers already sent
+  if (res.headersSent) {
+    return next(error)
+  }
+
   const response = {
     status: 'error',
     message: error.message || 'Internal server error',
@@ -29,20 +33,5 @@ export const errorHandler = (
     ...(process.env.NODE_ENV !== 'production' && { stack: error.stack }),
   }
 
-  if (error instanceof ValidationError || error instanceof AppError) {
-    res.status(statusCode).json(response)
-    return
-  }
-
-  if (error.name === 'JsonWebTokenError') {
-    res.status(401).json({ status: 'fail', message: 'Invalid token', name: error.name })
-    return
-  }
-
-  if (error.name === 'TokenExpiredError') {
-    res.status(401).json({ status: 'fail', message: 'Token expired', name: error.name })
-    return
-  }
-
-  res.status(500).json(response)
+  res.status(statusCode).json(response)
 }

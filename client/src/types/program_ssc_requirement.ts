@@ -10,22 +10,22 @@ export enum Grade {
 }
 
 export interface ProgramSSCRequirement {
-  id: number
+  id: string
   tag: string
-  maximumNumberOfSittings: number
+  maximumNumberOfSittings: string
   qualificationTypes: string[]
-  firstSubjectId: number
+  firstSubject: string
   firstSubjectGrade: Grade
-  secondSubjectId: number
+  secondSubject: string
   secondSubjectGrade: Grade
-  thirdSubjectId: number
-  alternateThirdSubjectId: number | null
+  thirdSubject: string
+  alternateThirdSubject: string
   thirdSubjectGrade: Grade
-  fourthSubjectId: number
-  alternateFourthSubjectId: number | null
+  fourthSubject: string
+  alternateFourthSubject: string
   fourthSubjectGrade: Grade
-  fifthSubjectId: number
-  alternateFifthSubjectId: number | null
+  fifthSubject: string | null
+  alternateFifthSubject: string
   fifthSubjectGrade: Grade
   createdAt?: Date
   updatedAt?: Date

@@ -1,5 +1,5 @@
-import Biodata, { BiodataAttributes } from '../models/Biodata'
 import { Transaction } from 'sequelize'
+import Biodata from '../models/Biodata'
 
 export interface CreateBiodataInput {
   applicationId: number
@@ -153,6 +153,7 @@ class BiodataService {
       if (!biodata) {
         return null
       }
+      const data = { ...updateData, dateOfBirth: (updateData.dateOfBirth ? updateData.dateOfBirth : null) }
 
       await biodata.update(updateData, { transaction })
       await biodata.reload({ transaction })

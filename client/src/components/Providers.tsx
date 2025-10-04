@@ -1,10 +1,11 @@
 // Create this file: components/Providers.tsx
 'use client'
 
+import { AuthProvider } from '@/context/AuthContext'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState } from 'react'
-import { AuthProvider } from '@/context/AuthContext'
+import { FieldConfigProvider } from '../context/FieldConfigContext'
 
 interface ProvidersProps {
   children: React.ReactNode
@@ -27,7 +28,9 @@ export function Providers({ children }: ProvidersProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>{children}</AuthProvider>
+      <FieldConfigProvider>
+        <AuthProvider>{children}</AuthProvider>
+      </FieldConfigProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )

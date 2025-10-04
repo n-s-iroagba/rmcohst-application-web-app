@@ -1,21 +1,22 @@
 // services/verification.service.ts
 
-import { UserService } from './user.service'
-import { CodeHelper } from '../utils/codeHelper'
 import User from '../models/User'
+import { AuthConfig } from '../types/auth.types'
+import { CodeHelper } from '../utils/codeHelper'
+import { BadRequestError, ForbiddenError } from '../utils/errors'
 import logger from '../utils/logger'
 import { TokenService } from './TokenService'
-import { BadRequestError, ForbiddenError } from '../utils/errors'
-import { AuthConfig } from '../types/auth.types'
-import { EmailService } from './MailService'
+import { UserService } from './user.service'
+
 import config from '../config'
+import { EmailService } from './EmailService'
 export class VerificationService {
   constructor(
     private readonly tokenService: TokenService,
     private readonly userService: UserService,
     private readonly emailService: EmailService,
     private readonly config: AuthConfig
-  ) {}
+  ) { }
 
   async generateVerificationDetails(
     user: User

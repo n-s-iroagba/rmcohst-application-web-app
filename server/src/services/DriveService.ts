@@ -7,7 +7,6 @@ import { ApplicantProgramSpecificQualification, Biodata } from '../models'
 import { ApplicantSSCQualification } from '../models/ApplicantSSCQualification'
 import { FullApplication } from '../types/join-model.types'
 
-
 interface DriveFileUpload {
   name: string
   buffer: Buffer
@@ -31,17 +30,19 @@ interface ApplicationFolderStructure {
 
 class GoogleDriveApplicationService {
   private drive: any
+  private sharedDriveId: string
 
-  constructor() {
-    // Initialize Google Drive API
+  constructor(sharedDriveId: string) {
     const auth = new google.auth.GoogleAuth({
-      keyFile: process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE, // Path to service account key
+      keyFile: './src/services/mrrealtortemp-c057e0d039ed.json',
       scopes: ['https://www.googleapis.com/auth/drive'],
     })
 
     this.drive = google.drive({ version: 'v3', auth })
+    this.sharedDriveId = sharedDriveId
   }
-  public async uploadFile(fileData: DriveFileUpload): Promise<string> {
+
+  private async uploadFile(fileData: DriveFileUpload): Promise<string> {
     try {
       const fileMetadata = {
         name: fileData.name,
@@ -57,62 +58,60 @@ class GoogleDriveApplicationService {
         requestBody: fileMetadata,
         media: media,
         fields: 'id, name, webViewLink',
+        supportsAllDrives: true,
       })
 
-      logger.info(`Uploaded file to Google Drive: ${fileData.name}`, {
+      logger.info(`Uploaded file to Shared Drive: ${fileData.name}`, {
         fileId: file.data.id,
         webViewLink: file.data.webViewLink,
       })
 
-      return file.data.id
+      return file.data.id!
     } catch (error) {
       logger.error(`Error uploading file ${fileData.name}:`, error)
       throw error
     }
   }
 
-  /**
-   * Create or get folder by name (make public for receipt folder creation)
-   */
   public async createOrGetFolder(name: string, parentId?: string): Promise<string> {
     try {
-      // First, try to find existing folder
       const searchQuery = parentId
-        ? `name='${name}' and parents in '${parentId}' and mimeType='application/vnd.google-apps.folder'`
-        : `name='${name}' and mimeType='application/vnd.google-apps.folder'`
+        ? `name='${name}' and parents in '${parentId}' and mimeType='application/vnd.google-apps.folder' and trashed=false`
+        : `name='${name}' and mimeType='application/vnd.google-apps.folder' and trashed=false`
 
       const existingFolders = await this.drive.files.list({
         q: searchQuery,
         fields: 'files(id, name)',
+        corpora: 'drive',
+        driveId: this.sharedDriveId,
+        includeItemsFromAllDrives: true,
+        supportsAllDrives: true,
       })
 
       if (existingFolders.data.files && existingFolders.data.files.length > 0) {
-        return existingFolders.data.files[0].id
+        return existingFolders.data.files[0].id!
       }
 
-      // Create new folder if not found
       const folderMetadata = {
         name,
         mimeType: 'application/vnd.google-apps.folder',
-        ...(parentId && { parents: [parentId] }),
+        parents: parentId ? [parentId] : [this.sharedDriveId],
       }
 
       const folder = await this.drive.files.create({
         requestBody: folderMetadata,
         fields: 'id',
+        supportsAllDrives: true,
       })
 
-      logger.info(`Created Google Drive folder: ${name}`, { folderId: folder.data.id })
-      return folder.data.id
+      logger.info(`Created folder in Shared Drive: ${name}`, { folderId: folder.data.id })
+      return folder.data.id!
     } catch (error) {
       logger.error(`Error creating/getting folder ${name}:`, error)
       throw error
     }
   }
 
-  /**
-   * Create complete folder structure for an application
-   */
   public async createApplicationFolderStructure(
     application: FullApplication
   ): Promise<ApplicationFolderStructure> {
@@ -122,49 +121,27 @@ class GoogleDriveApplicationService {
         throw new Error('Biodata not found for application')
       }
 
-      // Create folder hierarchy
       const sessionName = application.academicSession?.name || 'Unknown Session'
       const facultyName = application.program?.department?.faculty?.name || 'Unknown Faculty'
       const departmentName = application.program?.department?.name || 'Unknown Department'
       const programName = application.program?.name || 'Unknown Program'
 
-      // Create application folder name using biodata
       const applicationFolderName = `${biodata.firstName || 'Unknown'}_${biodata.surname || 'Unknown'}_${application.id}`
 
-      // Create folders step by step
       const sessionFolderId = await this.createOrGetFolder(sessionName)
       const facultyFolderId = await this.createOrGetFolder(facultyName, sessionFolderId)
       const departmentFolderId = await this.createOrGetFolder(departmentName, facultyFolderId)
       const programFolderId = await this.createOrGetFolder(programName, departmentFolderId)
-      const applicationFolderId = await this.createOrGetFolder(
-        applicationFolderName,
-        programFolderId
-      )
+      const applicationFolderId = await this.createOrGetFolder(applicationFolderName, programFolderId)
 
-      // Create subfolders within application folder
       const biodataFolderId = await this.createOrGetFolder('biodata', applicationFolderId)
-      const sscQualificationFolderId = await this.createOrGetFolder(
-        'ssc_qualification',
-        applicationFolderId
-      )
-      const programSpecificQualificationFolderId = await this.createOrGetFolder(
-        'program_specific_qualification',
-        applicationFolderId
-      )
-      const sscCertificatesFolderId = await this.createOrGetFolder(
-        'ssc_certificates',
-        applicationFolderId
-      )
-      const programSpecificCertificatesFolderId = await this.createOrGetFolder(
-        'program_specific_certificates',
-        applicationFolderId
-      )
-      const passportPhotographFolderId = await this.createOrGetFolder(
-        'passport_photograph',
-        applicationFolderId
-      )
+      const sscQualificationFolderId = await this.createOrGetFolder('ssc_qualification', applicationFolderId)
+      const programSpecificQualificationFolderId = await this.createOrGetFolder('program_specific_qualification', applicationFolderId)
+      const sscCertificatesFolderId = await this.createOrGetFolder('ssc_certificates', applicationFolderId)
+      const programSpecificCertificatesFolderId = await this.createOrGetFolder('program_specific_certificates', applicationFolderId)
+      const passportPhotographFolderId = await this.createOrGetFolder('passport_photograph', applicationFolderId)
 
-      const folderStructure: ApplicationFolderStructure = {
+      return {
         sessionFolderId,
         facultyFolderId,
         departmentFolderId,
@@ -177,26 +154,14 @@ class GoogleDriveApplicationService {
         programSpecificCertificatesFolderId,
         passportPhotographFolderId,
       }
-
-      logger.info('Created application folder structure', {
-        applicationId: application.id,
-        applicationFolderName,
-        folderStructure,
-      })
-
-      return folderStructure
     } catch (error) {
       logger.error('Error creating application folder structure:', error)
       throw error
     }
   }
 
-  /**
-   * Generate and upload biodata document
-   */
   public async uploadBiodataDocument(biodata: Biodata, parentFolderId: string): Promise<string> {
     try {
-      // Generate biodata as JSON or formatted text
       const biodataContent = {
         personalInfo: {
           firstName: biodata.firstName,
@@ -240,9 +205,6 @@ class GoogleDriveApplicationService {
     }
   }
 
-  /**
-   * Upload SSC qualification document
-   */
   public async uploadSSCQualificationDocument(
     sscQualification: ApplicantSSCQualification,
     parentFolderId: string
@@ -253,15 +215,9 @@ class GoogleDriveApplicationService {
         certificateTypes: sscQualification.certificateTypes,
         subjects: [
           { subjectId: sscQualification.firstSubjectId, grade: sscQualification.firstSubjectGrade },
-          {
-            subjectId: sscQualification.secondSubjectId,
-            grade: sscQualification.secondSubjectGrade,
-          },
+          { subjectId: sscQualification.secondSubjectId, grade: sscQualification.secondSubjectGrade },
           { subjectId: sscQualification.thirdSubjectId, grade: sscQualification.thirdSubjectGrade },
-          {
-            subjectId: sscQualification.fourthSubjectId,
-            grade: sscQualification.fourthSubjectGrade,
-          },
+          { subjectId: sscQualification.fourthSubjectId, grade: sscQualification.fourthSubjectGrade },
           { subjectId: sscQualification.fifthSubjectId, grade: sscQualification.fifthSubjectGrade },
         ],
       }
@@ -283,9 +239,6 @@ class GoogleDriveApplicationService {
     }
   }
 
-  /**
-   * Upload program specific qualification document
-   */
   public async uploadProgramSpecificQualificationDocument(
     programSpecificQualification: ApplicantProgramSpecificQualification,
     parentFolderId: string
@@ -316,9 +269,6 @@ class GoogleDriveApplicationService {
     }
   }
 
-  /**
-   * Upload certificate files
-   */
   public async uploadCertificateFiles(
     certificates: any[],
     parentFolderId: string,
@@ -359,9 +309,6 @@ class GoogleDriveApplicationService {
     }
   }
 
-  /**
-   * Upload passport photograph
-   */
   public async uploadPassportPhotograph(
     photographBuffer: Buffer,
     parentFolderId: string,
@@ -382,9 +329,6 @@ class GoogleDriveApplicationService {
     }
   }
 
-  /**
-   * Main method to upload complete application to Google Drive
-   */
   public async uploadCompleteApplication(application: FullApplication): Promise<{
     folderStructure: ApplicationFolderStructure
     uploadedFiles: {
@@ -397,12 +341,9 @@ class GoogleDriveApplicationService {
     }
   }> {
     try {
-      // Create folder structure
       const folderStructure = await this.createApplicationFolderStructure(application)
-
       const uploadedFiles: any = {}
 
-      // Upload biodata
       if (application.biodata) {
         uploadedFiles.biodataFileId = await this.uploadBiodataDocument(
           application.biodata,
@@ -410,18 +351,13 @@ class GoogleDriveApplicationService {
         )
       }
 
-      // Upload SSC qualification
-      if (application.sscQualification) {
+      if (application.sscQualification.certificates) {
         uploadedFiles.sscQualificationFileId = await this.uploadSSCQualificationDocument(
           application.sscQualification,
           folderStructure.sscQualificationFolderId
         )
 
-        // Upload SSC certificates
-        if (
-          application.sscQualification.certificates &&
-          application.sscQualification.certificates.length > 0
-        ) {
+        if (application.sscQualification.certificateTypes?.length) {
           uploadedFiles.sscCertificateFileIds = await this.uploadCertificateFiles(
             application.sscQualification.certificates,
             folderStructure.sscCertificatesFolderId,
@@ -429,31 +365,33 @@ class GoogleDriveApplicationService {
           )
         }
       }
+      if (application.programSpecificQualifications?.length) {
+        uploadedFiles.programSpecificQualifications = []
+        uploadedFiles.programSpecificCertificates = []
 
-      // Upload program specific qualifications
-      if (
-        application.programSpecificQualifications &&
-        application.programSpecificQualifications.length > 0
-      ) {
-        const programSpecificQual = application.programSpecificQualifications[0] // Assuming single qualification
-
-        uploadedFiles.programSpecificQualificationFileId =
-          await this.uploadProgramSpecificQualificationDocument(
+        for (const programSpecificQual of application.programSpecificQualifications) {
+          // Upload qualification document
+          const qualificationFileId = await this.uploadProgramSpecificQualificationDocument(
             programSpecificQual,
             folderStructure.programSpecificQualificationFolderId
           )
 
-        // Upload program specific certificate
-        if (programSpecificQual.certificate) {
-          uploadedFiles.programSpecificCertificateFileIds = await this.uploadCertificateFiles(
-            [programSpecificQual.certificate],
-            folderStructure.programSpecificCertificatesFolderId,
-            'program_specific_certificate'
-          )
+          uploadedFiles.programSpecificQualifications.push(qualificationFileId)
+
+          // Upload certificate (if present)
+          if (programSpecificQual.certificate) {
+            const certificateFileIds = await this.uploadCertificateFiles(
+              [programSpecificQual.certificate],
+              folderStructure.programSpecificCertificatesFolderId,
+              'program_specific_certificate'
+            )
+
+            uploadedFiles.programSpecificCertificates.push(...certificateFileIds)
+          }
         }
       }
 
-      // Upload passport photograph
+
       if (application.biodata?.passportPhotograph) {
         const applicantName = `${application.biodata.firstName}_${application.biodata.surname}`
         uploadedFiles.passportPhotographFileId = await this.uploadPassportPhotograph(
@@ -463,52 +401,37 @@ class GoogleDriveApplicationService {
         )
       }
 
-      logger.info('Successfully uploaded complete application to Google Drive', {
-        applicationId: application.id,
-        folderStructure,
-        uploadedFiles,
-      })
-
-      return {
-        folderStructure,
-        uploadedFiles,
-      }
+      return { folderStructure, uploadedFiles }
     } catch (error) {
       logger.error('Error uploading complete application to Google Drive:', error)
       throw error
     }
   }
 
-  /**
-   * Get folder URL for sharing
-   */
   public async getFolderShareableLink(folderId: string): Promise<string> {
     try {
-      // Make folder accessible with link
       await this.drive.permissions.create({
         fileId: folderId,
         requestBody: {
           role: 'reader',
           type: 'anyone',
         },
+        supportsAllDrives: true,
       })
 
-      // Get folder details
       const folder = await this.drive.files.get({
         fileId: folderId,
         fields: 'webViewLink',
+        supportsAllDrives: true,
       })
 
-      return folder.data.webViewLink
+      return folder.data.webViewLink!
     } catch (error) {
       logger.error('Error creating shareable link:', error)
       throw error
     }
   }
 
-  /**
-   * Method to be called when application is finalized
-   */
   public async processApplicationSubmission(application: FullApplication): Promise<void> {
     try {
       logger.info('Processing application submission for Google Drive upload', {

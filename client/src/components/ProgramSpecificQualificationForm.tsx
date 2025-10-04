@@ -10,6 +10,7 @@ import React, { useEffect } from 'react'
 
 import { ProgramSpecificQualificationFormdata } from '@/types/applicant_program_specific_qualification'
 import { FieldsConfig } from '@/types/fields_config'
+import { createFieldsConfig } from '../helpers/createFieldConfig'
 export const formConfig: FieldsConfig<ProgramSpecificQualificationFormdata> = {
   qualificationType: {
     type: 'select'
@@ -38,7 +39,6 @@ const ProgramSpecificQualificationForm: React.FC<Props> = ({ application, handle
     changeHandlers,
 
     updating,
-    apiError
   } = usePut<ProgramSpecificQualificationFormdata>(
     application?.programSpecificQualifications?.id
       ? API_ROUTES.SSC_QUALIFICATION.UPDATE(application.programSpecificQualifications.id)
@@ -46,16 +46,17 @@ const ProgramSpecificQualificationForm: React.FC<Props> = ({ application, handle
     application?.programSpecificQualifications as ProgramSpecificQualificationFormdata
   )
 
-  const { createFieldsConfig } =
+  const { setFieldsConfig } =
     useFieldConfigContext<ProgramSpecificQualificationFormdata>()
 
   useEffect(() => {
-    createFieldsConfig(formConfig, changeHandlers)
-  }, [createFieldsConfig, changeHandlers])
+    setFieldsConfig(createFieldsConfig(formConfig, changeHandlers))
+  }, [])
   const handleSave = () => {
     handleForward()
   }
   testIdContext.setContext(formConfig)
+
   return (
     programSpecificQualifications && (
       <CustomForm
@@ -64,7 +65,7 @@ const ProgramSpecificQualificationForm: React.FC<Props> = ({ application, handle
         formLabel="Fill in Program Specific Qualification"
         onCancel={handleBackward}
         submiting={updating}
-        error={apiError}
+        error={''}
       />
     )
   )

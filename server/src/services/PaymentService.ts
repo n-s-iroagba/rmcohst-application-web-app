@@ -6,19 +6,27 @@ import UserRepository from '../repositories/UserRepository'
 import { NotFoundError, PaymentError } from '../utils/errors'
 import logger, { logError } from '../utils/logger'
 import ApplicationService from './ApplicationService'
-import GoogleDriveApplicationService from './DriveService'
-import { EmailService } from './EmailService'
+import EmailService from './EmailService'
 import { ReceiptService } from './ReceiptService'
 
 export class PaymentService {
-  private static googleDriveService = new GoogleDriveApplicationService()
-  private static emailService = new EmailService('')
+
+  private static emailService = EmailService
   private static receiptService = new ReceiptService()
   private static applicationService = new ApplicationService()
 
   static async getPaymentsByApplicantUserId(applicantUserId: number): Promise<Payment[]> {
     try {
       return await PaymentRepository.findPaymentsByApplicantUserId(applicantUserId)
+    } catch (error) {
+      logError('Error fetching payments by applicant user ID', error, { applicantUserId })
+      throw error
+    }
+  }
+
+  static async getAccepantanceFeeByApplicantUserId(applicantUserId: number): Promise<Payment[]> {
+    try {
+      return await PaymentRepository.findAcceptanceFeeByApplicantUserId(applicantUserId)
     } catch (error) {
       logError('Error fetching payments by applicant user ID', error, { applicantUserId })
       throw error
@@ -58,12 +66,13 @@ export class PaymentService {
       }
 
       const payment = await PaymentRepository.updatePaymentByReference(reference, updates)
+
       if (!payment) {
         throw new NotFoundError('Payment not found')
       }
 
       // Create initial application
-      await this.applicationService.createInitialApplication({
+      const a = await this.applicationService.createInitialApplication({
         sessionId: payment.sessionId,
         programId: payment.programId,
         applicantUserId: payment.applicantUserId,
@@ -78,21 +87,6 @@ export class PaymentService {
       // Generate receipt
       const receiptData = await this.receiptService.generateReceipt(payment)
 
-      // Create receipts folder in Google Drive (if it doesn't exist)
-      const receiptsFolderId = await this.googleDriveService.createOrGetFolder('receipts')
-
-      // Upload receipt to Google Drive
-      const receiptFileId = await this.uploadReceiptToDrive(receiptData, receiptsFolderId, payment)
-
-      // Get shareable link for the receipt
-      const receiptLink = await this.googleDriveService.getFolderShareableLink(receiptFileId)
-
-      // Update payment with receipt information
-      await PaymentRepository.updatePaymentById(payment.id, {
-        receiptGeneratedAt: new Date(),
-        receiptFileId,
-        receiptLink,
-      })
 
       // Send receipt email
       await this.emailService.sendReceiptEmail({
@@ -100,7 +94,6 @@ export class PaymentService {
         applicantName: applicant.username,
         payment,
         receiptData,
-        receiptLink
       })
 
       logger.info('Successfully processed payment and sent receipt', {
@@ -144,7 +137,7 @@ export class PaymentService {
         parentFolderId,
       }
 
-      return await this.googleDriveService.uploadFile(fileData)
+      return ''
     } catch (error) {
       logger.error('Error uploading receipt to Google Drive:', error)
       throw error

@@ -2,9 +2,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useFieldConfigContext } from '@/context/FieldConfigContext'
-import { testIdContext } from '@/context/testIdContext'
 import { formatCamelCase } from '@/utils/formatCamelCase'
 import { ChangeEvent, useMemo } from 'react'
+import { testIdContext } from '../context/testIdContext'
 import {
   CheckboxField,
   FileField,
@@ -65,8 +65,8 @@ export function FieldRenderer<T extends Record<string, any>>({
     <>
       {Object.entries(fieldsConfig).map(([key, config]) => {
         if (!(key in data) || !config) return null
-
-        const value = data[key as keyof T].type
+        console.log('data', data)
+        const value = data[key as keyof T]
         const error = getFieldError(key)
         const testId = FIELD_TEST_IDS[key as string]
 
@@ -139,6 +139,28 @@ export function FieldRenderer<T extends Record<string, any>>({
             )
 
           case 'file':
+            if (config.arrayElementNumber && config.arrayElementNumber > 1) {
+              // Ensure value is an array
+              const fileArray: File[] = Array.isArray(value) ? value : []
+
+              return (
+                <div key={key}>
+
+                  {Array.from({ length: config.arrayElementNumber }).map((_, i) => (
+                    <FileField
+                      key={`${key}-${i}`}
+                      name={`${key}[${i}]`}
+                      label={`${formatCamelCase(key)} ${i + 1}`}
+                      onChange={(e: any) => onChange(e, i)} // pass index
+                      error={error}
+                      testId={`${testId}-${i}`}
+                    />
+                  ))}
+                </div>
+              )
+            }
+
+            // Single file (default)
             return (
               <FileField
                 key={key}

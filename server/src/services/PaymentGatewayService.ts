@@ -83,6 +83,7 @@ export default class PaymentGatewayService {
       )
 
       const { status, data: responseData } = response.data
+      console.log(response.data)
 
       if (status) {
         await PaymentService.handleSuccessfulPayment(reference, responseData.paid_at)

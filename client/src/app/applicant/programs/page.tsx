@@ -50,7 +50,7 @@ export default function SelectProgramPage() {
             key={program.id}
             className="p-4 cursor-pointer hover:shadow-md transition border"
             onClick={() => handleProgramClick(program.id)}
-            data-testId={ApplicationTestIds.selectProgram(index)}
+            data-testid={ApplicationTestIds.selectProgram(index)}
           >
             <h3 className="font-semibold text-lg">{program.name}</h3>
           </div>

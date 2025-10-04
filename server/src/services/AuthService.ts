@@ -16,7 +16,7 @@ import { TokenService } from './TokenService'
 import { UserService } from './user.service'
 import { VerificationService } from './VerificationService'
 
-import { EmailService } from './EmailService'
+import EmailService from './EmailService'
 
 
 import UserRepository from '../repositories/UserRepository'
@@ -28,7 +28,7 @@ export class AuthService {
   private tokenService: TokenService
   private passwordService: PasswordService
   private userService: UserService
-  private emailService: EmailService
+  private emailService: typeof EmailService
   private verificationService: VerificationService
   roleService: any
 
@@ -36,7 +36,7 @@ export class AuthService {
     this.tokenService = new TokenService(config.jwtSecret)
     this.passwordService = new PasswordService()
     this.userService = new UserService()
-    this.emailService = new EmailService(config.clientUrl)
+    this.emailService = EmailService
     this.verificationService = new VerificationService(
       this.tokenService,
       this.userService,
@@ -165,12 +165,12 @@ export class AuthService {
     try {
       logger.info('Login attempt started', { email: data.email })
 
-      const user = await this.userService.findUserByEmail(data.email, true)
-      console.log('PASSWORD', user?.password)
-      await this.validatePassword(user, data.password)
+      const user = await this.userService.findUserByEmail(data.email)
       if (!user) {
-        throw new NotFoundError('user not found')
+        throw new NotFoundError('User with this credentials not found.')
       }
+
+      await this.validatePassword(user, data.password)
 
       if (!user.isEmailVerified) {
         logger.warn('Login attempted by unverified user', { userId: user.id })
@@ -187,7 +187,7 @@ export class AuthService {
       await user.save()
       return { user: returnUser, accessToken, refreshToken }
     } catch (error) {
-      return this.handleAuthError('Login', { email: data.email }, error)
+      throw error
     }
   }
 
@@ -281,7 +281,7 @@ export class AuthService {
       const user = await this.userService.findUserByEmail(email)
       if (!user) {
         logger.error('Password reset requested for non-existent email', { email })
-        throw new NotFoundError('user for forgot password not found')
+        throw new NotFoundError('User With this email not found.')
       }
 
       const { token, hashedToken } = this.passwordService.generateResetToken()
@@ -299,19 +299,14 @@ export class AuthService {
    * @param data - DTO with new password and reset token.
    * @returns New auth tokens.
    */
-  async resetPassword(data: ResetPasswordRequestDto): Promise<AuthServiceLoginResponse> {
+  async resetPassword(data: ResetPasswordRequestDto): Promise<void> {
     try {
       logger.info('Password reset process started')
 
       const user = await this.userService.findUserByResetToken(data.resetPasswordToken)
       const hashedPassword = await this.passwordService.hashPassword(data.password)
       await this.userService.updateUserPassword(user, hashedPassword)
-
-      const { accessToken, refreshToken } = this.generateTokenPair(user)
-      logger.info('Password reset successful', { userId: user.id })
-      const role = await Role.findByPk(user.roleId)
-      if (!role) throw new NotFoundError('role not found')
-      return this.saveRefreshTokenAndReturn(user, accessToken, refreshToken, role.name)
+      return
     } catch (error) {
       return this.handleAuthError('Password reset', {}, error)
     }
@@ -362,7 +357,7 @@ export class AuthService {
     const isMatch = await this.passwordService.comparePasswords(password, user.password)
     if (!isMatch) {
       logger.warn('Password validation failed', { userId: user.id })
-      throw new BadRequestError('Invalid credentials', 'INVALID_CREDENTIALS')
+      throw new BadRequestError('User with this credentials not found.')
     }
     logger.info('Password validated successfully', { userId: user.id })
   }

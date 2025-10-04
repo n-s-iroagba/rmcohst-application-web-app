@@ -1,5 +1,6 @@
 // EmailService.ts - Unified Email Service with best practices
 import nodemailer, { Transporter } from 'nodemailer'
+import path from 'path'
 import { User } from '../models'
 import Payment from '../models/Payment'
 import logger from '../utils/logger'
@@ -32,7 +33,7 @@ interface ReceiptEmailData {
   applicantName: string
   payment: Payment
   receiptData: any
-  receiptLink: string
+
 }
 
 interface FailedPaymentEmailData {
@@ -41,8 +42,7 @@ interface FailedPaymentEmailData {
   payment: Payment
   failureReason: string
 }
-
-export class EmailService {
+class EmailService {
   private transporter: Transporter
   private config: EmailConfig
   private static instance: EmailService
@@ -367,7 +367,6 @@ export class EmailService {
     applicantName,
     payment,
     receiptData,
-    receiptLink,
   }: ReceiptEmailData): Promise<void> {
     try {
       const html = `
@@ -408,15 +407,15 @@ export class EmailService {
                     <tr style="border-bottom: 1px solid #eee;">
                       <td style="padding: 8px 0; font-weight: 600;">Payment Date:</td>
                       <td style="padding: 8px 0;">${new Date(payment.paidAt).toLocaleDateString(
-                        'en-US',
-                        {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        }
-                      )}</td>
+        'en-US',
+        {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        }
+      )}</td>
                     </tr>
                     <tr>
                       <td style="padding: 8px 0; font-weight: 600;">Status:</td>
@@ -430,7 +429,7 @@ export class EmailService {
                 </div>
                 
                 <div class="text-center">
-                  <a href="${receiptLink}" class="button">Download Receipt</a>
+               
                   <a href="${this.clientUrl}/application/continue" class="button success">Continue Application</a>
                 </div>
                 
@@ -655,7 +654,37 @@ export class EmailService {
       }
     }
   }
+
+  async sendApplicationZipMail(
+    recipientEmail: string,
+    zipPath: string
+  ) {
+    // 4. Setup transporter (adjust to your SMTP or Gmail OAuth2)
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT || 587),
+      secure: false,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    })
+
+    await transporter.sendMail({
+      from: `"Admissions" <${process.env.SMTP_USER}>`,
+      to: recipientEmail,
+      subject: 'Your Application Submission',
+      text: 'Attached is a copy of your submitted application.',
+      attachments: [
+        {
+          filename: path.basename(zipPath),
+          path: zipPath,
+        },
+      ],
+    })
+  }
 }
+export default new EmailService('http://localhost:3000') // Replace with your actual client URL
 
 // Update your Payment model to include these new fields:
 export interface PaymentAttributes {

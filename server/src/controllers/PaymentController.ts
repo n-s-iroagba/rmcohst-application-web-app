@@ -1,12 +1,21 @@
 import { Request, Response } from 'express'
 import { PaymentService } from '../services/PaymentService'
-import logger from '../utils/logger'
 
 export class PaymentController {
   static async getPaymentsByApplicantUserId(req: Request, res: Response) {
     try {
       const applicantUserId = parseInt(req.params.applicantUserId)
       const payments = await PaymentService.getPaymentsByApplicantUserId(applicantUserId)
+      res.status(200).json(payments)
+    } catch (error: any) {
+      res.status(500).json({ error: error.message })
+    }
+  }
+
+  static async getAcceptanceFeeByApplicantUserId(req: Request, res: Response) {
+    try {
+      const applicantUserId = parseInt(req.params.id)
+      const payments = await PaymentService.getAccepantanceFeeByApplicantUserId(applicantUserId)
       res.status(200).json(payments)
     } catch (error: any) {
       res.status(500).json({ error: error.message })

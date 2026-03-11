@@ -5,7 +5,7 @@ import { FieldType } from '@/types/fields_config'
 
 import { useMutation, UseMutationResult, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { ApiError, handleError } from '../helpers/handleError'
+import { ApiError } from '../helpers/handleError'
 // Define input types for different handlers
 type InputChangeEvent = React.ChangeEvent<HTMLInputElement>
 type TextAreaChangeEvent = React.ChangeEvent<HTMLTextAreaElement>
@@ -183,9 +183,6 @@ export const usePost = <T, U>(
       const data = await mutation.mutateAsync(postResource)
       return data
     } catch (error) {
-
-      console.error('Post failed:', error)
-      handleError(error as ApiError, setApiError)
       throw error
 
     }

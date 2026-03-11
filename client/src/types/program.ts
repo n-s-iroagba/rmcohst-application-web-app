@@ -2,7 +2,11 @@ import { Department, DepartmentWithFaculty } from './department'
 import { ProgramSpecificRequirement } from './program_specific_requirement'
 import { ProgramSSCRequirement } from './program_ssc_requirement'
 
-export type ProgramLevel = 'OND' | 'HND' | 'Certificate'
+export enum ProgramLevel {
+  OND = 'OND',
+  HND = 'HND',
+  CERTIFICATE = 'Certificate'
+}
 type DurationType = 'WEEK' | 'MONTH' | 'YEAR'
 
 export interface Program {
@@ -14,13 +18,18 @@ export interface Program {
   duration: number
   department: Department
   applicationFeeInNaira: number
-  acceptanceFeeInNaira: number 
+  acceptanceFeeInNaira: number
   description?: string
   sscRequirementId: number
   programSpecificRequirementsId: number
   isActive: boolean
   createdAt: Date
   updatedAt: Date
+}
+export interface FullProgram extends Program {
+  sscRequirements: ProgramSSCRequirement
+  specificRequirements: ProgramSpecificRequirement
+  department: DepartmentWithFaculty
 }
 
 export type ProgramCreationDto = {
@@ -42,8 +51,3 @@ export interface ProgramFilters {
   searchTerm?: string
 }
 
-export interface FullProgram extends Program {
-   sscRequirements: ProgramSSCRequirement
-  specificRequirements: ProgramSpecificRequirement
-  department:DepartmentWithFaculty
-}

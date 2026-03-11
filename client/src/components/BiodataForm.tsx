@@ -11,16 +11,17 @@ import { biodataFormConfig } from '@/test/config/applicationFormconfig'
 import { biodataFormTestIds } from '@/test/testIds/formTestIds'
 import { Application } from '@/types/application'
 import { Biodata } from '@/types/biodata'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { createFieldsConfig } from '../helpers/createFieldConfig'
 
 const BiodataForm: React.FC<{ application: Application, handleForward: () => void }> = ({ application, handleForward }) => {
   const { navigateToHome, } = useRoutes()
+  const [error, setError] = useState('')
   const {
     putResource: biodata,
     changeHandlers,
     updating,
-    apiError
+
   } = usePut(
     application ? API_ROUTES.BIODATA.UPDATE(application?.biodata.id) : null,
     application?.biodata
@@ -36,26 +37,30 @@ const BiodataForm: React.FC<{ application: Application, handleForward: () => voi
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formdata = new FormData()
+    try {
+      // Get form data from the form event
+      const form = e.target as HTMLFormElement
+      const formDataObj = new FormData(form)
 
-    // Get form data from the form event
-    const form = e.target as HTMLFormElement
-    const formDataObj = new FormData(form)
+      // Append all form fields to formdata
+      for (const [key, value] of formDataObj.entries()) {
+        formdata.append(key, value)
 
-    // Append all form fields to formdata
-    for (const [key, value] of formDataObj.entries()) {
-      formdata.append(key, value)
+        //    if (key==='passportPhotograph') {
+        //   formdata.append(key, value.files[0])
+        // }
+      }
+      console.log(formdata.values)
 
-      //    if (key==='passportPhotograph') {
-      //   formdata.append(key, value.files[0])
-      // }
+      await api.patch(API_ROUTES.BIODATA.UPDATE(application?.biodata.id), formdata, { headers: { 'Content-Type': 'multipart/form-data' } })
+      handleForward()
+
+    } catch (error) {
+      console.error(error)
+      setError('An Error occured')
+
     }
-    console.log(formdata.values)
-
-    await api.patch(API_ROUTES.BIODATA.UPDATE(application?.biodata.id), formdata, { headers: { 'Content-Type': 'multipart/form-data' } })
-    handleForward()
   }
-
-
 
   return (
     <CustomForm
@@ -64,7 +69,7 @@ const BiodataForm: React.FC<{ application: Application, handleForward: () => voi
       formLabel={'Fill in your biodata'}
       onCancel={navigateToHome}
       submiting={updating}
-      error={apiError}
+      error={error}
     />
   )
 }

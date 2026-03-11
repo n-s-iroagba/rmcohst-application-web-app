@@ -97,7 +97,9 @@ export function FieldRenderer<T extends Record<string, any>>({
             //   console.error('no options');
             //   return null;
             // }
+            console.log(value)
             return (
+
               <SelectField
                 key={key}
                 name={key}

@@ -34,7 +34,7 @@ const SSCQualificationForm: React.FC<Props> = ({ application, handleForward, han
     putResource: sscQualification,
     changeHandlers,
     updating,
-
+    handlePut
   } = usePut<SSCQualificationFormData>(
     application?.sscQualification?.id
       ? API_ROUTES.SSC_QUALIFICATION.UPDATE(application.sscQualification.id)
@@ -48,7 +48,7 @@ const SSCQualificationForm: React.FC<Props> = ({ application, handleForward, han
 
   const config: FieldsConfig<Partial<ApplicantSSCQualification>> = {
     numberOfSittings: {
-      type: 'text',
+      type: 'number',
 
     },
     certificateTypes: {
@@ -218,6 +218,8 @@ const SSCQualificationForm: React.FC<Props> = ({ application, handleForward, han
         formdata.append(`certificateFile${i}`, fileInput.files[0])
       }
     }
+    handlePut(e)
+
     handleForward()
   }
   return (

@@ -2,49 +2,48 @@ import { Request, Response } from 'express'
 import { z } from 'zod'
 import ApplicantSSCQualificationService from '../services/ApplicantSSCQualificationService'
 import logger from '../utils/logger'
-import { Grade, CertificateType } from '../models/ApplicantSSCQualification'
 
 // Validation schema for update request
-const updateSSCQualificationSchema = z.object({
-  applicationId: z
-    .string()
-    .optional()
-    .transform(val => (val ? Number(val) : undefined)),
-  numberOfSittings: z
-    .string()
-    .optional()
-    .transform(val => (val ? Number(val) : undefined)),
-  certificateTypes: z.string().optional(), // Will be parsed as JSON
-  firstSubjectId: z
-    .string()
-    .optional()
-    .transform(val => (val ? Number(val) : undefined)),
-  firstSubjectGrade: z.nativeEnum(Grade).optional(),
-  secondSubjectId: z
-    .string()
-    .optional()
-    .transform(val => (val ? Number(val) : undefined)),
-  secondSubjectGrade: z.nativeEnum(Grade).optional(),
-  thirdSubjectId: z
-    .string()
-    .optional()
-    .transform(val => (val ? Number(val) : undefined)),
-  thirdSubjectGrade: z.nativeEnum(Grade).optional(),
-  fourthSubjectId: z
-    .string()
-    .optional()
-    .transform(val => (val ? Number(val) : undefined)),
-  fourthSubjectGrade: z.nativeEnum(Grade).optional(),
-  fifthSubjectId: z
-    .string()
-    .optional()
-    .transform(val => (val ? Number(val) : undefined)),
-  fifthSubjectGrade: z.nativeEnum(Grade).optional(),
-})
+// const updateSSCQualificationSchema = z.object({
+//   applicationId: z
+//     .number()
+//     .optional()
+//     .transform(val => (val ? Number(val) : undefined)),
+//   numberOfSittings: z
+//     .string()
+//     .optional()
+//     .transform(val => (val ? Number(val) : undefined)),
+//   certificateTypes: z.string().optional(), // Will be parsed as JSON
+//   firstSubjectId: z
+//     .string()
+//     .optional()
+//     .transform(val => (val ? Number(val) : undefined)),
+//   firstSubjectGrade: z.nativeEnum(Grade).optional(),
+//   secondSubjectId: z
+//     .string()
+//     .optional()
+//     .transform(val => (val ? Number(val) : undefined)),
+//   secondSubjectGrade: z.nativeEnum(Grade).optional(),
+//   thirdSubjectId: z
+//     .string()
+//     .optional()
+//     .transform(val => (val ? Number(val) : undefined)),
+//   thirdSubjectGrade: z.nativeEnum(Grade).optional(),
+//   fourthSubjectId: z
+//     .string()
+//     .optional()
+//     .transform(val => (val ? Number(val) : undefined)),
+//   fourthSubjectGrade: z.nativeEnum(Grade).optional(),
+//   fifthSubjectId: z
+//     .string()
+//     .optional()
+//     .transform(val => (val ? Number(val) : undefined)),
+//   fifthSubjectGrade: z.nativeEnum(Grade).optional(),
+// })
 
-const idParamUpdateSchema = z.object({
-  id: z.string().transform(val => Number(val)),
-})
+// const idParamUpdateSchema = z.object({
+//   id: z.string().transform(val => Number(val)),
+// })
 
 class ApplicantSSCQualificationController {
   /**
@@ -54,10 +53,10 @@ class ApplicantSSCQualificationController {
   public static async update(req: Request, res: Response): Promise<void> {
     try {
       // Validate params
-      const { id } = idParamUpdateSchema.parse(req.params)
+      const id = parseInt(req.params.id)
 
       // Validate body
-      const validatedData = updateSSCQualificationSchema.parse(req.body)
+      // const validatedData = updateSSCQualificationSchema.parse(req.body)
 
       // Get files from multer (if any)
       const files = req.files as Express.Multer.File[] | undefined
@@ -65,7 +64,7 @@ class ApplicantSSCQualificationController {
       // Call service to update
       const updatedQualification = await ApplicantSSCQualificationService.update(
         id,
-        validatedData,
+        req.body,
         files
       )
 
@@ -127,7 +126,7 @@ class ApplicantSSCQualificationController {
    */
   public static async getById(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = idParamUpdateSchema.parse(req.params)
+      const id = parseInt(req.params.id)
 
       const qualification = await ApplicantSSCQualificationService.findById(id)
 

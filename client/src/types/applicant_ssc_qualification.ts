@@ -2,19 +2,19 @@ import { Grade } from './program_ssc_requirement'
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 export interface ApplicantSSCQualification {
   id: number
-  applicationId: number
+  applicationId: string
   numberOfSittings: number
   certificateTypes: string[]
   certificates?: File[] | Blob[] | []
-  firstSubject: number
+  firstSubjectId: string
   firstSubjectGrade: Grade
-  secondSubject: number
+  secondSubjectId: string
   secondSubjectGrade: Grade
-  thirdSubject: number
+  thirdSubjectId: string
   thirdSubjectGrade: Grade
-  fourthSubject: number
+  fourthSubjectId: string
   fourthSubjectGrade: Grade
-  fifthSubject: number
+  fifthSubjectId: string
   fifthSubjectGrade: Grade
   completed: boolean
 }

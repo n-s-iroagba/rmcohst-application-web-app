@@ -58,5 +58,8 @@ export const API_ROUTES = {
   },
   SUBJECT: {
     LIST: '/subjects'
+  },
+  DEPARTMENT: {
+    LIST: '/departments'
   }
 }

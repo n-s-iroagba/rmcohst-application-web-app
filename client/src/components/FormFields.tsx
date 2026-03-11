@@ -154,7 +154,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
       onChange={onChange}
       className="w-full border rounded px-3 py-2"
     >
-      <option value="">Select {label}</option>
+      {value ? <option value="">{value}</option> : <option value="">Select {label}</option>}
       {options.map((opt) => (
         <option className="text-black" key={opt.id} value={opt.id}>
           {opt.label}

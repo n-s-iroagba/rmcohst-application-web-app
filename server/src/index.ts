@@ -7,6 +7,7 @@ import { errorHandler } from './middleware/errorHandler'
 import { requestLogger } from './middleware/requestLogger'
 import academicSessionRoutes from './routes/academicSessionRoutes'
 import applicantProgramSpecificQualificationRoutes from './routes/applicantProgramSpecificQualificationRoutes'
+import applicantSSCQualificationRoutes from './routes/applicantSSCQualificationRoutes'
 import applicationRoutes from './routes/applicationRoutes'
 import authRoutes from './routes/authRoutes'
 import biodataRoutes from './routes/biodataRoutes'
@@ -57,7 +58,7 @@ app.use('/payments', paymentRoutes)
 app.use('/biodata', biodataRoutes)
 app.use('/subjects', subjectRoutes)
 app.use('/sessions', academicSessionRoutes)
-app.use('/ssc-qualifications', applicantProgramSpecificQualificationRoutes)
+app.use('/ssc-qualifications', applicantSSCQualificationRoutes)
 app.use('/program-qualifications', applicantProgramSpecificQualificationRoutes)
 app.use(errorHandler)
 
@@ -78,7 +79,7 @@ const startServer = async () => {
     // console.log('📦 Syncing DB...');
     // await sequelize.sync(
     //   {
-    //     force: true,
+    //     alter: true,
     //     logging: console.log
     //   }
     // )

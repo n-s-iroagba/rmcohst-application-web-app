@@ -19,11 +19,13 @@ export const biodataFormConfig: FieldsConfig<Partial<Biodata>> = {
   },
   gender: {
     type: 'select',
+    options: [{ id: 'male', label: "Male" }, { id: 'female', label: 'Female' }]
 
 
   },
   maritalStatus: {
     type: 'select',
+    options: [{ id: 'single', label: 'Single' }, { id: 'married', label: 'Married' }, { id: 'divorced', label: 'Divorced' }]
 
   },
   nationality: {
@@ -56,6 +58,6 @@ export const biodataFormConfig: FieldsConfig<Partial<Biodata>> = {
     type: 'textarea'
   },
   nextOfKinRelationship: {
-    type: 'select'
+    type: 'text'
   }
 }

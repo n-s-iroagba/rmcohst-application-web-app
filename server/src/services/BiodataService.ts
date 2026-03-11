@@ -155,7 +155,7 @@ class BiodataService {
       }
       const data = { ...updateData, dateOfBirth: (updateData.dateOfBirth ? updateData.dateOfBirth : null) }
 
-      await biodata.update(updateData, { transaction })
+      await biodata.update(data, { transaction })
       await biodata.reload({ transaction })
 
       return biodata

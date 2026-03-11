@@ -2,7 +2,7 @@ export const INTERNAL_ROUTES = {
   HOME: '/',
   AUTH: {
     LOGIN: '/auth/login',
-    SIGNUP: '/auth/signup',
+    SIGNUP: '/auth/signup/applicant',
     VERIFY_EMAIL: (token: string, id: number) => `/auth/verify-email/${token}/${id}`,
     RESEND_VERIFICATION_CODE: '/auth/resend-verification-code',
     LOGOUT: '/auth/logout',

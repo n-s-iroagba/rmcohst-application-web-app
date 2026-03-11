@@ -1,6 +1,5 @@
 import ApplicantSSCQualification from '../models/ApplicantSSCQualification'
 import logger from '../utils/logger'
-import { idParamSchema } from '../validation/faculty.validationSchemas'
 
 class ApplicantSSCQualificationService {
   public static async create(applicationId: number): Promise<ApplicantSSCQualification> {
@@ -73,7 +72,7 @@ class ApplicantSSCQualificationService {
 
       // Prepare update data
       const updatePayload = {
-        ...(applicationId && { applicationId }),
+        ...(applicationId && { applicationId: Number(applicationId) }),
         ...(numberOfSittings && { numberOfSittings: Number(numberOfSittings) }),
         ...(parsedCertificateTypes && { certificateTypes: parsedCertificateTypes }),
         certificates,

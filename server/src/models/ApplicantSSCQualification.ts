@@ -1,4 +1,4 @@
-import { Model, DataTypes, Association } from 'sequelize'
+import { DataTypes, Model } from 'sequelize'
 import sequelize from '../config/database'
 
 // Types and Enums
@@ -39,7 +39,7 @@ export interface ApplicantSSCQualification {
   fifthSubjectGrade?: Grade | null
 }
 
-export interface SSCQualificationFormData extends Omit<ApplicantSSCQualification, 'id'> {}
+export interface SSCQualificationFormData extends Omit<ApplicantSSCQualification, 'id'> { }
 
 // Validation interfaces
 export interface ValidationResult {
@@ -69,8 +69,7 @@ export interface CertificateFile {
 
 class SSCQualification
   extends Model<ApplicantSSCQualification>
-  implements ApplicantSSCQualification
-{
+  implements ApplicantSSCQualification {
   public id?: number
   public applicationId?: number | null
   public numberOfSittings?: number | null
@@ -265,7 +264,7 @@ class SSCQualification
     }
 
     // Subject duplication check
-    const subjectIds = [
+    const subjectIdsss = [
       this.firstSubjectId,
       this.secondSubjectId,
       this.thirdSubjectId,
@@ -273,7 +272,7 @@ class SSCQualification
       this.fifthSubjectId,
     ].filter(id => id !== null)
 
-    const duplicateSubjects = subjectIds.filter((id, index) => subjectIds.indexOf(id) !== index)
+    const duplicateSubjects = subjectIdsss.filter((id, index) => subjectIdsss.indexOf(id) !== index)
 
     if (duplicateSubjects.length > 0) {
       errors.push('Duplicate subjects are not allowed')
@@ -329,7 +328,7 @@ class SSCQualification
   /**
    * Get subjects with passing grades (C6 and above)
    */
-  public getPassingSubjects(): Array<{ subjectId: number; grade: Grade }> {
+  public getPassingSubjects(): Array<{ subjectIdss: number; grade: Grade }> {
     const passingGrades = [Grade.A1, Grade.B2, Grade.B3, Grade.C4, Grade.C5, Grade.C6]
     const subjects = []
 
@@ -343,7 +342,7 @@ class SSCQualification
 
     for (const pair of subjectGradePairs) {
       if (pair.id && pair.grade && passingGrades.includes(pair.grade)) {
-        subjects.push({ subjectId: pair.id, grade: pair.grade })
+        subjects.push({ subjectIdss: pair.id, grade: pair.grade })
       }
     }
 
